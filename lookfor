@@ -1,0 +1,23 @@
+#!/bin/sh
+# -*-tcl-*-
+# The next line restarts using tclsh \
+exec tclsh "$0" "$@"
+
+set target [lindex $argv 0]
+puts "Looking for $target"
+
+cd ~/mars/lib
+catch {puts [exec grep $target */*.tcl]}
+catch {puts [exec grep $target */*.test]}
+catch {puts [exec grep $target */*.sql]}
+
+cd ~/athena/lib
+catch {puts [exec grep $target */*.tcl */*/*.tcl]}
+catch {puts [exec grep $target */*.sql */*/*.sql]}
+
+cd ~/athena/test/app_sim
+catch {puts [eval exec {grep $target *.tcl *.test}]}
+
+
+
+

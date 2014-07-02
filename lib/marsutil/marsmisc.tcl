@@ -12,6 +12,39 @@
 #
 #    Miscellaneous commands
 #
+# TODO:
+#    * Move types into a different module, and possibly rename
+#       * count => icount (used in shared/bsys.tcl)
+#       * hexcolor
+#       * identifier
+#       * ipaddress
+#    * Move elsewhere
+#      * getcode
+#      * geotiff
+#    * list commands
+#      * ladd
+#      * ldelete
+#      * lmaxlen
+#      * lsearchi
+#      * lshift
+#    * Assertions
+#      * assert
+#      * require
+#    * file commands
+#
+#    * Obsolete Commands:
+#      * degrees
+#      * dicteq
+#      * discrete ?
+#      * distance
+#      * fstringmap
+#      * lformat  -- use mapfunc instead.
+#      * optval   -- Must replace with snit's from.
+#      * pickfrom ?
+#      * poisson ?
+#      * radians
+#      * stringToRegexp
+#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -44,7 +77,6 @@ namespace eval ::marsutil:: {
         lformat         \
         lmaxlen         \
         lmerge          \
-        lmove           \
         lsearchi        \
         lshift          \
         moneyfmt        \
