@@ -1,0 +1,862 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    smartinterp.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) smartinterp(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require marsutil
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+
+    #-------------------------------------------------------------------
+    # Setup
+
+    # setup
+    #
+    # Creates a smartinterp(n).
+
+    proc setup {} {
+        variable interp
+
+        set interp [smartinterp %AUTO%]
+    }
+
+    # cleanup
+    #
+    # Cleans up after the test.
+
+    proc cleanup {} {
+        variable interp
+
+        $interp destroy
+    }
+
+
+    # matchdict edict adict
+    #
+    # edict    - Expected result dictionary
+    # adict    - Actual result dictionary
+    #
+    # TclTest custom match algorithm for "dict":
+    # the adict must have the same keys as edict, and every value in
+    # adict must eq the pattern in edict.
+
+    proc matchdict {edict adict} {
+        # FIRST, the dictionaries must have the same keys.
+        if {[lsort [dict keys $edict]] ne [lsort [dict keys $adict]]} {
+            return 0
+        }
+
+        # NEXT, each actual value must match the expected pattern.
+        dict for {key value} $adict {
+            set pattern [dict get $edict $key]
+
+            if {$value ne $pattern} {
+                return 0
+            }
+        }
+
+        return 1
+    }
+
+    # matchlist elist alist
+    #
+    # elist    - Expected result dictionary
+    # alist    - Actual result dictionary
+    #
+    # TclTest custom match algorithm for "list":
+    # the alist and elist must have the same elements.
+
+    proc matchlist {elist alist} {
+        # FIRST, each actual value must match the expected pattern.
+        foreach e $elist a $alist {
+            if {$a ne $e} {
+                return 0
+            }
+        }
+
+        return 1
+    }
+
+
+    ::tcltest::customMatch dict ::marsutil::test::matchdict
+    ::tcltest::customMatch list ::marsutil::test::matchlist
+
+    # pdict dict
+    #
+    # dict - A dictionary
+    # 
+    # Pretty-prints a dictionary for use in -result
+
+    proc pdict {dict} {
+        set results "\n"
+
+        set wid [lmaxlen [dict keys $dict]]
+
+        foreach {key value} $dict {
+            append results \
+                "        [format {%-*s %s} $wid $key [list $value]]\n" 
+        }
+        append results "    "
+                    
+        return $results
+    }
+
+    # errlist list
+    #
+    # list - A list of line numbers and error messages.
+    # 
+    # Pretty-prints the list for use in -result
+
+    proc errlist {list} {
+        set results "\n"
+
+        foreach {num msg} $list {
+            append results \
+                "        [format {%s %s} $num [list $msg]]\n" 
+        }
+        append results "    "
+                    
+        return $results
+    }
+
+    proc echo {args} {
+        return "<[join $args ><]>"
+    }
+
+    
+    #-------------------------------------------------------------------
+    # scriptsplit
+    
+    test scriptsplit-1.1 {scriptsplit command} -body {
+        pdict [tclchecker scriptsplit {
+            set a 5
+            if {$a == 5} {
+                set b 7
+            }
+            set c [format %2d $a]
+        }]
+    } -match dict -result {
+        2 {set a 5}
+        3 {if {$a == 5} {
+                set b 7
+            }}
+        6 {set c [format %2d $a]}
+    }
+
+    test scriptsplit-1.2 {scriptsplit command with first line} -body {
+        pdict [tclchecker scriptsplit {
+            set a 5
+            if {$a == 5} {
+                set b 7
+            }
+            set c [format %2d $a]
+        } 10]
+    } -match dict -result {
+        11 {set a 5}
+        12 {if {$a == 5} {
+                set b 7
+            }}
+        15 {set c [format %2d $a]}
+    }
+
+    test scriptsplit-1.3 {skips blank lines} -body {
+        pdict [tclchecker scriptsplit {
+            set a 5
+
+            if {$a == 5} {
+                set b 7
+            }
+
+            set c [format %2d $a]
+        }]
+    } -match dict -result {
+        2 {set a 5}
+        4 {if {$a == 5} {
+                set b 7
+            }}
+        8 {set c [format %2d $a]}
+    }
+
+    test scriptsplit-1.4 {skips comment lines} -body {
+        pdict [tclchecker scriptsplit {
+            # first
+            set a 5
+
+            # second
+            if {$a == 5} {
+                set b 7
+            }
+
+            # third
+            set c [format %2d $a]
+        }]
+    } -match dict -result {
+        3  {set a 5}
+        6  {if {$a == 5} {
+                set b 7
+            }}
+        11 {set c [format %2d $a]}
+    }
+
+    test scriptsplit-2.1 {throws UNTERMINATED} -body {
+        catch {
+            tclchecker scriptsplit "
+                set a 5
+
+                if {\$a == 5} \{
+                    set b 7
+
+                set c 9
+            "
+        } result eopts
+
+        list [dict get $eopts -errorcode] $result
+    } -result {{UNTERMINATED 4} {Unterminated command in script}}
+
+    #-------------------------------------------------------------------
+    # cmdsplit
+
+    proc csplit {command {num 1}} {
+        lassign [tclchecker cmdsplit $command $num] words nums
+
+        set result [list]
+
+        foreach num $nums word $words {
+            lappend result $num $word
+        }
+
+        return $result
+    }
+    
+    test cmdsplit-1.1 {splits Tcl command into words} -body {
+        csplit {set a [expr {$x + $y}]}
+    } -match list -result {
+        1 set 
+        1 a 
+        1 {[expr {$x + $y}]}
+    }
+
+    test cmdsplit-1.2 {tracks line numbers} -body {
+        csplit {if {$a < $b} {
+                set c $d
+            } else {
+                set c $e
+            }
+        }
+    } -match list -result {
+        1 if 
+        1 {{$a < $b}} 
+        1 {{
+ set c $d
+ }} 
+        3 else 
+        3 {{
+ set c $e
+ }}
+    }
+
+    test cmdsplit-1.3 {honors num argument} -body {
+        csplit {set a 7} 5
+    } -match list -result {
+        5 set
+        5 a
+        5 7
+    }
+
+    test cmdsplit-1.4 {honors separated backslashes} -body {
+        csplit ".win configure \\
+            -width 5 \\
+            -height 10
+        "
+    } -match list -result {
+        1 .win 
+        1 configure 
+        2 -width 
+        2 5 
+        3 -height 
+        3 10
+    }
+
+    test cmdsplit-1.5 {honors unseparated backslashes} -body {
+        csplit ".win configure\\
+            -width 5\\
+            -height 10
+        "
+    } -match list -result {
+        1 .win 
+        1 configure 
+        2 -width 
+        2 5 
+        3 -height 
+        3 10
+    }
+
+    #-------------------------------------------------------------------
+    # getembedded
+
+    test getembedded-1.1 {get interpolated command string} -body {
+        tclchecker getembedded {Person [name $p] is [age $p] years old}
+    } -result {{name $p} {age $p}}
+
+    #-------------------------------------------------------------------
+    # check
+
+    proc pcheck {script} {
+        variable interp
+        return [errlist [tclchecker check $interp $script]]
+    }
+
+    # 1.* - General Success
+
+    test check-1.1 {empty list on success} -setup {
+        setup
+    } -body {
+        tclchecker check $interp {
+            set a 5
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {}
+
+    # 2.* - General Syntax Errors
+
+    test check-2.1 {unterminated error on split} -setup {
+        setup
+    } -body {
+        pcheck "if \{"
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        1 {Unterminated command}
+    }
+
+    test check-2.2 {syntax error in command} -setup {
+        setup
+    } -body {
+        pcheck "
+            set a 5
+            if {\$a == 5} {
+                set c 2
+            }]
+            set b 7
+        "
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {extra characters after close-brace}
+    }
+
+    # 3.* - General command signature checking
+
+    test check-3.1 {unknown command} -setup {
+        setup
+    } -body {
+        pcheck {
+            set a 5
+            foo a b c
+            set b 7
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+    }
+    
+    test check-3.2 {indeterminate commands} -setup {
+        setup
+    } -body {
+        # Only [bar] should cause an error.
+        pcheck {
+            $win configure -width [bar 3 4]
+            [set win] configure -width 5
+            bar 1 2
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {Warning, undefined command: "bar"}
+        4 {Warning, undefined command: "bar"}
+    }
+
+    test check-3.3 {wrong # args} -setup {
+        setup
+    } -body {
+        pcheck {
+            set a 5
+            set b 5 extra
+            set c 7
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {wrong # args: should be "set varName ?newValue?"}
+    }
+
+    # 4.* - Checking of commands interpolated into arguments.
+
+    test check-4.1 {interpolated commands in arguments} -setup {
+        setup
+    } -body {
+        pcheck {
+            set a 5
+            set b "a b c [foo 1 2 3] d e f"
+            set c 7
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+    }
+
+    test check-4.2 {interpolated commands in interpolated commands} -setup {
+        setup
+    } -body {
+        pcheck {
+            set a 5
+            set b "a b c [foo 1 [bar x y z] 2 3] d e f"
+            set c 7
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+        3 {Warning, undefined command: "bar"}
+    }
+
+    # 5.* - [expr] and expressions
+
+    test check-5.1 {success} -setup {
+        setup
+    } -body {
+        pcheck {expr {1 + 2}}
+    } -cleanup {
+        cleanup
+    } -match list -result {}
+
+    test check-5.2 {expr with multiple arguments} -setup {
+        setup
+    } -body {
+        pcheck {expr 1 + 2}
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        1 {wrong # args: should be "expr expression"}
+    }
+
+    test check-5.3 {expr with syntax error} -setup {
+        setup
+    } -body {
+        pcheck {expr {1 + * 2}}
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        1 {missing operand at _@_ in expression "1 + _@_* 2"}
+    }
+    
+    test check-5.4 {expr with interpolated command} -setup {
+        setup
+    } -body {
+        pcheck {expr {1 + [foo x] + 2}}
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        1 {Warning, undefined command: "foo"}
+    }
+
+    test check-5.5 {expr with function with too many args} -setup {
+        setup
+    } -body {
+        pcheck {expr {1 + sin(2,3)}}
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        1 {error in function sin(), wrong # args, should be "sin(x)"}
+    }
+
+    test check-5.5 {expr with unknown function} -setup {
+        setup
+    } -body {
+        pcheck {expr {1 + foo(2,3)}}
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        1 {unknown function: foo()}
+    }
+
+    # 6.* - dict for's body
+
+    test check-6.1 {recurse into [dict for] body} -setup {
+        setup
+    } -body {
+        pcheck {
+            dict for {key value} $mydict {
+                set a 1
+                foo
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        4 {Warning, undefined command: "foo"}
+    }
+
+    # 7.* - for
+
+    test check-7.1 {for: recurse into start} -setup {
+        setup
+    } -body {
+        pcheck {
+            for {joe} {$i < 7} {incr i} {
+                set a 1
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {Warning, undefined command: "joe"}
+    }
+
+    test check-7.2 {for: recurse into test} -setup {
+        setup
+    } -body {
+        pcheck {
+            for {set i 1} {$i < bob()} {incr i} {
+                set a 1
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {unknown function: bob()}
+    }
+   
+    test check-7.3 {for: recurse into next} -setup {
+        setup
+    } -body {
+        pcheck {
+            for {set i 1} {$i < 7} {dave i} {
+                set a 1
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {Warning, undefined command: "dave"}
+    }
+   
+    test check-7.4 {for: recurse into body} -setup {
+        setup
+    } -body {
+        pcheck {
+            for {set i 1} {$i < 7} {incr i} {
+                set a 1
+                brian 1 2
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        4 {Warning, undefined command: "brian"}
+    }
+   
+    # 8.* - foreach
+
+    test check-8.1 {foreach: recurse into body} -setup {
+        setup
+    } -body {
+        pcheck {
+            foreach item $list {
+                set a 1
+                foo
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        4 {Warning, undefined command: "foo"}
+    }
+   
+    test check-8.2 {foreach: recurse into body, multiple indices} -setup {
+        setup
+    } -body {
+        pcheck {
+            foreach item1 $list1 item2 $list2 {
+                set a 1
+                foo
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        4 {Warning, undefined command: "foo"}
+    }
+
+    # 9.* - proc
+
+    test check-9.1 {proc: recurse into body} -setup {
+        setup
+    } -body {
+        pcheck {
+            proc myproc {a b c} {
+                foo $a $b
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+    }
+   
+    # 10.* - while
+
+    test check-10.1 {while: recurse into test} -setup {
+        setup
+    } -body {
+        pcheck {
+            while {$i < joe()} {
+                set a $i
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {unknown function: joe()}
+    }
+
+    test check-10.2 {while: recurse into body} -setup {
+        setup
+    } -body {
+        pcheck {
+            while {$i < 7} {
+                bob a $i
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "bob"}
+    }
+
+    # 11.* - if
+
+    test check-11.1 {success: if} -setup {
+        setup
+    } -body {
+        pcheck {
+            if {$a == 1} {
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {}
+
+    test check-11.2 {success: if/then} -setup {
+        setup
+    } -body {
+        pcheck {
+            if {$a == 1} then {
+                set b 2
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {}
+
+    test check-11.3 {success: if/else} -setup {
+        setup
+    } -body {
+        pcheck {
+            if {$a == 1} {
+                set b 2
+            } else {
+                set b 3
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {}
+
+    test check-11.4 {success: if/elseif/else} -setup {
+        setup
+    } -body {
+        pcheck {
+            if {$a == 1} {
+                set b 2
+            } elseif {$a == 2} {
+                set b 3
+            } else {
+                set b 4
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {}
+
+    test check-11.5 {lots of errors} -setup {
+        setup
+    } -body {
+        pcheck {
+            if {$a = 1} {
+                fooset b 2
+            } elseif {$a == bob()} {
+                set b 3 extra
+            } else {
+                barset b 4
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {incomplete operator "=" in expression "$a = 1"}
+        3 {Warning, undefined command: "fooset"}
+        4 {unknown function: bob()}
+        5 {wrong # args: should be "set varName ?newValue?"}
+        7 {Warning, undefined command: "barset"}
+    }
+
+    test check-11.6 {invalid keyword} -setup {
+        setup
+    } -body {
+        pcheck {
+            if {$a == 1} {
+                set b 2
+            } fred {
+                set b 4
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        4 {unexpected token: "fred"}
+    }
+
+    # 12.* - dict with
+
+    test check-12.1 {dict with: recurse into body} -setup {
+        setup
+    } -body {
+        pcheck {
+            dict with $dict {
+                foo $a $b
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+    }
+   
+    # 13.* - switch
+
+    test switch-13.1 {switch with switch body} -setup {
+        setup
+    } -body {
+        pcheck {
+            switch $string {
+                case1 { foo a b c }
+                case2 { bar a b c }
+                default { error "No such case" }
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+        4 {Warning, undefined command: "bar"}
+    }
+
+    test switch-13.2 {skips options} -setup {
+        setup
+    } -body {
+        pcheck {
+            switch -this -that -theother -- $string {
+                case1 { foo a b c }
+                case2 { bar a b c }
+                default { error "No such case" }
+            }
+        }
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        3 {Warning, undefined command: "foo"}
+        4 {Warning, undefined command: "bar"}
+    }
+
+    test switch-13.3 {switch with expanded cases} -setup {
+        setup
+    } -body {
+        pcheck {
+            switch $string \
+                case1 { foo a b c } \
+                case2 { bar a b c } \
+                default { error "No such case" }
+        }
+
+        # If we were reading this script from a datafile or
+        # text widget, the checker would see that the switch
+        # statement is on multiple lines and report the error lines
+        # appropriately.  But it's really hard to build the right
+        # string in this context.
+    } -cleanup {
+        cleanup
+    } -match list -result {
+        2 {Warning, undefined command: "foo"}
+        2 {Warning, undefined command: "bar"}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+
+
+
+

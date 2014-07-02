@@ -4,4 +4,10 @@ project athena-mars "3.0a1" "Mars Simulation Support Library"
 lib marsutil
 
 require snit 2.3
+require textutil::expander 1.3.1
+
+shell {
+    package require marsutil 3.0
+    namespace import marsutil::*
+}
 

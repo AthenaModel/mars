@@ -1,0 +1,35 @@
+<<manpage marsutil(n) "Mars Utility API">>
+
+<<section SYNOPSIS>>
+
+<pre>
+package require marsutil <<version>>
+namespace import ::marsutil::*
+</pre>
+
+<<itemlist>>
+
+<<section DESCRIPTION>>
+
+marsutil(n) is a package of low-level infrastructure code of various
+kinds.  A binary extension provides fast versions of some of the
+commands.  The entry for commands with fast versions will so
+indicate.<p>
+
+
+<<section ENVIRONMENT>>
+
+Requires Tcl 8.5 or later.<p>
+
+<<section AUTHORS>>
+
+Will Duquette, Dave Jaffe, Dave Hanks, Jon Stinzel<p>
+
+<<section HISTORY>>
+
+Originally written for JNEM as util(n); migrated to Mars in
+September 2008, and extended considerably since.<p>
+
+<</manpage>>
+
+

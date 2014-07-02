@@ -1,0 +1,91 @@
+<<manpage {marsutil(n) tclchecker(n)} "Tcl Syntax Checker">>
+
+<<section SYNOPSIS>>
+
+<pre>
+package require marsutil <<version>>
+namespace import ::marsutil::tclchecker
+</pre>
+
+<<itemlist>>
+
+<<section DESCRIPTION>>
+
+tclchecker(n) defines a syntax checker for simple Tcl scripts of the
+kind run in a <<xref tclchecker(n)>> interpreter.  In addition, it 
+provides tools for breaking Tcl scripts into pieces, while tracking
+line numbers: individual commands, and individual words in a command.<p>
+
+<<section COMMANDS>>
+
+<<deflist commands>>
+
+
+<<defitem "tclchecker check" {tclchecker check <i>client script</i> ?<i>firstline</i>?}>>
+
+Checks the <i>script</i> for obvious errors in the context of the 
+<i>client</i>, which must be an instance of <<xref smartinterp(n)>>,
+and returns a flat list of line numbers and error messages.  
+If <i>firstline</i> is given,
+it is taken to be the line number of the first line of the script; it
+defaults to 1.  Note that the result is <i>not</i> a dictionary; the same
+line number can appear multiple times.<p>
+
+<<defitem cmdsplit {tclchecker cmdsplit <i>cmd</i> ?<i>num</i>?}>>
+
+Splits a single Tcl command (as returned by <<iref scriptsplit>>) into 
+individual words, returning a list of two items: a list of words, and
+a list of starting line numbers for each word.  Thus, this command is
+usually used like this:<p>
+
+<pre>
+lassign [tclchecker cmdsplit $command] words nums
+</pre>
+
+If <i>num</i> is given, it's the starting line number for the command
+as a whole.<p>
+
+<<defitem getembedded {tclchecker getembedded <i>string</i>}>>
+
+Returns a list of the interpolated commands embedded in a string.  
+<b>textutil::expander</b> does the heavy lifting.<p>
+
+<<defitem scriptsplit {tclchecker scriptsplit <i>script</i> ?<i>firstline</i>?}>>
+
+This command splits a script into individual commands, returning
+a dictionary of commands by initial line number.  The caller can
+process the commands in sequence by iterating over the keys in 
+the dictionary.<p>
+
+If <i>firstline</i> is given, it is used as the line number of the
+first line in the script.  It defaults to 1.<p>
+
+Multiple commands on a single line are treated as one command.<p>
+
+This command does not recurse into control structure or proc bodies.<p>
+
+If the script cannot be split into commands because of an unterminated
+string, this command throws an error with error code <b>UNTERMINATED</b>.<p>
+
+<</deflist instance>>
+
+<<section ENVIRONMENT>>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<<section AUTHOR>>
+
+Will Duquette<p>
+
+<<section HISTORY>>
+
+Original package.
+
+<</manpage>>
+
+
+
+

@@ -15,8 +15,17 @@
 # Package Definition
 
 # -kite-start-provide  DO NOT EDIT THIS BLOCK BY HAND
-package provide marsutil 1.0
+package provide marsutil 3.0a1
 # -kite-end-provide
+
+#-----------------------------------------------------------------------
+# Required Packages
+
+# -kite-start-require  DO NOT EDIT THIS BLOCK BY HAND
+package require snit 2.3
+package require textutil::expander 1.3.1
+# -kite-end-require
+
 
 #-----------------------------------------------------------------------
 # Namespace definition
@@ -28,4 +37,8 @@ namespace eval ::marsutil:: {
 #-----------------------------------------------------------------------
 # Modules
 
-source [file join $::marsutil::library marsutil.tcl]
+source [file join $::marsutil::library marsmisc.tcl   ]
+source [file join $::marsutil::library tclchecker.tcl ]
+source [file join $::marsutil::library smartinterp.tcl]
+source [file join $::marsutil::library template.tcl   ]
+source [file join $::marsutil::library ehtml.tcl      ]

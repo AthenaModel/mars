@@ -1,0 +1,200 @@
+<<manpage {marsutil(n) template(n)} "Text Template Definition">>
+
+<<section SYNOPSIS>>
+
+<pre>
+package require marsutil <<version>>
+namespace import ::marsutil::*
+</pre>
+
+<<itemlist>>
+
+<<section DESCRIPTION>>
+
+The template(n) package contains a number of routines for the creation
+and use of text templates.  A template is a Tcl command that, given
+zero or more arguments, returns text based on the arguments and a
+template string which references the arguments.<p>
+
+In addition, template(n) defines a Snit macro allowing Snit
+methods, typemethods, and procs to be templates, simply by
+prefixing the method, typemethod, or proc with the word
+"template".<p>
+
+<<section COMMANDS>>
+
+template(n) provides the following commands:<p>
+
+<<deflist>>
+
+<<defitem tsubst {tsubst <i>tstring</i>}>>
+
+By default, substitutes variables, commands, and backslashes into
+<i>tstring</i> in the caller's context, returning the result, just as the
+standard Tcl command <code>subst</code> does.  If the first
+non-whitespace token in <i>tstring</i> is<p>
+
+<pre>
+|<--
+</pre>
+ 
+then the position of the "|" character defines the left margin.  All
+whitespace in <i>tstring</i> to the left of the "|" is deleted before the
+template is expanded.  In addition, the line on which the token
+appears is also deleted, along with all whitespace before it.  For
+example,<p>
+
+<pre>
+set name "Joe"
+puts [tsubst {
+         |<--
+             $name}]
+</pre>
+
+will output the string<p>
+
+<pre>
+"....Joe"
+</pre>
+
+(where the "." characters denote blanks).<p>
+
+<<defitem template {template <i>name arglist ?initbody? template</i>}>>
+
+Defines a new template command.  <i>name</i> and <i>arglist</i> are
+the name and argument list of the new command, just as when using
+<code>proc</code>.  If specified, <i>initbody</i> is a body of Tcl
+code which will be executed before the <i>template</i> is expanded;
+it's usually used to define local variables which will then appear in
+the <i>template</i> string.<p>
+
+Finally, <i>template</i> is a text template string which may contain
+embedded variables and commands.  For example,<p>
+
+<pre>
+template greeting {first last} {Hi, $first $last!}
+</pre>
+
+This statement defines a new Tcl command, <code>greeting</code>, that
+takes two arguments, <i>first</i> and <i>last</i>.  Then,<p>
+
+<pre>
+puts [greeting John Doe]
+</pre>
+
+will write<p>
+
+<pre>
+Hi, John Doe!
+</pre>
+
+to standard output.  The template string might also contain commands.
+Suppose the <code>pget</code> command returns information about a
+person from a data base given a record ID:<p>
+
+<pre>
+template greeting {id} {Hi, [pget $id first] [pget $id last]!}
+</pre>
+
+If desired, the <i>initbody</i> can be used to precompute values for 
+substitution into the template.  For example, the following 
+template definition does the same thing as the previous one:<p>
+
+<pre>
+template greeting {id} {
+    set first [pget $id first]
+    set last  [pget $id last]
+} {Hi, $first $last!}
+</pre>
+
+Any literal "$", "[", or "]" characters in the <i>template</i> string
+must be escaped with a "\":<p>
+
+<pre>
+template showprice {price} {This wonderful widget costs \$$price!}
+</pre>
+
+The <i>template</i> string may reference template arguments, local
+variables defined in the <i>initbody</i>, and global variables provided
+that they are declared in the <i>initbody</i> or are fully qualified.<p>
+
+The <i>template</i> string is processed by <<iref tsubst>>, so it
+may contain the "<tt>|<--</tt>" indent marker.<p>
+
+<<defitem tforeach {tforeach <i>vars items ?initbody? template</i>}>>
+
+The <code>tforeach</code> command is designed for use within
+<<iref template>> definitions.  It loops over items in a list much
+as <code>foreach</code> does; in each iteration, the <i>template</i>
+string is expanded using <<iref tsubst>>.  Then, the concatenated
+expansions are returned.  <i>vars</i> is a list of one or more
+variable names and <i>items</i> is a list of items, as for
+<code>foreach</code>.  If provided, <i>initbody</i> contains Tcl code
+which is called before each substitution; it is usually used to
+initialize variables used in the template.<p>
+
+For example, suppose that <code>aget</code> returns information about an
+assembly given its ID:<p>
+
+<pre>
+template assembly {id} {
+    Assembly [aget $id name] contains:
+        [tforeach cmp [aget $id components] {    Component $cmp\n}]
+}
+</pre>
+
+The <<iref tforeach>> command is used to format a line for each
+component.<p>
+
+<<defitem tif {tif <i>condition thenbody</i> ?else <i>elsebody</i>?}>>
+
+The <code>tif</code> command is designed for use in
+<<iref template>>
+definitions.  <i>condition</i> is a logical expression, as for the
+<code>if</code> statement.  <i>thenbody</i> and <i>elsebody</i> (if
+present) are template strings.  If <i>condition</i> is true, the
+<i>thenbody</i> is expanded and returned using
+<<iref tsubst>>;
+otherwise, the <i>elsebody</i> (if present) is expanded and returned.<p>
+
+<<defitem swallow {swallow <i>body</i>}>>
+
+In Tcl, most commands return a value.  Sometimes in a template
+definition it's desirable to call a command for its side-effects,
+rather than its return value, which should be ignored.  For example, 
+the Tcl command<p>
+
+<pre>
+set a 5
+</pre>
+
+will ordinarily return "5".  On the other hand,<p>
+
+<pre>
+swallow {set a 5}
+</pre>
+
+has the same effect of assigning 5 to the variable <code>a</code>, but
+it always returns the empty string.
+
+<code>swallow</code>'s body may contain any number of Tcl commands.<p>
+
+<</deflist>>
+
+<<section ENVIRONMENT>>
+
+template(n) requires Tcl 8.3 or later.
+
+To use template(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the template(n)
+library directory.
+
+<<section AUTHOR>>
+
+Will Duquette<p>
+
+<<section HISTORY>>
+
+This package was originally written for the DSN Uplink subsystem.
+
+<</manpage>>
