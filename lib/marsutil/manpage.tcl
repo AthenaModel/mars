@@ -179,7 +179,7 @@ snit::type ::marsutil::manpage {
 
         foreach infile $files {
             set pagename [file tail [file root $infile]]
-            set outfile [file join $destdir $manfile.html]
+            set outfile [file join $destdir $pagename.html]
 
             if {[catch {ehtml expandFile $infile} result]} {
                 throw SYNTAX $result
