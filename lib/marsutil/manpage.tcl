@@ -49,7 +49,8 @@ snit::type ::marsutil::manpage {
             manurl       \
             mktree       \
             section      \
-            subsection
+            subsection   \
+            version
     }
 
     #-------------------------------------------------------------------
@@ -111,20 +112,21 @@ snit::type ::marsutil::manpage {
     # Formats the man pages in a man page directory.
 
     typemethod format {srcdir destdir args} {
-        # FIRST, initialize the ehtml processor.
+        # FIRST, initialize the options
+        array set info {
+            project     "YourProject"
+            version     "0.0.0"
+            description "Your project description"
+            section     "Project Man Pages"
+            manroots    {: ../man%s/%n.html}
+        }
+
+        # NEXT, initialize the ehtml processor.
         # TODO: We want to do this between files!
+        # TODO: At present, ehtml init can only be called once!
         ehtml init
         ehtml import ::marsutil::manpage::*
         
-        # NEXT, initialize the options
-        array set info {
-            project     "<project>"
-            version     "0.0.0"
-            description "Your <project>"
-            section     "Project Man Pages"
-            manroots    {}
-        }
-
         # NEXT, validate the directories.
         if {![file isdirectory $srcdir]} {
             error "'$val' is not a valid directory."
@@ -156,9 +158,7 @@ snit::type ::marsutil::manpage {
                 }
 
                 -manroots {
-                    if {[catch {ehtml manroots $val} result]} {
-                        error "Error: Invalid -manroots: \"$val\", $result"
-                    }
+                    set val [dict merge $info(manroots) $val]
                     set info(manroots) $val
                 }
                 -section {
@@ -170,8 +170,14 @@ snit::type ::marsutil::manpage {
             }
         }
 
+        # NEXT, save the manroots.
+        if {[catch {ehtml manroots $info(manroots)} result]} {
+            error "Error: Invalid -manroots: \"$info(manroots)\", $result"
+        }
+
+
         # NEXT, get the files
-        set files [glob -nocomplain [file join $srcdir *.ehtml]]
+        set files [lsort [glob -nocomplain [file join $srcdir *.ehtml]]]
 
         if {[llength $files] == 0} {
             return
@@ -181,7 +187,9 @@ snit::type ::marsutil::manpage {
             set pagename [file tail [file root $infile]]
             set outfile [file join $destdir $pagename.html]
 
-            if {[catch {ehtml expandFile $infile} result]} {
+            try {
+                set output [ehtml expandFile $infile]
+            } on error {result} {
                 throw SYNTAX $result
             }
 

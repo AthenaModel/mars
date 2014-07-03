@@ -5,6 +5,7 @@
 # Build Artifacts
 *.log
 *.kit
+/docs/man*/*.html
 
 # SublimeText artifacts
 *.sublime-*
