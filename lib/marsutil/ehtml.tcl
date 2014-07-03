@@ -20,10 +20,6 @@ namespace eval ::marsutil:: {
 #-----------------------------------------------------------------------
 # ehtml ensemble
 
-# Create the macro namespace ASAP
-
-namespace eval ::marsutil::ehtml::macro {}
-
 snit::type ::marsutil::ehtml {
     #-------------------------------------------------------------------
     # Components
@@ -102,11 +98,6 @@ snit::type ::marsutil::ehtml {
 
         # NEXT, macros are evaluated in the smartinterp.
         $exp evalcmd [list $interp eval]
-
-        # NEXT, make ehtml available in the macro namespace
-        namespace eval ::marsutil::ehtml::macro {
-            namespace import ::marsutil::ehtml
-        }
     }
 
     #-------------------------------------------------------------------
@@ -323,7 +314,7 @@ snit::type ::marsutil::ehtml {
                 set url [string map [list %s $section %n $name] $pattern]
 
                 if {$anchor ne ""} {
-                    append url "#[ehtml textToID $anchor]"
+                    append url "#[$self textToID $anchor]"
                 }
 
                 set defaultAnchor "${name}($section)"
@@ -494,11 +485,11 @@ snit::type ::marsutil::ehtml {
             set rowclass oddrow
         }
 
-        set date      [ehtml cget date]
-        set status    [ehtml cget status]
-        set initiator [ehtml cget initiator]
+        set date      [$self cget date]
+        set status    [$self cget status]
+        set initiator [$self cget initiator]
 
-        set description [ehtml cpop change]
+        set description [$self cpop change]
     } {
         |<--
         <tr class="$rowclass" valign=top>
