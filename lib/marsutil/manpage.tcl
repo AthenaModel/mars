@@ -68,6 +68,10 @@ snit::type ::marsutil::manpage {
 
     typevariable info -array {}
 
+    # ehtml -- The ehtml translator
+
+    typevariable ehtml ""
+
     # An array: key is module name, value is list of submodules.
     # modules with no parent are under submodule().
     typevariable submodule
@@ -122,10 +126,9 @@ snit::type ::marsutil::manpage {
         }
 
         # NEXT, initialize the ehtml processor.
-        # TODO: We want to do this between files!
-        # TODO: At present, ehtml init can only be called once!
-        ehtml init
-        ehtml import ::marsutil::manpage::*
+        if {$ehtml eq ""} {
+            set ehtml [ehtml ${type}::ehtmltrans]
+        }
         
         # NEXT, validate the directories.
         if {![file isdirectory $srcdir]} {
@@ -171,7 +174,7 @@ snit::type ::marsutil::manpage {
         }
 
         # NEXT, save the manroots.
-        if {[catch {ehtml manroots $info(manroots)} result]} {
+        if {[catch {$ehtml manroots $info(manroots)} result]} {
             error "Error: Invalid -manroots: \"$info(manroots)\", $result"
         }
 
@@ -187,8 +190,10 @@ snit::type ::marsutil::manpage {
             set pagename [file tail [file root $infile]]
             set outfile [file join $destdir $pagename.html]
 
+            $type DefineMacros
+
             try {
-                set output [ehtml expandFile $infile]
+                set output [$ehtml expandFile $infile]
             } on error {result} {
                 throw SYNTAX $result
             }
@@ -204,6 +209,60 @@ snit::type ::marsutil::manpage {
         puts $f [indexfile]
         close $f
     }
+
+    #-------------------------------------------------------------------
+    # Translator Configuration
+
+    # DefineMacros
+    #
+    # Defines all macros in the context of the ehtml(5) translator
+
+    typemethod DefineMacros {} {
+        $ehtml clear
+
+        $ehtml smartalias manpage 2 2 {nameList description} \
+            [myproc manpage]
+
+        $ehtml smartalias /manpage 0 0 {} \
+            [myproc /manpage]
+
+        $ehtml smartalias version 0 0 {} \
+            [myproc version]
+
+        $ehtml smartalias section 1 1 {name} \
+            [myproc section]
+
+        $ehtml smartalias subsection 1 1 {name} \
+            [myproc subsection]
+
+        $ehtml smartalias contents 0 0 {} \
+            [myproc contents]
+
+        $ehtml smartalias deflist 0 - {comment...} \
+            [myproc deflist]
+
+        $ehtml smartalias /deflist 0 - {comment...} \
+            [myproc /deflist]
+
+        $ehtml smartalias defitem 2 2 {item text} \
+            [myproc defitem]
+
+        $ehtml smartalias itemlist 0 0 {} \
+            [myproc itemlist]
+
+        $ehtml smartalias iref 1 - {iref...} \
+            [myproc iref]
+
+        $ehtml smartalias defopt 1 1 {text} \
+            [myproc defopt]
+
+        $ehtml smartalias indexfile 0 0 {} \
+            [myproc indexfile]
+
+        $ehtml smartalias indexlist 1 1 {modules} \
+            [myproc indexlist]
+    }
+    
 
     #-------------------------------------------------------------------
     # Javascripts
@@ -233,7 +292,7 @@ snit::type ::marsutil::manpage {
 
         if {[llength $nameList] > 1} {
             set parent [lindex $nameList 0]
-            set parentRef ", submodule of [ehtml xref $parent]"
+            set parentRef ", submodule of [$ehtml xref $parent]"
             set titleParentRef ", submodule of $parent"
         } else {
             set parent ""
@@ -241,7 +300,7 @@ snit::type ::marsutil::manpage {
             set titleParentRef ""
         }
 
-        if {[ehtml pass] == 1} {
+        if {[$ehtml pass] == 1} {
             set items {}
             array unset itemtext
             array unset optsfor
@@ -368,10 +427,10 @@ snit::type ::marsutil::manpage {
 
     template proc section {name} {
         set name [string toupper $name]
-        set id [ehtml textToID $name]
-        if {[ehtml pass] == 1} {
+        set id [$ehtml textToID $name]
+        if {[$ehtml pass] == 1} {
             lappend sections $name 
-            ehtml xrefset $name $name "#$id"
+            $ehtml xrefset $name $name "#$id"
         }
 
         set curSection $name
@@ -387,10 +446,10 @@ snit::type ::marsutil::manpage {
     # Begins a subsection of a major section
 
     template proc subsection {name} {
-        set id [ehtml textToID $name]
-        if {[ehtml pass] == 1} {
+        set id [$ehtml textToID $name]
+        if {[$ehtml pass] == 1} {
             lappend subsections($curSection) $name 
-            ehtml xrefset $name $name "#$id"
+            $ehtml xrefset $name $name "#$id"
         }
     } {
         |<--
@@ -405,12 +464,12 @@ snit::type ::marsutil::manpage {
         |<--
         <ul>
         [tforeach name $sections {
-            <li><a href="#[ehtml textToID $name]">$name</a></li>
+            <li><a href="#[$ehtml textToID $name]">$name</a></li>
             [tif {[info exists subsections($name)]} {
                 |<--
                 <ul>
                 [tforeach subname $subsections($name) {
-                    <li><a href="#[ehtml textToID $subname]">$subname</a></li>
+                    <li><a href="#[$ehtml textToID $subname]">$subname</a></li>
                 }]
                 </ul>
             }]
@@ -449,7 +508,7 @@ snit::type ::marsutil::manpage {
         set itemtext($item) $text
     } {
         |<--
-        <dt><b><tt><a name="[ehtml textToID $item]">$text</a></tt></b></dt>
+        <dt><b><tt><a name="[$ehtml textToID $item]">$text</a></tt></b></dt>
         <dd>
     }
 
@@ -462,7 +521,7 @@ snit::type ::marsutil::manpage {
         |<--
         [tforeach tag $items {
             |<--
-            <tt><a href="#[ehtml textToID $tag]">$itemtext($tag)</a></tt><br>
+            <tt><a href="#[$ehtml textToID $tag]">$itemtext($tag)</a></tt><br>
             [tif {[info exists optsfor($tag)]} {
                 |<--
                 [tforeach opt $optsfor($tag) {
@@ -483,12 +542,12 @@ snit::type ::marsutil::manpage {
     proc iref {args} {
         set tag $args
 
-        if {[ehtml pass] == 1} {
+        if {[$ehtml pass] == 1} {
             return
         }
 
         if {[lsearch -exact $items $tag] != -1} {
-            return "<tt><a href=\"#[ehtml textToID $tag]\">$tag</a></tt>"
+            return "<tt><a href=\"#[$ehtml textToID $tag]\">$tag</a></tt>"
         } else {
             puts stderr "Warning, iref not found: '$tag'"
             return "<tt>$tag</tt>"
@@ -522,7 +581,7 @@ snit::type ::marsutil::manpage {
     # man pages.
 
     template proc indexfile {} {
-        # TODO: acquire the section title in a clearner way.
+        # TODO: acquire the section title in a cleaner way.
         set title "Man Page Section $::marsutil::manpage::info(section)"
 
         # FIRST, see if we've got any parents for which no man page exists.
@@ -559,7 +618,7 @@ snit::type ::marsutil::manpage {
         [indexlist $submodule()]
 
         <hr>
-        <i>Index generated by mars_man(1) on [clock format [clock seconds]]</i>
+        <i>Index generated on [clock format [clock seconds]]</i>
         </body>
         </html>
     }
@@ -576,7 +635,7 @@ snit::type ::marsutil::manpage {
         [tforeach mod [lsort $modules] {
             |<--
             <li>
-            [ehtml xref $mod]: $module($mod)
+            [$ehtml xref $mod]: $module($mod)
             [tif {[info exists submodule($mod)]} {
                 |<--
                 [indexlist $submodule($mod)]

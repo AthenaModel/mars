@@ -25,26 +25,31 @@ namespace eval ::marsutil:: {
 namespace eval ::marsutil::ehtml::macro {}
 
 snit::type ::marsutil::ehtml {
-    pragma -hastypedestroy 0 -hasinstances 0
-
     #-------------------------------------------------------------------
-    # Type Components
+    # Components
 
-    typecomponent exp    ;# The textutil::expander
+    component interp ;# The smartinterp for macros
 
-    delegate typemethod cget        to exp
-    delegate typemethod cis         to exp
-    delegate typemethod cname       to exp
-    delegate typemethod cpop        to exp
-    delegate typemethod cpush       to exp
-    delegate typemethod cset        to exp
-    delegate typemethod cvar        to exp
-    delegate typemethod errmode     to exp
-    delegate typemethod expand      to exp
-    delegate typemethod lb          to exp
-    delegate typemethod rb          to exp
-    delegate typemethod setbrackets to exp
-    delegate typemethod where       to exp
+    delegate method alias       to interp
+    delegate method ensemble    to interp
+    delegate method eval        to interp
+    delegate method proc        to interp
+    delegate method smartalias  to interp
+
+    component exp    ;# The textutil::expander
+
+    delegate method cget        to exp
+    delegate method cis         to exp
+    delegate method cname       to exp
+    delegate method cpop        to exp
+    delegate method cpush       to exp
+    delegate method cset        to exp
+    delegate method cvar        to exp
+    delegate method errmode     to exp
+    delegate method lb          to exp
+    delegate method rb          to exp
+    delegate method setbrackets to exp
+    delegate method where       to exp
 
     #-------------------------------------------------------------------
     # Type Variables
@@ -54,7 +59,7 @@ snit::type ::marsutil::ehtml {
     #  pass      The pass number, 1 or 2 (while expanding, only)
     #  xrefhook  Called with xref ID for unknown xrefs.
 
-    typevariable info -array {
+    variable info -array {
         pass     1
         xrefhook {}
     }
@@ -67,7 +72,7 @@ snit::type ::marsutil::ehtml {
     #    anchor    The anchor text
     #    url       The URL to link to
 
-    typevariable xreflinks
+    variable xreflinks
 
     # manroots Array: Allows easy links to man pages via the "xref"
     # macro.
@@ -76,27 +81,27 @@ snit::type ::marsutil::ehtml {
     #
     #     mars:n --> mars/mann
 
-    typevariable manroots
+    variable manroots
 
     #-------------------------------------------------------------------
-    # Application Initializer
+    # Constructor
 
-    # init
+    # constructor
     #
-    # Initialize the module.
+    # Initialize the object.
 
-    typemethod init {} {
+    constructor {} {
         # FIRST, create the expander
-        set exp [textutil::expander ${type}::exp]
+        install exp using textutil::expander ${selfns}::exp
+
+        # NEXT, create the smartinterp
+        $self InitializeInterpreter
 
         # NEXT, macros appear in double angle-brackets.
         $exp setbrackets "<<" ">>"
 
-        # NEXT, macros are evaluated in the ::ehtml::macro namespace,
-        # which allows macros to be defined such that they don't
-        # affect the global namespace.
-
-        $exp evalcmd [list namespace eval ::marsutil::ehtml::macro]
+        # NEXT, macros are evaluated in the smartinterp.
+        $exp evalcmd [list $interp eval]
 
         # NEXT, make ehtml available in the macro namespace
         namespace eval ::marsutil::ehtml::macro {
@@ -105,25 +110,99 @@ snit::type ::marsutil::ehtml {
     }
 
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public Methods
 
-    # import args
+    # clear
     #
-    # args     A list of "namespace import" arguments
-    #
-    # Imports the listed command patterns into the macro namespace
+    # Re-initializes the interpreter.
 
-    typemethod import {args} {
-        namespace eval ::marsutil::ehtml::macro \
-            [list namespace import {*}$args]
+    method clear {} {
+        $interp destroy
+        set interp ""
+
+        $self InitializeInterpreter
     }
 
-    # macro name arglist ?initbody? args
+    # InitializeInterpreter
     #
-    # Defines a template(n) template in the macro namespace.
-    
-    typemethod macro {name arglist args} {
-        template ${type}::macro::$name $arglist {*}$args
+    # Creates and initializes the macro interpreter.
+
+    method InitializeInterpreter {} {
+        # FIRST, create the interpreter
+        install interp using smartinterp ${selfns}::interp \
+            -cli     no  \
+            -trusted yes
+
+        # NEXT, Basic Macros.
+        $interp smartalias hrule 0 0 {} \
+            [myproc hrule]
+
+        $interp smartalias lb 0 0 {} \
+            [mymethod lb]
+
+        $interp smartalias link 1 2 {url ?anchor?} \
+            [myproc link]
+
+        $interp smartalias nbsp 1 1 {text} \
+            [myproc nbsp]
+
+        $interp smartalias quote 1 1 {text} \
+            [myproc quote]
+
+        $interp smartalias rb 0 0 {} \
+            [mymethod rb]
+
+        $interp smartalias xref 1 2 {id ?anchor?} \
+            [mymethod xref]
+
+        $interp smartalias xrefset 3 3 {id anchor url} \
+            [mymethod xrefset]
+
+
+        # NEXT, Change Log macros
+        $interp smartalias changelog 0 0 {} \
+            [mymethod Macro changelog]
+
+        $interp smartalias change 3 3 {date status initiator} \
+            [mymethod Macro change]
+
+        $interp smartalias /change 0 0 {} \
+            [mymethod Macro /change]
+
+        $interp smartalias /changelog 0 0 {} \
+            [mymethod Macro /changelog]
+
+        # NEXT, Procedure macros
+        $interp smartalias procedure 0 0 {} \
+            [mymethod Macro procedure]
+
+        $interp smartalias step 0 0 {} \
+            [mymethod Macro step]
+
+        $interp smartalias /step/ 0 0 {} \
+            [mymethod Macro /step/]
+
+        $interp smartalias /step 0 0 {} \
+            [mymethod Macro /step]
+
+        $interp smartalias /procedure 0 0 {} \
+            [mymethod Macro /procedure]
+    }
+
+    # expand text
+    #
+    # text    A text string
+    #
+    # Expands a text string in two passes.
+
+    method expand {text} {
+        # Pass 1 -- for indexing
+        set info(pass) 1
+        $exp expand $text
+
+        # Pass 2 -- for output
+        set info(pass) 2
+        return [$exp expand $text]
     }
 
     # expandFile name
@@ -132,23 +211,15 @@ snit::type ::marsutil::ehtml {
     #
     # Process a file and return the expanded output.
 
-    typemethod expandFile {name} {
-        set input [readfile $name]
-
-        # Pass 1 -- for indexing
-        set info(pass) 1
-        $exp expand $input
-
-        # Pass 2 -- for output
-        set info(pass) 2
-        return [$exp expand $input]
+    method expandFile {name} {
+        $self expand [readfile $name]
     }
 
     # pass
     #
     # Returns the current pass number
 
-    typemethod pass {} {
+    method pass {} {
         return $info(pass)
     }
 
@@ -158,7 +229,7 @@ snit::type ::marsutil::ehtml {
     # whitespace and internal punctuation is removed, internal whitespace
     # is converted to "_", and the text is converted to lower case.
     
-    typemethod textToID {text} {
+    method textToID {text} {
         # First, trim any white space and convert to lower case
         set text [string trim [string tolower $text]]
         
@@ -170,48 +241,6 @@ snit::type ::marsutil::ehtml {
         return $text
     }
 
-    # nbsp text
-    #
-    # text    A text string
-    #
-    # Makes a string nonbreaking, normalizing spaces.
-
-    typemethod nbsp {text} {
-        set text [string trim $text]
-        regsub {\s\s+} $text " " text
-
-        return [string map {" " &nbsp;} $text]
-    }
-
-    # quote text
-    #
-    # text    A text string
-    #
-    # Quotes "<", ">", and "&" characters in text for display
-    # in HTML.
-
-    typemethod quote {text} {
-        string map {& &amp; < &lt; > &gt;} $text
-    }
-
-    # hrule
-    #
-    # Horizontal rule
-
-    template typemethod hrule {} {<p><hr></p>}
-
-    # link url ?anchor?
-    #
-    # url     The URL to link to
-    # anchor  The text to display, if different
-    #
-    # Creates an HTML link
-
-    template typemethod link {url {anchor ""}} {
-        if {$anchor eq ""} {
-            set anchor $url
-        }
-    } {<a href="$url">$anchor</a>}
 
     #-------------------------------------------------------------------
     # Cross-Reference Management
@@ -226,7 +255,7 @@ snit::type ::marsutil::ehtml {
     # text for the reference; or a list of two empty strings if
     # it can't relate the ID to anything.
 
-    typemethod xrefhook {args} {
+    method xrefhook {args} {
         # TBD: Define wrongNumArgs!
         if {[llength $args] > 1} {
             error "wrong \# args: should be \"$type xrefhook ?hook?\""
@@ -246,7 +275,7 @@ snit::type ::marsutil::ehtml {
     # url       The URL to link to.
     #
     # Define an ad-hoc cross reference.
-    typemethod xrefset {id anchor url} {
+    method xrefset {id anchor url} {
         set xreflinks($id) [dict create id $id anchor $anchor url $url]
         
         # Return nothing, so that this can be used in macros.
@@ -262,7 +291,7 @@ snit::type ::marsutil::ehtml {
     # any ID entered using xrefset.  If the ID is unrecognized,
     # the xrefhook is called.
 
-    typemethod xref {id {anchor ""}} {
+    method xref {id {anchor ""}} {
         if {$info(pass) == 1} {
             return
         }
@@ -347,8 +376,10 @@ snit::type ::marsutil::ehtml {
     # i.e., for man page references in which no root is specified.
     #
     # If <section> is omitted, then the pattern is for any section.
+    #
+    # TODO: Make this an option
 
-    typemethod manroots {roots} {
+    method manroots {roots} {
         foreach {spec pattern} $roots {
             if {![string match "*:*" $spec]} {
                 error "Invalid root specification: \"$spec\""
@@ -363,39 +394,35 @@ snit::type ::marsutil::ehtml {
     #-------------------------------------------------------------------
     # Basic Macros
 
-    # lb
-    #
-    # Return the left bracket sequence
-    proc macro::lb {} { 
-        return [ehtml quote [ehtml lb]]
-    }
-
-    # rb
-    #
-    # Return the right bracket sequence
-
-    proc macro::rb {} { 
-        return [ehtml quote [ehtml rb]]
-    }
-
-
     # nbsp text
     #
     # text    A text string
     #
     # Makes a string nonbreaking, normalizing spaces.
 
-    proc macro::nbsp {text} {
-        return [ehtml nbsp $text]
+    proc nbsp {text} {
+        set text [string trim $text]
+        regsub {\s\s+} $text " " text
+
+        return [string map {" " &nbsp;} $text]
+    }
+
+    # quote text
+    #
+    # text    A text string
+    #
+    # Quotes "<", ">", and "&" characters in text for display
+    # in HTML.
+
+    proc quote {text} {
+        string map {& &amp; < &lt; > &gt;} $text
     }
 
     # hrule
     #
     # Horizontal rule
 
-    proc macro::hrule {} {
-        return [ehtml hrule]
-    }
+    template proc hrule {} {<p><hr></p>}
 
     # link url ?anchor?
     #
@@ -404,35 +431,11 @@ snit::type ::marsutil::ehtml {
     #
     # Creates an HTML link
 
-    proc macro::link {url {anchor ""}} {
-        return [ehtml link $url $anchor]
-    }
-
-    # xref id ?anchor?
-    #
-    # id       The XREF id of the page to link to
-    # anchor   The anchor text, if different
-    #
-    # Links to some cross-referenced page.  The "id" may be
-    # any ID entered using xrefset.  If the ID is unrecognized,
-    # the xrefhook is called.
-
-    proc macro::xref {id {anchor ""}} {
-        return [ehtml xref $id $anchor]
-    }
-
-    # xrefset id anchor url
-    #
-    # id        Name to be used in <<xref ...>> macro
-    # anchor    The text to be displayed as an anchor
-    # url       The URL to link to.
-    #
-    # Define an ad-hoc cross reference.
-    proc macro::xrefset {id anchor url} {
-        ehtml xrefset $id $anchor $url
-        
-        return ""
-    }
+    template proc link {url {anchor ""}} {
+        if {$anchor eq ""} {
+            set anchor $url
+        }
+    } {<a href="$url">$anchor</a>}
 
     #-------------------------------------------------------------------
     # Change Log Macros
@@ -441,7 +444,7 @@ snit::type ::marsutil::ehtml {
     #
     # Begins a change log 
 
-    template proc macro::changelog {} {
+    template method {Macro changelog} {} {
         variable itemCounter
         set itemCounter 0
     } {
@@ -459,7 +462,7 @@ snit::type ::marsutil::ehtml {
     #
     # Ends a change log
 
-    template proc macro::/changelog {} {
+    template method {Macro /changelog} {} {
         |<--
         </table><p>
     }
@@ -473,16 +476,16 @@ snit::type ::marsutil::ehtml {
     # Begins a change entry.  The description appears between
     # <<change>> and <</change>>.
 
-    proc macro::change {date status initiator} {
-        ehtml cpush change
-        ehtml cset date      [ehtml nbsp $date]
-        ehtml cset status    [ehtml nbsp $status]
-        ehtml cset initiator [ehtml nbsp $initiator]
+    method {Macro change} {date status initiator} {
+        $self cpush change
+        $self cset date      [nbsp $date]
+        $self cset status    [nbsp $status]
+        $self cset initiator [nbsp $initiator]
         return
     }
 
     # Ends a change entry
-    template proc macro::/change {} {
+    template method {Macro /change} {} {
         variable itemCounter
 
         if {[incr itemCounter] % 2 == 0} {
@@ -524,7 +527,7 @@ snit::type ::marsutil::ehtml {
     #
     # Begins a procedure
 
-    template proc macro::procedure {} {
+    template method {Macro procedure} {} {
         variable stepCounter
         set stepCounter 0
     } {
@@ -536,7 +539,7 @@ snit::type ::marsutil::ehtml {
     #
     # Begins a step in a procedure.  The text following the tag
     # should describe what is to be done.  Steps are numbered.
-    template proc macro::step {} {
+    template method {Macro step} {} {
         variable stepCounter
         incr stepCounter
     } {
@@ -551,7 +554,7 @@ snit::type ::marsutil::ehtml {
     # Ends the description and begins the example.  The text
     # following should give an example of the commands to enter.
 
-    template proc macro::/step/ {} {
+    template method {Macro /step/} {} {
         |<--
         </td><td>
     }
@@ -560,7 +563,7 @@ snit::type ::marsutil::ehtml {
     #
     # Ends the step.
 
-    template proc macro::/step {} {
+    template method {Macro /step} {} {
         |<--
         </td>
         </tr>
@@ -570,7 +573,7 @@ snit::type ::marsutil::ehtml {
     #
     # Ends the procedure
     
-    template proc macro::/procedure {} {
+    template method {Macro /procedure} {} {
         |<--
         </table border="1" cellspacing="0" cellpadding="2">
     }

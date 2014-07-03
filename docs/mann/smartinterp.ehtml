@@ -74,7 +74,7 @@ arguments are not very helpful, especially for functions defined as
 procedures in the <code>::tcl::mathfunc</code> namespace.  
 smartinterp(n)'s normal smart alias error messages aren't appropriate
 either.  Consequently, smartinterp(n) modifies the built-in
-<<xref tcl:expr(n)>> command to translate ugly error messages into
+<code>expr</code> command to translate ugly error messages into
 more useful ones.<p>
 
 The application can define its own math functions as procedures in the

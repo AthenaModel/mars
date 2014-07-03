@@ -1,6 +1,6 @@
 <<manpage {marsutil(n) ehtml(n)} "Extended HTML Processor">>
 
-<<ehtml xrefset textutil::expander(n) textutil::expander(n) \
+<<xrefset textutil::expander(n) textutil::expander(n) \
         "http://tcllib.sourceforge.net/doc/expander.html">>
 
 <<section SYNOPSIS>>
@@ -147,18 +147,14 @@ installed.)
 
 <pre>
   :       ${TOP_DIR}/docs/man%s/%n.html
-  tcl:n   http://www.tcl.tk/man/tcl8.5/TclCmd/%n.htm
-  tk:n    http://www.tcl.tk/man/tcl8.5/TkCmd/%n.htm
+  tcl:n   http://www.tcl.tk/man/tcl8.6/TclCmd/%n.htm
+  tk:n    http://www.tcl.tk/man/tcl8.6/TkCmd/%n.htm
 </pre>
 
 Thus, this man page is referred to "<code>ehtml(n)</code>", which
 translates to:
 
     .../mars/docs/mann/ehtml.html
-
-In addition, Mars documentation can reference Tcl and Tk man pages
-in section "n", e.g., <<xref tcl:regexp(n)>> is referenced as
-"<code>tcl:regexp(n)</code>".<p>
 
 <<defitem nbsp {ehtml nbsp <i>text</i>}>>
 

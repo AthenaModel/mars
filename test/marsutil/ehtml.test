@@ -1,7 +1,7 @@
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
-#    marsutil.test
+#    ehtml.test
 #
 # PROJECT:
 #    athena-mars
@@ -48,7 +48,8 @@ namespace eval ::marsutil::test {
     # Set up for tests
 
     proc setup {} {
-        # TBD
+        ehtml trans 
+        trans manroots {: ./man%s/%n.html}
     }
 
     # cleanup
@@ -56,21 +57,85 @@ namespace eval ::marsutil::test {
     # Cleans up after a test.
 
     proc cleanup {} {
-        # TBD
+        trans destroy
     }
 
 
     #-------------------------------------------------------------------
-    # dummy
+    # macros
 
-    test dummy-1.1 {Dummy} -setup {
+    test macros-1.1 {hrule} -setup {
         setup
     } -body {
-        set result 1
+        trans expand {-<<hrule>>-}
     } -cleanup {
         cleanup
-    } -result {1}
+    } -result {-<p><hr></p>-}
 
+    test macros-2.1 {lb} -setup {
+        setup
+    } -body {
+        trans expand {-<<lb>>-}
+    } -cleanup {
+        cleanup
+    } -result {-<<-}
+
+    test macros-3.1 {link} -setup {
+        setup
+    } -body {
+        trans expand {-<<link foo.html>>-}
+    } -cleanup {
+        cleanup
+    } -result {-<a href="foo.html">foo.html</a>-}
+
+    test macros-3.2 {link with anchor} -setup {
+        setup
+    } -body {
+        trans expand {-<<link foo.html bar>>-}
+    } -cleanup {
+        cleanup
+    } -result {-<a href="foo.html">bar</a>-}
+
+    test macros-4.1 {nbsp} -setup {
+        setup
+    } -body {
+        trans expand {-<<nbsp "a b c">>-}
+    } -cleanup {
+        cleanup
+    } -result {-a&nbsp;b&nbsp;c-}
+
+    test macros-5.1 {quote} -setup {
+        setup
+    } -body {
+        trans expand {-<<quote "<&>">>-}
+    } -cleanup {
+        cleanup
+    } -result {-&lt;&amp;&gt;-}
+
+    test macros-6.1 {quote} -setup {
+        setup
+    } -body {
+        trans expand {-<<quote "<&>">>-}
+    } -cleanup {
+        cleanup
+    } -result {-&lt;&amp;&gt;-}
+
+    test macros-7.1 {xref} -setup {
+        setup
+    } -body {
+        trans expand {-<<xref foo(n)>>-}
+    } -cleanup {
+        cleanup
+    } -result {-<a href="./mann/foo.html">foo(n)</a>-}
+
+    test macros-7.2 {xref} -setup {
+        setup
+        trans xrefset foo Foo! ./bar.html
+    } -body {
+        trans expand {-<<xref foo>>-}
+    } -cleanup {
+        cleanup
+    } -result {-<a href="./bar.html">Foo!</a>-}
 
     #-------------------------------------------------------------------
     # Cleanup
