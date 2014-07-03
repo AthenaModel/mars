@@ -18,87 +18,96 @@ ehtml(n) defines an "Extended HTML" processor.  Extended HTML is
 plain HTML text extended with macros in double angle brackets;
 see <<xref ehtml(5)>> for the basic syntax and standard macros.<p>
 
-This module is a wrapper around the Tcllib <<xref textutil::expander(n)>>
-module.<p>
+Instances of ehtml(n) are wrapper around the Tcllib 
+<<xref textutil::expander(n)>> module, using a
+<<xref smartinterp(n)>> object as the macro interpreter.<p>
 
 <<section MACROS>>
 
 Extended HTML macros are simply Tcl commands whose return value is
 substituted into the input text.  The <<xref ehtml(5)>> man page
 describes some standard macros; and this module provides tools for
-writing new sets of macros.<p>
+adding additional macros.<p>
 
-Macros are expanded using the standard Tcl <code>namespace eval</code>
-command in the <code>::marsutil::ehtml::macro</code> namespace.
-Consequently, any Tcl command can be used as a macro: without
-namespace qualification if it is defined in the
-<code>::marsutil::ehtml::macro</code> namespace or the global
-namespace, and with qualification anywhere else.  Macro sets are
-normally defined in a module namespace and imported into
-<code>::marsutil::ehtml::macro</code> so as to avoid cluttering up the
-global namespace.<p>
+Macros are expanded in a <<xref smartinterp(n)>> interpreter.  Any
+Tcl command present in the interpreter can be used as a macro.  
+In particular, if the interpreter's auto_path is configured properly,
+a man page can load local code using the <<xref ehtml(5) swallow>> 
+macro.<p>
+
 
 <<section COMMANDS>>
 
 <<deflist commands>>
 
-<<defitem ehtml {ehtml <i>subcommand</i> ?<i>args...</i>?}>>
+<<defitem ehtml {ehtml <i>name</i>}>>
+
+Creates a new ehtml(n) object called <i>$name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<<iref ehtml>> returns the fully-qualified form of the
+<i>name</i>.<p>
 
 The processor is manipulated via the subcommands of the
 <<iref ehtml>> command, which are as follows:<p>
 
-<<deflist ehtml>>
+<</deflist commands>>
 
-<<defitem init {ehtml init}>>
+<<section "INSTANCE COMMAND">>
 
-Initializes the module; this call must be made before any of the others.<p>
+Each instance of the <<iref ehtml>> object has the following
+subcommands:<p>
 
-<<defitem cget {ehtml cget <i>varname</i>}>>
-<<defitem cis {ehtml cis <i>cname</i>}>>
-<<defitem cname {ehtml cname}>>
-<<defitem cpop {ehtml cpop <i>cname</i>}>>
-<<defitem cpush {ehtml cpush <i>cname</i>}>>
-<<defitem cset {ehtml cset <i>varname value</i>}>>
-<<defitem cvar {ehtml cvar <i>varname</i>}>>
-<<defitem errmode {ehtml errmode}>>
-<<defitem expand {ehtml expand}>>
-<<defitem lb {ehtml lb}>>
-<<defitem rb {ehtml rb}>>
-<<defitem setbrackets {ehtml setbrackets}>>
-<<defitem where {ehtml where}>>
+<<deflist instance>>
 
-See <<xref textutil::expander(n)>>.<p>
+<<defitem cget {$obj cget <i>varname</i>}>>
+<<defitem cis {$obj cis <i>cname</i>}>>
+<<defitem cname {$obj cname}>>
+<<defitem cpop {$obj cpop <i>cname</i>}>>
+<<defitem cpush {$obj cpush <i>cname</i>}>>
+<<defitem cset {$obj cset <i>varname value</i>}>>
+<<defitem cvar {$obj cvar <i>varname</i>}>>
+<<defitem errmode {$obj errmode}>>
+<<defitem lb {$obj lb}>>
+<<defitem rb {$obj rb}>>
+<<defitem setbrackets {$obj setbrackets}>>
+<<defitem where {$obj where}>>
 
-<<defitem expandFile {ehtml expandFile <i>name</i>}>>
+These commands provide access to the <<xref textutil::expander(n)>>;
+see that man page for details.<p>
+
+<<defitem alias {$obj alias <i>srcToken</i>}>>
+<<defitem alias {$obj alias <i>srcToken</i> {}}>>
+<<defitem alias {$obj alias <i>srcCmd targetCmd</i> ?<i>arg...</i>?}>>
+<<defitem alias {$obj alias <i>srcCmd targetCmd</i> ?<i>arg...</i>?}>>
+<<defitem ensemble {$obj ensemble <i>alias</i>}>>
+<<defitem proc {$obj proc <i>name arglist body</i>}>>
+<<defitem smartalias {$obj smartalias <i>alias min max argsyn prefix</i>}>>
+
+These commands are used to define commands in the macro interpreter, i.e.,
+to define new macros.  See <<xref smartinterp(n)>> for details.<p>
+
+<<defitem clear {$obj clear}>>
+
+Re-initializes the macro interpreter.  Any macros defined by the client
+will need to be redefined.<p>
+
+<<defitem eval {$obj eval <i>script</i>}>>
+
+Evaluates the script in the context of the macro interpreter.<p>
+
+<<defitem expand {$obj expand <i>text</i>}>>
+
+Expands the <i>text</i> in two passes, and returns the result of the
+expansion.   Use <<iref pass>> to write
+macros which are pass-sensitive.<p>
+
+<<defitem expandFile {$obj expandFile <i>name</i>}>>
 
 Reads the contents of the text file called <i>name</i>, expands it in
 two passes, and returns the expansion.  Use <<iref pass>> to write
 macros which are pass-sensitive.<p>
 
-<<defitem hrule {ehtml hrule}>>
-
-Returns an HTML horizontal rule.<p>
-
-<<defitem import {ehtml import ?pattern...?}>>
-
-Imports the exported commands indicated by one or <i>pattern</i>s into
-the macro namespace.<p>
-
-<<defitem link {ehtml link <i>url</i> ?<i>anchor</i>?}>>
-
-Creates an HTML link given the <i>url</i> of the linked page.  If
-specified, <i>anchor</i> is used is used as the displayed anchor text;
-otherwise, the <i>url</i> is displayed explicitly.<p>
-
-
-<<defitem macro {ehtml macro <i>name arglist</i> ?<i>initbody</i>? <i>template</i>}>>
-
-Defines a new macro in the macro namespace.  A macro is really just a
-<<xref template(n)>> <<xref template(n) template>>; the arguments and
-semantics are the same.<p>
-
-
-<<defitem manroots {ehtml manroots <i>roots</i>}>>
+<<defitem manroots {$obj manroots <i>roots</i>}>>
 
 Defines a mapping from man page names to URLs, so that
 <<xref ehtml(5)>> text can use <<iref xref>> to link to
@@ -154,33 +163,23 @@ installed.)
 Thus, this man page is referred to "<code>ehtml(n)</code>", which
 translates to:
 
-    .../mars/docs/mann/ehtml.html
+<pre>
+  .../mars/docs/mann/ehtml.html
+</pre><p>
 
-<<defitem nbsp {ehtml nbsp <i>text</i>}>>
+<<defitem pass {$obj pass}>>
 
-Deletes leading and trailing whitespace from <i>text</i>, normalizes
-internal whitespace, and converts remaining space characters to
-non-breaking spaces (<code>&amp;nbsp;</code>), returning the result.<p>
+Returns the expansion pass number, 1 or 2.   It's common to build up 
+indices during the first pass and generate tables of links in the 
+second.<p>
 
-<<defitem quote {ehtml quote <i>text</i>}>>
-
-Converts ampersand, less than, and greater than characters in
-<i>text</i> to HTML entities (e.g., <code>&amp;lt;</code>) and returns
-the result.<p>
-
-<<defitem pass {ehtml pass}>>
-
-Returns the expansion pass when expanding files using
-<i>expandFile</i>.  It's common to build up indices during the first
-pass and generate tables of links in the second.<p>
-
-<<defitem textToId {ehtml textToId <i>text</i>}>>
+<<defitem textToId {$obj textToId <i>text</i>}>>
 
 Converts a general string to an identifier string.  Leading and trailing
 whitespace and internal punctuation are removed, internal whitespace
 is converted to "_", and the text is converted to lower case.<p>
 
-<<defitem xrefhook {ehtml xrefhook ?<i>hook</i>?}>>
+<<defitem xrefhook {$obj xrefhook ?<i>hook</i>?}>>
 
 Sets or queries a Tcl command be used to handle unknown
 cross-references.  (Cross references are defined using
@@ -192,14 +191,14 @@ if caller specified none.  If the <i>hook</i> cannot identify an
 <i>url</i> associated with the <i>id</i>, it should return a 
 list of two empty strings.<p>
 
-<<defitem xrefset {ehtml xrefset <i>id anchor url</i>}>>
+<<defitem xrefset {$obj xrefset <i>id anchor url</i>}>>
 
 Defines a cross-reference <i>id</i>, which can be passed to
 <<iref xref>> to create a page link.  The <i>id</i> can be any
 string.  The <i>anchor</i> is the default text to display for the
 link.  The <i>url</i> is the URL of the linked page.<p>
 
-<<defitem xref {ehtml xref <i>id</i> ?<i>anchor</i>?}>>
+<<defitem xref {$obj xref <i>id</i> ?<i>anchor</i>?}>>
 
 Creates a link to the cross-referenced page with the specified
 <i>id</i>.  If specified, <i>anchor</i> will be the displayed text;
@@ -228,12 +227,12 @@ even when the <i>root</i> is specified.<p>
 
 <<section "SEE ALSO">>
 
-<<xref ehtml(5)>>, <<xref mars_doc(5)>>, <<xref mars_man(5)>>,
-<<xref textutil::expander(n)>>
+<<xref ehtml(5)>>, <<xref manpage(n)>>, <<xref marsdoc(n)>>,
+<<xref marsdoc(5)>>, <<xref textutil::expander(n)>>
 
 <<section ENVIRONMENT>>
 
-ehtml(n) requires Tcl 8.5 or later.
+ehtml(n) requires Tcl 8.6 or later.
 
 To use ehtml(n) in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the marsutil(n)
@@ -245,7 +244,8 @@ Will Duquette<p>
 
 <<section HISTORY>>
 
-Original package, based on code in the JNEM jnem_man(1) tool.
+Original package, based on code in the JNEM jnem_man(1) tool,
+heavily revised for Mars 3.0.
 
 <</manpage>>
 

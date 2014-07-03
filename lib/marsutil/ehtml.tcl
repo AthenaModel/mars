@@ -143,6 +143,9 @@ snit::type ::marsutil::ehtml {
         $interp smartalias rb 0 0 {} \
             [mymethod rb]
 
+        $interp smartalias swallow 1 1 {script} \
+            [mymethod swallow]
+
         $interp smartalias xref 1 2 {id ?anchor?} \
             [mymethod xref]
 
