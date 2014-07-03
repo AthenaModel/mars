@@ -344,6 +344,14 @@ snit::type ::marsutil::manpage {
         </html>
     }
 
+    # version
+    #
+    # Returns the -version.
+
+    proc version {} {
+        return $info(version)
+    }
+
     # section name
     #
     # name    A section name
