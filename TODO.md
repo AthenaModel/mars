@@ -8,9 +8,11 @@
 
 * ehtml(n)
   * Complete ehtml(n) testing
-  * Update ehtml(n) man page
   * Add ehtml(5) man page
+  * Refactor API as needed
 * manpage(n)
+  * Add manpage(n) man page
+  * Add manpage(5) man page
   * Add test suite
   * Add manpage.
 
