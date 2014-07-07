@@ -296,9 +296,9 @@ snit::type ::marsutil::marsdoc {
             puts $f $output
 
             if {$info(anchors)} {
-                puts "<!-- List of Anchors"
-                puts [DumpAnchors]
-                puts "-->"
+                puts $f "<!-- List of Anchors"
+                puts $f [DumpAnchors]
+                puts $f "-->"
             }
 
             close $f
