@@ -23,14 +23,14 @@
         set path [string map $trans  $path]
     } {
         |<--
-        <tr><td><b><tt>$path</tt></b></td>
+        [tr]<td><b><tt>$path</tt></b></td>
         <td>
     }
 
     macro /treedir {} {
         |<--
         </td>
-        </tr>
+        [/tr]
     }
 }>>
 
@@ -111,6 +111,7 @@ projects.<p>
 The project directory tree is as follows:<p>
 
 <<table tab.tree "Project Directory Tree">>
+<<th>><td>Path</td> <td>Description</td><</th>>
 
 <<treedir <root>/       >> Root of project tree<</treedir>>
 <<treedir +bin/         >> Executables (both binaries and scripts)<</treedir>>

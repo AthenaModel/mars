@@ -189,6 +189,14 @@ arbitrary.<p>
 Tables will be auto-numbered, and included in the list of
 <<iref tables>>.<p>
 
+<<defitem th {&lt;&lt;th&gt;&gt;...&lt;&lt;/th&gt;&gt;}>>
+
+Brackets a "pretty" table header.<p>
+
+<<defitem td {&lt;&lt;td&gt;&gt;...&lt;&lt;/td&gt;&gt;}>>
+
+Brackets a "pretty" table row.<p>
+
 <<defitem tables {&lt;&lt;tables&gt;&gt;}>>
 
 This macro will be replaced by a list of the tables found in the

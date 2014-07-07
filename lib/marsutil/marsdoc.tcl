@@ -206,6 +206,7 @@ snit::type ::marsutil::marsdoc {
     # title-$id            Complete title for anchor $id, e.g.,
     #                      "1.1 References".
     # link-$id             Link text for anchor $id e.g., "Section 1.1"
+    # rowcounter           Row counter for odd/even rows in tables.
 
     typevariable doc
 
@@ -618,6 +619,18 @@ snit::type ::marsutil::marsdoc {
         $ehtml smartalias tables 0 0 {} \
             [myproc tables]
 
+        $ehtml smartalias th 0 0 {} \
+            [myproc th]
+
+        $ehtml smartalias /th 0 0 {} \
+            [myproc /th]
+
+        $ehtml smartalias tr 0 0 {} \
+            [myproc tr]
+
+        $ehtml smartalias /tr 0 0 {} \
+            [myproc /tr]
+
         $ehtml smartalias version 0 0 {} \
             [myproc version]
     }
@@ -685,11 +698,35 @@ snit::type ::marsutil::marsdoc {
             AddTableId $id $title
             return
         }
+
+        set doc(rowcounter) 0
     } {
         |<--
         <center><table class="pretty">
         <caption><b><a name="$id" href="#toc.$id">$doc(title-$id)</a><b></caption>
     }
+
+    # th ... /th
+    #
+    # Begin/end table header.
+    template proc th {} {<tr class="header">}
+    template proc /th {} {</tr>}
+
+
+    # tr ... /tr
+    #
+    # Begin/end table row.
+    template proc tr {} {
+        incr doc(rowcounter)
+
+        if {$doc(rowcounter) % 2 == 0} {
+            set class "evenrow"
+        } else {
+            set class "oddrow"
+        }
+    } {<tr class="$class">}
+
+    template proc /tr {} {</tr>}
 
     # /table
     #

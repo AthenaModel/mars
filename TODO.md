@@ -12,7 +12,6 @@
 * manpage(n)
   * Add test suite
 * marsdoc(n)
-  * Support odd and even rows in tables.
   * Add test suite.
 
 * Man Page Processing
