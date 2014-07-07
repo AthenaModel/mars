@@ -6,6 +6,10 @@
 </head>
 
 <<swallow {
+    xrefset kite(1) kite(1) https://github.jpl.nasa.gov/will/athena-kite
+    xrefset github "GitHub 4 JPL" http://github.jpl.nasa.gov
+    xrefset Coding "Mars Tcl Coding Standard" ./coding.html
+
     # Macro Definitions
 
     # <<table ...>>
@@ -48,6 +52,15 @@
 <<preface changelog "Change Log">>
 
 <<changelog>>
+<<change 7/7/2014 update will>>
+Major updates for Mars 3.0.0:<p>
+
+<ul>
+<li> Moved from Subversion/Bugzilla to github.
+<li> Binary packages have been moved to a different project.
+</ul>
+<</change>>
+
 <<change 6/25/2012 Update will>>
 
 Minor updates for Mars 2.x.<p>
@@ -89,19 +102,16 @@ Added a section on target software platforms.
 
 Mars is an infrastructure library for simulation development.  Its
 primary clients are the JNEM and Athena projects.  Mars uses
-Subversion for version control, and Bugzilla for package tracking;
-this document explains how this works in practice.<p>
+<<xref github>> for version control 
+and issue tracking, and <<xref kite(1)>> for build management and other
+development tasks. This document explains how this works in practice.<p>
 
 <<section overview.numbering "Mars Version Numbering">>
 
-Versions of the Mars software are numbered <i>x.y</i> where <i>x</i>
-is the major version number and <i>y</i> is the build number.  The
-value of <i>y</i> increments with each build; the value of <i>x</i>
-increments only with significant infrastructure upgrades, i.e., when
-moving from one version of Tcl/Tk to the next. <p>
-
-Note that Mars is not released on its own, but only as part of a
-client project.<p>
+Versions of the Mars software are numbered <i>x.y.z</i>, following
+standard Tcl package numbering conventions.  The version number
+applies to all Mars library packages.  Updates to version numbers
+are generally made when Mars is built to support a client package.<p>
 
 See also <<xref clients>> for the relation between Mars and its client
 projects.<p>
@@ -114,9 +124,9 @@ The project directory tree is as follows:<p>
 <<th>><td>Path</td> <td>Description</td><</th>>
 
 <<treedir <root>/       >> Root of project tree<</treedir>>
-<<treedir +bin/         >> Executables (both binaries and scripts)<</treedir>>
+<<treedir +bin/         >> Executable loader scripts and ancillary 
+                           tools.<</treedir>>
 <<treedir +docs/        >> Project documentation<</treedir>>
-<<treedir ++dev/        >> Miscellaneous development documentation<</treedir>>
 <<treedir ++man1/       >> Man page section (1): Executables<</treedir>>
 <<treedir ++man5/       >> Man page section (5): File Formats<</treedir>>
 <<treedir ++mann/       >> Man page section (n): Tcl Commands<</treedir>>
@@ -126,14 +136,8 @@ The project directory tree is as follows:<p>
                            <i>name</i><</treedir>>
 <<treedir ++app_<name>/ >> Tcl source code for mars(1) application
                            mars_<i>name</i><</treedir>>
-<<treedir +src/         >> C/C++ source directory<</treedir>>
-<<treedir ++include/    >> C/C++ library header files<</treedir>>
-<<treedir ++lib/        >> C/C++ library files (build products)<</treedir>>
-<<treedir ++lib<name>/  >> C/C++ source code for library
-                           lib<i>name</i>.a<</treedir>>
-<<treedir ++<name>/     >> C/C++ source code for executable
-                           <i>name</i><</treedir>>
-
+<<treedir +test/        >> Project test suites<</treedir>>
+<<treedir ++<name>/     >> Test suite for package <i>name</i><</treedir>>
 <</table>>
 
 <b>Notes:</b><p>
@@ -141,11 +145,11 @@ The project directory tree is as follows:<p>
 <ul>
   <li> All Mars executables are development tools; none are delivered
        with client projects.
-  <li> Mars manual pages are written in <<xref mars_man(5)>> format.
+  <li> Mars manual pages are written in <<xref manpage(5)>> format.
   <li> By convention, Tcl man pages are placed in section (n) of the
        Unix manual.
   <li> The structure of Tcl package directories is described in the
-       <i>Mars Tcl Coding Standard</i>.
+       <<xref Coding>>.
 </ul>
 
 <<section overview.docs "Development Documentation">>
@@ -159,39 +163,32 @@ Mars development documentation consists of:<p>
 </ul><p>
 
 Software manual pages are stored in the repository project tree, as
-described in <<xref overview.tree>>, and are written in <<xref mars_man(5)>>
+described in <<xref overview.tree>>, and are written in <<xref manpage(5)>>
 format.<p>
 
-Other documents may be written in HTML or in MS Word; note that Word
-documents should be saved in both Word and PDF formats. HTML documents
-will usually use the <<xref mars_doc(5)>> extended HTML format.<p>
+Other documents will be written in HTML or in MS Office formats; however,
+MS Office documents may not be saved in the code repository.<p>
 
-Other documents, such as this CM plan, will be stored in the
-repository in the <code>mars/docs/dev</code> directory.<p>
+HTML documents, like this CM plan, will usually use the 
+<<xref marsdoc(5)>> extended HTML format, and will be stored in the
+repository in the <code>mars/docs</code> directory.<p>
 
 <<section overview.references "References">>
 
-<i>Bugzilla</i>, <<link http://www.bugzilla.org>><p>
-
-<i>MinGW</i>, <<link http://www.mingw.org>><p>
-
-<i>Subversion</i>, <<link http://subversion.apache.org>><p>
-
-<i>Pragmatic Version Control: Using Subversion</i>, by Mike Mason,
-Pragmatic Bookshelf, 2006.<p>
+<ul>
+<li> <<xref github>>
+<li> <<xref kite(1)>>
+<li> <<xref Coding>>
+</ul>
 
 <<section platform "Target Platforms">>
 
-Mars can be built for the following platforms: 32-bit Linux, 64-bit
-Linux, and 32-bit Windows.  On Linux, the native development tools are
-used.  On Windows, the <i>MinGW</i> tool chain is used; see
-<<link http://www.mingw.org>>.<p>
-
-The pure-Tcl code in Mars can also be used on OS X, and in particular
-the documentation can be built there.  Only the Mars binary Tcl
-extensions are unavailable.<p>
+Mars is a Pure-TCL cross-platform library, and targets Linux and Windows.
+It also runs adequately on OS X, with some GUI oddities.<p>
 
 <<section vc "Version Control">>
+
+FIXME!
 
 Mars uses Subversion more or less as described in <i>Pragmatic Version
 Control using Subversion</i>.<p>
