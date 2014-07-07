@@ -1,0 +1,1142 @@
+<html> <head>
+<title>Mars <<version>>: Configuration Management Plan</title>
+<style>
+<<standardstyle>>
+</style>
+</head>
+
+<<swallow {
+    # Macro Definitions
+
+    # <<table ...>>
+    # <<treedir path>> Description <</treedir>>
+    #    ...
+    # <</table>>
+
+    macro treedir {path} {
+        set trans {
+            +   &nbsp;&nbsp;&nbsp;&nbsp; 
+            <   <i> 
+            >   </i>
+        }
+
+        set path [string map $trans  $path]
+    } {
+        |<--
+        <tr><td><b><tt>$path</tt></b></td>
+        <td>
+    }
+
+    macro /treedir {} {
+        |<--
+        </td>
+        </tr>
+    }
+}>>
+
+<body>
+<<banner>>
+
+<h2>Configuration Management Plan</h2>
+
+<<hrule>>
+
+<<contents>>
+
+<<hrule>>
+
+<<preface changelog "Change Log">>
+
+<<changelog>>
+<<change 6/25/2012 Update will>>
+
+Minor updates for Mars 2.x.<p>
+<</change>>
+
+<<change 10/7/2011 Update will>>
+<ul>
+  <li> Changed the naming convention for experimental branches; they
+       are named using the year and month, but not the day of the
+       month.
+  <li> Updated the procedure for official builds: the Makefiles now
+       handle the version number differently.
+</ul>
+<</change>>
+
+<<change 10/3/2011 Update will>>
+Added a section on target software platforms.
+<</change>>
+
+<<change 9/20/2011 Update will>>
+<ul>
+  <li> Standardized on "https://oak.jpl.nasa.gov/svn" as the
+       repository name.  The name "https://oak/svn" is rejected by
+       some clients.
+  <li> Added a procedure for using <<xref mars_commit(1)>> to commit
+       bug fixes.
+  <li> Added information about how Subversion is integrated with Bugzilla,
+       for future reference.
+  <li> Miscellaneous corrections, e.g., Minerva is now Athena.
+</ul>
+<</change>>
+
+<<change 10/15/2008 New will>> Initial draft. <</change>>
+<</changelog>>
+
+<<hrule>>
+
+<<section overview "Overview">>
+
+Mars is an infrastructure library for simulation development.  Its
+primary clients are the JNEM and Athena projects.  Mars uses
+Subversion for version control, and Bugzilla for package tracking;
+this document explains how this works in practice.<p>
+
+<<section overview.numbering "Mars Version Numbering">>
+
+Versions of the Mars software are numbered <i>x.y</i> where <i>x</i>
+is the major version number and <i>y</i> is the build number.  The
+value of <i>y</i> increments with each build; the value of <i>x</i>
+increments only with significant infrastructure upgrades, i.e., when
+moving from one version of Tcl/Tk to the next. <p>
+
+Note that Mars is not released on its own, but only as part of a
+client project.<p>
+
+See also <<xref clients>> for the relation between Mars and its client
+projects.<p>
+
+<<section overview.tree "Project Tree">>
+
+The project directory tree is as follows:<p>
+
+<<table tab.tree "Project Directory Tree">>
+
+<<treedir <root>/       >> Root of project tree<</treedir>>
+<<treedir +bin/         >> Executables (both binaries and scripts)<</treedir>>
+<<treedir +docs/        >> Project documentation<</treedir>>
+<<treedir ++dev/        >> Miscellaneous development documentation<</treedir>>
+<<treedir ++man1/       >> Man page section (1): Executables<</treedir>>
+<<treedir ++man5/       >> Man page section (5): File Formats<</treedir>>
+<<treedir ++mann/       >> Man page section (n): Tcl Commands<</treedir>>
+<<treedir ++mani/       >> Man page section (i): Tcl Interfaces<</treedir>>
+<<treedir +lib/         >> Tcl Libraries <</treedir>>
+<<treedir ++<name>/     >> Tcl source code for package
+                           <i>name</i><</treedir>>
+<<treedir ++app_<name>/ >> Tcl source code for mars(1) application
+                           mars_<i>name</i><</treedir>>
+<<treedir +src/         >> C/C++ source directory<</treedir>>
+<<treedir ++include/    >> C/C++ library header files<</treedir>>
+<<treedir ++lib/        >> C/C++ library files (build products)<</treedir>>
+<<treedir ++lib<name>/  >> C/C++ source code for library
+                           lib<i>name</i>.a<</treedir>>
+<<treedir ++<name>/     >> C/C++ source code for executable
+                           <i>name</i><</treedir>>
+
+<</table>>
+
+<b>Notes:</b><p>
+
+<ul>
+  <li> All Mars executables are development tools; none are delivered
+       with client projects.
+  <li> Mars manual pages are written in <<xref mars_man(5)>> format.
+  <li> By convention, Tcl man pages are placed in section (n) of the
+       Unix manual.
+  <li> The structure of Tcl package directories is described in the
+       <i>Mars Tcl Coding Standard</i>.
+</ul>
+
+<<section overview.docs "Development Documentation">>
+
+Mars development documentation consists of:<p>
+
+<ul>
+  <li> Software manual pages (man pages)
+  <li> Memos
+  <li> Other documents: this CM Plan, etc.
+</ul><p>
+
+Software manual pages are stored in the repository project tree, as
+described in <<xref overview.tree>>, and are written in <<xref mars_man(5)>>
+format.<p>
+
+Other documents may be written in HTML or in MS Word; note that Word
+documents should be saved in both Word and PDF formats. HTML documents
+will usually use the <<xref mars_doc(5)>> extended HTML format.<p>
+
+Other documents, such as this CM plan, will be stored in the
+repository in the <code>mars/docs/dev</code> directory.<p>
+
+<<section overview.references "References">>
+
+<i>Bugzilla</i>, <<link http://www.bugzilla.org>><p>
+
+<i>MinGW</i>, <<link http://www.mingw.org>><p>
+
+<i>Subversion</i>, <<link http://subversion.apache.org>><p>
+
+<i>Pragmatic Version Control: Using Subversion</i>, by Mike Mason,
+Pragmatic Bookshelf, 2006.<p>
+
+<<section platform "Target Platforms">>
+
+Mars can be built for the following platforms: 32-bit Linux, 64-bit
+Linux, and 32-bit Windows.  On Linux, the native development tools are
+used.  On Windows, the <i>MinGW</i> tool chain is used; see
+<<link http://www.mingw.org>>.<p>
+
+The pure-Tcl code in Mars can also be used on OS X, and in particular
+the documentation can be built there.  Only the Mars binary Tcl
+extensions are unavailable.<p>
+
+<<section vc "Version Control">>
+
+Mars uses Subversion more or less as described in <i>Pragmatic Version
+Control using Subversion</i>.<p>
+
+<<section vc.repository "The Subversion Repository">>
+
+The Mars Subversion repository URL is<p>
+
+<pre>    https://oak.jpl.nasa.gov/svn</pre>
+
+In the remainder of this document, the string <i>repository</i> will
+mean the repository's base URL in the above form.<p>
+
+
+The repository contains multiple projects; the project URL for Mars
+is<p>
+
+<pre>
+     <i>repository</i>/mars/
+</pre>
+
+The project has the following internal structure:<p>
+
+
+<pre>
+    <i>repository</i>/mars/trunk/
+    <i>repository</i>/mars/branches/
+    <i>repository</i>/mars/tags/
+</pre>
+
+The <code>trunk</code> directory contains the project's files on the
+main line of development.  Subdirectories of the <code>branches</code>
+directory represent development branches. Subdirectories of the
+<code>tags</code> directory represent snapshots of development, e.g.,
+the 2.3 build.
+
+
+<<section vc.branches "Subversion Branches and Tags">>
+
+This section explains how Mars uses Subversion branches and tags to
+facilitate development of Mars and its clients.  Procedures appear in
+<<xref proc>>.<p>
+
+<<table tab.branches "Branches and Tags">>
+
+<tr align="left">
+<th>Branch/Tag</th>
+<th>Example</th>
+<th>Description</th>
+</tr>
+
+<tr valign="top">
+<td><code>trunk/</code></td>
+<td><code>trunk/</code></td>
+<td>All current development</td>
+</tr>
+
+<tr valign="top">
+<td><code>tags/mars_<i>x.y</i></code></td>
+<td><code>tags/mars_2.3</code></td>
+<td>Snapshot of Mars build 2.3</td>
+</tr>
+
+<tr valign="top">
+<td><code>branches/<i>user</i>/<i>yyyymm_name</i></code></td>
+<td><code>branches/will/200810_sample</code></td>
+<td>Experimental branch</td>
+</tr>
+
+<tr valign="top">
+<td><code>branches/bug/<i>nnnn</i></code></td>
+<td><code>branches/bug/1776</code></td>
+<td>Bug-fix branch</td>
+</tr>
+<</table>>
+
+<<section vc.branches.builds "Build Tags">>
+
+At each official build during normal development, the trunk is tagged
+for the build as "<code>tags/mars_<i>x.y</i></code>".  This serves as
+a snapshot of the build, and allows it to be recovered at any time.<p>
+
+<<section vc.branches.exper "Experimental Branches">>
+
+Developers can create branches on which to do experimental coding; the
+results can later be merged with the trunk or abandoned.  Experimental
+branches are created with branch name
+"<code>branches/<i>user</i>/<i>yyyymm_name</i></code>",
+where <i>user</i> is the developer's user name, <i>yyyymm</i> is the current
+year and month, and <i>name</i> is some brief name for the experiment.
+Experimental branches can then be checked out just like the trunk.<p>
+
+<<section vc.branches.bugfix "Bug-fix Branches">>
+
+When fixing complicated bugs over a period of time, it is sometimes
+useful to do the fix on a separate branch.  This allows multiple
+commits without any chance of destabilizing the trunk.  Such branches
+should be called "<code>branches/bug/<i>nnnn</i></code>", where
+<code>nnnn</code> is the bug number.  The completed fix can be merged
+back to the trunk just as with an experimental branch.<p>
+
+<<section vc.branches.release "Release Branches">>
+
+Mars is not released on its own, and so release branches are not
+required.  When Mars is released as part of a client project, the
+desired build is copied into the client's release branch and
+maintained there. See <<xref clients>> for information on how Mars is
+released with client projects.
+
+<<section bug "Package Tracking">>
+
+Both bugs and new requirements will be tracked using Bugzilla.
+The JNEM Bugzilla Server resides at
+
+<pre>    <<link https://oak.jpl.nasa.gov/bugzilla>></pre>
+
+<<section bug.product "Product">>
+
+Bugzilla relates bugs to a specific Product, Version, and Component.
+The product for Mars is "Mars 2.0".<p>
+
+<<section bug.version "Version">>
+
+The "Version" field indicates the build of Mars in which the
+bug was found. By convention, build <i>y</i> (i.e., Mars 2.<i>y</i>)
+is indicated in Bugzilla by the string "B<i>y</i>".<p>
+
+<<section bug.component "Component">>
+
+Every bug is written against some "component" of the project.  The
+following components will be used:<p>
+
+
+<<table tab.components "Bugzilla Components">>
+
+<tr align="left">
+<th>Component</th>
+<th>Description</th>
+</tr>
+
+<tr valign="top">
+<td>CM Process</td>
+<td>Makefiles, build tools, CM tools, etc.</td>
+</tr>
+
+<tr valign="top">
+<td>Code</td>
+<td>Source code (plus related data and documentation)</td>
+</tr>
+
+<tr valign="top">
+<td>Data</td>
+<td>Data files, plus related documentation</td>
+</tr>
+
+<tr valign="top">
+<td>Documentation</td>
+<td>Purely documentation-related changes.</td>
+</tr>
+
+<</table>>
+
+<<section bug.whiteboard "Status Whiteboard">>
+
+By convention, the Status Whiteboard field is used to record the build
+in which the bug was fixed or otherwise resolved.  The following text
+is used:<p>
+
+<pre>    Fixed in <i>x.y</i></pre>
+
+where <i>x.y</i> is the build version.<p>
+
+<<section bug.severity "Severity">>
+
+Every bug has a severity; Bugzilla defines the following categories:<p>
+
+<<table tab.severity "Bugzilla Severities">>
+
+<tr align="left">
+<th>Severity</th>
+<th>Description</th>
+</tr>
+
+<tr valign="top">
+<td><b>Blocker</b></td>
+<td>Blocks development and/or testing work</td>
+</tr>
+
+<tr valign="top">
+<td><b>Critical</b></td>
+<td>Crashes, loss of data, severe memory leak</td>
+</tr>
+
+<tr valign="top">
+<td><b>Major</b></td>
+<td>Major loss of function</td>
+</tr>
+
+<tr valign="top">
+<td><b>Normal</b></td>
+<td>Average severity</td>
+</tr>
+
+<tr valign="top">
+<td><b>Minor</b></td>
+<td>Minor loss of function, or other problem where easy workaround is
+present</td>
+</tr>
+
+<tr valign="top">
+<td><b>Trivial</b></td>
+<td>Cosmetic problem like misspelled words or misaligned text</td>
+</tr>
+
+<tr valign="top">
+<td><b>Enhancement</b></td>
+<td>Request for enhancement</td>
+</tr>
+
+<</table>>
+
+New features are tracked as "Enhancements"; other bugs are usually set
+to "Normal" except in unusual cases.<p>
+
+<<section bug.lifecycle "Life Cycle">>
+
+The "Status" and "Resolution" fields track a bug through its life
+cycle, as shown in the following table, which was pulled
+from the Bugzilla documentation.<p>
+
+Bugs are created with a Status of <b>NEW</b>, and might
+or might not be <b>ASSIGNED</b>.  When it is <b>RESOLVED</b>, the
+developer might give it a Resolution of <b>FIXED</b>, <b>INVALID</b>,
+<b>DUPLICATE</b>, or <b>WONTFIX</b> (which in practice often means
+<b>LATER</b>).<p>
+
+When I&T verifies that the bug is resolved, it is marked <b>CLOSED</b>.<p>
+
+<<table tab.lifecycle "Bug Status and Resolution">>
+
+<tr align="left">
+<th>STATUS</th>
+<th>RESOLUTION</th>
+</tr>
+
+<tr valign="top">
+<td>
+The <b>Status</b> field indicates the general health of a bug.  Only
+certain status transitions are allowed.<p>
+</td>
+<td>
+The <b>Resolution</b> field indicates what happened to this bug.
+</td>
+</tr>
+
+<tr valign="top">
+<td>
+<b>UNCONFIRMED</b>: This bug has recently been added to the database. Nobody
+has validated that this bug is true. Users who have the "canconfirm"
+permission set may confirm this bug, changing its state to <b>NEW</b>. Or, it
+may be directly resolved and marked <b>RESOLVED</b>.<p>
+
+<b>NEW</b>: This bug has recently been added to the assignee's list of
+bugs and must be processed. Bugs in this state may be accepted, and
+become <b>ASSIGNED</b>, passed on to someone else, and remain <b>NEW</b>, or
+resolved and marked <b>RESOLVED</b>.<p>
+
+<b>ASSIGNED</b>: This bug is not yet resolved, but is assigned to the
+proper person. From here bugs can be given to another person and
+become <b>NEW</b>, or resolved and become <b>RESOLVED</b>.<p>
+ 
+<b>REOPENED</b>: This bug was once resolved, but the resolution was
+deemed incorrect. For example, a <b>WORKSFORME</b> bug is
+<b>REOPENED</b> when more information shows up and the bug is now
+reproducible. From here bugs are either marked <b>ASSIGNED</b> or
+<b>RESOLVED</b>.
+</td> 
+<td>
+No resolution yet. All bugs which are in one of these "open" states
+have the resolution set to blank. All other bugs will be marked with
+one of the following resolutions.
+</td>
+</tr>
+
+<tr valign="top">
+<td>
+<b>RESOLVED</b>: A resolution has been taken, and it is awaiting
+verification by QA. From here bugs are either re-opened and become
+<b>REOPENED</b>, are marked <b>VERIFIED</b>, or are closed for good
+and marked <b>CLOSED</b>.<p>
+ 
+<b>VERIFIED</b>: QA has looked at the bug and the resolution and
+agrees that the appropriate resolution has been taken. Bugs remain in
+this state until the product they were reported against actually
+ships, at which point they become <b>CLOSED</b>.<p>
+ 
+<b>CLOSED</b>: The bug is considered dead, the resolution is
+correct. Any zombie bugs who choose to walk the earth again must do so
+by becoming <b>REOPENED</b>.
+</td>
+<td>
+<b>FIXED</b>: A fix for this bug is checked into the tree and tested.<p>
+ 
+<b>INVALID</b>: The problem described is not a bug.<p>
+ 
+<b>WONTFIX</b>: The problem described is a bug which will never be fixed.<p>
+ 
+<b>LATER</b>: The problem described is a bug which will not be fixed
+in this version of the product.<p>
+ 
+<b>REMIND</b>: The problem described is a bug which will probably not
+be fixed in this version of the product, but might still be.<p>
+ 
+<b>DUPLICATE</b>: The problem is a duplicate of an existing
+bug. Marking a bug duplicate requires the bug# of the duplicating bug
+and will at least put that bug number in the description field.<p>
+ 
+<b>WORKSFORME</b>: All attempts at reproducing this bug were futile,
+and reading the code produces no clues as to why the described
+behavior would occur. If more information appears later, the bug can
+be reopened.
+</td>
+</tr>
+
+<</table>>
+
+<<section bug.text "Report Description">>
+
+Bug reports should include enough specific information to allow the
+bug to be reproduced.  When the bug is fixed, the comment should
+include the precise test needed to verify the fix.<p>
+
+<<section proc "Procedures">>
+
+We expect that Mars development will generally take place in a Mars
+work area embedded within a client workarea; see <<xref clients>> for
+details.  This section describes procedures for standalone Mars
+development.<p>
+
+<<section proc.cmbuild "Performing Official Builds">>
+
+<<procedure>>
+
+<<step>>
+Make sure all developers have committed all changes needed for the build.
+<</step/>>
+n/a
+<</step>>
+
+<<step>>
+Determine the version number.
+<</step/>>
+E.g., "2.3".
+<</step>>
+
+<<step>>
+Check the trunk out of the repository as <code>~/mars</code>.
+<</step/>>
+If you have not checked out Mars previously:<p>
+
+<pre>
+$ svn checkout <i>repository</i>/mars/trunk ~/mars
+</pre>
+
+If the <code>~/mars</code> directory already points at the trunk:<p>
+
+<pre>
+$ cd ~/mars
+$ svn update
+</pre>
+
+If the <code>~/mars</code> directory points at some other branch or tag:<p>
+
+<pre>
+$ cd ~/mars
+$ svn switch <i>repository</i>/mars/trunk .
+</pre>
+
+<</step>>
+
+<<step>>
+Update the Build Notes file, <code>docs/build_notes.ehtml</code>, with
+the details about the current build, and commit it.  The update will
+usually include the version, the date, a general description of the
+changes, and a list of the Bugzilla packages, with titles.
+<</step/>>
+<pre>
+$ cd ~/mars/docs
+$ emacs build_notes.ehtml
+$ svn commit -m"Updated for build 2.3"
+</pre>
+<</step>>
+
+<<step>>
+Build and test the software, resolving any problems found until the
+build is clean, and commit any changes.
+<</step/>>
+<pre>
+$ cd ~/mars
+$ make build
+</pre>
+<</step>>
+
+<<step>>
+Tag the trunk with the build number.  <b>This step will switch your
+workspace to the tagged code!</b>
+<</step/>>
+<pre>
+$ cd ~/mars
+$ make MARS_VERSION=2.3 tag
+</pre>
+
+This is equivalent to:<p>
+
+<pre>
+$ cd ~/mars
+$ svn cp . <i>repository</i>/mars/tags/mars_2.3
+$ svn switch <i>repository</i>/mars/tags/mars_2.3 .
+$ echo 2.3 > lib/marsutil/version.txt
+$ svn commit lib/marsutil/version.txt
+</pre>
+
+<</step>>
+
+<<step>>
+Perform the official build.  Because Mars is typically built with each
+client that uses it, this "official" build simply verifies that the
+tagged version of Mars is viable.
+<</step/>>
+<pre>
+$ make build
+</pre>
+<</step>>
+
+<<step>>
+Browse docs/index.html, and verify that the generated HTML documents
+reference the correct Mars version number.
+<</step/>>
+n/a
+<</step>>
+
+<<step>>
+If desired, the Mars documentation tree can be copied to some central
+location.
+<</step/>>
+n/a
+<</step>>
+
+<<step>>
+Add the version to Bugzilla.
+<</step/>>
+On the Bugzilla toolbar, click "Administration".  On the resulting
+page click "Products", then "Mars 2.0", then "Edit Versions".  Add a
+version "B<i>y</i>", e.g., when building Mars 2.3, add a version "B3".
+<</step>>
+
+<<step>>
+Switch <code>~/mars</code> back to the trunk in preparation for future
+development.
+<</step/>>
+<pre>
+$ cd ~/mars
+$ svn switch <i>repository</i>/mars/trunk .
+</pre>
+<</step>>
+
+<</procedure>>
+
+<<section proc.co_trunk "Checking Out The Trunk">>
+
+Mars is often checked out as an embedded work area within the client
+project.  If it is to be checked out stand-alone, it can be checked
+out anywhere; this procedure assumes that it is checked out simply as
+"<code>~/mars</code>".<p>
+
+<<procedure>>
+
+<<step>>
+Check out the trunk.
+<</step/>>
+<pre>$ svn checkout <i>repository</i>/mars/trunk ~/mars</pre>
+<</step>>
+
+<<step>>
+Do a development build.
+<</step/>>
+See <<xref proc.devbuild>>.
+<</step>>
+
+<<step>>
+Go to work.
+<</step/>>
+<pre>
+$ cd ~/mars
+$ ...
+</pre>
+<</step>>
+
+<</procedure>>
+
+<<section proc.co_tag "Checking Out A Tag">>
+
+Tags (see <<xref vc.branches.builds>>) can be checked out
+anywhere.  Don't commit changes to tags.<p>
+
+<<procedure>>
+
+<<step>>
+Check out the tag
+<</step/>>
+<pre>$ svn checkout <i>repository</i>/mars/tag/mars_2.3 ~/mars_2.3</pre>
+<</step>>
+
+<<step>>
+Do a development build.
+<</step/>>
+See <<xref proc.devbuild>>.
+<</step>>
+
+<<step>>
+Go to work.
+<</step/>>
+<pre>
+$ cd ~/mars
+$ ...
+</pre>
+<</step>>
+
+<</procedure>>
+
+<<section proc.co_exper "Checking Out An Experimental Branch">>
+
+Experimental branches (see <<xref vc.branches.exper>>) can be
+checked out anywhere.  It's usually desirable to pick a directory name
+when checking out an experimental branch; a common strategy is to use
+the directory name "<code>mars_<i>name</i></code>" where <i>name</i>
+is the experiment name, e.g., "<i>mars_widget</i>" when the branch
+name is "<code>branches/will/20081015_widget</code>".<p>
+
+
+<<procedure>>
+
+<<step>>
+Check out the branch
+<</step/>>
+<pre>
+$ svn checkout <i>repository</i>/mars/branches/will/200810_widget \
+      ~/mars_widget
+</pre>
+<</step>>
+
+<<step>>
+Do a development build.
+<</step/>>
+See <<xref proc.devbuild>>.
+<</step>>
+
+<<step>>
+Go to work.
+<</step/>>
+<pre>
+$ cd ~/mars_widget
+$ ...
+</pre>
+<</step>>
+
+<</procedure>>
+
+<<section proc.devbuild "Performing a Development Build">>
+
+A development build is simply a build performed during the course of
+development.  It has three purposes: it builds C/C++ libraries, it
+builds the documentation, and it runs all unit tests. This procedure
+presumes that the version to be built has been checked out into
+"<code>~/mars</code>", but of course Mars can be built where ever
+it is checked out.<p>
+
+<<procedure>>
+
+<<step>>
+Go to the work area.
+<</step/>>
+<pre>$ cd ~/mars</pre>
+<</step>>
+
+<<step>>
+Build everything from scratch
+<</step/>>
+<pre>$ make clean all</pre>
+<</step>>
+
+<<step>>
+Run all tests, if desired.
+<</step/>>
+<pre>$ make test</pre>
+<</step>>
+
+<<step>>
+The previous two steps can be combined into a single command, if desired.
+<</step/>>
+<pre>$ make build</pre>
+<</step>>
+
+<</procedure>>
+
+Read the header of <code>~/mars/Makefile</code> for other
+possibilities.<p>
+
+<<section proc.commit "Committing Bugs">>
+
+Note: ideally, a single commit should be done for each bug.  If the
+job is large enough that you wish to do multiple commits, create a bug
+fix branch as described in <<xref vc.branches.bugfix>>.<p>
+
+Subversion is integrated with Bugzilla such that when code changes are
+committed to Subversion for a particular bug, the commit message will
+be added to the relevant bug in Bugzilla as a comment.  For this to
+work, the user must commit changes as follows:<p>
+
+<<procedure>>
+<<step>>
+Invoke <<xref mars_commit(1)>> for the bug number.
+<</step/>>
+<pre>$ mars commit 1234</pre>
+<</step>>
+
+<<step>>
+Verify the files to commit.  The tool will list all changed files in
+the current directory and below.  Make sure new files have been added
+to the repository, and that there's nothing that shouldn't be there.
+(The output is the same as for the <code>svn status</code> tool.)
+<</step/>>
+Do nothing if all of the changed files should be committed.
+Otherwise, select each of the files to commit.
+<</step>>
+
+<<step>>
+Enter a detailed change description.
+<</step/>>
+Type the change description into the text box.
+<</step>>
+
+<<step>>
+Commit the change.
+<</step/>>
+Press the "Commit" button.
+<</step>>
+
+<</procedure>>
+
+<<section clients "Client Projects">>
+
+Mars is not delivered on its own, but is to be used as an
+infrastructure layer by client projects.  This section explains how
+client projects are intended to fit Mars into their CM, using JNEM as
+an example.<p>
+
+<<section clients.main "Main-Line Development">>
+
+During main-line development on the client's trunk, the client should
+be using the latest Mars code.  This is accomplished by using an
+svn:externals property to cause Mars to be checked out as part of the
+client code base:<p>
+
+<pre>
+    $ svn propset svn:externals <i>repository</i>/jnem/trunk \
+        "mars <i>repository</i>/mars/trunk"
+</pre>
+
+When the client's trunk is checked out, e.g., as <code>jnem/</code>, Mars is
+checked out as <code>jnem/mars/</code>.  The current Mars working copy
+is thus embedded in the client working copy and can be referenced,
+built, and tested in place.<p>
+
+Once this external link is created, it persists.  The
+<<xref mars_link(1)>> tool can be used to create and manipulate this
+link.<p>
+
+It is possible to make code changes to the Mars trunk in this embedded
+work area; one must be careful to commit both the Mars changes and any
+client changes.  <b>Note:</b> the authors of <i>Pragmatic Version
+Control</i> suggests that this is a bad idea.  However, given that we
+have a single development team, and that Mars development is tightly
+coupled with client development, we think that this is OK.<p>
+
+<<section clients.bugs "Bug Reporting">>
+
+When a change is made that affects both Mars and a client, two bug
+reports are needed: one for the Mars change and one for the client
+change.  The Mars bug report provides a record of what's changed in
+Mars, and the client bug report goes through I&amp;T with the client, thus
+allow both the client change and the Mars change to be tested in the
+test lab.<p>
+
+When the Mars change is a new API and the client change is use of that
+API, completely separate bug reports are appropriate: implementing an
+API and using an API are two separate problems which deserve distinct
+descriptions.  When the change is actually a bug fix that affects both
+projects, or perhaps even a bug in Mars that manifests in the client,
+then cloning the original client's bug report is appropriate.<p>
+
+<<section clients.devbuilds "Client Development Builds">>
+
+When a developer performs a development build of the client, the
+client's makefiles should be set up to build Mars as well.  In
+particular, the client's  "<code>make src</code>", "<code>make
+docs</code>", and "<code>make test</code>" targets should each do
+a "<code>cd mars; make <i>target</i></code>".<p>
+
+<<section clients.cmbuilds "Client Official Builds">>
+
+When an official build is to be done for the client, the build manager
+should do the following:<p>
+
+<<procedure>>
+
+<<step>>
+Determine whether any changes have been committed to Mars since the
+previous official build of Mars. If there have been, do an official
+build of Mars, as described in <<xref proc.cmbuild>>.  Otherwise,
+determine the version number of the latest build.  Either way,
+we'll assume that the latest build is Mars 2.3.
+<</step/>>
+n/a
+<</step>>
+
+<<step>>
+Check out the desired trunk or branch of the client, as the desired
+version.  We'll assume that we wish to build the client's trunk as
+Athena 4.0.9.
+<</step/>>
+<pre>
+$ cd ~/athena_pkgs
+$ svn checkout <i>repository</i>/athena/trunk athena_4.0.9
+</pre>
+<</step>>
+
+<<step>>
+The Mars trunk was checked out as <code>athena_4.0.9/mars</code>.
+Temporarily link the working copy to point at the desired build of Mars.
+<</step/>>
+<pre>
+$ cd ~/athena_pkgs/athena_4.0.9
+$ svn switch <i>repository</i>/mars/tags/mars_2.3 mars
+</pre>
+
+or<p>
+
+<pre>
+$ cd ~/athena_pkgs/athena_4.0.9
+$ mars link 2.3
+</pre>
+<</step>>
+
+
+<<step>>
+Do a development build and test of the client. Resolve any errors, and
+retest, until the client builds cleanly.  Commit any changes.
+<</step/>>
+<pre>
+$ cd ~/athena_pkgs/athena_4.0.9
+$ make build
+</pre>
+<</step>>
+
+
+<<step>>
+Tag the build, updating the working copy to the tagged version.
+<</step/>>
+<pre>
+$ cd ~/athena_pkgs/athena_4.0.9
+$ svn copy . <i>repository</i>/athena/tags/athena_4.0.9
+$ svn switch <i>repository</i>/athena/tags/athena_4.0.9 .
+</pre>
+<</step>>
+
+
+<<step>>
+Permanently link the tagged version to the required version of Mars.  Here,
+<<xref mars_link(1)>> sets the <code>svn:externals</code> property
+to match the embedded working copy in <code>mars/</code>.<p>
+
+<b>NOTE:</b> The <code>svn switch</code> in the previous step probably
+switched the working copy of Mars back to the Mars trunk.  That's
+why we recreate the link with 2.3.
+<</step/>>
+<pre>
+$ cd ~/athena_pkgs/athena_4.0.9
+$ svn switch <i>repository</i>/mars/tags/mars_2.3 mars
+$ svn propset svn:externals . \
+    "mars <i>repository</i>/mars/tags/mars_2.3"
+</pre>
+
+or<p>
+
+<pre>
+$ cd ~/athena_pkgs/athena_4.0.9
+$ mars link 2.3
+$ mars link save
+</pre>
+
+<</step>>
+
+<<step>>
+Proceed with the client build.
+<</step/>>
+n/a
+<</step>>
+
+<</procedure>>
+
+<<section clients.branches "Client Branches">>
+
+Client branches can be linked to any desired version of Mars via
+<code>svn:externals</code>, just as the client trunk is linked to the
+trunk of Mars. However, it is more likely that a given client branch,
+and particularly any release branch, should be tied to a particular
+version of Mars, and that any bug fixes to Mars should be applied
+within the context of the release branch as well.  Consequently, when
+creating a client release branch the <code>svn:externals</code>
+property should be removed and <code>svn copy</code> should be used to
+pull the desired version of Mars into the release branch.<p>
+
+The <<xref mars_link(1)>> <code>save -ascopy</code> command will do
+this easily.<p>
+
+<<section svnbug "Subversion/Bugzilla Integration">>
+
+Subversion is integrated with Bugzilla so that when changes are committed
+to Subversion for a particular bug using <<xref mars_commit(1)>>, the
+commit message and list of changed files are added to that bug report
+as a comment.<p>
+
+This section explains precisely how the integration is done, so that
+it can more easily be debugged if it stops working--as it often does
+whenever the software on the CM machine is upgraded.<p>
+
+<ul>
+  <li> The user commits bug <i>nnnn</i> using
+       <<xref mars_commit(1)>>.<p>
+
+  <li> <<xref mars_commit(1)>> commits the change, adding the
+       fullowing text to the commit message:<p>
+
+       <pre>Fixed Bug #{<i>nnnn</i>}</pre><p>
+
+  <li> On the repository host, Subversion calls the post-commit hook
+       with the repository path, <code>/home/svn</code>, and the
+       revision number.  The hook is defined by the fullowing script:<p>
+
+       <pre>/home/svn/hooks/post-commit</pre><p>
+
+  <li> The hook script immediately calls a script which sends an
+       e-mail message to Bugzilla:<p>
+
+       <pre>/home/svn/hooks/commit-email.pl</pre><p>
+
+       <ul>
+         <li> <code>commit-email.pl</code> retrieves the commit
+              message for the given revision number.<p>
+
+         <li> The commit is ignored if the commit message does not
+              contain the string "<code>Fixed Bug
+              #{<i>nnnn</i>}</code>".  Otherwise, the e-mail message
+              is formatted and sent.<p>
+
+         <li> Per the Bugzilla e-mail interface (Google "Bugzilla
+              email_in.pl" for the protocul), the message has a
+              subject containing the string "<code>[Bug
+              <i>nnnn</i>]</code>".  The body of the e-mail is the
+              comment to append to the bug report.<p>
+
+         <li> The message is sent <b>from</b>
+              <code>MAILER-DAEMON@oak.jpl.nasa.gov</code>. 
+              We have defined this e-mail address as a
+              Bugzilla user, thus allowing it to submit bug comments by
+              e-mail.<p>
+               
+         <li> The message is sent <b>to</b>
+              <code>bug-submit@oak.jpl.nasa.gov</code>.  "bug-submit" is a 
+              user on oak whose home directory is
+              <code>/home/bug-submit</code>.<p>
+       </ul>
+
+  <li> To troubleshoot <code>commit-email.pl</code>, call it explicitly:<p>
+
+       <pre>sudo /home/svn/hooks/commit-email.pl /home/svn 6898</pre>
+
+       Revision 6898 is a test commit which references bug 3165 in
+       Bugzilla.<p>
+
+  <li> If the message is sent successfully, it will be received by
+       user <code>bug-submit</code> on oak.jpl.nasa.gov.<p>
+
+  <li> In <code>/home/bug-submit</code> there is a
+       <code>.procmailrc</code> file that tells procmail(1) how to handle
+       all e-mail received by this user.  It passes all such messages 
+       to a Bugzilla script:<p>
+
+       <pre>/home/bugzilla/email_in.pl</pre><p>
+
+       All messages that come through, along with any error messages,
+       are logged to this file:<p>
+
+       <pre>/home/bug-submit/procmail_log</pre><p>
+
+  <li> The <code>email_in.pl</code> script is supposed to add the
+       comment to the named bug.<p>
+
+  <li> To troubleshoot problems with <code>email_in.pl</code>, first
+       look in <code>procmail_log</code> and make sure the messages
+       are arriving.  If they are not, debug
+       <code>commit_email.pl</code>.<p>
+
+  <li> If the messages are arriving, debug <code>email_in.pl</code>
+       from the command line.<p>
+
+       <ul>
+         <li> Create a file called <code>email.txt</code> with the
+              fullowing content:<p>
+
+              <pre>
+              From: William.H.Duquette@jpl.nasa.gov
+              Subject: [Bug 3165] Change Comment
+
+              Test comment
+              </pre><p>
+
+              Replace the "From:" address with your own e-mail
+              address; note that the address must be a valid Bugzilla
+              user, able to update bug reports.<p>
+
+         <li> Run <code>email_in.pl</code> as fullows:<p>
+
+              <pre>sudo /home/bugzilla/email_in.pl -vvv <email.txt</pre><p>
+
+              Address any errors returned by the script; then verify
+              that the comments are showing up in Bugzilla for
+              bug 3165.<p>
+       </ul>
+</ul>
+
+<hr>
+<address><a href="http://eis.jpl.nasa.gov/~will/">Will Duquette</a> / <a href="mailto:William.H.Duquette@jpl.nasa.gov">
+William.H.Duquette@jpl.nasa.gov</a></address>
+
+</body> </html>
+
+

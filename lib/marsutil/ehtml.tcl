@@ -143,15 +143,55 @@ snit::type ::marsutil::ehtml {
         $interp smartalias rb 0 0 {} \
             [mymethod rb]
 
-        $interp smartalias swallow 1 1 {script} \
-            [mymethod swallow]
-
         $interp smartalias xref 1 2 {id ?anchor?} \
             [mymethod xref]
 
         $interp smartalias xrefset 3 3 {id anchor url} \
             [mymethod xrefset]
 
+        # NEXT, Macro definitions
+        $interp proc swallow {body} {
+            uplevel 1 $body
+            return
+        }
+
+        # This is just template(n)'s "template" command
+        # TODO: Add "import" command to smartinterp(n), to pull in a
+        # proc's definition.
+        $interp proc macro {name arglist initbody {template ""}} {
+            # FIRST, have we an initbody?
+            if {"" == $template} {
+                set template $initbody
+                set initbody ""
+            }
+
+            # NEXT, define the body of the new proc so that the initbody, 
+            # if any, is executed and then the substitution is 
+            set body "$initbody\n    tsubst [list $template]\n"
+
+            # NEXT, define
+            uplevel 1 [list proc $name $arglist $body]
+            return
+        }
+
+        # This is just template(n)'s "tsubst" command.
+        $interp proc tsubst {tstring} {
+            # If the string begins with the indent mark, process it.
+            if {[regexp {^(\s*)\|<--[^\n]*\n(.*)$} $tstring dummy leader body]} {
+
+                # Determine the indent from the position of the indent mark.
+                if {![regexp {\n([^\n]*)$} $leader dummy indent]} {
+                    set indent $leader
+                }
+
+                # Remove the ident spaces from the beginning of each indented
+                # line, and update the template string.
+                regsub -all -line "^$indent" $body "" tstring
+            }
+
+            # Process and return the template string.
+            return [uplevel 1 [list subst $tstring]]
+        }
 
         # NEXT, Change Log macros
         $interp smartalias changelog 0 0 {} \

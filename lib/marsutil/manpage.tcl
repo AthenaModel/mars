@@ -31,29 +31,6 @@ snit::type ::marsutil::manpage {
     pragma -hastypedestroy 0 -hasinstances 0
 
     #-------------------------------------------------------------------
-    # Type Constructor
-
-    typeconstructor {
-        # Export macros
-        namespace export \
-            defitem      \
-            deflist      \
-            /deflist     \
-            defopt       \
-            indexfile    \
-            indexlist    \
-            iref         \
-            itemlist     \
-            manpage      \
-            /manpage     \
-            manurl       \
-            mktree       \
-            section      \
-            subsection   \
-            version
-    }
-
-    #-------------------------------------------------------------------
     # Type Variables
 
     # Info array: scalars
@@ -69,7 +46,6 @@ snit::type ::marsutil::manpage {
     typevariable info -array {}
 
     # ehtml -- The ehtml translator
-
     typevariable ehtml ""
 
     # An array: key is module name, value is list of submodules.
@@ -352,6 +328,32 @@ snit::type ::marsutil::manpage {
         td {
             padding-left: 4px;
         }
+
+        /* Table Formatting Classes: "pretty" 
+         * Border around the outside, even/odd striping, no internal
+         * border lines.
+         */
+        TABLE.pretty {
+            border: 1px solid black;
+            border-spacing: 0;
+        }
+
+        TABLE.pretty TR.header {
+            font-weight: bold;
+            color: white;
+            background-color: #000099;
+        }
+
+        TABLE.pretty TR.oddrow {
+            color: black;
+            background-color: white;
+        }
+
+        TABLE.pretty TR.evenrow {
+            color: black;
+            background-color: #EEEEEE;
+        }
+
         
         [tif {$mktreeFlag} {
             |<--
