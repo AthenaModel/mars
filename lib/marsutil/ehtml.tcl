@@ -441,7 +441,7 @@ snit::type ::marsutil::ehtml {
     # Returns the right macro bracket, quoted for output.
 
     proc rb {} {
-        return "&rt;&rt;"
+        return "&gt;&gt;"
     }
 
     # nbsp text
