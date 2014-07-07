@@ -369,7 +369,7 @@ each component is an integer ranging from 0 to 255.<p>
 
 <<section ENVIRONMENT>>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.6 or later.<p>
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package
@@ -385,4 +385,5 @@ Originally implemented for JNEM as util(n).  Migrated to Mars in
 September, 2008.<p>
 
 <</manpage>>
+
 

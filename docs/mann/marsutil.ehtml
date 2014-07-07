@@ -19,7 +19,7 @@ indicate.<p>
 
 <<section ENVIRONMENT>>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.6 or later.<p>
 
 <<section AUTHORS>>
 
@@ -31,5 +31,6 @@ Originally written for JNEM as util(n); migrated to Mars in
 September 2008, and extended considerably since.<p>
 
 <</manpage>>
+
 
 

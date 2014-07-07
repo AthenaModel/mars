@@ -713,7 +713,7 @@ snit::type ::marsutil::marsdoc {
 
     template proc figure {id title filename} {
         if {[$ehtml pass] == 1} {
-            AddFigureId $id $title
+            AddFigureId $id $ttle
             return
         }
     } {

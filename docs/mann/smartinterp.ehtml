@@ -300,7 +300,7 @@ See <<xref "Smart Aliases and Ensembles">> for examples.<p>
 
 <<section ENVIRONMENT>>
 
-Requires Tcl 8.5 or later.
+Requires Tcl 8.6 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package directory.
@@ -314,6 +314,7 @@ Will Duquette<p>
 Original package.
 
 <</manpage>>
+
 
 
 

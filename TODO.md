@@ -1,6 +1,5 @@
 # athena-mars TODO List
 
-* Goal:  Add "kite man" for building the man pages.
 * Goal:  Kite updates lib requires in pkgModules.tcl
 * Revise marsmisc(n)
   * Split into submodules as appropriate
@@ -8,18 +7,12 @@
 
 * ehtml(n)
   * Complete ehtml(n) testing
-  * Add ehtml(5) man page
   * Refactor API as needed
   * Move basic CSS into ehtml?
 * manpage(n)
-  * Add manpage(n) man page
-  * Add manpage(5) man page
   * Add test suite
 * marsdoc(n)
   * Support odd and even rows in tables.
-  * Add marsdoc(n) code
-  * Add marsdoc(n) man page
-  * Add marsdoc(5) man page
   * Add test suite.
 
 * Man Page Processing
