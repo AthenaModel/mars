@@ -1,0 +1,232 @@
+<<manpage ehtml(5) "Extended HTML Format">>
+
+<<section SYNOPSIS>>
+
+<<itemlist>>
+
+<<section DESCRIPTION>>
+
+This man page defines the ehtml(5) "Extended HTML" format,
+i.e., HTML extended with Tcl macros.  The <<xref ehtml(n)>> module
+translates ehtml(5) input into plain HTML.<p>
+
+The ehtml(5) format is the basis for more specific formats, including
+<<xref marsdoc(5)>> and <<xref manpage(5)>>, the format used to
+write this man page.  The basics of the format are documented here.<p>
+
+<<section "BASIC SYNTAX">>
+
+The majority of the content of a ehtml(5) man page is standard HTML
+body text.  Macros are entered in double angle brackets, like so:<p>
+
+<pre>
+<<lb>>mymacro<<rb>>
+</pre>
+
+Some macros occur in pairs; for example, change logs are created using
+the <<iref changelog>> macros.<p>
+
+<pre>
+<<lb>>changelog<<rb>>
+    .
+    .
+    .
+<<lb>>/changelog<<rb>>
+</pre>
+
+<<section MACROS>>
+
+ehtml(5) man pages may use any of the following macros; formats
+like <<xref manpage(5)>> will add additional macros.
+Note that these macros are simply Tcl commands; you can define
+your own macros as described in <<xref "DEFINING MACROS">>,
+and use them in your ehtml(5) input.<p>
+
+<<deflist macros>>
+
+<<defitem changelog "[lb]changelog[rb]...[lb]/changelog[rb]">>
+
+Defines a change log table.  The content between the beginning and end
+macro should consist of <<iref change>> entries.<p>
+
+<<defitem change "[lb]change <i>date status initiator</i>[rb]...[lb]/change[rb]">>
+
+Defines a single change entry within a <<iref changelog>>.  The change
+is as of the specified <i>date</i> and was made by the
+<i>initiator</i>; the <i>status</i> can indicate whether the change is
+an addition, a deletion, or whatever the user likes.  The Extended
+HTML input between the beginning and end tag is expanded as usual, and
+is used as the description of the change.<p>
+
+For example,
+
+<pre>
+<<lb>>changelog<<rb>>
+<<lb>>change 10/01/2008 New whd<<rb>>
+Initial draft.
+<<lb>>/change<<rb>>
+<<lb>>/changelog<<rb>>
+</pre>
+
+<<defitem hrule "[lb]hrule[rb]">>
+
+Produces a horizontal rule across the page.<p>
+
+<<defitem lb "[lb]lb[rb]">>
+
+Returns the left-hand macro brackets, e.g., "<code><<lb>></code>".<p>
+
+
+<<defitem link "[lb]link <i>url</i> ?<i>anchor</i>?[rb]">>
+
+Creates a link to the specified <i>url</i>, displaying the specified
+<i>anchor</i> text.  If <i>anchor</i> is omitted, the <i>url</i>
+itself is displayed.<p>
+
+If the page will be linked multiple times, it might be better to
+define a cross-reference using <<iref xrefset>>.<p>
+
+<<defitem macro "[lb]macro <i>name arglist</i> ?<i>initbody</i>? <i>template</i>[rb]">>
+
+Defines a new macro using a template.  The arguments are the same as for
+<<xref template(n)>>'s <<xref template(n) template>> command.<p>
+
+<<defitem nbsp "[lb]nbsp <i>text</i>[rb]">>
+
+After trimming leading and trailing whitespace and normalizing
+internal whitespace to single blanks, <<iref nbsp>> replaces all
+remaining whitespace with non-breaking spaces.<p>
+
+<<defitem procedure "[lb]procedure[rb]...[lb]/procedure[rb]">>
+
+Defines a procedure: instructions for performing a set of commands at
+a command line.  Each step consists of a description of what is to be
+done, and of an example of the commands to enter.  The procedure is
+formatted as a table of numbered steps, with each step's description in the
+left-hand column and example in the right-hand column.<p>
+
+The content between the beginning and ending macros should consist of
+<<iref step>> entries.<p>
+
+<<defitem quote "[lb]quote <i>text</i>[rb]">>
+
+Quotes angle brackets and ampersands in the <i>text</i> for HTML display.<p>
+
+<<defitem step "[lb]step[rb] <i>description</i> [lb]/step/[rb] <i>example</i> [lb]/step[rb]">>
+
+Defines a single step within a <<iref procedure>>.  The
+<i>description</i> is Extended HTML text saying what is to be done,
+and the <i>example</i> is Extended HTML text giving an example of how
+to do it.<p>
+
+For example,
+
+<pre>
+<<lb>>procedure<<rb>>
+
+<<lb>>step<<rb>>
+Edit the document.
+<<lb>>/step/<<rb>>
+&lt;pre&gt;
+$ emacs mydoc.ehtml
+&lt;/pre&gt;
+<<lb>>/step<<rb>>
+    .
+    .
+    .
+
+<<lb>>/procedure<<rb>>
+</pre>
+
+
+<<defitem rb "[lb]rb[rb]">>
+
+Returns the right-hand macro brackets, e.g., "<code><<rb>></code>".<p>
+
+<<defitem swallow "[lb]swallow {<i>Tcl commands</i>}[rb]">>
+
+This macro is mostly used when defining macros inline in a
+manpage.  It executes the <i>Tcl commands</i>, and returns nothing;
+because it returns nothing, it doesn't affect the output.<p>
+
+See <<xref "DEFINING MACROS">> for an example.<p>
+
+<<defitem xref "[lb]xref <i>id</i> ?<i>anchor</i>?[rb]">>
+
+The <<iref xref>> macro creates hyperlinks. Generally speaking,
+<i>id</i> identifies the page to link to; <i>anchor</i> is the
+link text.  If <i>anchor</i> isn't specified, then the <i>id</i> will
+be used as the link text.<p>
+
+When <<xref ehtml(n)>> is used on its own, the only xref IDs are those
+defined by <<iref xrefset>>.  When <<xref ehtml(n)>> is used by
+another tool, as by <<xref manpage(n)>>, there will usually be
+variety of automatically defined cross-reference IDs.  In particular,
+man pages can usually be referred to by name.<p>
+
+<<defitem xrefset "[lb]xrefset <i>id anchor url</i>[rb]">>
+
+This macro defines a cross-reference, which can be used by
+<<iref xref>> to create hyperlinks.  The <i>id</i> identifies the
+cross-reference to <<iref xref>>; it should be chosen so as not to
+conflict with other <<iref xref>> identifiers.  The <i>anchor</i> is
+the link text that will be used if no link text is specified in the
+<<iref xref>> macro.  The <i>url</i> is, of course, the URL to link to.<p>
+
+For example, the following macro defines "google" as a cross-reference
+ID.<p>
+
+<pre>
+<<lb>>xrefset google "Google" "http://www.google.com"<<rb>>
+    .
+    .
+    .
+To find something, use <<lb>>xref google<<rb>>....
+</pre>
+
+<</deflist macros>>
+
+
+<<section "DEFINING MACROS">>
+
+ehtml(5) macros have Tcl syntax; in fact, a macro can contain arbitrary Tcl
+code.  In particular, the input can define new
+macros using the standard Tcl <tt>proc</tt> command or the
+<<iref macro>> command.  This is usually done in
+conjunction with the <<iref swallow>> macro, to avoid including the
+output in the finished man page.<p>
+
+For example, here's the definition of a macro that returns a timestamp
+using Tcl's <tt>clock</tt> command:<p>
+
+<pre>
+<<lb>>swallow {
+    proc timestamp {} {
+        return [clock format [clock seconds]]
+    }
+}<<rb>>
+</pre>
+
+When writing macros, remember that ehtml(n) usually makes <b>two passes</b>
+over its input, and so every macro will be executed <b>twice</b>.
+This is usually only a problem when a macro is accumulating data into
+a Tcl variable in the first pass so that it can be used during the
+second pass (e.g., to output an accumulated list, such as a table of
+contents).<p>
+
+In such a case, the macro can use <<xref ehtml(n)>>'s
+<<xref ehtml(n) pass>> method to find out which pass it is.<p>
+
+<<section AUTHOR>>
+
+Will Duquette<p>
+
+<<section HISTORY>>
+
+Original package.<p>
+
+<</manpage>>
+
+
+
+
