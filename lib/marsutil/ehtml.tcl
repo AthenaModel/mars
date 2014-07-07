@@ -129,7 +129,7 @@ snit::type ::marsutil::ehtml {
             [myproc hrule]
 
         $interp smartalias lb 0 0 {} \
-            [mymethod lb]
+            [myproc lb]
 
         $interp smartalias link 1 2 {url ?anchor?} \
             [myproc link]
@@ -141,7 +141,7 @@ snit::type ::marsutil::ehtml {
             [myproc quote]
 
         $interp smartalias rb 0 0 {} \
-            [mymethod rb]
+            [myproc rb]
 
         $interp smartalias xref 1 2 {id ?anchor?} \
             [mymethod xref]
@@ -427,6 +427,22 @@ snit::type ::marsutil::ehtml {
     
     #-------------------------------------------------------------------
     # Basic Macros
+
+    # lb
+    #
+    # Returns the left macro bracket, quoted for output.
+
+    proc lb {} {
+        return "&lt;&lt;"
+    }
+
+    # rb
+    #
+    # Returns the right macro bracket, quoted for output.
+
+    proc rb {} {
+        return "&rt;&rt;"
+    }
 
     # nbsp text
     #
