@@ -173,6 +173,12 @@ conflict with other <<iref xref>> identifiers.  The <i>anchor</i> is
 the link text that will be used if no link text is specified in the
 <<iref xref>> macro.  The <i>url</i> is, of course, the URL to link to.<p>
 
+The macro returns a link to the <i>url</i> with the given <i>anchor</i>
+text, so that it can be used in a list of references for display.<p>
+
+Note that <<iref xrefset>> can appear anywhere in the input; it does
+not need to proceed the first <<iref xref>> to the <i>id</i>.<p>
+
 For example, the following macro defines "google" as a cross-reference
 ID.<p>
 

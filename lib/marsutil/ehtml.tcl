@@ -312,8 +312,8 @@ snit::type ::marsutil::ehtml {
     method xrefset {id anchor url} {
         set xreflinks($id) [dict create id $id anchor $anchor url $url]
         
-        # Return nothing, so that this can be used in macros.
-        return ""
+        # Return the link.
+        return [$self xref $id]
     }
 
     # xref id ?anchor?
