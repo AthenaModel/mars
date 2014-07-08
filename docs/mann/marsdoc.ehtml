@@ -53,6 +53,11 @@ Specifies a brief one-line description of the project being documented.
 Defaults to "Your project description".  This string
 appears in the headers of the generated pages.<p>
 
+<<defopt {-poc <i>email</i>}>>
+
+Specifies an e-mail address for the primary point-of-contact.  This
+can be included in documents using the <<xref marsdoc(5) poc>> macro.<p>
+
 <<defopt {-manroots <i>roots</i>}>>
 
 Specifies a the mapping from man page names to URLs to be used

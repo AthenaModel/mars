@@ -136,13 +136,14 @@ snit::type ::marsutil::marsdoc {
 
     # Info array: scalars
     #
-    #  project      The project name
-    #  version      The project version
-    #  description  The project description
-    #  anchors      If 1, dump a list of sections, tables, and figures,
-    #               with xref IDs, for each document.
-    #  debug        If 1, dump additional debugging info
-    #  fileroot     Root of the current input file's name
+    #  project      - The project name
+    #  version      - The project version
+    #  description  - The project description
+    #  poc          - Point of contact e-mail address
+    #  anchors      - If 1, dump a list of sections, tables, and figures,
+    #                 with xref IDs, for each document.
+    #  debug        - If 1, dump additional debugging info
+    #  fileroot     - Root of the current input file's name
     #
     # These are initialized by "format".
     
@@ -220,6 +221,7 @@ snit::type ::marsutil::marsdoc {
     #   -project name      - Project name
     #   -version num       - Project version number
     #   -description text  - Project description
+    #   -poc               - Point-of-contact e-mail address
     #   -manroots dict     - ehtml(n) "manroots"
     #   -anchors           - Dump info about the anchors in 
     #                        the module.
@@ -234,6 +236,7 @@ snit::type ::marsutil::marsdoc {
             project     "????"
             version     "?.?"
             description "???? ???? ????"
+            poc         "???@???.???"
             manroots    {}
             anchors     0
             fileroot    ""
@@ -255,6 +258,10 @@ snit::type ::marsutil::marsdoc {
                     set info(description) [lshift args]
                 }
                 
+                -poc {
+                    set info(poc) [lshift args]
+                }
+
                 -manroots {
                     set info(manroots) [lshift args]
                     # TODO: Build in ":" for project's man pages.
@@ -595,6 +602,9 @@ snit::type ::marsutil::marsdoc {
         $ehtml smartalias description 0 0 {} \
             [myproc description]
 
+        $ehtml smartalias poc 0 0 {} \
+            [myproc poc]
+
         $ehtml smartalias preface 2 2 {id title} \
             [myproc preface]
 
@@ -876,6 +886,14 @@ snit::type ::marsutil::marsdoc {
 
     proc description {} {
         return $info(description)
+    }
+
+    # poc
+    #
+    # Returns a "mailto" link to the point-of-contact e-mail address.
+
+    proc poc {} {
+        return "<a href=\"mailto:$info(poc)\">$info(poc)</a>"
     }
 
     # banner

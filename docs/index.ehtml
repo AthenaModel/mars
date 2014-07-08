@@ -7,11 +7,6 @@
 </style>
 </head>
 
-<<swallow {
-# TODO: Add <<poc>> macro based on -poc option.
-macro poc {} {William.H.Duquette@jpl.nasa.gov}
-}>>
-
 <body>
 <<banner>>
 
@@ -32,6 +27,6 @@ macro poc {} {William.H.Duquette@jpl.nasa.gov}
 
 <hr>
 
-<address><a href="mailto:<<poc>>"><<poc>></a></address>
+<address>Point-of-Contact: <<poc>></address>
 </body>
 </html>

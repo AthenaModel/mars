@@ -140,6 +140,11 @@ document.  Note that it is rarely necessary to use this macro
 explicitly, because the table of <<iref contents>> will include it
 automatically if there are any figures in the document.<p>
 
+<<defitem poc {&lt;&lt;poc&gt;&gt;}>>
+
+Returns the <<xref marsdoc(n)>> point-of-contact e-mail address
+as a "mailto" link.<p>
+
 <<defitem preface {&lt;&lt;preface <i>id title</i>&gt;&gt;}>>
 
 Adds an unnumbered section header to the document; it is uniquely
