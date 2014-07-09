@@ -50,27 +50,28 @@ snit::type ::marsutil::manpage {
 
     # An array: key is module name, value is list of submodules.
     # modules with no parent are under submodule().
-    typevariable submodule
+    typevariable submodule -array {}
 
     # An array: key is module name, value is description.
-    typevariable module
+    typevariable module -array {}
 
     # Mktree script flag
     typevariable mktreeFlag 0
 
     # Man Page variables
 
-    typevariable currentManpage  ;# Name of the current man page
+    typevariable currentManpage         ;# Name of the current man page
 
-    typevariable items {}        ;# List of item tags, in order of definition 
-    typevariable itemtext        ;# Array, item text by tag
-    typevariable sections {}     ;# List of section names, in order of 
-                                  # definition.
-    typevariable curSection {}   ;# Current section
-    typevariable subsections     ;# Array of subsection names by parent 
-                                  # section.
-    typevariable optsfor         ;# Option data
-    typevariable opttext         ;# Option text
+    typevariable items {}               ;# List of item tags, in order of 
+                                         # definition 
+    typevariable itemtext -array {}     ;# Array, item text by tag
+    typevariable sections {}            ;# List of section names, in order of 
+                                         # definition.
+    typevariable curSection {}          ;# Current section
+    typevariable subsections -array {}  ;# Array of subsection names by parent 
+                                         # section.
+    typevariable optsfor -array {}      ;# Option data
+    typevariable opttext -array {}      ;# Option text
 
     #-------------------------------------------------------------------
     # Public Typemethods
@@ -154,6 +155,8 @@ snit::type ::marsutil::manpage {
             error "Error: Invalid -manroots: \"$info(manroots)\", $result"
         }
 
+        # NEXT, clear all state.
+        $type ClearState
 
         # NEXT, get the files
         set files [lsort [glob -nocomplain [file join $srcdir *.ehtml]]]
@@ -184,6 +187,25 @@ snit::type ::marsutil::manpage {
         set f [open $outfile w]
         puts $f [indexfile]
         close $f
+    }
+
+    # ClearState 
+    #
+    # Resets all state variables.
+
+    typemethod ClearState {} {
+        array unset module
+        array unset submodule
+        array unset itemtext
+        array unset subsections
+        array unset optsfor
+        array unset opttext
+
+        set mktreeFlag 0
+        set currentManpage ""
+        set items {}
+        set sections {} 
+        set curSection {}
     }
 
     #-------------------------------------------------------------------
