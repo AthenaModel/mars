@@ -625,7 +625,7 @@ snit::type ::marsutil::ehtml {
     
     template method {Macro /procedure} {} {
         |<--
-        </table border="1" cellspacing="0" cellpadding="2">
+        </table>
     }
     
 }

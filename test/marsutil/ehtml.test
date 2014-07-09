@@ -60,9 +60,101 @@ namespace eval ::marsutil::test {
         trans destroy
     }
 
+    # pexpand block
+    #
+    # block   - A block of text
+    #
+    # Expands macros and pretty prints the result.
+
+    proc pexpand {block} {
+        set result [trans expand [outdent $block]]
+        return "\n$result"
+    }
+
+    # Tracking passes
+
+    variable passes {}
+
+    proc tracker {} {
+        variable passes
+        lappend passes [trans pass]
+    }
 
     #-------------------------------------------------------------------
-    # macros
+    # expand
+
+    test expand-1.1 {no macros} -setup {
+        setup
+    } -body {
+        trans expand {-hi-}
+    } -cleanup {
+        cleanup
+    } -result {-hi-}
+
+    test expand-1.2 {custom proc as macro} -setup {
+        setup
+        trans proc hi {name} {return "Hello, $name!"}
+    } -body {
+        trans expand {-<<hi Fred>>-}
+    } -cleanup {
+        cleanup
+    } -result {-Hello, Fred!-}
+
+    #-------------------------------------------------------------------
+    # pass
+
+    test pass-1.1 {two passes} -setup {
+        setup
+        set passes [list]
+        trans alias tracker ::marsutil::test::tracker
+    } -body {
+        trans expand {<<tracker>>}
+        set passes
+    } -cleanup {
+        cleanup
+    } -result {1 2}
+
+    #-------------------------------------------------------------------
+    # clear
+
+    test clear-1.1 {custom proc as macro} -setup {
+        setup
+        trans proc hi {name} {return "Hello, $name!"}
+        trans clear
+    } -body {
+        trans expand {-<<hi Fred>>-}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Error in macro * invalid command name "hi"}
+
+    #-------------------------------------------------------------------
+    # expandFile
+
+    test expandFile-1.1 {expands file} -setup {
+        setup
+        makeFile "-<<expr 1 + 1>>-" expandFile-1.1.txt
+    } -body {
+        string trim [trans expandFile expandFile-1.1.txt]
+    } -cleanup {
+        cleanup
+    } -result {-2-}
+        
+    #-------------------------------------------------------------------
+    # textToID
+
+    test textToID-1.1 {strips whitespace} -setup {
+        setup
+    } -body {
+        trans textToID {  My, Text&string! }
+    } -cleanup {
+        cleanup
+    } -result {my_textstring}
+    
+
+    #-------------------------------------------------------------------
+    # Standard Macros
 
     test macros-1.1 {hrule} -setup {
         setup
@@ -78,7 +170,7 @@ namespace eval ::marsutil::test {
         trans expand {-<<lb>>-}
     } -cleanup {
         cleanup
-    } -result {-<<-}
+    } -result {-&lt;&lt;-}
 
     test macros-3.1 {link} -setup {
         setup
@@ -120,7 +212,15 @@ namespace eval ::marsutil::test {
         cleanup
     } -result {-&lt;&amp;&gt;-}
 
-    test macros-7.1 {xref} -setup {
+    test macros-7.1 {rb} -setup {
+        setup
+    } -body {
+        trans expand {-<<rb>>-}
+    } -cleanup {
+        cleanup
+    } -result {-&gt;&gt;-}
+
+    test macros-8.1 {xref/xrefset} -setup {
         setup
     } -body {
         trans expand {-<<xref foo(n)>>-}
@@ -128,7 +228,7 @@ namespace eval ::marsutil::test {
         cleanup
     } -result {-<a href="./mann/foo.html">foo(n)</a>-}
 
-    test macros-7.2 {xref} -setup {
+    test macros-8.2 {xref/xrefset} -setup {
         setup
         trans xrefset foo Foo! ./bar.html
     } -body {
@@ -136,6 +236,105 @@ namespace eval ::marsutil::test {
     } -cleanup {
         cleanup
     } -result {-<a href="./bar.html">Foo!</a>-}
+
+    test macros-8.3 {xrefset returns link} -setup {
+        setup
+    } -body {
+        trans expand {-<<xrefset foo Foo! ./bar.html>>-}
+    } -cleanup {
+        cleanup
+    } -result {-<a href="./bar.html">Foo!</a>-}
+
+    test macros-9.1 {swallow} -setup {
+        setup
+    } -body {
+        trans expand {-<<swallow {expr {1 + 1}}>>-}
+    } -cleanup {
+        cleanup
+    } -result {--}
+
+    test macros-10.1 {simple macro} -setup {
+        setup
+    } -body {
+        trans expand {-<<macro hi {name} {Hello, $name!}>><<hi friend>>-}
+    } -cleanup {
+        cleanup
+    } -result {-Hello, friend!-}
+
+    test macros-10.2 {macro with template body} -setup {
+        setup
+    } -body {
+        trans expand {-<<macro hi {name} {
+                set name [string toupper $name]
+            } {Hello, $name!}>><<hi friend>>-}
+    } -cleanup {
+        cleanup
+    } -result {-Hello, FRIEND!-}
+
+    test macros-11.1 {change log} -setup {
+        setup
+    } -body {
+        pexpand {
+            <<changelog>>
+            <<change 7/9/2014 New will>>
+            Text describing the change.
+            <</change>>
+            <</changelog>>
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+<table class="pretty" width="100%" cellpadding="5" cellspacing="0">
+<tr class="header">
+<th align="left" width="10%">Status</th>
+<th align="left" width="70%">Nature of Change</th>
+<th align="left" width="10%">Date</th>
+<th align="left" width="10%">Initiator</th>
+</tr>
+    
+<tr class="oddrow" valign=top>
+<td>New</td>
+<td>
+Text describing the change.
+</td>
+<td>7/9/2014</td>
+<td>will</td>
+</tr>
+    
+</table><p>
+    }
+
+    test macros-12.1 {procedure} -setup {
+        setup
+    } -body {
+        pexpand {
+            <<procedure>>
+            <<step>>
+            What to do.
+            <</step/>>
+            How to do it.
+            <</step>>
+            <</procedure>>
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+<table border="1" cellspacing="0" cellpadding="2">
+    
+<tr valign="top">
+<td><b>1.</b></td>
+<td>
+    
+What to do.
+</td><td>
+    
+How to do it.
+</td>
+</tr>
+    
+</table>
+    }
+
 
     #-------------------------------------------------------------------
     # Cleanup

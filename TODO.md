@@ -1,9 +1,10 @@
 # athena-mars TODO List
 
-* Goal:  Kite updates lib requires in pkgModules.tcl
+* Is it necessary to wrap test modules in namespaces for "kite test"?
 * Revise marsmisc(n)
   * Split into submodules as appropriate
   * Purge deadwood
+
 
 * ehtml(n)
   * Complete ehtml(n) testing
