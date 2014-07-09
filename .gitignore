@@ -7,6 +7,7 @@
 *.kit
 /docs/*.html
 /docs/*/*.html
+teapot.txt
 
 
 # SublimeText artifacts
