@@ -1,23 +1,18 @@
-<html> <head>
-<title>Mars <<version>>: Configuration Management Plan</title>
-<style>
-<<standardstyle>>
-</style>
-</head>
+<document "Configuration Management Plan">
 
-<<swallow {
+<swallow {
     # Macro Definitions
 
-    # <<table ...>>
-    # <<treedir path>> Description <</treedir>>
+    # <table ...>
+    # <treedir path> Description </treedir>
     #    ...
-    # <</table>>
+    # </table>
 
     macro treedir {path} {
         set trans {
             +   &nbsp;&nbsp;&nbsp;&nbsp; 
-            <   <i> 
-            >   </i>
+            (   <i> 
+            )   </i>
         }
 
         set path [string map $trans  $path]
@@ -32,37 +27,32 @@
         </td>
         [/tr]
     }
-}>>
+}>
 
-<body>
-<<banner>>
+<hrule>
 
-<h2>Configuration Management Plan</h2>
+<contents>
 
-<<hrule>>
+<hrule>
 
-<<contents>>
+<preface changelog "Change Log">
 
-<<hrule>>
-
-<<preface changelog "Change Log">>
-
-<<changelog>>
-<<change 7/7/2014 update will>>
+<changelog>
+<change 7/7/2014 update will>
 Major updates for Mars 3.0.0:<p>
 
 <ul>
 <li> Moved from Subversion/Bugzilla to github.
 <li> Binary packages have been moved to a different project.
 </ul>
-<</change>>
+</change>
 
-<<change 6/25/2012 Update will>>
+<change 6/25/2012 Update will>
 
 Minor updates for Mars 2.x.<p>
-<</change>>
+</change>
 
-<<change 10/7/2011 Update will>>
+<change 10/7/2011 Update will>
 <ul>
   <li> Changed the naming convention for experimental branches; they
        are named using the year and month, but not the day of the
@@ -70,42 +60,42 @@ Minor updates for Mars 2.x.<p>
   <li> Updated the procedure for official builds: the Makefiles now
        handle the version number differently.
 </ul>
-<</change>>
+</change>
 
-<<change 10/3/2011 Update will>>
+<change 10/3/2011 Update will>
 Added a section on target software platforms.
-<</change>>
+</change>
 
-<<change 9/20/2011 Update will>>
+<change 9/20/2011 Update will>
 <ul>
   <li> Standardized on "https://oak.jpl.nasa.gov/svn" as the
        repository name.  The name "https://oak/svn" is rejected by
        some clients.
-  <li> Added a procedure for using <<xref mars_commit(1)>> to commit
+  <li> Added a procedure for using <xref mars_commit(1)> to commit
        bug fixes.
   <li> Added information about how Subversion is integrated with Bugzilla,
        for future reference.
   <li> Miscellaneous corrections, e.g., Minerva is now Athena.
 </ul>
-<</change>>
+</change>
 
-<<change 10/15/2008 New will>> Initial draft. <</change>>
-<</changelog>>
+<change 10/15/2008 New will> Initial draft. </change>
+</changelog>
 
-<<hrule>>
+<hrule>
 
-<<section overview "Overview">>
+<section overview "Overview">
 
 Mars is an infrastructure library for simulation development.  Its
 primary clients are the JNEM and Athena projects.  Mars uses
-<<xref GitHub>> for version control 
-and issue tracking, and <<xref kite(1)>> for build management and other
+<xref GitHub> for version control 
+and issue tracking, and <xref kite(1)> for build management and other
 development tasks. This document explains how this works in practice.<p>
 
-<<section overview.numbering "Mars Version Numbering">>
+<section overview.numbering "Mars Version Numbering">
 
 Versions of the Mars software are numbered <i>x.y</i>, following
-standard Tcl <<xref package(n)>> version numbering conventions.  
+standard Tcl <xref package(n)> version numbering conventions.  
 The version number applies to all Mars library packages.  The
 head of Mars development is currently version 3.x.<p>
 
@@ -117,7 +107,7 @@ for multiple unstable versions to be made public, e.g., "3.0.a0",
 the stable "3.0" version, and also less than any "3.0.z" versions we might
 need in the future.<p>
 
-The Mars version number is set in the <<xref kite(1)>> project file.
+The Mars version number is set in the <xref kite(1)> project file.
 During normal development, it is set to an "unstable" version number,
 e.g., "3.<i>x</i>a0".  Client applications in on-going development will 
 generally reference this "unstable" version so as to run with the 
@@ -138,47 +128,47 @@ drop the "a0" suffix in the Kite project file:<p>
 <li> The client application then builds against the stable version.
 </ul>
 
-See also <<xref clients>> for the relation between Mars and its client
+See also <xref clients> for the relation between Mars and its client
 projects.<p>
 
-<<section overview.tree "Project Tree">>
+<section overview.tree "Project Tree">
 
 The project directory tree is as follows:<p>
 
-<<table tab.tree "Project Directory Tree">>
-<<th>><td>Path</td> <td>Description</td><</th>>
+<table tab.tree "Project Directory Tree">
+<th><td>Path</td> <td>Description</td></th>
 
-<<treedir <root>/       >> Root of project tree<</treedir>>
-<<treedir +project.kite >> <<xref kite(1)>> Project File
-<<treedir +bin/         >> Executable loader scripts and ancillary 
-                           tools.<</treedir>>
-<<treedir +docs/        >> Project documentation<</treedir>>
-<<treedir ++man1/       >> Man page section (1): Executables<</treedir>>
-<<treedir ++man5/       >> Man page section (5): File Formats<</treedir>>
-<<treedir ++mann/       >> Man page section (n): Tcl Commands<</treedir>>
-<<treedir ++mani/       >> Man page section (i): Tcl Interfaces<</treedir>>
-<<treedir +lib/         >> Tcl Libraries <</treedir>>
-<<treedir ++<name>/     >> Tcl source code for package
-                           <i>name</i><</treedir>>
-<<treedir ++app_<name>/ >> Tcl source code for mars(1) application
-                           mars_<i>name</i><</treedir>>
-<<treedir +test/        >> Project test suites<</treedir>>
-<<treedir ++<name>/     >> Test suite for package <i>name</i><</treedir>>
-<</table>>
+<treedir (root)/       > Root of project tree</treedir>
+<treedir +project.kite > <xref kite(1)> Project File
+<treedir +bin/         > Executable loader scripts and ancillary 
+                           tools.</treedir>
+<treedir +docs/        > Project documentation</treedir>
+<treedir ++man1/       > Man page section (1): Executables</treedir>
+<treedir ++man5/       > Man page section (5): File Formats</treedir>
+<treedir ++mann/       > Man page section (n): Tcl Commands</treedir>
+<treedir ++mani/       > Man page section (i): Tcl Interfaces</treedir>
+<treedir +lib/         > Tcl Libraries </treedir>
+<treedir ++(name)/     > Tcl source code for package
+                           <i>name</i></treedir>
+<treedir ++app_(name)/ > Tcl source code for mars(1) application
+                           mars_<i>name</i></treedir>
+<treedir +test/        > Project test suites</treedir>
+<treedir ++(name)/     > Test suite for package <i>name</i></treedir>
+</table>
 
 <b>Notes:</b><p>
 
 <ul>
   <li> All Mars executables are development tools; none are delivered
        with client projects.
-  <li> Mars manual pages are written in <<xref manpage(5)>> format.
+  <li> Mars manual pages are written in <xref manpage(5)> format.
   <li> By convention, Tcl man pages are placed in section (n) of the
        Unix manual.
   <li> The structure of Tcl package directories is described in the
-       <<xref Coding>>.
+       <xref Coding>.
 </ul>
 
-<<section overview.docs "Development Documentation">>
+<section overview.docs "Development Documentation">
 
 Mars development documentation consists of:<p>
 
@@ -189,37 +179,37 @@ Mars development documentation consists of:<p>
 </ul><p>
 
 Software manual pages are stored in the repository project tree, as
-described in <<xref overview.tree>>, and are written in <<xref manpage(5)>>
+described in <xref overview.tree>, and are written in <xref manpage(5)>
 format.<p>
 
 Other documents will be written in HTML or in MS Office formats; however,
 MS Office documents may not be saved in the code repository.<p>
 
 HTML documents, like this CM plan, will usually use the 
-<<xref marsdoc(5)>> extended HTML format, and will be stored in the
+<xref marsdoc(5)> extended HTML format, and will be stored in the
 repository in the <code>mars/docs</code> directory.<p>
 
-<<section overview.references "References">>
+<section overview.references "References">
 
 <ul>
-<li> <<xrefset Git "Git" http://git-scm.com>>
-<li> <<xrefset GitHub "GitHub 4 JPL" http://github.jpl.nasa.gov>>
-<li> <<xrefset kite(1) kite(1) https://github.jpl.nasa.gov/will/athena-kite>>
-<li> <<xrefset Coding "Mars Tcl Coding Standard" ./coding.html>>
-<li> <<xrefset package(n) package(n) http://www.tcl.tk/man/tcl8.6/TclCmd/package.htm>>
+<li> <xrefset Git "Git" http://git-scm.com>
+<li> <xrefset GitHub "GitHub 4 JPL" http://github.jpl.nasa.gov>
+<li> <xrefset kite(1) kite(1) https://github.jpl.nasa.gov/will/athena-kite>
+<li> <xrefset Coding "Mars Tcl Coding Standard" ./coding.html>
+<li> <xrefset package(n) package(n) http://www.tcl.tk/man/tcl8.6/TclCmd/package.htm>
 </ul>
 
-<<section platform "Target Platforms">>
+<section platform "Target Platforms">
 
 Mars is a Pure-TCL cross-platform library, and targets Linux and Windows.
 It also runs adequately on OS X, with some GUI oddities.<p>
 
-<<section vc "Version Control">>
+<section vc "Version Control">
 
-Mars uses the <<xref Git>> version control system, hosted at 
-<<xref GitHub>>.<p>
+Mars uses the <xref Git> version control system, hosted at 
+<xref GitHub>.<p>
 
-<<section vc.repository "The Git Repository">>
+<section vc.repository "The Git Repository">
 
 The Mars repository URL is<p>
 
@@ -228,54 +218,54 @@ The Mars repository URL is<p>
 In the remainder of this document, the string <i>repository</i> will
 mean the repository's base URL in the above form.<p>
 
-<<section vc.branches "Git Branches and Tags">>
+<section vc.branches "Git Branches and Tags">
 
 This section explains how Mars uses Git branches and tags to
 facilitate development of Mars and its clients.  Procedures appear in
-<<xref proc>>.<p>
+<xref proc>.<p>
 
-<<section vc.branches.master "Main-Line Development">>
+<section vc.branches.master "Main-Line Development">
 
 Main-line development takes place on the <b>master</b> branch.<p>
 
-<<section vc.branches.builds "Build Tags">>
+<section vc.branches.builds "Build Tags">
 
 At each official build during normal development, we tag the <b>master</b>
 branch as "<code>mars_3.<i>x</i></code>" This serves as a snapshot of the
 build, and allows it to be recovered at any time.<p>
 
-<<section vc.branches.exper "Experimental Branches">>
+<section vc.branches.exper "Experimental Branches">
 
 Developers can create branches on which to do experimental coding; the
 results can later be merged with the trunk or deleted.  Experimental
 branches should be given a descriptive name.  Branches should be deleted
 when no longer needed.<p>
 
-<<section vc.branches.bugfix "Bug-fix Branches">>
+<section vc.branches.bugfix "Bug-fix Branches">
 
 When fixing complicated bugs over a period of time, it is sometimes
 useful to do the fix on a separate branch.  This allows multiple
 commits without any chance of destabilizing the trunk.  Such branches
 should be called "<code>issue<i>nnnn</i></code>", where
 <code>nnnn</code> is the issue number in the tracker at
-<<xref GitHub>>.  The completed fix can be merged
+<xref GitHub>.  The completed fix can be merged
 back to the trunk just as with an experimental branch.<p>
 
-<<section vc.branches.release "Release Branches">>
+<section vc.branches.release "Release Branches">
 
 FIXME: I'm not clear yet on how to do release branches well with
-<<xref Git>>/<<xref GitHub>>.  However, it would appear that if we
+<xref Git>/<xref GitHub>.  However, it would appear that if we
 need a release branch rooted at, say, Mars 3.3, it should be easy
 to create after the fact based on the "mars_3.3" tag.<p>
 
-<<section vc.commits "Committing Changes">>
+<section vc.commits "Committing Changes">
 
-The <<xref GitHub>> desktop software makes it very easy to include
+The <xref GitHub> desktop software makes it very easy to include
 detailed commit messages with each commit: both a brief one-line
 title and a more detailed description.  Developers should strive to
 provide informative commit messages.<p>
 
-<<section vc.commits.issues "Committing Changes for an Issue">>
+<section vc.commits.issues "Committing Changes for an Issue">
 
 To relate a commit to a particular issue in the issue tracker, 
 use any of the following forms (which are case-insensitive) somewhere
@@ -297,22 +287,22 @@ where <i>nnn</i> is the issue number.<p>
 When making changes that do not fully resolve the issue, simply
 reference the issue number as "#<i>nnn</i>".<p>
 
-<<section issue "Issue Tracking">>
+<section issue "Issue Tracking">
 
-Both bugs and new requirements will be tracked using the <<xref GitHub>>
+Both bugs and new requirements will be tracked using the <xref GitHub>
 issue tracker.<p>
 
-<<section issue.milestones "Versions and Milestones">>
+<section issue.milestones "Versions and Milestones">
 
-<<xref GitHub>>'s issue tracker related issues to "milestones"; open
+<xref GitHub>'s issue tracker related issues to "milestones"; open
 issues can be associated with the future milestones for which they are
 scheduled to be closed.<p>
 
 We will create a milestone for each official version of Mars 
-(see <<xref overview.numbering>>).  As issues are completed, the developer
+(see <xref overview.numbering>).  As issues are completed, the developer
 will associate them with the milestone for the next build.
 
-<<section issue.reporting "Issue Contents">>
+<section issue.reporting "Issue Contents">
 
 Each issue should include:<p>
 
@@ -322,7 +312,7 @@ Each issue should include:<p>
 <li> Enough information to recreate the problem, if possible.
 </ul>
 
-<<section issue.lifecycle "Life Cycle">>
+<section issue.lifecycle "Life Cycle">
 
 An issue is opened when a problem, bug, defect, or enhancement is noted,
 and assigned to the relevant developer.<p>
@@ -338,25 +328,25 @@ opening and closing Mars issues.  An issue can be closed by the developer
 either when it is assigned to a milestone, or after the change is tested 
 "in-use" in a client application.<p>
 
-<<section clients "Client Projects">>
+<section clients "Client Projects">
 
 Mars is not delivered on its own, but is to be used as an
 infrastructure layer by client projects.  This section explains how
 client projects are intended to fit Mars into their CM, using Athena as
 an example.<p>
 
-<<section clients.issues "Bug Reporting">>
+<section clients.issues "Bug Reporting">
 
 When a change is made that affects both Mars and a client, two issues
 are needed: one for the Mars change and one for the client
 change.  The Mars issue provides a record of what's changed in
 Mars, and the client issue goes through I&amp;T with the client.<p>
 
-<<section clients.main "Main-Line Development">>
+<section clients.main "Main-Line Development">
 
 During main-line development on the client's trunk, the client should
 be using the latest Mars code.  Assuming that the client is also a
-<<xref kite(1)>> project, this is accomplished by adding the 
+<xref kite(1)> project, this is accomplished by adding the 
 following statement to the client's <code>project.kite</code> file:<p>
 
 <pre>
@@ -371,7 +361,7 @@ To pull in the latest code, then, do:<p>
 
 in the client project tree.<p>
 
-<<section clients.cmbuilds "Client Official Builds">>
+<section clients.cmbuilds "Client Official Builds">
 
 When an official build is to be done for the client, the client should
 build with a stable version of Mars.  Typically this is done by
@@ -388,167 +378,167 @@ Then, update the dependency:<p>
 $ kite deps update mars
 </pre>
 
-<<section proc "Procedures">>
+<section proc "Procedures">
 
 This section describes procedures for Mars
 development.<p>
 
-<<section proc.clone "Cloning the Repository">>
+<section proc.clone "Cloning the Repository">
 
-By convention, <<xref GitHub>> repositories are cloned to the
+By convention, <xref GitHub> repositories are cloned to the
 <code>~/github/<i>project</i></code> directory.<p>
 
-<<procedure>>
+<procedure>
 
-<<step>>
+<step>
 Clone Mars to <code>~/github/athena-mars</code>.
-<</step/>>
+</step/>
 <pre>
 $ cd ~/github
 $ git clone https://github.jpl.nasa.gov/will/athena-mars.git athena-mars
-<</step>>
+</step>
 
-<<step>>
+<step>
 Go to work.
-<</step/>>
+</step/>
 <pre>
 $ cd athena-mars
 $ ...
 </pre>
-<</step>>
+</step>
 
-<</procedure>>
+</procedure>
 
-<<section proc.checkout "Checking Out A Tag or Branch">>
+<section proc.checkout "Checking Out A Tag or Branch">
 
 To check out a tag or branch, first
-<<xref proc.clone "clone the repository">>.  Then check out the
+<xref proc.clone "clone the repository">.  Then check out the
 tag or branch.<p>
 
-<<procedure>>
+<procedure>
 
-<<step>>
+<step>
 Check out the tag or branch, e.g., "mars_3.3".
-<</step/>>
+</step/>
 <pre>
 $ cd ~/github/athena-mars
 $ git checkout mars_3.3
 </pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Go to work.
-<</step/>>
+</step/>
 <pre>
 $ ...
 </pre>
-<</step>>
+</step>
 
-<</procedure>>
+</procedure>
 
-Alternative, use the <<xref GitHub>> desktop software to switch the
+Alternative, use the <xref GitHub> desktop software to switch the
 work area to the desired branch or tag.<p>
 
-<<section proc.devbuild "Performing a Development Build">>
+<section proc.devbuild "Performing a Development Build">
 
 A development build is simply a build performed during the course of
 development.   For Mars, it runs all unit tests, builds the documentation, 
 produces <code>mars.kit</code>, and packages up the libraries for installation
 in the local teapot.<p>
 
-<<procedure>>
+<procedure>
 
-<<step>>
+<step>
 Go to the work area.
-<</step/>>
+</step/>
 <pre>$ cd ~/github/athena-mars</pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Update dependencies, if necessary
-<</step/>>
+</step/>
 <pre>$ kite deps update</pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Run all tests, if desired.
-<</step/>>
+</step/>
 <pre>$ kite test</pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Build all build products.
-<</step/>>
+</step/>
 <pre>$ kite build</pre>
-<</step>>
-<</procedure>>
+</step>
+</procedure>
 
 
-<<section proc.cmbuild "Performing Official Builds">>
+<section proc.cmbuild "Performing Official Builds">
 
-Note that many of the <<xref Git>>-related steps can also be done
-using the <<xref GitHub>> desktop application or the <<xref GitHub>>
+Note that many of the <xref Git>-related steps can also be done
+using the <xref GitHub> desktop application or the <xref GitHub>
 web interface.<p>
 
-<<procedure>>
+<procedure>
 
-<<step>>
+<step>
 Make sure all developers have committed all changes needed for the build.
-<</step/>>
+</step/>
 n/a
-<</step>>
+</step>
 
-<<step>>
+<step>
 Check the <b>master</b> branch out of the repository
 into <code>~/github/athena-mars</code>.  Either
-<<xref proc.clone "clone it">> or <<xref proc.checkout "checkout">>
+<xref proc.clone "clone it"> or <xref proc.checkout "checkout">
 the <b>master</b> branch.
-<</step/>>
+</step/>
 See the procedures referenced to the left.
-<</step>>
+</step>
 
 
-<<step>>
+<step>
 Determine the version number.  This will almost always be the version
 in the <code>project.kite</code> file, less the unstable "a0" suffix.
-<</step/>>
+</step/>
 E.g., "3.3" if <code>project.kite</code> says "3.3a0"
-<</step>>
+</step>
 
-<<step>>
+<step>
 Updated the version in <code>project.kite</code>.
-<</step/>>
+</step/>
 </pre>
 $ cd ~/github/athena-mars
 $ vim project.kite 
 </pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Update the Build Notes file, <code>docs/build_notes.ehtml</code>, with
 the details about the current build, and commit it.  The update will
 usually include the version, the date, a general description of the
 changes, and a list of issued included in the build, with titles.
-<</step/>>
+</step/>
 <pre>
 $ cd ~/github/athena-mars/docs
 $ vim build_notes.ehtml
 </pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Commit the changes.
 <pre>
 $ cd ~/github/athena-mars
 $ git commit -a "Building Mars 3.3"
 </pre>
-<</step>>
+</step>
 
 
-<<step>>
+<step>
 Build and test the software, resolving any problems found until the
 build is clean, and commit any changes.
-<</step/>>
+</step/>
 <pre>
 $ cd ~/github/athena-mars
 $ kite clean
@@ -556,66 +546,59 @@ $ kite deps update
 $ kite test
 $ kite build
 </pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 Tag the <b>master</b> branch with the build number.
 TODO: This may eventually be done by Kite.
-<</step/>>
+</step/>
 <pre>
 $ cd ~/github/athena-mars
 $ git tag -a -m "Mars version 3.3" mars_3.3
 </pre>
-<</step>>
+</step>
 
-<<step>>
+<step>
 If desired, the Mars documentation tree and other build products
 can be copied to some central location.
-<</step/>>
+</step/>
 n/a
-<</step>>
+</step>
 
-<<step>>
+<step>
 If desired, the teapot packages for Mars library packages can be
 installed in the local teapot.
-<</step/>>
+</step/>
 TODO: Kite does not yet support this.
-<</step>>
+</step>
 
-<<step>>
+<step>
 Increment the version number in <code>project.kite</code> 
 to the next unstable version, e.g., from "3.3" to "3.4a0".
-<</step/>>
+</step/>
 <pre>
 $ cd ~/github/athena-mars
 $ vim project.kite
 $ git commit -a "Incremented version."
 </pre>
-<</step>>
+</step>
 
-<<step>>
-Add the new version as a milestone in <<xref GitHub>>.
-<</step/>>
-At the <<xref GitHub>> web site, add milestone "mars_3.4".  See
-the <<xref GitHub>> help for instructions.
-<</step>>
+<step>
+Add the new version as a milestone in <xref GitHub>.
+</step/>
+At the <xref GitHub> web site, add milestone "mars_3.4".  See
+the <xref GitHub> help for instructions.
+</step>
 
-<</procedure>>
+</procedure>
 
 
-<<section proc.commit "Committing Bug Fixes">>
+<section proc.commit "Committing Bug Fixes">
 
-Using the <<xref GitHub>> desktop software or the <<xref Git>> 
+Using the <xref GitHub> desktop software or the <xref Git> 
 command line tools, commit the changes, referencing the issue
 number as "#<i>nnn</i>".  If you use one of the phrases from 
-"<<xref vc.commits.issues>>", the issue will be closed automatically.<p>
+"<xref vc.commits.issues>", the issue will be closed automatically.<p>
 
 
-
-<hr>
-<address><a href="http://eis.jpl.nasa.gov/~will/">Will Duquette</a> / <a href="mailto:William.H.Duquette@jpl.nasa.gov">
-William.H.Duquette@jpl.nasa.gov</a></address>
-
-</body> </html>
-
-
+</document>
