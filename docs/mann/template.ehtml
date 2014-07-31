@@ -1,15 +1,15 @@
-<<manpage {marsutil(n) template(n)} "Text Template Definition">>
+<manpage {marsutil(n) template(n)} "Text Template Definition">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
-package require marsutil <<version>>
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 The template(n) package contains a number of routines for the creation
 and use of text templates.  A template is a Tcl command that, given
@@ -21,13 +21,13 @@ methods, typemethods, and procs to be templates, simply by
 prefixing the method, typemethod, or proc with the word
 "template".<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
 template(n) provides the following commands:<p>
 
-<<deflist>>
+<deflist>
 
-<<defitem tsubst {tsubst <i>tstring</i>}>>
+<defitem tsubst {tsubst <i>tstring</i>}>
 
 By default, substitutes variables, commands, and backslashes into
 <i>tstring</i> in the caller's context, returning the result, just as the
@@ -35,7 +35,7 @@ standard Tcl command <code>subst</code> does.  If the first
 non-whitespace token in <i>tstring</i> is<p>
 
 <pre>
-|<--
+|<lb>--
 </pre>
  
 then the position of the "|" character defines the left margin.  All
@@ -47,7 +47,7 @@ example,<p>
 <pre>
 set name "Joe"
 puts [tsubst {
-         |<--
+         |<lb>--
              $name}]
 </pre>
 
@@ -59,7 +59,7 @@ will output the string<p>
 
 (where the "." characters denote blanks).<p>
 
-<<defitem template {template <i>name arglist ?initbody? template</i>}>>
+<defitem template {template <i>name arglist ?initbody? template</i>}>
 
 Defines a new template command.  <i>name</i> and <i>arglist</i> are
 the name and argument list of the new command, just as when using
@@ -118,15 +118,15 @@ The <i>template</i> string may reference template arguments, local
 variables defined in the <i>initbody</i>, and global variables provided
 that they are declared in the <i>initbody</i> or are fully qualified.<p>
 
-The <i>template</i> string is processed by <<iref tsubst>>, so it
-may contain the "<tt>|<--</tt>" indent marker.<p>
+The <i>template</i> string is processed by <iref tsubst>, so it
+may contain the "<tt>|<lb>--</tt>" indent marker.<p>
 
-<<defitem tforeach {tforeach <i>vars items ?initbody? template</i>}>>
+<defitem tforeach {tforeach <i>vars items ?initbody? template</i>}>
 
 The <code>tforeach</code> command is designed for use within
-<<iref template>> definitions.  It loops over items in a list much
+<iref template> definitions.  It loops over items in a list much
 as <code>foreach</code> does; in each iteration, the <i>template</i>
-string is expanded using <<iref tsubst>>.  Then, the concatenated
+string is expanded using <iref tsubst>.  Then, the concatenated
 expansions are returned.  <i>vars</i> is a list of one or more
 variable names and <i>items</i> is a list of items, as for
 <code>foreach</code>.  If provided, <i>initbody</i> contains Tcl code
@@ -143,21 +143,21 @@ template assembly {id} {
 }
 </pre>
 
-The <<iref tforeach>> command is used to format a line for each
+The <iref tforeach> command is used to format a line for each
 component.<p>
 
-<<defitem tif {tif <i>condition thenbody</i> ?else <i>elsebody</i>?}>>
+<defitem tif {tif <i>condition thenbody</i> ?else <i>elsebody</i>?}>
 
 The <code>tif</code> command is designed for use in
-<<iref template>>
+<iref template>
 definitions.  <i>condition</i> is a logical expression, as for the
 <code>if</code> statement.  <i>thenbody</i> and <i>elsebody</i> (if
 present) are template strings.  If <i>condition</i> is true, the
 <i>thenbody</i> is expanded and returned using
-<<iref tsubst>>;
+<iref tsubst>;
 otherwise, the <i>elsebody</i> (if present) is expanded and returned.<p>
 
-<<defitem swallow {swallow <i>body</i>}>>
+<defitem swallow {swallow <i>body</i>}>
 
 In Tcl, most commands return a value.  Sometimes in a template
 definition it's desirable to call a command for its side-effects,
@@ -179,9 +179,9 @@ it always returns the empty string.
 
 <code>swallow</code>'s body may contain any number of Tcl commands.<p>
 
-<</deflist>>
+</deflist>
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 template(n) requires Tcl 8.3 or later.
 
@@ -189,12 +189,14 @@ To use template(n) in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the template(n)
 library directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 This package was originally written for the DSN Uplink subsystem.
 
-<</manpage>>
+</manpage>
+
+

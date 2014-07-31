@@ -1,96 +1,98 @@
-<<manpage {marsutil(n) marsdoc(n)} "Mars Document Formatter">>
+<manpage {marsutil(n) marsdoc(n)} "Mars Document Formatter">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
-package require marsutil <<version>>
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 marsdoc(n) defines a formatter for project document files written in 
-<<xref marsdoc(5)>> format.  <<xref marsdoc(5)>> is an "Extended HTML"
+<xref marsdoc(5)> format.  <xref marsdoc(5)> is an "Extended HTML"
 format; a document is an HTML file with embedded macros that make it
 easy to add section number, tables of contents, and so forth.<p>
 
-See <<xref marsdoc(5)>> for a description of the document syntax and the
+See <xref marsdoc(5)> for a description of the document syntax and the
 available macros.  Note that individual documents can define their
 own macros.<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
 This module provides the following commands:<p>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem format {marsdoc format ?<i>options...</i>? <i>files...</i>}>>
+<defitem format {marsdoc format ?<i>options...</i>? <i>files...</i>}>
 
-Given a list of one or more <<xref marsdoc(5)>> files, this command
+Given a list of one or more <xref marsdoc(5)> files, this command
 formats each as an HTML page in the same directory.<p>  
 
 Note that the macro expander is reset between documents; page-specific
 macros do not carry over from one document to the next.<p>
 
-<<deflist options>>
+<deflist options>
 
-<<defopt {-project <i>project</i>}>>
+<defopt {-project <i>project</i>}>
 
 Specifies the name of the project being documented. 
 Defaults to "YourProject".  This string appears in the headers
 and footers of the generated pages.<p>
 
-<<defopt {-version <i>x.y.z</i>}>>
+<defopt {-version <i>x.y.z</i>}>
 
 Specifies the client project's version number, for inclusion in the
 generated documents.  Defaults to "0.0.0", as a placeholder.<p>
 
-<<defopt {-description <i>description</i>}>>
+<defopt {-description <i>description</i>}>
 
 Specifies a brief one-line description of the project being documented. 
 Defaults to "Your project description".  This string
 appears in the headers of the generated pages.<p>
 
-<<defopt {-poc <i>email</i>}>>
+<defopt {-poc <i>email</i>}>
 
 Specifies an e-mail address for the primary point-of-contact.  This
-can be included in documents using the <<xref marsdoc(5) poc>> macro.<p>
+can be included in documents using the <xref marsdoc(5) poc> macro.<p>
 
-<<defopt {-manroots <i>roots</i>}>>
+<defopt {-manroots <i>roots</i>}>
 
 Specifies a the mapping from man page names to URLs to be used
 when processing cross-references in documents.  See
-<<xref ehtml(n) manroots>> in <<xref ehtml(n)>> for the syntax
+<xref ehtml(n) manroots> in <xref ehtml(n)> for the syntax
 of <i>roots</i>.<p>
 
-Unlike <<xref manpage(n)>>, marsdoc(n) has no knowledge of where
+Unlike <xref manpage(n)>, marsdoc(n) has no knowledge of where
 the files being formatted reside in relation to man pages; thus it
 is the caller's responsibility to set this option if man page 
 cross-references are desired.<p>
 
-<<defopt {-anchors}>>
+<defopt {-anchors}>
 
 If this option is included, then an index of all anchors and titles
 will be included in an HTML comment at the end of each output file.<p>
 
-<</deflist options>>
+</deflist options>
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 marsdoc(n) requires Tcl 8.6 or later.<p>
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Originally written for JNEM as jnem_doc(1); migrated to Mars in
 September 2008 as app_doc(1), and then as marsdoc(n) in July 2014.<p>
 
-<</manpage>>
+</manpage>
+
+
 
 
 

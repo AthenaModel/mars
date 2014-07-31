@@ -1,4 +1,4 @@
-project athena-mars "3.0a1" "Mars Simulation Support Library"
+project athena-mars "3.0a2" "Mars Simulation Support Library"
 poc William.H.Duquette@jpl.nasa.gov
 lib marsutil
 

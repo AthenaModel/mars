@@ -1,31 +1,31 @@
-<<manpage manpage(5) "Mars Man Page Format">>
+<manpage manpage(5) "Mars Man Page Format">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 This man page defines the manpage(5) man page format,
 a flavor of "Extended HTML", i.e., HTML extended with Tcl macros.  The
 basic syntax and capabilities of Extended HTML are defined in the
-<<xref ehtml(5)>> man page.  This man page describes an extension 
+<xref ehtml(5)> man page.  This man page describes an extension 
 to the basic format, as an aid to writing man pages.<p>
 
-The <<xref manpage(n)>> module translates man pages in
+The <xref manpage(n)> module translates man pages in
 manpage(5) format into HTML.<p>
 
-<<section MACROS>>
+<section MACROS>
 
 manpage(5) man pages may use any of the following macros, as well
-as those defined in the <<xref ehtml(5)>> man page.
+as those defined in the <xref ehtml(5)> man page.
 Note that these macros are simply Tcl commands; you can define
-your own macros, as described in <<xref ehtml(5)>>,
+your own macros, as described in <xref ehtml(5)>,
 and use them in your man pages.<p>
 
-<<deflist macros>>
+<deflist macros>
 
-<<defitem manpage {manpage <i>nameList description</i>}>>
+<defitem manpage {manpage <i>nameList description</i>}>
 
 This macro should be the first in the man page, as it expands to the
 HTML header and also the "NAME" section of the man page.<p>
@@ -35,20 +35,20 @@ the name of the man page; <i>description</i> is a short one-line
 description of the documented library, file format, or program:<p>
 
 <pre>
-<<lb>>manpage manpage(5) "Mars Man Page Format"<<rb>>
+<lb>manpage manpage(5) "Mars Man Page Format"<rb>
 </pre>
 
 The second form is used when the man page documents a submodule of a
 larger library.  In this case, <i>nameList</i> is a list containing
 two entries, the name of the parent man page and the name of this man
-page.  For example, the man page for <<xref marsutil(n)>>'s
-<<xref marsmisc(n)>> module begins with this macro:<p>
+page.  For example, the man page for <xref marsutil(n)>'s
+<xref marsmisc(n)> module begins with this macro:<p>
 
 <pre>
-<<lb>>manpage {marsutil(n) marsmisc(n)} "Miscellaneous Commands"<<rb>>
+<lb>manpage {marsutil(n) marsmisc(n)} "Miscellaneous Commands"<rb>
 </pre>
 
-<<defitem /manpage {/manpage}>>
+<defitem /manpage {/manpage}>
 
 This macro should be the last in the man page, as it expands to the
 HTML footer.  It also adds a timestamp for when the page was
@@ -57,10 +57,10 @@ translated.<p>
 For example,<p>
 
 <pre>
-<<lb>>/manpage<<rb>>
+<lb>/manpage<rb>
 </pre>
 
-<<defitem section {section <i>name</i>}>>
+<defitem section {section <i>name</i>}>
 
 Begins a new section.  By convention, man page section names are
 displayed in all caps; consequently, <i>name</i> is converted to
@@ -70,12 +70,12 @@ Every section is included in a table of contents at the beginning of
 the generated man page.<p>
 
 The <i>name</i> can be almost anything; however, see
-<<xref "MAN PAGE SKELETON">> for a list of the sections found in 
+<xref "MAN PAGE SKELETON"> for a list of the sections found in 
 most man pages.<p>
 
-<<defitem subsection {subsection <i>name</i>}>>
+<defitem subsection {subsection <i>name</i>}>
 
-Begins a new subsection under the current <<iref section>>.
+Begins a new subsection under the current <iref section>.
 By convention, man page subsection names are displayed in mixed case.
 Subsections are included in the table of contents, indented under
 their parent section.<p>
@@ -83,33 +83,33 @@ their parent section.<p>
 The subsection <i>name</i> can be almost anything, but it should be
 unique within the man page.<p>
 
-<<defitem deflist {deflist ?<i>comment text</i>?}>>
+<defitem deflist {deflist ?<i>comment text</i>?}>
 
 Begins a definition list, which will be terminated by
-<<iref /deflist>>.  In between will usually be a number of
-<<iref defitem>> or <<iref defopt>> macros with accompanying text.<p>
+<iref /deflist>.  In between will usually be a number of
+<iref defitem> or <iref defopt> macros with accompanying text.<p>
 
 Definition lists are frequently nested; the optional <i>comment
-text</i> can be used to relate the <<iref deflist>> to its
-<<iref /deflist>>, but has no effect on the output:
+text</i> can be used to relate the <iref deflist> to its
+<iref /deflist>, but has no effect on the output:
 
 <pre>
-<<lb>>section COMMANDS<<rb>>
+<lb>section COMMANDS<rb>
 
-<<lb>>deflist commands<<rb>>
+<lb>deflist commands<rb>
     .
     .
     .
-<<lb>>/deflist commands<<rb>>
+<lb>/deflist commands<rb>
 </pre>
 
-<<defitem /deflist {/deflist ?<i>comment text</i>?}>>
+<defitem /deflist {/deflist ?<i>comment text</i>?}>
 
-Terminates a <<iref deflist>>.<p>
+Terminates a <iref deflist>.<p>
 
-<<defitem defitem {defitem <i>tag text</i>}>>
+<defitem defitem {defitem <i>tag text</i>}>
 
-This macro begins an item definition within a <<iref deflist>>.  An
+This macro begins an item definition within a <iref deflist>.  An
 "item" is one of whatever the man page is documenting: a Tcl command
 or subcommand, a C function, a program.<p>
 
@@ -121,11 +121,11 @@ The <i>text</i> is the text that's
 actually displayed in the man page; it usually includes more
 information, such as the command's full signature.<p>
 
-The <<iref defitem>> macro is followed by the documentation for the
+The <iref defitem> macro is followed by the documentation for the
 item. For example,<p>
 
 <pre>
-<<lb>>defitem mycommand {mycommand <i>value</i> ?<i>optionalValue</i>?}<<rb>>
+<lb>defitem mycommand {mycommand <i>value</i> ?<i>optionalValue</i>?}<rb>
 
 This command does nothing in particular, being merely a pedagogical
 example.&lt;p&gt;
@@ -137,109 +137,109 @@ example, the object usually appears as a variable reference in the
 first spot:<p>
 
 <pre>
-<<lb>>defitem mysubcommand {$object mysubcommand <i>value</i>}<<rb>>
+<lb>defitem mysubcommand {$object mysubcommand <i>value</i>}<rb>
 </pre>
 
 Each of the macro definitions in this section is produced by
-<<iref defitem>>.<p>
+<iref defitem>.<p>
 
-<<defitem defopt {defopt text}>>
+<defitem defopt {defopt text}>
 
 Programs often have options; Tcl commands and objects often have
-options as well.  When <<iref defopt>> appears in a definition list,
+options as well.  When <iref defopt> appears in a definition list,
 it defines an option belonging to the item defined by the immediately
-preceding <<iref defitem>>.  It's assumed that the option is the first
+preceding <iref defitem>.  It's assumed that the option is the first
 token in <i>text</i>.  For example,<p>
 
 <pre>
-<<lb>>deflist commands<<rb>>
+<lb>deflist commands<rb>
     . . .
-<<lb>>defitem mycommand {mycommand ?<i>options...</i>?}<<rb>>
+<lb>defitem mycommand {mycommand ?<i>options...</i>?}<rb>
 
 This command has the following options:&lt;p&gt;
 
-    <<lb>>deflist mycommand options<<rb>>
+    <lb>deflist mycommand options<rb>
 
-    <<lb>>defopt {-this <i>value</i>}<<rb>>
+    <lb>defopt {-this <i>value</i>}<rb>
 
     Description of the the option...
         . . .
-    <<lb>>/deflist mycommand options<<rb>>
+    <lb>/deflist mycommand options<rb>
     . . .
-<<lb>>/deflist commands<<rb>>
+<lb>/deflist commands<rb>
 </pre>
 
-<<defitem itemlist {itemlist}>>
+<defitem itemlist {itemlist}>
 
 This macro expands to a list of the items defined in this manpage.
 It's usually used in the "SYNOPSIS" section of the man page, as shown
-in the <<xref "MAN PAGE SKELETON">>.  The list of macros in the
-<<xref SYNOPSIS>> section of this man page was produced by
-<<iref itemlist>>.<p>
+in the <xref "MAN PAGE SKELETON">.  The list of macros in the
+<xref SYNOPSIS> section of this man page was produced by
+<iref itemlist>.<p>
 
-If an item has options defined with <<iref defopt>>, they will appear,
-slightly indented, just below the item in the <<iref itemlist>>.<p>
+If an item has options defined with <iref defopt>, they will appear,
+slightly indented, just below the item in the <iref itemlist>.<p>
 
-<<defitem iref {iref <i>item...</i>}>>
+<defitem iref {iref <i>item...</i>}>
 
 The name "iref" stands for "item reference"; this macro creates a
 hyperlink to the definition of <i>item</i> in the same man page.
 For example,<p>
 
 <pre>
-<<lb>>iref defitem<<rb>>
+<lb>iref defitem<rb>
 </pre>
 
-expands to a link to <<iref defitem>>.<p>
+expands to a link to <iref defitem>.<p>
 
 If the item name has multiple tokens, there is no need to quote them;
-<<iref iref>>'s arguments are accumulated into a single item name.<p>
+<iref iref>'s arguments are accumulated into a single item name.<p>
 
-<<defitem version {version}>>
+<defitem version {version}>
 
 Returns the project version number, as provided to 
-<<xref manpage(n)>>'s <<xref manpage(n) format>> subcommand.<p>
+<xref manpage(n)>'s <xref manpage(n) format> subcommand.<p>
 
-<<defitem xref {xref <i>id</i> ?<i>anchor</i>?}>>
+<defitem xref {xref <i>id</i> ?<i>anchor</i>?}>
 
-The <<iref xref>> macro creates hyperlinks. Generally speaking,
+The <iref xref> macro creates hyperlinks. Generally speaking,
 <i>id</i> identifies the page to link to; <i>anchor</i> is the
 link text.  If <i>anchor</i> isn't specified, then the <i>id</i> will
 be used as the link text.<p>
 
 The <i>id</i> can take a number of forms.  If it's the name of a
 section in the manpage, it links to that section; for example, the
-following <<iref xref>> would link back to the man page's "SYNOPSIS"
+following <iref xref> would link back to the man page's "SYNOPSIS"
 section.
 <p>
 
 <pre>
-<<lb>>xref SYNOPSIS<<rb>>
+<lb>xref SYNOPSIS<rb>
 </pre>
 
 If the <i>id</i> looks like a manpage reference, like "manpage(5)",
-then it is assumed to name another Mars man page; <<iref xref>>
+then it is assumed to name another Mars man page; <iref xref>
 links to it.  In this particular case, <i>anchor</i>, if present, is
 assumed to be an item within the man page.  For example,<p>
 
 <pre>
-<<lb>>xref somelib(n)<<rb>>
+<lb>xref somelib(n)<rb>
 </pre>
 
 creates a link to the somelib(n) man page, and<p>
 
 <pre>
-<<lb>>xref somelib(n) somecommand<<rb>>
+<lb>xref somelib(n) somecommand<rb>
 </pre>
 
 creates a link to the definition of "somecommand" within that man
 page; the link text will be "somecommand".<p>
 
-Finally, the <<xref ehtml(5)>> <<xref xhtml(5) xrefset>> macro can be
+Finally, the <xref ehtml(5)> <xref xhtml(5) xrefset> macro can be
 used to assign ID strings to frequently used URLs; if the <i>id</i> is
 one of these ID strings.<p>
 
-<<defitem mktree {mktree}>>
+<defitem mktree {mktree}>
 
 If included anywhere in the man page, this macro enables use of the
 "mktree" Javascript package for turning nested lists of links into
@@ -249,64 +249,66 @@ output.<p>
 
 TBD: Add info on how to enable this for a particular tree!<p>
 
-<</deflist macros>>
+</deflist macros>
 
-<<section "MAN PAGE SKELETON">>
+<section "MAN PAGE SKELETON">
 
 The sections included in a man page depend on just what you're
 documenting.  That said, here's a fairly typical skeleton:<p>
 
 <pre>
-<<lb>>manpage somelib(n)<<rb>>
+<lb>manpage somelib(n)<rb>
 
-<<lb>>section SYNOPSIS<<rb>>
+<lb>section SYNOPSIS<rb>
 
 Put how to load this library here.  Then, put the itemlist:&lt;p&gt;
 
-<<lb>>itemlist<<rb>>
+<lb>itemlist<rb>
 
-<<lb>>section DESCRIPTION<<rb>>
+<lb>section DESCRIPTION<rb>
 
 A general description of the package.&lt;p&gt;
 
-<<lb>>section COMMANDS<<rb>>
+<lb>section COMMANDS<rb>
 
 If this were a C library, this might be "FUNCTIONS" instead.&lt;p&gt;
 
-<<lb>>deflist commands<<rb>>
+<lb>deflist commands<rb>
      .
      .
      .
-<<lb>>/deflist commands<<rb>>
+<lb>/deflist commands<rb>
 
-<<lb>>section EXAMPLES<<rb>>
+<lb>section EXAMPLES<rb>
 
 Put examples here, assuming they didn't fit better under one of the
 items listed above.&lt;p&gt;
 
-<<lb>>section AUTHOR<<rb>>
+<lb>section AUTHOR<rb>
 
 Your name.&lt;p&gt;
 
-<<lb>>section HISTORY<<rb>>
+<lb>section HISTORY<rb>
 
 Any relevant historical information, like "This package was developed
-as a replacement for <<lb>>xref soandsolib(n)<<rb>>...."&lt;p&gt;
+as a replacement for <lb>xref soandsolib(n)<rb>...."&lt;p&gt;
 
-<<lb>>/manpage<<rb>>
+<lb>/manpage<rb>
 </pre>
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Originally written for JNEM as jnem_man(5); migrated to Mars in
 September 2008 as app_man(5), and revised to be a library module
 in July 2014.<p>
 
-<</manpage>>
+</manpage>
+
+
 
 
 
