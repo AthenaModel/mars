@@ -26,12 +26,13 @@ package require snit 2.3
 package require kiteutils 0.0
 # -kite-require-end
 
-
 #-----------------------------------------------------------------------
 # Namespace definition
 
 namespace eval ::marsutil:: {
     variable library [file dirname [info script]]
+
+    namespace import ::kiteutils::lshift
 }
 
 #-----------------------------------------------------------------------

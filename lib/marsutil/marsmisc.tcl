@@ -13,37 +13,38 @@
 #    Miscellaneous commands
 #
 # TODO:
-#    * Move types into a different module, and possibly rename
-#       * count => icount (used in shared/bsys.tcl)
+#
+#    * kiteutils/control
+#      * bgcatch
+#    * kiteutils/dictx
+#      dictglob
+#    * code
+#      * getcode
+#    * marsmisc
+#      * echo (define if undefined)
+#      * gettimeofday
+#      * hexquote
+#      * let
+#      * optval
+#    * money
+#      * commafmt
+#      * moneyfmt
+#      * moneyscan
+#      * moneysort
+#    * prob
+#      * discrete
+#      * pickfrom
+#      * poisson
+#    * regex
+#      * stringToRegexp
+#      * wildToRegexp
+#    * valtype
+#       * count => (used in shared/bsys.tcl)
 #       * hexcolor
 #       * identifier
 #       * ipaddress
-#    * Move elsewhere
-#      * getcode
-#      * geotiff
-#    * list commands
-#      * ladd
-#      * ldelete
-#      * lmaxlen
-#      * lsearchi
-#      * lshift
-#    * Assertions
-#      * assert
-#      * require
-#    * file commands
-#
-#    * Obsolete Commands:
-#      * degrees
-#      * dicteq
-#      * discrete ?
-#      * distance
-#      * fstringmap
-#      * lformat  -- use mapfunc instead.
-#      * optval   -- Must replace with snit's from.
-#      * pickfrom ?
-#      * poisson ?
-#      * radians
-#      * stringToRegexp
+#       * restrict
+#       * roundrange
 #
 #-----------------------------------------------------------------------
 
@@ -52,69 +53,35 @@
 
 namespace eval ::marsutil:: {
     namespace export    \
-        assert          \
         bgcatch         \
-        callwith        \
         commafmt        \
         count           \
-        degrees         \
-        dicteq          \
         dictglob        \
         discrete        \
-        distance        \
         echo            \
-        fstringmap      \
         getcode         \
         gettimeofday    \
-        geotiff         \
         hexcolor        \
         hexquote        \
         identifier      \
         ipaddress       \
-        ladd            \
-        ldelete         \
         let             \
-        lformat         \
-        lmaxlen         \
-        lmerge          \
-        lsearchi        \
-        lshift          \
         moneyfmt        \
         moneyscan       \
         moneysort       \
-        normalize       \
         optval          \
-        outdent         \
         percent         \
         pickfrom        \
         poisson         \
-        radians         \
         roundrange      \
-        readfile        \
-        require         \
         restrict        \
         stringToRegexp  \
         wildToRegexp
-
-    variable version ""
-    variable pi      [expr {acos(-1.0)}]
-    variable radians [expr {$pi/180.0}]
-
 }
 
 #-----------------------------------------------------------------------
 # Control Structures
 
-# assert expression
-#
-# If the expression is not true, an assertion failure error is thrown.
-proc ::marsutil::assert {expression} {
-    if {[uplevel [list expr $expression]]} {
-        return
-    }
-
-    return -code error -errorcode ASSERT "Assertion failed: $expression"
-}
 
 # bgcatch script
 #
@@ -132,34 +99,6 @@ proc ::marsutil::bgcatch {script} {
     }
 
     return
-}
-
-# callwith prefix args...
-#
-# prefix     A command prefix
-# args       Addition arguments
-#
-# Concatenates the prefix and the arguments and calls the result in
-# the global scope.  The prefix is assumed to be a proper list.
-#
-# If the prefix is the empty list, callwith does nothing.
-
-proc ::marsutil::callwith {prefix args} {
-    if {[llength $prefix] > 0} {
-        return [uplevel \#0 $prefix $args]
-    }
-}
-
-# require expression message
-#
-# If the expression is not true, an assertion failure error is thrown
-# with the specified message.
-proc ::marsutil::require {expression message} {
-    if {[uplevel [list expr $expression]]} {
-        return
-    }
-
-    return -code error -errorcode ASSERT $message
 }
 
 # restrict varname vtype defval
@@ -189,166 +128,9 @@ proc ::marsutil::restrict {varname vtype defval} {
 }
 
 
-#-----------------------------------------------------------------------
-# List functions
-
-# lmaxlen list 
-#
-# Return the length of the longest string in list.
-
-proc ::marsutil::lmaxlen {list} {
-    set maxlen 0
-
-    foreach val $list {
-        set maxlen [expr {max($maxlen,[string length $val])}]
-    }
-
-    return $maxlen
-}
-
-# lshift listvar
-#
-# Removes the first element from the list held in listvar, updates
-# listvar, and returns the element.
-
-proc ::marsutil::lshift {listvar} {
-    upvar $listvar list
-
-    set value [lindex $list 0]
-    set list [lrange $list 1 end]
-    return $value
-}
-
-# lsearchi list string
-#
-# Searches for the string in the list, using case-insensitive matching.
-
-proc ::marsutil::lsearchi {list string} {
-    for {set i 0} {$i < [llength $list]} {incr i} {
-        if {[string equal -nocase [lindex $list $i] $string]} {
-            return $i
-        }
-    }
-    
-    return -1
-}
-
-# lformat list fmt
-#
-# fmt      A [format] format string
-# list     A list
-#
-# Applies the format string to each element in the list, returning the
-# updated list.
-
-proc ::marsutil::lformat {fmt list} {
-    set result {}
-
-    foreach item $list {
-        lappend result [format $fmt $item]
-    }
-
-    return $result
-}
-
-# ladd listvar value
-#
-# listvar    A list variable
-# value      A value
-#
-# If the value does not exist in listvar, it is appended.
-# The new list is returned.
-
-proc ::marsutil::ladd {listvar value} {
-    upvar $listvar list1
-
-    if {[info exists list1]} {
-        set ndx [lsearch -exact $list1 $value]
-        if {$ndx == -1} {
-            lappend list1 $value
-        }
-    } else {
-        set list1 [list $value]
-    }
-
-    return $list1
-}
-
-# ldelete listvar value
-#
-# listvar    A list variable
-# value      A value
-#
-# If value exists in listvar, it is removed.  The new list is returned.
-# If the list doesn't exist, that's OK.
-
-proc ::marsutil::ldelete {listvar value} {
-    upvar $listvar list1
-
-    # Remove the value from the list.
-    if {[info exists list1]} {
-        set ndx [lsearch -exact $list1 $value]
-
-        if {$ndx >= 0} {
-            set list1 [lreplace $list1 $ndx $ndx]
-        }
-
-        return $list1
-    }
-
-    return
-}
-
-# lmerge listvar list
-#
-# listvar    A list variable
-# list       A list
-#
-# Appends the elements of the list into the listvar, only if they
-# aren't already present.
-
-proc ::marsutil::lmerge {listvar list} {
-    upvar $listvar dest
-
-    if {![info exists dest]} {
-        set dest [list]
-    }
-
-    foreach item [concat $dest $list] {
-        set items($item) 1
-    }
-
-    set dest [array names items]
-
-    return $dest
-}
 
 #-----------------------------------------------------------------------
 # Dict Functions
-
-# dicteq dict key value ?key value...?
-#
-# dict     A dictionary
-# key      A key
-# value    A value to match
-#
-# Returns one if the dictionary has the specified keys and values.
-# Matching is by "eq".  If a key isn't in the dictionary,
-# the match fails.
-
-proc ::marsutil::dicteq {dict args} {
-    foreach {key value} $args {
-        if {![dict exists $dict $key]} {
-            return 0
-        }
-
-        if {[dict get $dict $key] ne $value} {
-            return 0
-        } 
-    }
-
-    return 1
-}
 
 # dictglob dict key pattern ?key pattern...?
 #
@@ -395,29 +177,6 @@ if {[llength [info commands ::marsutil::let]] == 0} {
         set result [uplevel 1 [list expr $expression]]
     }
 
-}
-
-
-# radians deg
-#
-# deg  - An angle in decimal degrees.
-#
-# Returns the angle in radians.
-
-proc ::marsutil::radians {deg} {
-    variable radians
-    return [expr {$radians * $deg}] 
-}
-
-# degrees rad
-#
-# rad  - An angle in radians.
-#
-# Returns the angle in decimal degrees.
-
-proc ::marsutil::degrees {rad} {
-    variable radians
-    return [expr {$rad / $radians}] 
 }
 
 # roundrange min max
@@ -801,49 +560,6 @@ proc ::marsutil::hexquote {text} {
     string map $::marsutil::hexquoteMap $text
 }
 
-# outdent block
-#
-# block     A block of text in curly braces, indented like the
-#	    body of a Tcl if or while command.
-#
-# Outdents the block as follows:
-# 
-# * Removes the first and last lines.
-# * Finds the length of shortest whitespace leader over all remaining 
-#   lines.
-# * Deletes that many characters from the beginning of each line.
-# * Returns the result.
-
-proc ::marsutil::outdent {block} {
-    # FIRST, delete the leading and trailing lines.
-    regsub {^ *\n} $block {} block
-    regsub {\n *$} $block {} block
-
-    # NEXT, get the length of the minimum whitespace leader.
-    set minLen 100
-
-    foreach line [split $block \n] {
-	if {[regexp {^\b*$} $line]} {
-	    continue
-	}
-
-	regexp {^ *} $line leader
-
-	set len [string length $leader]
-
-	if {$len < $minLen} {
-	    set minLen $len
-	}
-    }
-
-    # NEXT, delete that length at the beginning of each line.
-    set pattern "^ {$minLen}"
-
-    regsub -all -line $pattern $block {} block
-
-    # Return the updated block.
-    return $block
-}
 
 # wildToRegexp pattern
 # 
@@ -919,20 +635,6 @@ proc ::marsutil::optval {argvar option {defvalue ""}} {
     return $value
 }
 
-# normalize text
-#
-# text    A block of text
-#
-# Strips leading and trailing whitespace, converts newlines to spaces,
-# and replaces all multiple internal spaces with single spaces.
-
-proc ::marsutil::normalize {text} {
-    set text [string trim $text]
-    regsub -all "\n" $text " " text
-    regsub -all { +} $text " " text
-    
-    return $text
-}
 
 # echo  args
 # 
@@ -945,63 +647,6 @@ proc ::marsutil::echo {args} {
     puts $args
 }
 
-#-------------------------------------------------------------------
-# Geotiff reading
-
-# ::marsutil::geotiff exists only if Marsbin.dll is loaded
-if {[llength [info commands ::marsutil::geotiff]] == 0} {
-    proc ::marsutil::geotiff {args} {
-        error "geotiff command requires Marsbin library"
-    }
-}
-
-#-------------------------------------------------------------------
-# File Handling Utilities
-
-# fstringmap mapping filename
-#
-# mapping    A dict, as for [string map]
-# filename   A file name
-#
-# Does a [string map] on the text of the file, writing it back to
-# the file.  The original contents is copied to a backup file
-# called "$filename~".
-
-proc ::marsutil::fstringmap {mapping filename} {
-    # FIRST, read the text from the file
-    set f [open $filename r]
-    set text [read $f]
-    close $f
-
-    # NEXT, backup the file
-    set backup "$filename~"
-    file copy -force $filename $backup
-
-    # NEXT, do the replacement.
-    set text [string map $mapping $text]
-
-    # NEXT, save the new text.
-    set f [open $filename w]
-    puts $f $text
-    close $f
-}
-
-# readfile filename
-#
-# filename    The file name
-#
-# Reads the file and returns the text.  Throws the normal
-# open/read errors.
-
-proc ::marsutil::readfile {filename} {
-    set f [open $filename r]
-
-    try {
-        return [read $f]
-    } finally {
-        close $f
-    }
-}
 
 #-------------------------------------------------------------------
 # Type-Definition Ensembles
@@ -1038,11 +683,6 @@ snit::type ::marsutil::ipaddress {
 # count: a non-negative integer
 
 snit::integer ::marsutil::count \
-    -min 0
-
-# distance: a non-negative floating point value.
-
-snit::double ::marsutil::distance \
     -min 0
 
 # a 24bit RGB hexadecimal color string: "#RRGGBB"

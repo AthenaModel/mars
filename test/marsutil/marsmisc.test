@@ -18,796 +18,502 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2.2 
     eval ::tcltest::configure $argv
 }
+
+# Import tcltest(n)
+namespace import ::tcltest::*
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
 package require marsutil
+namespace import ::marsutil::*
 
-#-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
+#-------------------------------------------------------------------
+# bgcatch
 
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
+test bgcatch-1.1 {Script called in caller's context} -body {
+    set a [clock clicks]
+    bgcatch {set b $a}
+    expr {$a == $b}
+} -result {1}
 
-    # Import tcltest(n)
-    namespace import ::tcltest::*
-
-    # Import the code to be tested
-    namespace import ::marsutil::*
-
-    #-------------------------------------------------------------------
-    # assert
-
-    test assert-1.1 {Assertion succeeds} -body {
-        assert {1 == 1}
-    } -result {}
-
-    test assert-1.2 {Assertion fails} -body {
-        global errorCode
-        catch {assert {1 == 2}} result
-        list $errorCode $result
-    } -result {ASSERT {Assertion failed: 1 == 2}}
-
-    #-------------------------------------------------------------------
-    # bgcatch
-
-    test bgcatch-1.1 {Script called in caller's context} -body {
-        set a [clock clicks]
-        bgcatch {set b $a}
-        expr {$a == $b}
-    } -result {1}
-
-    test bgcatch-1.2 {Script called in caller's context} -setup {
-        proc ::bgerror {msg} {
-            puts -nonewline "bgerror: $msg"
-        }
-    } -body {
-        bgcatch {error "Simulated Error"}
-    } -cleanup {
-        rename ::bgerror ""
-    } -output {bgerror: Simulated Error}
-
-    #-------------------------------------------------------------------
-    # callwith
-
-    test callwith-1.1 {call with no arguments} -body {
-        callwith [list expr {1+1}]
-    } -result {2}
-
-    test callwith-1.2 {call with one complex argument} -body {
-        callwith expr {2 + 2}
-    } -result {4}
-
-    test callwith-1.3 {call with several arguments} -body {
-        callwith [list string is] integer -strict {foo bar}
-    } -result {0}
-
-    test callwith-1.4 {call with error} -body {
-        callwith expr {2 + xyz}
-    } -returnCodes {
-        error
-    } -result {invalid bareword "xyz"
-in expression "2 + xyz";
-should be "$xyz" or "{xyz}" or "xyz(...)" or ...}
-
-    test callwith-1.5 {call with empty prefix} -body {
-        callwith "" a b c d
-    } -result {}
-
-    #-------------------------------------------------------------------
-    # commafmt
-
-    test commafmt-1.1 {Small integers are left alone} -body {
-        commafmt 123
-    } -result {123}
-
-    test commafmt-1.2 {Large integers are formatted with commas} -body {
-        commafmt 123456789
-    } -result {123,456,789}
-
-    test commafmt-1.3 {Negative integers are handled properly} -body {
-        commafmt -123456789
-    } -result {-123,456,789}
-
-    test commafmt-1.4 {Real numbers are rounded} -body {
-        commafmt 12345.6
-    } -result {12,346}
-
-    #-------------------------------------------------------------------
-    # moneyfmt
-    
-    test moneyfmt-1.1 {x < 1000} -body {
-        list [moneyfmt 0] [moneyfmt 999.99]
-    } -result {0.00 999.99}
-
-    test moneyfmt-1.2 {1000 <= x < 10,000} -body {
-        list [moneyfmt 1000] [moneyfmt 9999.99]
-    } -result {1,000.00 9,999.99}
-
-    test moneyfmt-1.3 {10,000 <= x < 1M} -body {
-        list [moneyfmt 10000.0] [moneyfmt 999999.0]
-    } -result {10,000 999,999}
-
-    test moneyfmt-1.4 {1M <= x < 1B} -body {
-        list [moneyfmt 1e6] [moneyfmt 999.999e6]
-    } -result {1.000M 999.999M}
-
-    test moneyfmt-1.5 {1B <= x < 1T} -body {
-        list [moneyfmt 1e9] [moneyfmt 999.999e9]
-    } -result {1.000B 999.999B}
-
-    test moneyfmt-1.6 {1T <= x} -body {
-        moneyfmt 1.5e12
-    } -result {1.500T}
-
-    test moneyfmt-1.7 {x < 1000, negative} -body {
-        list [moneyfmt 0] [moneyfmt -999.99]
-    } -result {0.00 -999.99}
-
-    test moneyfmt-1.8 {1000 <= x < 10,000, negative} -body {
-        list [moneyfmt -1000] [moneyfmt -9999.99]
-    } -result {-1,000.00 -9,999.99}
-
-    test moneyfmt-1.9 {10,000 <= x < 1M, negative} -body {
-        list [moneyfmt -10000.0] [moneyfmt -999999.0]
-    } -result {-10,000 -999,999}
-
-    test moneyfmt-1.10 {1M <= x < 1B, negative} -body {
-        list [moneyfmt -1e6] [moneyfmt -999.999e6]
-    } -result {-1.000M -999.999M}
-
-    test moneyfmt-1.11 {1B <= x < 1T, negative} -body {
-        list [moneyfmt -1e9] [moneyfmt -999.999e9]
-    } -result {-1.000B -999.999B}
-
-    test moneyfmt-1.12 {1T <= x, negative} -body {
-        moneyfmt -1.5e12
-    } -result {-1.500T}
-
-    #-------------------------------------------------------------------
-    # moneyscan
-
-    test moneyscan-1.1 {Invalid input} -body {
-        moneyscan 1.1Q
-    } -returnCodes {
-        error
-    } -result {Invalid input: "1.1Q"}
-
-    test moneyscan-2.1 {Scan 0.0} -body {
-        moneyscan 0.0
-    } -result {0.0}
-
-    test moneyscan-2.2 {Scan 1,234.56} -body {
-        moneyscan 1,234.56
-    } -result {1234.56}
-
-    test moneyscan-2.3 {Scan -1,234.56} -body {
-        moneyscan -1,234.56
-    } -result {-1234.56}
-
-    test moneyscan-2.4 {Scan 12.345M} -body {
-        moneyscan 12.345M
-    } -result {12345000.0}
-
-    test moneyscan-2.5 {Scan -12.345M} -body {
-        moneyscan -12.345M
-    } -result {-12345000.0}
-
-    test moneyscan-2.6 {Scan 12.345B} -body {
-        moneyscan 12.345B
-    } -result {12345000000.0}
-
-    test moneyscan-2.7 {Scan -12.345B} -body {
-        moneyscan -12.345B
-    } -result {-12345000000.0}
-
-    test moneyscan-2.8 {Scan 12.345T} -body {
-        moneyscan 12.345T
-    } -result {12345000000000.0}
-
-    test moneyscan-2.9 {Scan -12.345T} -body {
-        moneyscan -12.345T
-    } -result {-12345000000000.0}
-
-    test moneyscan-2.10 {Scan 0100} -body {
-        moneyscan 0100
-    } -result {100.0}
-
-    test moneyscan-2.11 {Scan 0100K} -body {
-        moneyscan 0100K
-    } -result {100000.0}
-
-    test moneyscan-2.12 {Scan 0} -body {
-        moneyscan 0
-    } -result {0.0}
-
-    #-------------------------------------------------------------------
-    # moneysort
-
-    test moneysort-1.1 {Invalid a} -body {
-        moneysort 1.1Q 2
-    } -returnCodes {
-        error
-    } -result {Invalid input: "1.1Q"}
-
-    test moneysort-1.2 {Invalid b} -body {
-        moneysort 1 2.2Q
-    } -returnCodes {
-        error
-    } -result {Invalid input: "2.2Q"}
-
-    test moneysort-2.1 {a < b} -body {
-        moneysort 1.1M 2.2M
-    } -result {-1}
-
-    test moneysort-2.2 {a == b} -body {
-        moneysort 1M 1.00M
-    } -result {0}
-
-    test moneysort-2.3 {a > b} -body {
-        moneysort 2.2M 1.1M
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # require
-
-    test require-1.1 {Assertion succeeds} -body {
-        require {1 == 1} "Dummy message"
-    } -result {}
-
-    test require-1.2 {Assertion fails} -body {
-        global errorCode
-        catch {require {1 == 2} "Dummy message"} result
-        list $errorCode $result
-    } -result {ASSERT {Dummy message}}
-
-    #-------------------------------------------------------------------
-    # restrict
-
-    # Pseudo-validation type: all we need to verify is that
-    # the value passed in for validation is canonicalized. 
-    # For this type, all values are valid, and all canonicalize
-    # to "THAT".
-    proc ::marsutil::test::thattype {"validate" value} {
-        return "THAT"
+test bgcatch-1.2 {Script called in caller's context} -setup {
+    proc ::bgerror {msg} {
+        puts -nonewline "bgerror: $msg"
     }
-
-    test restrict-1.1 {empty values get default} -body {
-        set value ""
-        restrict value snit::boolean no
-        set value
-    } -result {no}
-
-    test restrict-1.2 {invalid values get default} -body {
-        set value "NONESUCH"
-        restrict value snit::boolean yes
-        set value
-    } -result {yes}
-
-    test restrict-1.3 {valid values get canonicalized} -body {
-        set value "That One"
-        restrict value ::marsutil::test::thattype THIS
-        set value
-    } -result {THAT}
-
-    
-    #-------------------------------------------------------------------
-    # dicteq
-
-    test dicteq-1.1 {Match succeeds with empty dict and no keys} -body {
-        dicteq {}
-    } -result {1}
-
-    test dicteq-1.2 {Match succeeds with no keys} -body {
-        dicteq {a 1 b 2}
-    } -result {1}
-
-    test dicteq-1.3 {Match fails if specified key is not present.} -body {
-        dicteq {a 1 b 2} c 3
-    } -result {0}
-
-    test dicteq-1.4 {Match fails if dict is empty and keys given.} -body {
-        dicteq {} c 3
-    } -result {0}
-
-    test dicteq-1.5 {Match fails if value doesn't match.} -body {
-        dicteq {a 123 b 456} b 4
-    } -result {0}
-
-    test dicteq-1.6 {Match succeeds if key and value match.} -body {
-        dicteq {a 1 b 2} a 1
-    } -result {1}
-
-    test dicteq-1.7 {Match succeeds if key and value match.} -body {
-        dicteq {a 1 b 2} a 1 b 2
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # dictglob
-
-    test dictglob-1.1 {Match succeeds with empty dict and no keys} -body {
-        dictglob {}
-    } -result {1}
-
-    test dictglob-1.2 {Match succeeds with no keys} -body {
-        dictglob {a 1 b 2}
-    } -result {1}
-
-    test dictglob-1.3 {Match fails if specified key is not present.} -body {
-        dictglob {a 1 b 2} c 3
-    } -result {0}
-
-    test dictglob-1.4 {Match fails if dict is empty and keys given.} -body {
-        dictglob {} c 3
-    } -result {0}
-
-    test dictglob-1.5 {Match fails if value doesn't match.} -body {
-        dictglob {a 123 b 456} b 4
-    } -result {0}
-
-    test dictglob-1.6 {Match succeeds if key and pattern match.} -body {
-        dictglob {a 123 b 456} a *2*
-    } -result {1}
-
-    test dictglob-1.7 {Match succeeds if key and value match.} -body {
-        dictglob {a 123 b 456} a 1* b 4*
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # lmaxlen
-
-    test lmaxlen-1.1 {lmaxlen: empty list} -body {
-        lmaxlen {}
-    } -result {0}
-
-    test lmaxlen-1.2 {lmaxlen: normal list} -body {
-        lmaxlen [list a bb ccc dd e]
-    } -result {3}
-
-    #-----------------------------------------------------------------------
-    # lshift
-
-    test lshift-1.1 {lshift: normal list} -body {
-        set list {a b c}
-        set value [lshift list]
-        list $value $list
-    } -result {a {b c}}
-
-    test lshift-1.2 {lshift: list with one element} -body {
-        set list {a}
-        set value [lshift list]
-        list $value $list
-    } -result {a {}}
-
-    test lshift-1.3 {lshift: list with no elements} -body {
-        set list {}
-        set value [lshift list]
-        list $value $list
-    } -result {{} {}}
-
-    #-------------------------------------------------------------------
-    # lsearchi
-
-    test lsearchi-1.1 {lsearchi: matched first item} -body {
-        lsearchi {Foo Bar Baz} foo
-    } -result 0
-
-    test lsearchi-1.2 {lsearchi: matched last item} -body {
-        lsearchi {Foo Bar Baz} baz
-    } -result 2
-
-    test lsearchi-1.3 {lsearchi: matched no item} -body {
-        lsearchi {Foo Bar Baz} quux
-    } -result -1
-
-    test lsearchi-1.4 {lsearchi: empty list} -body {
-        lsearchi {} foo
-    } -result -1
-
-    #-------------------------------------------------------------------
-    # lformat
-
-    test lformat-1.1 {lformat: empty list} -body {
-        lformat %s {}
-    } -result {}
-
-    test lformat-1.2 {lformat: list with one number} -body {
-        lformat %.1f {1.18}
-    } -result {1.2}
-
-    test lformat-1.3 {lformat: list with two numbers} -body {
-        lformat  %.1f {1.18 2.11}
-    } -result {1.2 2.1}
-
-    #-------------------------------------------------------------------
-    # ladd
-
-    test ladd-1.1 {value is not yet in list} -body {
-        set a {foo bar}
-        set b [ladd a baz]
-        list $a $b
-    } -result {{foo bar baz} {foo bar baz}}
-
-    test ladd-1.2 {value is already in list} -body {
-        set a {foo bar}
-        set b [ladd a bar]
-        list $a $b
-    } -result {{foo bar} {foo bar}}
-
-    test ladd-1.3 {List doesn't yet exist} -body {
-        set b [ladd nonesuch bar]
-        list $nonesuch $b
-    } -cleanup {
-        unset nonesuch
-    } -result {bar bar}
-
-    #-------------------------------------------------------------------
-    # ldelete
-
-    test ldelete-1.1 {value is not in list} -body {
-        set a {foo bar}
-        set b [ldelete a baz]
-        list $a $b
-    } -result {{foo bar} {foo bar}}
-
-    test ldelete-1.2 {value is in list} -body {
-        set a {foo bar baz}
-        set b [ldelete a baz]
-        list $a $b
-    } -result {{foo bar} {foo bar}}
-
-    #-------------------------------------------------------------------
-    # lmerge
-
-    test lmerge-1.1 {empty list} -body {
-        set a {foo bar baz}
-        set b {}
-
-        lmerge a $b
-        lsort $a
-    } -result {bar baz foo}
-
-    test lmerge-1.2 {empty listvar} -body {
-        set a {}
-        set b {foo bar baz}
-
-        lmerge a $b
-        lsort $a
-    } -result {bar baz foo}
-
-    test lmerge-1.3 {disjoint lists} -body {
-        set a {foo bar baz}
-        set b {bing bang bong}
-
-        lmerge a $b
-        lsort $a
-    } -result {bang bar baz bing bong foo}
-
-    test lmerge-1.4 {duplicate lists} -body {
-        set a {bing bang bong}
-        set b {bing bang bong}
-
-        lmerge a $b
-        lsort $a
-    } -result {bang bing bong}
-
-    test lmerge-1.5 {duplicates in second list} -body {
-        set a {bing bang bong}
-        set b {foo foo foo}
-
-        lmerge a $b
-        lsort $a
-    } -result {bang bing bong foo}
-
-    test lmerge-1.6 {listvar names non-existent variable} -body {
-        unset a
-        lmerge a {foo bar baz}
-        lsort $a
-    } -result {bar baz foo}
-
-    #-------------------------------------------------------------------
-    # let
-
-    test let-1.1 {constant expression} -body {
-        let x {1 + 1}
-    } -result {2}
-
-    test let-1.2 {variable expression} -body {
-        set a 5
-        let x {$a}
-    } -result {5}
-
-    #-------------------------------------------------------------------
-    # radians
-
-    test radians-1.1 {converts degrees} -body {
-        radians 180.0
-    } -result {3.141592653589793}
-
-    #-------------------------------------------------------------------
-    # degrees
-
-    test degrees-1.1 {converts radians} -body {
-        degrees $::marsutil::pi 
-    } -result {180.0}
-
-    #-------------------------------------------------------------------
-    # roundrange
-
-    test roundrange-1.1 {round 0.12 0.89 } -body {
-        roundrange 0.12 0.89
-    } -result {0.0 1.0}
-
-    test roundrange-1.2 {round 342 9603} -body {
-        roundrange 342 9603
-    } -result {0.0 10000.0}
-
-    test roundrange-1.3 {round 342 343} -body {
-        roundrange 342 343 
-    } -result {342.0 343.0}
-
-    test roundrange-1.4 {round 0 100} -body {
-        roundrange 0 100
-    } -result {0.0 100.0}
-
-    test roundrange-1.5 {round -100 100} -body {
-        roundrange -100 100
-    } -result {-100.0 100.0}
-
-    test roundrange-1.6 {round 0 232.1} -body {
-        roundrange 0 232.1
-    } -result {0.0 300.0}
-
-    test roundrange-1.7 {round -0.2 232.1} -body {
-        roundrange -0.2 232.1
-    } -result {-100.0 300.0}
-
-    test roundrange-1.8 {round 0.8002 0.8023} -body {
-        roundrange 0.8002 0.8023
-    } -result {0.8 0.803}
-
-    #-------------------------------------------------------------------
-    # gettimeofday
-
-    test gettimeofday-1.1 {compare with clock seconds} -body {
-        # FIRST, get the time by both methods.
-        set t0 [gettimeofday]
-        set t1 [clock seconds]
-
-        # NEXT, convert t0 to an integer.
-        set t0 [expr {int($t0)}]
-
-        # NEXT, t1 might be 1 second later than t0, since it was
-        # called later.
-        expr {$t0 == $t1 || $t0 == $t1 - 1}
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # percent
-    test percent-1.1 {shows ~0.0 for small values} -body {
-
-        set vals ""
-        foreach frac {
-            0.0
-            0.001
-            0.003
-            0.005
-            0.0051
-            0.009
-            0.01
-            0.02
-            0.1
-        } {
-            append vals [percent $frac]
-        }
-        set vals
-        
-    } -result {  0% ~0% ~0% ~0%  1%  1%  1%  2% 10%}
-
-    #-------------------------------------------------------------------
-    # pickfrom
-    #
-    # This is difficult to test, as the result is random.
-
-    test pickfrom-1.1 {result is always in list} -body {
-        set count 0
-        set choices {a b c d}
-
-        for {set i 0} {$i < 1000} {incr i} {
-            set choice [pickfrom $choices]
-
-            if {[lsearch $choices $choice] != -1} {
-                incr count
-            }
-        }
-
-        set count
-    } -result {1000}
-
-    #-------------------------------------------------------------------
-    # poisson
-    #
-    # This function is difficult to test; we really need a statistical
-    # analysis.  For now, sample it once and verify that the result
-    # is an integer.
-
-    test poisson-1.1 {non-negative result} -body {
-        string is integer -strict [poisson 5]
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # discrete
-    #
-    # This function is similarly difficult to test.
-    # For now sample it a number of times and verify that the values
-    # are within the desired range.
-
-    test discrete-1.1 {results in range} -body {
-        set samples 10
-        set count 0
-        for {set i 0} {$i < $samples} {incr i} {
-            set n [discrete {0.1 0.2 0.3 0.4}]
-
-            if {$n >= 0 && $n < 4} {
-                incr count
-            }
-        }
-
-        expr {$count == $samples}
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # identifier
-
-    test identifier-1.1 {identifier validates valid values} -body {
-        identifier validate abc_ABC_123 
-    } -result {abc_ABC_123}
-
-    test identifier-1.2 {identifier fails on the empty string} -body {
-        identifier validate ""
-    } -returnCodes {
-        error
-    } -result {invalid value ""}
-
-    test identifier-1.3 {identifier fails on a string with whitespace} -body {
-        identifier validate "abc 123"
-    } -returnCodes {
-        error
-    } -result {invalid value "abc 123"}
-
-    test identifier-1.4 {identifier fails on a string with punctuation} -body {
-        identifier validate "abc.123"
-    } -returnCodes {
-        error
-    } -result {invalid value "abc.123"}
-
-    #-------------------------------------------------------------------
-    # hexquote
-
-    test hexquote-1.1 {all characters are quoted} -body {
-        hexquote "X\x0AY\x00Z"
-    } -result {\x58\x0A\x59\x00\x5A}
-
-    test hexquote-1.2 {input can be recreated} -body {
-        set a "A\x0A\B\x00\C\[\]\$X"
-        set b [subst -nocommands -novariables [hexquote $a]]
-        expr {$a eq $b}
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # normalize
-
-    test normalize-1.1 {strips whitespace} -body {
-        normalize "   abc   def \n ghi \t "
-    } -result {abc def ghi}
-
-    #-------------------------------------------------------------------
-    # outdent
-
-    test outdent-1.1 {outdent: empty block} -body {
-        outdent {}
-    } -result {}
-    
-    test outdent-1.2 {outdent: leading blank line} -body {
-        outdent {
-                  Now that we have this,
-                  we can make things
-                  look a lot nicer.}
-    } -result {Now that we have this,
-we can make things
-look a lot nicer.}
-
-    test outdent-1.3 {outdent: trailing blank line} -body {
-        outdent {Now that we have this,
-                  we can make things
-                  look a lot nicer.
-                }
-    } -result {Now that we have this,
-                  we can make things
-                  look a lot nicer.}
-	       
-    #-------------------------------------------------------------------
-    # optval
-
-    test optval-1.1 {optval: option exists} -body {
-        set arglist "foo bar -name Fred baz"
-        set name [optval arglist -name]
-        list $name $arglist
-    } -result {Fred {foo bar baz}}
-
-    test optval-1.2 {optval: option does not exist; no defvalue} -body {
-        set arglist "foo bar baz"
-        set name [optval arglist -name]
-        list $name $arglist
-    } -result {{} {foo bar baz}}
-
-    test optval-1.3 {optval: option does not exist; defvalue} -body {
-        set arglist "foo bar baz"
-        set name [optval arglist -name Fred]
-        list $name $arglist
-    } -result {Fred {foo bar baz}}
-
-    #-------------------------------------------------------------------
-    # wildToRegexp
-
-    test wildToRegexp-1.1 {wildToRegexp: plain text} -body {
-        wildToRegexp {asdf1234}
-    } -result {asdf1234}
-    
-    test wildToRegexp-1.2 {wildToRegexp: regexp characters} -body {
-        wildToRegexp {asdf[^]\+.}
-    } -result {asdf\[\^\]\\\+\.}
-    
-    test wildToRegexp-1.3 {wildToRegexp: wildcard characters} -body {
-        wildToRegexp {asdf\[\*]1234?}
-    } -result {asdf\\\[\\.*\]1234.}
-
-    #-------------------------------------------------------------------
-    # hexcolor
-
-    test hexcolor-1.1 {non-hex-digit} -body {
-        hexcolor validate #ABZ123
-    } -returnCodes {
-        error
-    } -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
-
-    test hexcolor-1.2 {too long} -body {
-        hexcolor validate #ABC1234
-    } -returnCodes {
-        error
-    } -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
-
-    test hexcolor-1.3 {no hash mark} -body {
-        hexcolor validate ABC123
-    } -returnCodes {
-        error
-    } -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
-
-    test hexcolor-1.4 {color name} -body {
-        hexcolor validate black
-    } -returnCodes {
-        error
-    } -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
-
-     test hexcolor-2.1 {canonicalizes} -body {
-        hexcolor validate #123abc
-    } -result {#123ABC}
-
-    
-
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
+} -body {
+    bgcatch {error "Simulated Error"}
+} -cleanup {
+    rename ::bgerror ""
+} -output {bgerror: Simulated Error}
+
+#-------------------------------------------------------------------
+# commafmt
+
+test commafmt-1.1 {Small integers are left alone} -body {
+    commafmt 123
+} -result {123}
+
+test commafmt-1.2 {Large integers are formatted with commas} -body {
+    commafmt 123456789
+} -result {123,456,789}
+
+test commafmt-1.3 {Negative integers are handled properly} -body {
+    commafmt -123456789
+} -result {-123,456,789}
+
+test commafmt-1.4 {Real numbers are rounded} -body {
+    commafmt 12345.6
+} -result {12,346}
+
+#-------------------------------------------------------------------
+# moneyfmt
+
+test moneyfmt-1.1 {x < 1000} -body {
+    list [moneyfmt 0] [moneyfmt 999.99]
+} -result {0.00 999.99}
+
+test moneyfmt-1.2 {1000 <= x < 10,000} -body {
+    list [moneyfmt 1000] [moneyfmt 9999.99]
+} -result {1,000.00 9,999.99}
+
+test moneyfmt-1.3 {10,000 <= x < 1M} -body {
+    list [moneyfmt 10000.0] [moneyfmt 999999.0]
+} -result {10,000 999,999}
+
+test moneyfmt-1.4 {1M <= x < 1B} -body {
+    list [moneyfmt 1e6] [moneyfmt 999.999e6]
+} -result {1.000M 999.999M}
+
+test moneyfmt-1.5 {1B <= x < 1T} -body {
+    list [moneyfmt 1e9] [moneyfmt 999.999e9]
+} -result {1.000B 999.999B}
+
+test moneyfmt-1.6 {1T <= x} -body {
+    moneyfmt 1.5e12
+} -result {1.500T}
+
+test moneyfmt-1.7 {x < 1000, negative} -body {
+    list [moneyfmt 0] [moneyfmt -999.99]
+} -result {0.00 -999.99}
+
+test moneyfmt-1.8 {1000 <= x < 10,000, negative} -body {
+    list [moneyfmt -1000] [moneyfmt -9999.99]
+} -result {-1,000.00 -9,999.99}
+
+test moneyfmt-1.9 {10,000 <= x < 1M, negative} -body {
+    list [moneyfmt -10000.0] [moneyfmt -999999.0]
+} -result {-10,000 -999,999}
+
+test moneyfmt-1.10 {1M <= x < 1B, negative} -body {
+    list [moneyfmt -1e6] [moneyfmt -999.999e6]
+} -result {-1.000M -999.999M}
+
+test moneyfmt-1.11 {1B <= x < 1T, negative} -body {
+    list [moneyfmt -1e9] [moneyfmt -999.999e9]
+} -result {-1.000B -999.999B}
+
+test moneyfmt-1.12 {1T <= x, negative} -body {
+    moneyfmt -1.5e12
+} -result {-1.500T}
+
+#-------------------------------------------------------------------
+# moneyscan
+
+test moneyscan-1.1 {Invalid input} -body {
+    moneyscan 1.1Q
+} -returnCodes {
+    error
+} -result {Invalid input: "1.1Q"}
+
+test moneyscan-2.1 {Scan 0.0} -body {
+    moneyscan 0.0
+} -result {0.0}
+
+test moneyscan-2.2 {Scan 1,234.56} -body {
+    moneyscan 1,234.56
+} -result {1234.56}
+
+test moneyscan-2.3 {Scan -1,234.56} -body {
+    moneyscan -1,234.56
+} -result {-1234.56}
+
+test moneyscan-2.4 {Scan 12.345M} -body {
+    moneyscan 12.345M
+} -result {12345000.0}
+
+test moneyscan-2.5 {Scan -12.345M} -body {
+    moneyscan -12.345M
+} -result {-12345000.0}
+
+test moneyscan-2.6 {Scan 12.345B} -body {
+    moneyscan 12.345B
+} -result {12345000000.0}
+
+test moneyscan-2.7 {Scan -12.345B} -body {
+    moneyscan -12.345B
+} -result {-12345000000.0}
+
+test moneyscan-2.8 {Scan 12.345T} -body {
+    moneyscan 12.345T
+} -result {12345000000000.0}
+
+test moneyscan-2.9 {Scan -12.345T} -body {
+    moneyscan -12.345T
+} -result {-12345000000000.0}
+
+test moneyscan-2.10 {Scan 0100} -body {
+    moneyscan 0100
+} -result {100.0}
+
+test moneyscan-2.11 {Scan 0100K} -body {
+    moneyscan 0100K
+} -result {100000.0}
+
+test moneyscan-2.12 {Scan 0} -body {
+    moneyscan 0
+} -result {0.0}
+
+#-------------------------------------------------------------------
+# moneysort
+
+test moneysort-1.1 {Invalid a} -body {
+    moneysort 1.1Q 2
+} -returnCodes {
+    error
+} -result {Invalid input: "1.1Q"}
+
+test moneysort-1.2 {Invalid b} -body {
+    moneysort 1 2.2Q
+} -returnCodes {
+    error
+} -result {Invalid input: "2.2Q"}
+
+test moneysort-2.1 {a < b} -body {
+    moneysort 1.1M 2.2M
+} -result {-1}
+
+test moneysort-2.2 {a == b} -body {
+    moneysort 1M 1.00M
+} -result {0}
+
+test moneysort-2.3 {a > b} -body {
+    moneysort 2.2M 1.1M
+} -result {1}
+
+#-------------------------------------------------------------------
+# restrict
+
+# Pseudo-validation type: all we need to verify is that
+# the value passed in for validation is canonicalized. 
+# For this type, all values are valid, and all canonicalize
+# to "THAT".
+proc thattype {"validate" value} {
+    return "THAT"
 }
 
-namespace delete ::marsutil::test
+test restrict-1.1 {empty values get default} -body {
+    set value ""
+    restrict value snit::boolean no
+    set value
+} -result {no}
+
+test restrict-1.2 {invalid values get default} -body {
+    set value "NONESUCH"
+    restrict value snit::boolean yes
+    set value
+} -result {yes}
+
+test restrict-1.3 {valid values get canonicalized} -body {
+    set value "That One"
+    restrict value thattype THIS
+    set value
+} -result {THAT}
+
+
+#-------------------------------------------------------------------
+# dictglob
+
+test dictglob-1.1 {Match succeeds with empty dict and no keys} -body {
+    dictglob {}
+} -result {1}
+
+test dictglob-1.2 {Match succeeds with no keys} -body {
+    dictglob {a 1 b 2}
+} -result {1}
+
+test dictglob-1.3 {Match fails if specified key is not present.} -body {
+    dictglob {a 1 b 2} c 3
+} -result {0}
+
+test dictglob-1.4 {Match fails if dict is empty and keys given.} -body {
+    dictglob {} c 3
+} -result {0}
+
+test dictglob-1.5 {Match fails if value doesn't match.} -body {
+    dictglob {a 123 b 456} b 4
+} -result {0}
+
+test dictglob-1.6 {Match succeeds if key and pattern match.} -body {
+    dictglob {a 123 b 456} a *2*
+} -result {1}
+
+test dictglob-1.7 {Match succeeds if key and value match.} -body {
+    dictglob {a 123 b 456} a 1* b 4*
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# let
+
+test let-1.1 {constant expression} -body {
+    let x {1 + 1}
+} -result {2}
+
+test let-1.2 {variable expression} -body {
+    set a 5
+    let x {$a}
+} -result {5}
+
+
+#-------------------------------------------------------------------
+# roundrange
+
+test roundrange-1.1 {round 0.12 0.89 } -body {
+    roundrange 0.12 0.89
+} -result {0.0 1.0}
+
+test roundrange-1.2 {round 342 9603} -body {
+    roundrange 342 9603
+} -result {0.0 10000.0}
+
+test roundrange-1.3 {round 342 343} -body {
+    roundrange 342 343 
+} -result {342.0 343.0}
+
+test roundrange-1.4 {round 0 100} -body {
+    roundrange 0 100
+} -result {0.0 100.0}
+
+test roundrange-1.5 {round -100 100} -body {
+    roundrange -100 100
+} -result {-100.0 100.0}
+
+test roundrange-1.6 {round 0 232.1} -body {
+    roundrange 0 232.1
+} -result {0.0 300.0}
+
+test roundrange-1.7 {round -0.2 232.1} -body {
+    roundrange -0.2 232.1
+} -result {-100.0 300.0}
+
+test roundrange-1.8 {round 0.8002 0.8023} -body {
+    roundrange 0.8002 0.8023
+} -result {0.8 0.803}
+
+#-------------------------------------------------------------------
+# gettimeofday
+
+test gettimeofday-1.1 {compare with clock seconds} -body {
+    # FIRST, get the time by both methods.
+    set t0 [gettimeofday]
+    set t1 [clock seconds]
+
+    # NEXT, convert t0 to an integer.
+    set t0 [expr {int($t0)}]
+
+    # NEXT, t1 might be 1 second later than t0, since it was
+    # called later.
+    expr {$t0 == $t1 || $t0 == $t1 - 1}
+} -result {1}
+
+#-------------------------------------------------------------------
+# percent
+test percent-1.1 {shows ~0.0 for small values} -body {
+
+    set vals ""
+    foreach frac {
+        0.0
+        0.001
+        0.003
+        0.005
+        0.0051
+        0.009
+        0.01
+        0.02
+        0.1
+    } {
+        append vals [percent $frac]
+    }
+    set vals
+    
+} -result {  0% ~0% ~0% ~0%  1%  1%  1%  2% 10%}
+
+#-------------------------------------------------------------------
+# pickfrom
+#
+# This is difficult to test, as the result is random.
+
+test pickfrom-1.1 {result is always in list} -body {
+    set count 0
+    set choices {a b c d}
+
+    for {set i 0} {$i < 1000} {incr i} {
+        set choice [pickfrom $choices]
+
+        if {[lsearch $choices $choice] != -1} {
+            incr count
+        }
+    }
+
+    set count
+} -result {1000}
+
+#-------------------------------------------------------------------
+# poisson
+#
+# This function is difficult to test; we really need a statistical
+# analysis.  For now, sample it once and verify that the result
+# is an integer.
+
+test poisson-1.1 {non-negative result} -body {
+    string is integer -strict [poisson 5]
+} -result {1}
+
+#-------------------------------------------------------------------
+# discrete
+#
+# This function is similarly difficult to test.
+# For now sample it a number of times and verify that the values
+# are within the desired range.
+
+test discrete-1.1 {results in range} -body {
+    set samples 10
+    set count 0
+    for {set i 0} {$i < $samples} {incr i} {
+        set n [discrete {0.1 0.2 0.3 0.4}]
+
+        if {$n >= 0 && $n < 4} {
+            incr count
+        }
+    }
+
+    expr {$count == $samples}
+} -result {1}
+
+#-------------------------------------------------------------------
+# identifier
+
+test identifier-1.1 {identifier validates valid values} -body {
+    identifier validate abc_ABC_123 
+} -result {abc_ABC_123}
+
+test identifier-1.2 {identifier fails on the empty string} -body {
+    identifier validate ""
+} -returnCodes {
+    error
+} -result {invalid value ""}
+
+test identifier-1.3 {identifier fails on a string with whitespace} -body {
+    identifier validate "abc 123"
+} -returnCodes {
+    error
+} -result {invalid value "abc 123"}
+
+test identifier-1.4 {identifier fails on a string with punctuation} -body {
+    identifier validate "abc.123"
+} -returnCodes {
+    error
+} -result {invalid value "abc.123"}
+
+#-------------------------------------------------------------------
+# hexquote
+
+test hexquote-1.1 {all characters are quoted} -body {
+    hexquote "X\x0AY\x00Z"
+} -result {\x58\x0A\x59\x00\x5A}
+
+test hexquote-1.2 {input can be recreated} -body {
+    set a "A\x0A\B\x00\C\[\]\$X"
+    set b [subst -nocommands -novariables [hexquote $a]]
+    expr {$a eq $b}
+} -result {1}
+       
+#-------------------------------------------------------------------
+# optval
+
+test optval-1.1 {optval: option exists} -body {
+    set arglist "foo bar -name Fred baz"
+    set name [optval arglist -name]
+    list $name $arglist
+} -result {Fred {foo bar baz}}
+
+test optval-1.2 {optval: option does not exist; no defvalue} -body {
+    set arglist "foo bar baz"
+    set name [optval arglist -name]
+    list $name $arglist
+} -result {{} {foo bar baz}}
+
+test optval-1.3 {optval: option does not exist; defvalue} -body {
+    set arglist "foo bar baz"
+    set name [optval arglist -name Fred]
+    list $name $arglist
+} -result {Fred {foo bar baz}}
+
+#-------------------------------------------------------------------
+# wildToRegexp
+
+test wildToRegexp-1.1 {wildToRegexp: plain text} -body {
+    wildToRegexp {asdf1234}
+} -result {asdf1234}
+
+test wildToRegexp-1.2 {wildToRegexp: regexp characters} -body {
+    wildToRegexp {asdf[^]\+.}
+} -result {asdf\[\^\]\\\+\.}
+
+test wildToRegexp-1.3 {wildToRegexp: wildcard characters} -body {
+    wildToRegexp {asdf\[\*]1234?}
+} -result {asdf\\\[\\.*\]1234.}
+
+#-------------------------------------------------------------------
+# hexcolor
+
+test hexcolor-1.1 {non-hex-digit} -body {
+    hexcolor validate #ABZ123
+} -returnCodes {
+    error
+} -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
+
+test hexcolor-1.2 {too long} -body {
+    hexcolor validate #ABC1234
+} -returnCodes {
+    error
+} -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
+
+test hexcolor-1.3 {no hash mark} -body {
+    hexcolor validate ABC123
+} -returnCodes {
+    error
+} -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
+
+test hexcolor-1.4 {color name} -body {
+    hexcolor validate black
+} -returnCodes {
+    error
+} -result {Invalid hex color specifier, should be "#RRGGBB" or "#RRRRGGGGBBBB"}
+
+ test hexcolor-2.1 {canonicalizes} -body {
+    hexcolor validate #123abc
+} -result {#123ABC}
+
+
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
 
 
 

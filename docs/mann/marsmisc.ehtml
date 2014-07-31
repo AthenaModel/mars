@@ -21,27 +21,11 @@ versions will so indicate.<p>
 
 <deflist>
 
-<defitem assert {assert <i>expression</i>}>
-
-<iref assert> tests an invariant Boolean <i>expression</i>.  If the
-expression is false, <iref assert> throws the following error:<p>
-
-<tt>Assertion failed: <i>expression</i></tt><p>
-
-The Tcl <code>errorCode</code> variable will be set to "ASSERT".<p>
-
 <defitem bgcatch {bgcatch <i>script</i>}>
 
 Executes an arbitrary Tcl <i>script</i> in the caller's context.  If
 the script throws an error, the error is handled by
 <code>bgerror</code>.  <iref bgcatch> never returns a value.<p>
-
-<defitem callwith {callwith <i>prefix</i> ?<i>args...</i>?}>
-
-Calls a command <i>prefix</i> with zero or more additional arguments
-in the global scope.  This is to be used when calling callback
-commands.  If <i>prefix</i> is the empty list, then <iref callwith>
-does and returns nothing.<p>
 
 <defitem commafmt {commafmt <i>value ?options...?</i> }>
 
@@ -58,16 +42,6 @@ there are more then rounding takes place. If not supplied, the default for
 <i>num</i> is zero.<p>
 
 </deflist>
-
-<defitem degrees {degrees <i>rad</i>}>
-
-Converts an angle in radians to decimal degrees.<p>
-
-<defitem dicteq {dicteq <i>dict key value</i> ?<i>key value...</i>?}>
-
-Returns 1 if dictionary <i>dict</i> has the specified keys and values,
-and 0 otherwise.  Values are compared using the "eq" operator.  Note
-that the <i>dict</i> can contain keys other than those specified.<p>
 
 <defitem dictglob {dictglob <i>dict key pattern</i> ?<i>key pattern...</i>?}>
 
@@ -89,31 +63,11 @@ where 0 &le; n &lt; <i>N</i>, where <i>N</i> is the length of
 
 Given some arguments, echo them to stdout.<p>
 
-<defitem fstringmap {fstringmap <i>mapping filename</i>}>
-
-Updates the content of the file named <i>filename</i> given the
-<i>mapping</i>, which is defined as for Tcl's <b>string map</b>
-command.  Essentially, this is a wrapper around <b>string map</b> that
-operates on a file.  The file is backed up as "<i>filename</i>~"
-before being updated.<p>
-
 <defitem getcode {getcode <i>command</i> <i>subcommands...</i>}>
 
 When possible, returns the code that defines the <i>command</i>.
 If <i>subcommands</i> are specified, the command must be a Snit
 type or instance.<p>
-
-<defitem getnetif {getnetif}>
-
-<iref getnetif> returns a list of the host's network interface names
-and IP addresses in dotted-decimal format.  This list can be treated
-as a dict with the network interface names acting as the keys.
-Will return TCL_ERROR if the network configuration information can't
-be determined.<p>
-
-<b><iref getnetif> is part of the <xref marsutil(n)> binary
-extension; it is available only when that extension is available, and
-then only on Linux.</b><p>
 
 <defitem gettimeofday {gettimeofday}>
 
@@ -123,22 +77,6 @@ available, the fraction part will have microsecond resolution;
 otherwise it will always be ".0".  <b>NOTE:</b> microsecond resolution
 is now available from the "clock" command; we should begin to use it.<p>
 
-<defitem hexdump {hexdump <i>value</i>}>
-
-<iref hexdump> returns a hexadecimal dump of the Tcl value; it's
-particularly useful for values created with Tcl's <code>binary
-format</code> command.  The dump takes the form of a list of bytes,
-where the bytes are formatted as two hex digits.  For example,<p>
-
-<pre>
-% hexdump [binary format I 255]
-00 00 00 FF
-%
-</pre>
-
-<iref hexdump> is part of the <xref marsutil(n)> binary extension; it
-is available only when that extension is available.<p>
-
 <defitem hexquote {hexquote <i>text</i>}>
 
 Returns a string in which all characters in <i>text</i> have been
@@ -146,18 +84,6 @@ replaced with their hex escape sequences, e.g., nulls are replaced
 with "\x00".  This allows strings containing binary data to be
 printed normally.  The original string can be retrieved using
 the standard Tcl <code>subst</code> command.<p>
-
-<defitem ladd {ladd <i>listvar value</i>}>
-
-Appends <i>value</i> to the list stored in <i>listvar</i>, only if it
-isn't already there.  Updates <i>listvar</i> accordingly, and
-returns the (possibly updated) list.<p>
-
-<defitem ldelete {ldelete <i>listvar value</i>}>
-
-Removes <i>value</i> from the list stored in <i>listvar</i> if it
-is there.  Updates <i>listvar</i> accordingly, and
-returns the (possibly updated) list.<p>
 
 <defitem let {let <i>varname expression</i>}>
 
@@ -175,35 +101,6 @@ clarity of the code remarkably.<p>
 
 The binary extension includes a fast version of this command, which is
 used by preference; in this case the runtime penalty is negligible.<p>
-
-<defitem lformat {lformat <i>fmt list</i>}>
-
-Applies the <i>fmt</i> string to each element of the <i>list</i>, and
-returns the resulting list.  <i>fmt</i> is a <code>format(n)</code>
-format string.<p>
-
-<defitem lmaxlen {lmaxlen <i>list</i>}>
-
-Returns the length of the longest string in the <i>list</i>.<p>
-
-<defitem lmerge {lmerge <i>listvar list</i>}>
-
-Merges the elements of <i>list</i> into the list contained in
-variable <i>listvar</i>.  The order of the resulting list is
-arbitrary, but it will contain each unique element of <i>list</i> at
-most once (unless the list in <i>listvar</i> already had duplicates).<p>
-
-<defitem lsearchi {lsearchi <i>list string</i>}>
-
-Searches <i>list</i> for <i>string</i>, doing a case-insensitive exact
-match.  Returns the index of the first occurrence, or -1 if the
-<i>string</i> is not found.<p>
-
-<defitem lshift {lshift <i>listvar</i>}>
-
-Given the name of a variable containing a list, removes the first
-element from the list and returns it, updating the variable.
-Effectively it pops the first element from the list.<p>
 
 <defitem moneyfmt {moneyfmt <i>value</i>}>
 
@@ -241,24 +138,12 @@ Compares two values <i>a</i> and <i>b</i> formatted by <iref moneyfmt>
 and returns -1 if <i>a</i> &lt; <i>b</i>, 0 if <i>a</i> == <i>b</i>,
 and +1 if <i>a</i> &gt; <i>b</i>.<p>
 
-<defitem normalize {normalize <i>text</i>}>
-
-Given a text string, trims leading and trailing whitespace, and
-reduces all internal whitespace to single spaces.<p>
-
 <defitem optval {optval <i>varname option</i> ?<i>defvalue</i>?}>
 
 Extracts an <i>option</i> and its value from a list stored in a
 variable called <i>varname</i>, returning the value.  If the
 <i>option</i> is not found in the list, returns <i>defvalue</i>, or
 the empty string if <i>defvalue</i> is not specified.<p>
-
-<defitem outdent {outdent <i>block</i>}>
-
-Given a block of text, "outdent" deletes any leading blank line or trailing
-blank line. It also determines the longest common whitespace prefix shared 
-by the remaining lines (assuming the whitespace does not contain tab 
-characters) and deletes it from each line.<p>  
 
 <defitem percent {percent <i>frac</i>}>
 
@@ -284,21 +169,6 @@ a rate in events/day:<p>
 <pre>
    set num [poisson [expr {$eventsPerDay / 1440.0}]]
 </pre>
-
-<defitem radians {radians <i>deg</i>}>
-
-Converts an angle in decimal degrees to radians.<p>
-
-<defitem readfile {readfile <i>filename</i>}>
-
-Opens the file with name <i>filename</i>, reads its contents, closes
-the file, and returns the contents.  Throws all of the open and read
-errors.  The file will be closed automatically on read errors.<p>
-
-<defitem require {require <i>expression message</i>}>
-
-This is identical to <iref assert> except that error message is the
-specified <i>message</i>.<p>
 
 <defitem restrict {restrict <i>varname vtype defval</i>}>
 
@@ -343,10 +213,6 @@ the Snit base type is given.<p>
 <defitem "count" {count validate <i>value</i>}>
 
 A count is a non-negative integer.  (snit::integer)<p>
-
-<defitem "distance" {distance validate <i>value</i>}>
-
-A distance is a non-negative floating point value. (snit::double)<p>
 
 <defitem hexcolor {hexcolor validate <i>value</i>}>
 
