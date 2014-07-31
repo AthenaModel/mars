@@ -1,0 +1,1259 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    sqldocument.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) sqldocument.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require sqlite3
+package require marsutil 1.0
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+    #-------------------------------------------------------------------
+    # Test harness
+
+    # bprint text
+    #
+    # text     A block of text
+    #
+    # Pretty prints the block of text, to make formatting tests easier.
+
+    proc bprint {text} {
+        return "\n$text    "
+    }
+
+    # cleanup
+    #
+    # This command cleans up after each test, returning the system
+    # to a known state.
+    
+    proc cleanup {} {
+        foreach instance [sqldocument info instances] {
+            $instance destroy
+        }
+    }
+
+    # testsection
+    #
+    # A test sqlsection(i) module
+
+    snit::type ::marsutil::test::testsection {
+        typevariable schema {
+            CREATE TABLE perm(a,b,c);
+        }
+
+        typevariable tempschema {
+            CREATE TEMP TABLE temp(d,e,f);
+        }
+
+        typemethod {sqlsection schema} {} {
+            return [::marsutil::outdent $schema]
+        }
+
+        typemethod {sqlsection tempschema} {} {
+            return [::marsutil::outdent $tempschema]
+        }
+
+        typemethod {sqlsection tempdata} {} {
+            return {
+                temp {
+                    {d 1 e 2 f 3}
+                    {d 4 e 5 f 6}
+                }
+            }
+        }
+
+        typemethod {sqlsection functions} {} {
+            set functions [list]
+
+            lappend functions concat [list ::concat]
+
+            return $functions
+        }
+    }
+
+    # badsection
+    #
+    # A test sqlsection(i) module with a bad schema
+
+    snit::type ::marsutil::test::badsection {
+        typevariable schema {
+            CREATE TABLE (a b c);
+        }
+
+        typemethod {sqlsection schema} {} {
+            return [::marsutil::outdent $schema]
+        }
+
+        typemethod {sqlsection tempschema} {} {
+            return ""
+        }
+
+        typemethod {sqlsection functions} {} {
+            return ""
+        }
+    }
+
+    proc delete_setup {} {
+        sqldocument db
+        db open :memory:
+
+        db eval {
+            CREATE TABLE first(
+                first_id INTEGER PRIMARY KEY,
+                name TEXT
+            );
+
+            CREATE TABLE second(
+                second_id INTEGER PRIMARY KEY,
+                first_id INTEGER REFERENCES first(first_id)
+                         ON DELETE CASCADE,
+                parent INTEGER REFERENCES second(second_id)
+                         ON DELETE CASCADE,
+                name TEXT
+            );
+
+            CREATE TABLE third(
+                third_id INTEGER PRIMARY KEY,
+                second_id REFERENCES second(second_id),
+                name TEXT
+            );
+
+            CREATE TABLE fourth(
+                fourth_id INTEGER PRIMARY KEY,
+                name TEXT
+            );
+
+            -- fifth will depend on fourth, but using a trigger
+            -- rather than an FK reference.
+            CREATE TABLE fifth(
+                fifth_id INTEGER PRIMARY KEY,
+                fourth_id INTEGER
+            );
+
+            CREATE TRIGGER fifth_cascades_to_fourth
+            AFTER DELETE ON fifth BEGIN
+                DELETE FROM fourth WHERE fourth_id=old.fourth_id;
+            END;
+
+            INSERT INTO first(first_id,name) VALUES(1,'A');
+            INSERT INTO first(first_id,name) VALUES(2,'B');
+            INSERT INTO first(first_id,name) VALUES(3,'C');
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(1,1,1,"X");
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(2,2,1,"Y");
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(3,3,2,"Z");
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(4,2,NULL,"W");
+
+            INSERT INTO fourth(fourth_id,name) VALUES(4,'D');
+            INSERT INTO fourth(fourth_id,name) VALUES(5,'E');
+            INSERT INTO fourth(fourth_id,name) VALUES(6,'F');
+
+            INSERT INTO fifth(fifth_id,fourth_id) VALUES(51,4);
+            INSERT INTO fifth(fifth_id,fourth_id) VALUES(52,NULL);
+        }
+    }
+
+    proc safe_setup {} {
+        sqldocument db
+        db open :memory:
+        db function plus ::tcl::mathop::+
+
+        db eval {
+            CREATE TABLE mytab(a,b,c);
+
+            INSERT INTO mytab(a,b,c) VALUES(1,2,3);
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # sqlsection schema
+
+    test sqlsection_schema-1.1 {Base schema is defined} -body {
+        bprint [sqldocument sqlsection schema]
+    } -result {
+    }
+
+    #-------------------------------------------------------------------
+    # sqlsection tempschema
+
+    test sqlsection_tempschema-1.1 {Base schema is defined} -body {
+        bprint [sqldocument sqlsection tempschema]
+    } -result {
+    }
+
+    #-------------------------------------------------------------------
+    # sqlsection functions
+
+    test sqlsection_functions-1.1 {Standard functions are defined} -body {
+        sqldocument sqlsection functions
+    } -result {dicteq ::marsutil::dicteq dictget ::marsutil::sqldocument::dictget dictglob ::marsutil::dictglob error ::error format ::format joinlist ::join nonempty ::marsutil::sqldocument::NonEmpty percent ::marsutil::percent wallclock {::clock seconds} sqldocument_grab ::marsutil::sqldocument::GrabFunc sqldocument_monitor ::marsutil::sqldocument::RowMonitorFunc}
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {Object is initially closed} -body {
+        sqldocument db
+        db isopen
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test constructor-1.2 {Object initially has no file} -body {
+        sqldocument db
+        db dbfile
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test constructor-2.1 {Database object is initially null} -body {
+        sqldocument db
+        db eval {foo}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {database is not open}
+
+    #-------------------------------------------------------------------
+    # -clock
+
+    test clock-1.1 {-clock functions defines} -setup {
+        ::marsutil::simclock reset
+    } -body {
+        sqldocument db -clock ::marsutil::simclock
+        db open :memory:
+        db eval {SELECT now(), tozulu(0)}
+    } -cleanup {
+        cleanup
+    } -result {0 010000ZJAN70}
+
+    #-------------------------------------------------------------------
+    # register/sections
+
+    test register-1.1 {Adds sqlsection to registry} -body {
+        sqldocument db
+        db register ::foo
+        db sections
+    } -cleanup {
+        cleanup
+    } -result {::marsutil::sqldocument ::foo}
+
+    test register-1.2 {Duplicate sections are ignored} -body {
+        sqldocument db
+        db register ::foo
+        db register ::foo
+        db register ::foo
+        db sections
+    } -cleanup {
+        cleanup
+    } -result {::marsutil::sqldocument ::foo}
+
+    #-------------------------------------------------------------------
+    # open
+
+    test open-1.1 {PRAGMA synchronous=OFF} -body {
+        sqldocument db
+        db open :memory:
+        db eval {PRAGMA synchronous}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test open-1.2 {PRAGMA temp_store=MEMORY} -body {
+        sqldocument db
+        db open :memory:
+        db eval {PRAGMA temp_store}
+    } -cleanup {
+        cleanup
+    } -result {2}
+
+    test open-1.3 {dbfile is set} -body {
+        sqldocument db
+        db open :memory:
+        db dbfile
+    } -cleanup {
+        cleanup
+    } -result {:memory:}
+
+    test open-1.4 {isopen is true} -body {
+        sqldocument db
+        db open :memory:
+        db isopen
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test open-1.5 {Error: database already open} -body {
+        sqldocument db
+        db open :memory:
+        db open :memory:
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {database is already open}
+
+    test open-1.6 {Error: no file specified} -body {
+        sqldocument db
+        db open
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {database file name not specified}
+
+    test open-1.7 {Can reopen previous database} -body {
+        sqldocument db
+        db open :memory:
+        db close
+
+        db open
+
+        # Make sure that we think it's open and that there's
+        # really a database attached.
+        list [db isopen] [db eval {SELECT 1}]
+    } -cleanup {
+        cleanup
+    } -result {1 1}
+
+    # open-2.x: verify that the standard functions are defined automatically
+    # when the database is opened.
+    test open-2.1 {Standard function: format} -body {
+        sqldocument db
+        db open :memory:
+        db onecolumn {SELECT format('%04d', 15)}
+    } -cleanup {
+        cleanup
+    } -result {0015}
+
+    test open-2.2 {Standard function: joinlist} -body {
+        sqldocument db
+        db open :memory:
+        db onecolumn {SELECT joinlist('a b c', '+')}
+    } -cleanup {
+        cleanup
+    } -result {a+b+c}
+
+    test open-2.3 {Standard function: wallclock} -body {
+        sqldocument db
+        db open :memory:
+        set now [db onecolumn {SELECT wallclock()}]
+        expr {$now > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test open-2.4 {Standard function: percent } -body {
+        sqldocument db
+        db open :memory:
+        db onecolumn {SELECT percent(0.5)}
+    } -cleanup {
+        cleanup
+    } -result { 50%}
+
+    # open-3.x: Temp Schema and Functions from other sections
+    test open-3.1 {Temp schema defined} -body {
+        # open a document and register a temp schema
+        sqldocument db
+        db register ::marsutil::test::testsection
+        db open :memory:
+
+        db eval {SELECT type, name FROM sqlite_temp_master}
+    } -cleanup {
+        cleanup
+    } -result {table temp}
+
+    test open-3.2 {Functions defined} -body {
+        # NEXT, open a document and register an additional sqlsection 
+        # with functions
+        sqldocument db
+        db register ::marsutil::test::testsection
+        db open :memory:
+
+        db onecolumn {SELECT concat('a b', 'c d')}
+    } -cleanup {
+        cleanup
+    } -result {a b c d}
+
+    test open-3.3 {Temp Data defined} -body {
+        # NEXT, open a document and register an additional sqlsection 
+        # with temp data
+        sqldocument db
+        db register ::marsutil::test::testsection
+        db open :memory:
+
+        db eval {SELECT d,e,f FROM temp}
+    } -cleanup {
+        cleanup
+    } -result {1 2 3 4 5 6}
+    
+    #-------------------------------------------------------------------
+    # -foreignkeys
+
+    test foreignkeys-1.1 {foreign keys are on by default} -body {
+        sqldocument db
+        db open :memory:
+        db onecolumn {PRAGMA foreign_keys}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test foreignkeys-1.2 {foreign keys can be disabled} -body {
+        sqldocument db -foreignkeys off
+        db open :memory:
+        db onecolumn {PRAGMA foreign_keys}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+
+    #-------------------------------------------------------------------
+    # clear
+
+    test clear-1.1 {Error: database is not open} -body {
+        sqldocument db
+        db clear
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {database is not open}
+
+    test clear-1.2 {Error: database is locked} -body {
+        sqldocument db1
+        db1 open test.db
+
+        sqldocument db2
+        db2 open test.db
+
+        db1 eval {BEGIN TRANSACTION}
+        db2 clear
+    } -returnCodes {
+        error
+    } -cleanup {
+        db1 eval {COMMIT TRANSACTION}
+        cleanup
+        removeFile test.db
+    } -result {database is locked}
+
+    test clear-1.3 {Error: could not initialize database} -body {
+        sqldocument db
+        db register ::marsutil::test::badsection
+        db open :memory:
+        db clear
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {could not initialize database: near "(": syntax error}
+
+    test clear-1.4 {Base schema is defined} -body {
+        sqldocument db
+        db open :memory:
+        db clear
+
+        db eval {SELECT name FROM sqlite_master}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test clear-1.5 {Section schema is defined} -body {
+        sqldocument db
+        db register ::marsutil::test::testsection
+        db open :memory:
+        db clear
+
+        db eval {SELECT name FROM sqlite_master}
+    } -cleanup {
+        cleanup
+    } -result {perm}
+
+    test clear-1.6 {Temp schema is still defined} -body {
+        sqldocument db
+        db register ::marsutil::test::testsection
+        db open :memory:
+        db clear
+
+        db eval {SELECT name FROM sqlite_temp_master}
+    } -cleanup {
+        cleanup
+    } -result {temp}
+
+    test clear-1.8 {functions remain defined} -body {
+        sqldocument db
+        db open :memory:
+        db clear
+
+        db onecolumn {SELECT format('%04d', 15)}
+    } -cleanup {
+        cleanup
+    } -result {0015}
+
+    test clear-1.9 {Non-schema tables are dropped} -body {
+        sqldocument db
+        db open :memory:
+
+        db eval {CREATE TABLE foo(a,b,c)}
+        set a [db eval {SELECT name FROM sqlite_master}]
+
+        db clear
+        set b [db eval {SELECT name FROM sqlite_master}]
+        
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {foo {}}
+
+    test clear-1.10 {Schema tables are emptied} -body {
+        sqldocument db
+        db register ::marsutil::test::testsection
+        db open :memory:
+        db clear
+
+        db eval {INSERT INTO perm(a,b,c) VALUES(1,2,3)}
+
+        set a [db eval {SELECT COUNT(a) FROM perm}]
+
+        db clear
+        set b [db eval {SELECT COUNT(a) FROM perm}]
+
+        # Clearing should delete the 1 record, yielding 0
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+    #-------------------------------------------------------------------
+    # commit
+
+    test commit-1.1 {Error: database is not open} -body {
+        sqldocument db
+        db commit
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {database is not open}
+
+    test commit-1.2 {No commit except on request} -body {
+        sqldocument db
+        db open test.db
+        db clear
+
+        db eval {CREATE TABLE fred(a,b,c)}
+        set a [db tables]
+
+        # Close without committing
+        db destroy
+        sqldocument db
+        db open test.db
+
+        set b [db tables]
+
+        # Should only see fred before closing
+        list $a $b
+    } -cleanup {
+        cleanup
+        removeFile test.db
+    } -result {fred {}}
+
+    test commit-1.3 {commit on request} -body {
+        sqldocument db
+        db open test.db
+        db clear
+
+        db eval {CREATE TABLE fred(a,b,c)}
+        set a [db tables]
+
+        # Commit and destroy
+        db commit
+        db destroy
+
+        sqldocument db
+        db open test.db
+
+        set b [db tables]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+        removeFile test.db
+    } -result {fred fred}
+
+
+    #-------------------------------------------------------------------
+    # close
+
+    test close-1.1 {Error: database is not open} -body {
+        sqldocument db
+        db close
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {database is not open}
+
+    test close-1.2 {Commit on close} -body {
+        sqldocument db
+        db open test.db
+        db clear
+
+        db eval {CREATE TABLE fred(a,b,c)}
+        set a [db tables]
+
+        db close
+
+        db open
+
+        set b [db tables]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+        removeFile test.db
+    } -result {fred fred}
+
+    #-------------------------------------------------------------------
+    # lock/unlock/islocked
+
+    test lock-1.1 {tables are unlocked by default} -body {
+        sqldocument db
+        db open :memory:
+
+        db eval { CREATE TABLE fred(a,b,c); }
+        db islocked fred
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test lock-1.2 {islocked is true for locked tables} -body {
+        sqldocument db
+        db open :memory:
+
+        db eval { CREATE TABLE fred(a,b,c); }
+        db lock fred
+        db islocked fred
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test lock-1.3 {islocked is false once unlocked} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+        db lock fred
+        set a [db islocked fred]
+        db unlock fred
+        set b [db islocked fred]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+    test lock-1.4 {can lock multiple tables at once} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+        db eval { CREATE TABLE george(d,e,f); }
+
+        db lock {fred george}
+        list [db islocked fred] [db islocked george]
+    } -cleanup {
+        cleanup
+    } -result {1 1}
+
+    test lock-1.5 {can unlock multiple tables at once} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+        db eval { CREATE TABLE george(d,e,f); }
+
+        db lock {fred george}
+        set a [list [db islocked fred] [db islocked george]]
+
+        db unlock {fred george}
+        set b [list [db islocked fred] [db islocked george]]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {{1 1} {0 0}}
+
+    test lock-1.6 {can safely lock locked tables} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+        db lock fred
+        db lock fred
+        db islocked fred
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test lock-1.7 {can safely unlock unlocked tables} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+        db unlock fred
+        db unlock fred
+        db islocked fred
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test lock-1.8 {can't insert into a locked table} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+        db lock fred
+
+        db eval { INSERT INTO fred(a) VALUES(1) }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Table "fred" is read-only}
+
+    test lock-1.9 {can't update a locked table} -body {
+        sqldocument db
+        db open :memory:
+
+        db eval { CREATE TABLE fred(a,b,c); }
+        db eval { INSERT INTO fred(a) VALUES(1) }
+        db lock fred
+
+        db eval { UPDATE fred SET b=2; }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Table "fred" is read-only}
+
+    test lock-1.10 {can't delete from a locked table} -body {
+        sqldocument db
+        db open :memory:
+
+        db eval { CREATE TABLE fred(a,b,c); }
+        db eval { INSERT INTO fred(a) VALUES(1) }
+        db lock fred
+
+        db eval { DELETE FROM fred; }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Table "fred" is read-only}
+
+    test lock-1.11 {*can* drop a locked table} -body {
+        sqldocument db
+        db open :memory:
+
+        db eval { CREATE TABLE fred(a,b,c); }
+        db eval { INSERT INTO fred(a) VALUES(1) }
+        db lock fred
+
+        db eval { DROP TABLE fred; }
+        db tables
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test lock-1.12 {can insert/update/delete once unlocked} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TABLE fred(a,b,c); }
+
+        db lock fred
+        db unlock fred
+
+        db eval { INSERT INTO fred(a) VALUES(1) }
+        db eval { UPDATE fred SET b=2; }
+        db eval { DELETE FROM fred; }
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test lock-1.13 {can lock and unlock temporary tables} -body {
+        sqldocument db
+        db open :memory:
+        db eval { CREATE TEMP TABLE fred(a,b,c); }
+
+        db lock fred 
+        set a [db islocked fred]
+
+        db unlock fred
+        set b [db islocked fred]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+
+    #-------------------------------------------------------------------
+    # Delegated Methods
+    #
+    # There's no need to test the delegated methods in detail.  All we
+    # really need to do is verify that we are delegating the methods we
+    # think we are.
+
+    test delegated-1.1 {Non-* delegation} -body {
+        sqldocument db
+        set methods [db info methods]
+
+        set count 0
+        foreach name {saveas query tables schema mat} {
+            if {[lsearch -exact $methods $name] == -1} {
+                incr count
+            }
+        }
+
+        set count
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test delegated-1.2 {* delegation} -body {
+        sqldocument db
+        db open :memory:
+
+        # Use a method delegated to *, and verify that there's no error.
+        db eval {SELECT 1}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # DICT collation sequence
+
+    test dict-1.1 {Can create columns with DICT collation} -setup {
+        sqldocument db
+        db open :memory:
+    } -body {
+        db eval {
+            CREATE TABLE tab(name TEXT COLLATE DICT);
+        }
+
+        foreach name {N1 N10 N12 N2 N3} {
+            db eval {
+                INSERT INTO tab(name) VALUES($name)
+            }
+        }
+
+        set a [db eval {SELECT name FROM tab}]
+        set b [db eval {SELECT name FROM tab ORDER BY name}]
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {{N1 N10 N12 N2 N3} {N1 N2 N3 N10 N12}}
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {delete one row} -setup {
+        delete_setup
+    } -body {
+        db delete first {first_id=2}
+        db eval {SELECT * FROM first}
+    } -cleanup {
+        cleanup
+    } -result {1 A 3 C}
+
+    test delete-1.2 {delete rows from several tables} -setup {
+        delete_setup
+    } -body {
+        db delete first {first_id=2} fourth {fourth_id=5}
+
+        set a [db eval {SELECT * FROM first}]
+        set b [db eval {SELECT * FROM fourth}]
+        
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {{1 A 3 C} {4 D 6 F}}
+
+
+    test delete-2.1 {delete one row, -grab} -setup {
+        delete_setup
+    } -body {
+        db delete -grab second {second_id=4}
+    } -cleanup {
+        cleanup
+    } -result {{second INSERT} {4 2 {} W}}
+    
+    test delete-2.2 {delete rows from multiple tables, -grab} -setup {
+        delete_setup
+    } -body {
+        db delete -grab second {second_id=4} fourth {fourth_id=5}
+    } -cleanup {
+        cleanup
+    } -result {{second INSERT} {4 2 {} W} {fourth INSERT} {5 E}}
+
+    test delete-2.3 {cascading delete, -grab} -setup {
+        delete_setup
+    } -body {
+        db delete -grab first {first_id=1}
+    } -cleanup {
+        cleanup
+    } -result {{first INSERT} {1 A} {second INSERT} {1 1 1 X 2 2 1 Y 3 3 2 Z}}
+
+    test delete-3.1 {grab with triggered-delete} -setup {
+        delete_setup
+    } -body {
+        # Deleting a row from fifth that references a row in fourth
+        # should delete and grab that row as well.
+        db delete -grab fifth {fifth_id=51}
+    } -cleanup {
+        cleanup
+    } -result {{fifth INSERT} {51 4} {fourth INSERT} {4 D}}
+
+    test delete-3.2 {grab with triggered-delete, no match} -setup {
+        delete_setup
+    } -body {
+        # Deleting a row from fifth that has NULL in fourth_id
+        # should grab only the row from fifth.
+        db delete -grab fifth {fifth_id=52}
+    } -cleanup {
+        cleanup
+    } -result {{fifth INSERT} {52 {}}}
+
+    test delete-4.1 {grab NULLs use nullvalue} -setup {
+        delete_setup
+        db nullvalue "@"
+    } -body {
+        # Deleting a row from fifth that has NULL in fourth_id
+        # should grab only the row from fifth.
+        db delete -grab fifth {fifth_id=52}
+    } -cleanup {
+        db nullvalue ""
+        cleanup
+    } -result {{fifth INSERT} {52 @}}
+
+    #-------------------------------------------------------------------
+    # safeeval
+
+    test safeeval-1.1 {Can't update in safeeval} -setup {
+        safe_setup
+    } -body {
+        db safeeval { UPDATE mytab SET a=5 }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {query error: not authorized}
+    
+    test safeeval-1.2 {Can select in safeeval} -setup {
+        safe_setup
+    } -body {
+        db safeeval { SELECT * FROM mytab }
+    } -cleanup {
+        cleanup
+    } -result {1 2 3}
+
+    test safeeval-1.3 {Can use function in safeeval} -setup {
+        safe_setup
+    } -body {
+        db safeeval { SELECT plus(a,b,c) FROM mytab }
+    } -cleanup {
+        cleanup
+    } -result {6}
+
+    #-------------------------------------------------------------------
+    # safequery
+
+    test safequery-1.1 {Can't update in safequery} -setup {
+        safe_setup
+    } -body {
+        db safequery { UPDATE mytab SET a=5 }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {query error: not authorized}
+    
+    test safequery-1.2 {Can select in safequery} -setup {
+        safe_setup
+    } -body {
+        bprint [db safequery { SELECT * FROM mytab }]
+    } -cleanup {
+        cleanup
+    } -result {
+a b c 
+- - - 
+1 2 3 
+    }
+
+    test safequery-1.3 {Can use function in safequery} -setup {
+        safe_setup
+    } -body {
+        bprint [db safequery { SELECT plus(a,b,c) FROM mytab }]
+    } -cleanup {
+        cleanup
+    } -result {
+plus(a,b,c) 
+----------- 
+6           
+    }
+
+    test safequery-1.4 {Can use options in safequery} -setup {
+        safe_setup
+    } -body {
+        bprint [db safequery { SELECT plus(a,b,c) FROM mytab } -mode list]
+    } -cleanup {
+        cleanup
+    } -result {
+plus(a,b,c)  6
+    }
+
+    #-------------------------------------------------------------------
+    # monitor
+
+    variable UpdatedRows
+
+    proc monitor_setup {} {
+        variable UpdatedRows
+
+        sqldocument db
+        db open :memory:
+
+        db eval {
+            CREATE TABLE mytab(
+               a INTEGER,
+               b INTEGER,
+               c TEXT,
+               PRIMARY KEY (a,b)
+            );
+
+            INSERT INTO mytab(a,b,c) VALUES(1,2,'FOO');
+            INSERT INTO mytab(a,b,c) VALUES(3,4,'BAR');
+        }
+
+        db monitor add mytab {a b}
+
+        set UpdatedRows [list]
+        notifier bind [namespace current]::db <mytab> \
+            ::test [namespace current]::MonitorEvent
+
+        notifier bind [namespace current]::db <Monitor> \
+            ::test [list [namespace current]::MonitorEvent <Monitor> ""]
+    }
+
+    proc MonitorEvent {op key} {
+        variable UpdatedRows
+        lappend UpdatedRows $op $key
+    }
+
+    test monitor-1.1 {Can monitor inserts in script} -setup {
+        monitor_setup
+    } -body {
+        db monitor script {
+            db eval {INSERT INTO mytab(a,b,c) VALUES(5,6,'BAZ')}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {update {5 6} <Monitor> {}}
+
+    test monitor-1.2 {Can monitor updates in script} -setup {
+        monitor_setup
+    } -body {
+        db monitor script {
+            db eval {UPDATE mytab SET c='FROB'}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {update {1 2} update {3 4} <Monitor> {}}
+
+    test monitor-1.3 {Can monitor deletes in script} -setup {
+        monitor_setup
+    } -body {
+        db monitor script {
+            db eval {DELETE FROM mytab WHERE a=1}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {delete {1 2} <Monitor> {}}
+
+    test monitor-2.1 {Can monitor inserts in transaction} -setup {
+        monitor_setup
+    } -body {
+        db monitor transaction {
+            db eval {INSERT INTO mytab(a,b,c) VALUES(5,6,'BAZ')}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {update {5 6} <Monitor> {}}
+
+    test monitor-2.2 {Can monitor updates in transaction} -setup {
+        monitor_setup
+    } -body {
+        db monitor transaction {
+            db eval {UPDATE mytab SET c='FROB'}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {update {1 2} update {3 4} <Monitor> {}}
+
+    test monitor-2.3 {Can monitor deletes in transaction} -setup {
+        monitor_setup
+    } -body {
+        db monitor transaction {
+            db eval {DELETE FROM mytab WHERE a=1}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {delete {1 2} <Monitor> {}}
+
+    test monitor-3.1 {No monitoring outside of script/transaction} -setup {
+        monitor_setup
+    } -body {
+        db eval {DELETE FROM mytab WHERE a=1}
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test monitor-4.1 {Remove disables monitoring} -setup {
+        monitor_setup
+    } -body {
+        db monitor remove mytab
+
+        db monitor transaction {
+            db eval {DELETE FROM mytab WHERE a=1}
+        }
+        set UpdatedRows
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # explain
+
+    proc explain_setup {} {
+        variable Explanation
+
+        sqldocument db -explaincmd [namespace current]::ExplainCmd
+        db open :memory:
+
+        db eval {
+            CREATE TABLE mytab(
+               a INTEGER,
+               b INTEGER,
+               c TEXT,
+               PRIMARY KEY (a,b)
+            );
+
+            INSERT INTO mytab(a,b,c) VALUES(1,2,'FOO');
+            INSERT INTO mytab(a,b,c) VALUES(3,4,'BAR');
+        }
+
+        set Explanation [list]
+    }
+
+    proc ExplainCmd {query explanation} {
+        variable Explanation
+        set Explanation [list $query $explanation]
+    }
+
+
+    test explain-1.1 {explain does a normal eval} -setup {
+        explain_setup  
+    } -body {
+        db explain {SELECT * FROM mytab}
+    } -cleanup {
+        cleanup
+    } -result {1 2 FOO 3 4 BAR}
+
+    test explain-1.2 {explain handles variables} -setup {
+        explain_setup  
+    } -body {
+        set a 3
+        db explain {SELECT * FROM mytab WHERE a=$a}
+    } -cleanup {
+        cleanup
+    } -result {3 4 BAR}
+
+    test explain-1.3 {explain handles EXPLAIN QUERY PLAN} -setup {
+        explain_setup  
+    } -body {
+        db explain {SELECT * FROM mytab}
+        set Explanation
+    } -cleanup {
+        cleanup
+    } -result {{SELECT * FROM mytab} {selectid  0
+order     0
+from      0
+detail    SCAN TABLE mytab
+}}
+
+    #-------------------------------------------------------------------
+    # Standard Functions
+
+    # TBD: The existence and nominal operation of the standard functions
+    # are tested above, in open-2.x.  We should really have a full
+    # test for each; however, as all of them are based on functions
+    # tested elsewhere, this should be good enough for now.
+
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+
+
+
+

@@ -1,0 +1,512 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    undostack.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for undostack(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    eval ::tcltest::configure $argv
+}
+
+# Define a constraint to comment out tests which shouldn't
+# or haven't been updated yet:
+
+::tcltest::testConstraint tbd
+
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require marsutil
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import marsutil(n), for use in the test cases.
+    namespace import ::marsutil::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+    #-------------------------------------------------------------------
+    # Scenario Definitions
+
+    # Create a run-time database in memory
+    sqldocument rdb \
+        -autotrans no \
+        -rollback on
+    rdb open :memory:
+    rdb register ::marsutil::undostack
+    rdb clear
+
+
+    # pprint block
+    #
+    # Pretty-prints a result block so that the test looks nice
+    
+    proc pprint {block} {
+        set block [string map [list \" \'] $block]
+        return "\n$block    "
+    }
+
+    # create ?options...?
+    #
+    # Creates an instance of undostack called "us" with the given options.
+    proc create {args} {
+        variable counters
+
+        # Create a undostack.
+        undostack us \
+            -rdb [namespace current]::rdb \
+            -tag us                       \
+            {*}$args
+
+        undostack them \
+            -rdb [namespace current]::rdb \
+            -tag them \
+            {*}$args
+
+        # Prepare data for undo tests
+        array set counters {
+            abc 0
+            def 0
+            qrs 0
+            xyz 0
+        }
+
+    }
+
+    proc cleanup {} {
+        foreach o [undostack info instances] {
+            $o destroy
+        }
+    }
+
+    # Routines for testing "edit undo"
+    proc Do {stack name} {
+        variable counters
+        incr counters($name)
+
+        $stack add [list [namespace current]::Undo $name]
+    }
+
+    proc Undo {name} {
+        variable counters
+        incr counters($name) -1
+    }
+
+    #-------------------------------------------------------------------
+    # Object Creation
+
+    test creation-1.1 {can't create two with same tag on one RDB} -setup {
+        create
+    } -body {
+        undostack badundostack \
+            -rdb [namespace current]::rdb \
+            -tag us
+    } -cleanup {
+        cleanup
+    } -returnCodes {
+        error
+    } -result {Error in constructor: Tag "us" already in use in RDB ::marsutil::test::rdb by undostack ::marsutil::test::us}
+
+    test creation-1.2 {can create two with two tags on one RDB} -setup {
+        create
+    } -body {
+        undostack goodundostack \
+            -rdb [namespace current]::rdb \
+            -tag good
+    } -cleanup {
+        goodundostack destroy
+        cleanup
+    } -result {::marsutil::test::goodundostack}
+
+    #-------------------------------------------------------------------
+    # Object Destruction
+
+    test destruction-1.1 {rdb clean up} -setup {
+        create
+        us add foo
+    } -body {
+        # FIRST, destroy the object
+        cleanup
+
+        # NEXT, verify that the undostack(n) table is empty
+        rdb onecolumn {SELECT count(rowid) FROM undostack_stack}
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # add
+
+    test add-1.1 {-undo off, stack remains empty} -setup {
+        create -undo off
+    } -body {
+        us add abc
+        rdb onecolumn {SELECT count(id) FROM undostack_stack}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test add-1.2 {-undo on, -automark on} -setup {
+        create
+    } -body {
+        us add abc
+        us add def
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag mark script 
+-- --- ---- ------ 
+1  us  1    abc    
+2  us  1    def    
+    }
+
+    test add-1.3 {-undo on, -automark off} -setup {
+        create -automark off
+    } -body {
+        us add abc
+        us add def
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag mark script 
+-- --- ---- ------ 
+1  us  0    abc    
+2  us  0    def    
+    }
+
+    #-------------------------------------------------------------------
+    # -undo
+    #
+    # The effects of -undo are mostly tested elsewhere; however, setting
+    # -undo to off should clear the undostack.  Let's check that.
+
+    test optundo-1.1 {setting -undo off clears undo stack} -setup {
+        create
+        us add abc
+        us add def
+    } -body {
+        set a [rdb eval {SELECT count(id) FROM undostack_stack}]
+        us configure -undo off
+        set b [rdb eval {SELECT count(id) FROM undostack_stack}]
+        
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {2 0}
+
+
+    #-------------------------------------------------------------------
+    # edit reset
+
+
+    test reset-1.1 {edit reset clears undo stack} -setup {
+        create
+    } -body {
+        us add abc
+        us add def
+
+        set a [rdb eval {SELECT count(id) FROM undostack_stack}]
+        us edit reset
+        set b [rdb eval {SELECT count(id) FROM undostack_stack}]
+        
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {2 0}
+
+    test reset-1.2 {edit reset doesn't affect other tags} -setup {
+        create
+    } -body {
+        us add abc
+        us add def
+        them add qrs
+        them add xyz
+
+        us edit reset
+
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag  mark script 
+-- ---- ---- ------ 
+3  them 1    qrs    
+4  them 1    xyz    
+    }
+
+    test reset-1.3 {edit reset is OK when stack is empty} -setup {
+        create
+    } -body {
+        us edit reset
+        rdb eval {SELECT count(id) FROM undostack_stack}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test reset-1.4 {edit reset is OK when -undo off} -setup {
+        create -undo off
+    } -body {
+        us edit reset
+        rdb eval {SELECT count(id) FROM undostack_stack}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # edit mark
+
+    test mark-1.1 {edit mark does nothing when -undo off} -setup {
+        create -undo off -automark off
+    } -body {
+        set a [rdb eval {SELECT count(id) FROM undostack_stack}]
+        us edit mark
+        set b [rdb eval {SELECT count(id) FROM undostack_stack}]
+        
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {0 0}
+
+    test mark-1.2 {edit mark inserts mark} -setup {
+        create -undo on -automark off
+    } -body {
+        us edit mark
+        us add abc
+        us add def
+        us edit mark
+        us add ghi
+        us add jkl
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag mark script 
+-- --- ---- ------ 
+1  us  1           
+2  us  0    abc    
+3  us  0    def    
+4  us  1           
+5  us  0    ghi    
+6  us  0    jkl    
+    }
+
+    #-------------------------------------------------------------------
+    # edit canundo
+
+    test canundo-1.1 {can undo if stack not empty} -setup {
+        create
+    } -body {
+        us add abc
+        us edit canundo
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test canundo-1.2 {can't undo if stack is empty} -setup {
+        create 
+    } -body {
+        us edit canundo
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test canundo-1.3 {can't undo if undo off} -setup {
+        create -undo off
+    } -body {
+        us add abc
+        us edit canundo
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+
+    #-------------------------------------------------------------------
+    # edit undo
+
+    test undo-1.1 {throws error when -undo off} -setup {
+        create -undo off
+    } -body {
+        us edit undo
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {nothing to undo}
+
+    test undo-1.2 {throws error when there's nothing to undo} -setup {
+        create -undo on
+    } -body {
+        us edit undo
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {nothing to undo}
+
+    test undo-2.1 {stack changes: undo with -automark on} -setup {
+        create
+    } -body {
+        Do us abc
+        Do us def
+        Do us abc
+        us edit undo
+        us edit undo
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag mark script                     
+-- --- ---- -------------------------- 
+1  us  1    ::marsutil::test::Undo abc 
+    }
+
+    test undo-2.2 {scripts called: undo with -automark on} -setup {
+        create
+    } -body {
+        Do us abc
+        Do us def
+        Do us abc
+        us edit undo
+        us edit undo
+        array get counters
+    } -cleanup {
+        cleanup
+    } -result {qrs 0 abc 1 xyz 0 def 0}
+
+
+    test undo-2.3 {stack changes: -automark off, no marks} -setup {
+        create -automark off
+    } -body {
+        Do us abc
+        Do us def
+        Do us abc
+        us edit undo
+        us edit canundo
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test undo-2.4 {scripts called: -automark off, no marks} -setup {
+        create -automark off
+    } -body {
+        Do us abc
+        Do us def
+        Do us abc
+        us edit undo
+        array get counters
+    } -cleanup {
+        cleanup
+    } -result {qrs 0 abc 0 xyz 0 def 0}
+
+
+    test undo-2.5 {stack changes: -automark off, edit mark} -setup {
+        create -automark off
+    } -body {
+        Do us abc
+        Do us def
+        us edit mark
+        Do us abc
+        us edit undo
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag mark script                     
+-- --- ---- -------------------------- 
+1  us  0    ::marsutil::test::Undo abc 
+2  us  0    ::marsutil::test::Undo def 
+    }
+
+    test undo-2.6 {script called: -automark off, edit mark} -setup {
+        create -automark off
+    } -body {
+        Do us abc
+        Do us def
+        us edit mark
+        Do us abc
+        us edit undo
+        array get counters
+    } -cleanup {
+        cleanup
+    } -result {qrs 0 abc 1 xyz 0 def 1}
+
+
+    test undo-3.1 {multiple tags, -automark on} -setup {
+        create
+    } -body {
+        Do us abc
+        Do them qrs
+        Do us def
+        Do them xyz
+        us edit undo
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag  mark script                     
+-- ---- ---- -------------------------- 
+1  us   1    ::marsutil::test::Undo abc 
+2  them 1    ::marsutil::test::Undo qrs 
+4  them 1    ::marsutil::test::Undo xyz 
+    }
+
+    test undo-3.2 {multiple tags, -automark off} -setup {
+        create -automark off
+    } -body {
+        us edit mark
+        Do us abc
+        Do them qrs
+        Do us def
+        Do them xyz
+        Do us abc
+        Do them qrs
+
+        us edit undo
+        pprint [rdb query {SELECT * FROM undostack_stack}]
+    } -cleanup {
+        cleanup
+    } -result {
+id tag  mark script                     
+-- ---- ---- -------------------------- 
+3  them 0    ::marsutil::test::Undo qrs 
+5  them 0    ::marsutil::test::Undo xyz 
+7  them 0    ::marsutil::test::Undo qrs 
+    }
+
+
+
+    
+
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test

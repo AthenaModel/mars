@@ -1,0 +1,898 @@
+<manpage {marsutil(n) order(n)} "Mars Order Processor">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsutil 1.0
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+An <i>order</i>, in the sense of this man page, is an input to the
+application that changes the application's state in some way.  There
+are typically a number of requirements on such inputs:<p>
+
+<ul>
+  <li> Thorough validation
+  <li> Undo/Redo support
+  <li> Recording and replay
+</ul>
+
+The easiest way to meet these requirements is to route all inputs
+through a single mechanism that provides the necessary tools.
+order(n) is such a mechanism.<p>
+
+order(n) allows the application to define "orders".  An order is one
+of these critical inputs.  The term "order" is used both for a
+specific kind of order, and for an instance of that kind.  Each kind
+of order consists of:<p>
+
+<ul>
+  <li> A name.  Order names are conventionally in uppercase with
+       colons as word separators, e.g., "ACTOR:CREATE".  The tokens
+       in the name are usually used to group related orders; thus, all
+       actor-related orders might begin with "ACTOR:".<p>
+
+  <li> Metadata, which includes a list of the order's parameters.<p>
+
+  <li> A body, a script that validates the parameter values and then finally
+       carries out the work of the order.  The parameter values are
+       provided to the body as a parameter dictionary.<p>
+</ul>
+
+In essence, then, an order is a specialized kind of command that's
+registered with the order processor and has a stylized interface that
+allows the order processor and other tools to manipulate it
+programmatically.<p>
+
+The <xref orderdialog(n)> module produces order dialog boxes from
+given the order metadata.<p>
+
+<subsection "Order Metadata">
+
+An order's metadata defines the order's title and parameters.  It can
+also set a number of options that affect how the order is processed.
+Much of the metadata is used by <xref orderdialog(n)> rather than
+by <xref order(n)> itself.<p>
+
+See <xref "Order Metadata Commands"> for more information.<p>
+
+<subsection "Order Bodies">
+
+An order's body is primarily responsible for validating the order data
+and providing high-quality error messages for any invalid parameters.
+The actual work is usually handed off to one or more "mutator" commands
+implemented by the relevant application modules.<p>
+
+order(n) supports the application's multi-level undo/redo stack.
+Those orders which are undoable will submit an undo script to order(n)
+using <iref setundo> as their last action.  Typically, each mutator
+called by the body returns a script that undoes the mutator's effect;
+the order body aggregates these into a single undo script.<p>
+
+<subsection "Error Handling">
+
+When an order is sent, there are four possibilities.<p>
+
+First, it might be rejected due to errors in the order's parameter
+values.  In this case the order has no effect on the application.
+<iref order send> will throw an error with error code <b>REJECT</b> and
+a result that is a dictionary of error messages by parameter name.  If
+the order is rejected for some cause that's independent of any
+particular parameter, the error dictionary will include the error
+message as the value of key "*".<p>
+
+Second, it might be cancelled.  In this case, <iref order send> will
+log the cancellation and return normally.<p>
+
+Third, it might fail due to an unexpected error (i.e., a bug).  In
+this case, the error will be propagated normally, unless the interface
+specifies an <code>-errorcmd</code>.  See <xref "Order Interfaces">,
+below.<p>
+
+Finally, it may be successful, in which case the <code>-ordercmd</code> is
+called and <iref order send> returns the order body's return
+value.<p>
+
+Particular <iref order interface>s can customize the error
+handling to a degree.<p>
+
+<subsection "Order Interfaces">
+
+Every order is sent by a particular "interface": e.g., the GUI,
+the command-line, a network interface, and so forth.  Frequently
+the kind of processing the order should receive depends on the interface
+that sent it.  The order(n) module pre-defines two interfaces, and
+allows the application to define as many more as are needed; order
+processing can be customized for each interface.
+
+In particular:<p>
+
+<ul>
+  <li> Orders sent to the interface can be traced by the
+       <code>-ordercmd</code>, or not (<code>-trace</code>).<p>
+
+  <li> Each order sent to the interface can be wrapped in an
+       SQL transction, or not (<code>-transaction</code>).<p>
+
+  <li> Rejection error messages can be specially formatted
+       (<code>-rejectcmd</code>).<p>
+       
+  <li> Unexpected error messages can be handled by a callback rather
+       than propagated to the sender (<code>-errorcmd</code>).<p>
+</ul>
+
+See <iref order interface> for full details on the interface options.
+
+The two predefined interfaces are <b>app</b> and <b>gui</b>:<p>
+
+<ul>
+  <li> <b>gui</b>:  The interface is used for orders resulting from
+       user input; in particular, it is used by
+       <xref orderdialog(n)>.  The application will usually set
+       its <code>-trace</code> option to "on", so that the
+       <code>-ordercmd</code> can be used to record successful orders
+       for later replay or for undo/redo.<p>
+
+  <li> <b>app</b>:  This interface is for internal use by the
+       application, e.g., for orders that do <b>not</b> result from
+       user input.  E.g., if order A sends order B, this is
+       really just a fancy procedure call; order B should not be
+       traced, and any parameter errors are the fault of the
+       programmer.<p>
+</ul>
+
+<subsection "Order States">
+
+It is common that an order is valid at some times in the application's
+life time, and not at others--in principle, that is, not due to the
+values of its parameters.  Further, different orders are valid (in
+this sense) at different times. This is handled by the notion of the
+"application state".<p>
+
+The application can define a list of states in which it can be at
+different times.  Then, using the <iref options> metadata command,
+each order is associated with a list of the states in which it can be 
+sent (<code>-sendstates)</code>.  Then,
+the application notifies order(n) of the current
+application state using <iref order state>.  If an order is sent
+during a state in which it is invalid, the order is rejected
+immediately.<p>
+
+The application can query both the states associated with an order
+(via <iref order options>) and the current state (via
+<iref order state>).  Thus, this can also be used to enable and
+disable GUI controls (e.g., menu items) when the state changes.<p>
+
+By default, this mechanism is turned off.  See the
+<code>-checkstate</code> <iref order interface> option to enable
+it.<p>
+
+<section COMMANDS>
+
+This section lists the commands provided by order(n).  There are
+three categories:  <xref "Application Commands">, which are used to
+define and send orders, and to query order metadata;
+<xref "Order Metadata Commands">, which are used to define an
+order's metadata; and <xref "Order Body Commands"> which are used in
+order bodies.<p>
+
+<subsection "Application Commands">
+
+The application-level commands are as follows:<p>
+
+<deflist app>
+
+<defitem "order available" {order available <i>name</i>}>
+
+Returns 1 if the named order is "available" in the current
+<iref order state>, and 0 otherwise.  The order is available
+if it can be sent.<p>
+
+<defitem "order cansend" {order cansend <i>name</i>}>
+
+Returns 1 if the named order can be sent in the current
+<iref order state>, and 0 otherwise.  The order can be sent
+if its <code>-sendstates</code> is "*", or if the
+current <iref order state> is included in the list of
+<code>-sendstates</code>.  Note that this only matters if
+<code>-checkstate</code> is <b>yes</b> for the sending
+<iref order interface>.<p>
+
+<defitem "order cget" {order cget ?<i>option</i>?}>
+
+Queries order(n)'s configuration options.  If called with an
+<i>option</i> name, it returns the value of that option.  Otherwise,
+it returns a dictionary of all of the module's configuration options
+and their values.  See <iref order init> for a list of the
+configuration options.<p>
+
+
+<defitem "order check" {order check <i>name parmdict</i>}>
+<defitem "order check" {order check <i>name parm value</i> ?<i>parm value...</i>?}>
+
+Checks whether the specified parameter values are valid for the named
+order, throwing <b>REJECT</b> if not.
+The order's parameters are specified as one argument, a
+dictionary, or as multiple parameter names and values.<p>
+
+This command behaves identically to <iref order send>, except that the
+order is not executed if the parameters are valid.<p>
+
+
+<defitem "order configure" {order configure <i>option</i> ?<i>value</i>? ?<i>option value...</i>?}>
+
+Sets one or more of order(n)'s configuration options.  See
+<iref order init> for the complete list.<p>
+
+
+<defitem "order define" {order define <i>name metadata body</i>}>
+
+Defines an order.  Orders are typically defined at file scope in
+application modules; they can also be defined (and redefined) at any time.<p>
+
+The <i>name</i> is the name of the order.  Order names are typically
+all-caps, using ":" as a word separator.  Orders are named
+hierarchically, i.e., all orders related to actors would look like
+"ACTOR:CREATE".<p>
+
+The <i>metadata</i> is a script of <xref "Order Metadata Commands">
+that define the order's parameters, among other things.<p>
+
+The <i>body</i> is the script that implements the order.  It is
+effectively the body of a Tcl <tt proc>, with these
+differences:<p>
+
+<ul>
+  <li> The <i>parms</i> array is a predefined variable; it contains the
+       order parameters and their values.<p>
+
+  <li> It may use the <xref "Order Body Commands">.<p>
+</ul>
+
+
+<defitem "order enter" {order enter <i>name parmdict</i>}>
+<defitem "order enter" {order enter <i>name parm value</i> ?<i>parm value...</i>?}>
+
+If <xref orderdialog(n)> is loaded, this command will pop up a
+dialog box for the named order.  The user can then fill in the
+parameters and send the order.  The dialog will be pre-populated with
+any included parameter values.<p>
+
+It is an error to try to enter an order dialog for an order that
+defines no parameters.<p>
+
+<defitem "order exists" {order exists <i>name</i>}>
+
+Returns 1 if there is an order with the specified <i>name</i>, and 0
+otherwise.<p>
+
+
+<defitem "order fill" {order fill <i>order parmdict</i>}>
+
+Given an <i>order</i> name and a parameter dictionary for the order,
+fills in missing values with the default values given in the order
+specification.  A parameter is presumed missing if it is absent
+from <i>parmdict</i> or if it has a value of "".  The return value is
+a dictionary containing a value for every order parameter.<p>
+
+Any parameters found in the <i>parmdict</i> that are not defined by the
+order are ignored.<p>
+
+This command is intended to be used by non-GUI interfaces.<p>
+
+<defitem "order init" {order init ?<i>option value...</i>?}>
+
+Initializes and configures the order handler.  Calling this command
+multiple times has no effect, unless <iref order reset> is used to restore
+the module to its pristine, uninitialized state.<p>
+
+The configuration options are as shown below; note that some of them
+can be modified later using <iref order configure>.<p>
+
+<deflist options>
+
+<defopt {-logcmd <i>cmd</i>}>
+
+If defined, <i>cmd</i> must be a command prefix equivalent to a
+<xref logger(n)> instance command.  order(n) will use the <i>cmd</i>
+to write to the application's debugging log.  If <i>cmd</i> is the empty
+string, no logging is done.<p>
+
+<defopt {-ordercmd <i>cmd</i>}>
+
+If defined, <i>cmd</i> will be called for each order that is
+successfully executed by <iref order send>, provided that the
+sending <iref order interface> has <code>-trace on</code>.  The <i>cmd</i>
+must be a prefix to which will be appended four additional
+arguments:<p>
+
+<ul>
+  <li> The name of the sending <i>interface</i>.
+  <li> The order <i>name</i>.
+  <li> The <i>parmdict</i>.
+  <li> The undo script, or "" if none.
+</ul><p>
+
+<defopt {-rdb <i>rdb</i>}>
+
+<b>Required.  Read-only after initialization.</b>  Specifies the name
+of the "run-time database", an instance of <xref sqldocument(n)>
+used to store the application's data.<p>
+
+<defopt {-subject <i>subject</i>}>
+
+This module sends out <xref notifier(n)> events; this value
+specifies the <i>subject</i> of these events.  Defaults to
+<b>::marsutil::order</b>.<p>
+
+<defopt {-usedtable <i>table</i>}>
+
+Specifies the name of a <i>table</i> or view in the run-time
+database.  The table or view must have a column called <b>id</b>.<p>
+
+The <iref prepare> command's <code>-unused</code> option verifies
+that a parameter value used as an entity ID is not already in use by
+some existing entity.  It does this by looking up the name in this
+table in the run-time database.  If <code>-usedtable</code> is not
+set, then <iref prepare>'s <code>-unused</code> option cannot be used.<p>
+
+</deflist options>
+
+<defitem "order initialized" {order initialized}>
+
+Returns 1 if the order(n) module has been initialized, and 0 otherwise.<p>
+
+<defitem "order interface" {order interface <i>subcommand</i> ?<i>args...</i>?}>
+
+This command is used to create, configure and query
+<xref "Order Interfaces">.  The subcommands are as follows:<p>
+
+<deflist interface>
+
+<defitem "order interface add" {order interface add <i>name</i> ?<i>option value...</i>?}>
+
+Adds a new interface, and configures it with the specified options.
+The available configuration options are as follows:<p>
+
+<deflist options>
+
+<defopt {-checkstate <i>flag</i>}>
+
+Defaults to <b>no</b>.  If <i>yes</i>, <iref order send> will
+require that orders sent via this interface include the current
+<iref order state> as one of their <code>-sendstates</code>.  This
+prevents orders from being used at inappropriate times.  See
+<xref "Order States"> for more information.<p>
+
+<defopt {-errorcmd <i>cmd</i>}>
+
+If <i>cmd</i> is given, it must be a command prefix taking three
+additional arguments: an order name, an error message, and a Tcl stack
+trace.  It will be called when on order sent using this interface
+throws an unexpected error (as opposed to a rejection).  All handling
+of the error is then up to the <i>cmd</i>.<p>
+
+If the <code>-errorcmd</code> is empty, unexpected errors will
+propagate normally.<p>
+
+<defopt {-rejectcmd <i>cmd</i>}>
+
+If <i>cmd</i> is given, it must be a command prefix taking one
+argument, a REJECT error dictionary.  It will be called when an order
+sent using this interface is rejected.  It must reformat and return
+the data in the error dictionary in any way it likes; the return value
+will be used as the REJECT error in place of the error dictionary.<p>
+
+This option is typically used to produce human readable error messages
+for non-GUI interfaces.<p>
+
+See <xref "Error Handling"> for more information about REJECT error
+dictionaries.<p>
+
+<defopt {-trace <i>flag</i>}>
+
+Defaults to <b>no</b>.  If <b>yes</b>, then all successful orders sent
+using this interface will be traced, i.e., the <code>-ordercmd</code>
+will be called for them.  See <iref order init> for more on the
+<code>-ordercmd</code>.<p>
+
+<defopt {-transaction <i>flag</i>}>
+
+Defaults to <b>yes</b>.  If <b>yes</b>, each order sent using this interface
+will be processed in an SQL transaction.  This means that unexpected
+errors during the handling of the order will leave the database state
+unchanged.  If <b>no</b>, no transaction is used.<p>
+
+</deflist options>
+
+<defitem "order interface cget" {order interface cget <i>name</i> ?<i>option</i>?}>
+
+Returns the value of <i>option</i> for the named interface.  If no
+<i>option</i> is specified, returns a dictionary of all of the named
+interface's options and their values.<p>
+
+<defitem "order interface configure" {order interface configure <i>name</i> ?<i>option value...</i>?}>
+
+Sets one or more option values for an existing interface.<p>
+
+<defitem "order interface names" {order interface names}>
+
+Returns the names of the existing interfaces.<p>
+
+</deflist interface>
+
+<defitem "order lastparms" {order lastparms}>
+
+Returns the parameter dictionary of the last order sent.  The
+dictionary will include one additional key, <b>_order</b>, whose value
+is the name of the order.  This is usually used in test code in
+conjunction with <iref order nullmode>.<p>
+
+<defitem "order names" {order names}>
+
+Returns a list of the names of the currently defined orders.<p>
+
+<defitem "order narrative" {order narrative <i>name pdict</i>}>
+
+Given an order <i>name</i> and parameter dictionary <i>pdict</i>,
+returns a human-readable string that describes what the order will
+do, provided that the order's <code>-narrativecmd</code> option is
+set.  Otherwise, it just returns the <iref order title>.<p>
+
+<defitem "order nullmode" {order nullmode <i>flag</i>}>
+
+Sets and clears "null mode".  In null mode the order is not executed,
+but the parameters are available by calling <iref order lastparms>.
+This is used for testing code that sends orders, e.g., executive
+commands that translate user command-line input into application
+orders, to verify that the user inputs are translated properly.<p>
+
+<defitem "order options" {order options <i>name</i> ?<i>option</i>?}>
+
+An order's metadata can define a number of options using the
+<iref options> metadata command.  This command queries an order's
+options.  If <i>option</i> is given, then the command returns the
+value of that option for the named order; otherwise, it returns a
+dictionary of all of the order's options and their values.<p>
+
+See <iref options> for a description of the available options.<p>
+
+
+<defitem "order parms" {order parms <i>name</i>}>
+
+Returns a list of the names of the parameters of the named order.<p>
+
+<defitem "order prune" {order prune <i>order parmdict</i>}>
+
+Given a parameter dictionary <i>parmdict</i> for the named
+<i>order</i>, returns a dictionary containing only parameters
+with non-default values.  This is for use in producing order scripts
+with a minimum of extraneous data.<p>
+
+<defitem "order puck" {order puck <i>tagdict</i>}>
+
+When <xref orderdialog(n)> is loaded, this command allows the
+application to pass data to the open order dialog, usually in response
+to mouse clicks or other interactions with the GUI.  For example,
+clicking on a map can send the selected location to the order dialog,
+to go in the currently active field.  See
+<xref orderdialog(n)> for more information.<p>
+
+<defitem "order reset" {order reset}>
+
+Erases all order and interface definitions from order(n)'s memory,
+along with all associated metadata, and returns order(n) to its
+pre-initialized state.  This command is primarily intended for use by
+the order(n) test suite.<p>
+
+<defitem "order send" {order send <i>interface name parmdict</i>}>
+<defitem "order send" {order send <i>interface name parm value</i> ?<i>parm value...</i>?}>
+
+Sends order <i>name</i> to the application.  The order is sent by the
+specified <i>interface</i>.  The order's parameters are specified as one
+argument, a dictionary, or as multiple parameter names and values.<p>
+
+The processing of the order can be affected by order(n)'s
+configuration options (see <iref order init>), by the
+by sending <iref order interface>, and by the order's own
+<iref options>.<p>
+
+On success, <iref order send> returns the order body's return
+value.<p>
+
+<defitem "order state" {order state ?<i>state</i>?}>
+
+Sets and queries the order state.  See <xref "Order States">
+for more information.<p>
+
+<defitem "order tags" {order tags <i>order parm</i>}>
+
+Returns a list of <iref order puck> tags associated with the field.
+If the user clicks on a neighborhood polygon in the application's map
+display, the application can call <iref order puck> with details:
+for example, the <b>nbhood</b> that was clicked, and the precise map
+<b>coords</b>.  If the field has tag <b>nbhood</b>, the
+neighborhood ID will be entered into it; if it has the tag
+<b>coords</b>, the map coordinates will be entered into it.<p>
+
+A parameter's tags are set using the <iref parmtags> metadata
+command.<p>
+
+<defitem "order title" {order title <i>name</i>}>
+
+Returns the order's title, provided that the order's
+metadata included the <iref title> command.  Otherwise, it just
+returns the order's name.<p>
+
+<defitem "order validate" {order validate <i>name</i>}>
+
+Validates <i>name</i> as the name of an order.  Returns
+<i>name</i> on success and throws <b>INVALID</b> on error.<p>
+
+</deflist app>
+
+
+<subsection "Order Metadata Commands">
+
+The following commands are intended for use in order metadata.
+They define the order's parameters, along with a host of data that
+is used by <xref orderdialog(n)> to create high-quality order
+dialog boxes.<p>
+
+
+<deflist meta>
+
+<defitem title {title <i>titleText</i>}>
+
+Specifies the order's title, for use by the GUI.  The title defaults
+to the order's name.<p>
+
+<defitem options {options <i>options option value</i> ?<i>option value...</i>}>
+
+This command sets options on the order itself; the values can later be
+queried using the <iref order options> command.  The following options
+are available:<p>
+
+<deflist options>
+
+<defopt {-dynaform <i>formtype</i>}>
+
+<b>Read only.</b>  Returns the name of the <xref dynaform(n)> 
+associated with this order, if any, or "" if none (i.e., if the order
+defines no parameters).<p>
+
+<defopt {-monitor <i>flag</i>}>
+
+This option indicates whether or not RDB row monitoring should be
+enabled when handling this order.  Row monitoring allows the RDB to
+send out notifier(n) events when rows in the database are updated,
+inserted, or deleted.  Defaults to <b>yes</b>.<p>
+
+Note that setting <code>-monitor</code> to <b>yes</b> is not enough to
+make row monitoring occur; the relevant tables must also be explicitly
+monitored.  See <xref sqldocument(n)> for more information.<p>
+
+<defopt {-narrativecmd <i>cmd</i>}>
+
+Specifies a command to produce the <iref order narrative> for this
+order.  If no command is given, the order's narrative string defaults
+to its title.  If <i>cmd</i> is given, it must be a command prefix
+that takes two additional arguments, the order's name and a dictionary
+of parameter names and values, and returns the narrative string.<p>
+
+<defopt {-sendstates <i>states</i>}>
+
+Specifies a list of the <xref "Order States"> in which orders of
+this kind can be sent.  Defaults to "<b>*</b>", which means that the
+order can be sent in any state.<p>
+
+</deflist>
+
+<defitem "form" {form <i>spec</i>}>
+
+Specify the <xref dynaform(n)> form specification for this order.
+See the <xref dynaform(n)> man page for the specification
+language.<p>
+
+The form specification defines the parameters available for the
+order, as well as the layout and dynamic behavior for the order's
+dialog.<p>
+
+<defitem "parmtags" {parmtags <i>parm</i> <i>tag</i> ?<i>tag...</i>?}>
+
+Attaches the listed tags to the given parameter, so that the
+parameter can be "pucked" from the GUI.<p>
+
+</deflist meta>
+
+
+<subsection "Order Body Commands">
+
+The following commands are intended for use in order bodies.  None of
+them are strictly essential, but they allow orders to be written
+concisely.<p>
+
+Before the order body is called, <iref order send> will make sure
+that its parameter dictionary does not refer to any unknown
+parameters.  The dictionary is then assigned to the
+<code>parms()</code> array.  The body can access the
+<code>parms()</code> directly, and many of these body commands do so
+implicitly.<p>
+
+The order body will typically begin with a <iref prepare>
+command for each parameter; after that, it varies.<p>
+
+<deflist body>
+
+<defitem cancel {cancel}>
+
+Cancels the order. This command allows an order handler to pop up a
+confirmation dialog, and cancel the order if the user so
+indicates.<p>
+
+<defitem checking {checking}>
+
+Returns 1 if the order body was called by <iref order check>, and
+0 if it was called by <iref order send>.<p>
+
+<defitem prepare {prepare <i>parm</i> ?<i>options...</i>?}>
+
+The <iref prepare> command prepares the parameter for use by the
+order handler.  It can transform and validate the parameter value in 
+a number of ways.<p>
+
+It is customary to begin each order's body with a succession of
+<iref prepare> commands, one for each parameter.  Called with no
+options, <iref prepare> ensures that <i>parm</i> has an entry in the
+<code>parms()</code> array, setting it to the empty string if it is missing.
+<p>
+
+Most of the useful work is done by the options, which are processed in
+order from left to right.  The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-oncheck}>
+
+Any subsequent options will be processed only when the order body is
+called from <iref order check>.  This is useful in cases where
+the order is used to edit a sanity-checked object.  From the order
+dialog, we want to catch any sanity-check failures on input; but
+from order scripts (or paste orders) we want to allow the bad data
+in, and sanity check it afterwards.  Thus, the GUI will call
+<iref order check> and get the <code>-oncheck</code> validation, 
+but other interfaces can call <iref order send> and avoid it.<p>
+
+<defopt {-listof <i>valtype</i>}>
+
+This is similar to <code>-type</code>.  It indicates that the value is
+a list of which every element must be a member of the specified
+validation type.  If any element fails, the parameter is
+<iref reject>ed.<p>
+
+<defopt {-normalize}>
+
+Normalizes internal whitespace: all internal whitespace sequences are
+replaced with single spaces.<p>
+
+<defopt {-num}>
+
+Tcl interprets integer numbers with leading zeroes as octal numbers.
+To prevent this, this option removes leading zeroes from parameter
+values which are non-zero integers.  Floating point and other
+non-integer values are left alone, and plain zeroes are left alone.<p>
+
+<defopt {-oldnum <i>oldNumber</i>}>
+
+This is like <code>-oldvalue</code>, but does a numeric comparison
+instead of a string comparison.<p>
+
+<defopt {-oldvalue <i>oldValue</i>}>
+
+Sets the parameter's value to the empty string if it is
+<code><b>eq</b></code> to <i>oldValue</i>.  This is useful for
+eliminating optional parameters that might be passed unchanged by an
+order dialog, as it allows the body to focus on those parameters that have
+really changed.<p>
+
+<defopt {-oneof <i>list</i>}>
+
+Ensures that the parameter's value is a member of the <i>list</i>.  If
+the list is short enough, the valid values will be included in any
+error message.<p>
+
+<defopt {-required}>
+
+The parameter is required; if the parameter's value is the empty
+string, consequently, it is <iref reject>ed.<p>
+
+<defopt {-selector}>
+
+The parameter is a <xref dynaform(n)> selector; validate that its
+value matches one of the selector's cases.  This option is used in
+place of a <code>-type</code> option.<p>
+
+<defopt {-someof <i>list</i>}>
+
+Ensures that the parameter's value consists of a list of values, each 
+of which is a member of <i>list</i>.  If <i>list</i> is short enough,
+the valid values will be included in any error message.<p>
+
+<defopt {-toupper}>
+
+Converts the parameter's value to all uppercase.<p>
+
+<defopt {-tolower}>
+
+Converts the parameter's value to all lowercase.<p>
+
+<defopt {-type <i>valtype</i>}>
+
+Indicates that the value of the parameter must belong to a validation
+type called <i>valtype</i>.  Specifying this option is essentially the
+same as including the following code snippet in the order body:<p>
+
+<pre>
+    validate $parm {
+        set parms($parm) [{*}$valtype validate $parms($parm)]
+    }
+</pre>
+
+The <i>valtype</i>'s "validate" method is used to validate the value,
+and may also put it into canonical form.<p>
+
+<defopt {-unused}>
+
+This option is used for entity names, e.g., neighborhood or group
+IDs, that are meant to be unique across the application; it requires
+that the value is unused in the RDB.  This option requires that the
+<code>-usedtable</code> is set in the call to <iref order init>.<p>
+
+<defopt {-xform <i>cmd</i>}>
+
+If the parameter's value is <iref valid>, the value is transformed
+by passing it to the specified command.<p>
+
+</deflist>
+
+<defitem reject {reject <i>parm msg</i>}>
+
+This command explicitly rejects the order because of an error
+involving the value of parameter <i>parm</i>; the <i>msg</i> details
+the error.  The <i>msg</i> text is automatically
+<xref marsmisc(n) normalize>d.<p>
+
+<b>NOTE:</b> Calling <iref reject> doesn't terminate the execution
+of the order body; it's common to validate multiple parameters before
+returning.  See <iref returnOnError>.<p>
+
+To reject the order for some reason other than a particular parameter
+value, specify "<b>*</b>" as the <i>parm</i>.  Note that
+cross-validation errors (<i>this</i> parameter value is consistent
+with <b>that</b> one) should be ascribed to one of the parameters.<p>
+
+<defitem returnOnError {returnOnError ?-final?}>
+
+If any parameters have been <iref reject>ed, this command returns
+control to <iref order send> or <iref order check>.<p>
+
+A call to <iref returnOnError> with the <code>-final</code> option
+will also terminate processing if the order handler was called from
+<iref order check>.  Every order must contain such a call as its final
+<iref returnOnError>, or <iref order check> might erroneously
+execute the order.<p>
+
+<defitem sender {sender}>
+
+Returns the name of the sending interface, as passed to
+<iref order send> or <iref order check>.  The body can use this
+information to decide whether it should pop up
+a confirmation dialog before deleting something.  This command should
+be used sparingly.<p>
+
+<defitem setundo {setundo <i>script</i>}>
+
+Tells order(n) that the order's effect is undoable. The <i>script</i>
+must be a Tcl script that undoes the effect of the order.  If this
+routine is not called, or if the <i>script</i> is the empty string,
+order(n) presumes that the order is <b>not</b> undoable.  Generally,
+it's assumed that if an order is not undoable it's because it has
+changed the application state in some non-trivial way.  Consequently,
+previous orders can no longer be undone either.<p>
+
+In the unlikely event that the order has no effect to undo, the undo
+script can be a comment, e.g.,<p>
+
+<pre>
+    # No-op
+</pre>
+
+This will allow the order to be (trivially) undone.<p>
+
+<defitem valid {valid <i>parm</i>}>
+
+This command returns 1 if the named parameter's value is not known to
+be invalid, and 0 otherwise.<p>
+
+A parameter's value is known to be invalid if it has already been
+<iref reject>ed, or if its value is the empty string.  (Some
+parameters are optional; a missing parameter is indicated by setting
+the parameter's value to the empty string.)
+
+This command is used to ensure that additional validation checks are
+skipped if the parameter's value is missing or has already been
+<iref reject>ed.<p>
+
+<defitem validate {validate <i>parm script</i>}>
+
+Mars and its clients define many "validation types"; Each such type
+has a <b>validate</b> subcommand which can be
+used to determine whether or not a data value belongs to a particular
+type.  If it does not, the subcommand throws an error with
+error code <b>INVALID</b> and a detailed message string.<p>
+
+This command turns such validation failures into order rejections.
+It executes its <i>script</i> as a Tcl script; if the
+script throws an error with error code <b>INVALID</b>, it
+automatically <iref reject>s the named <i>parm</i>.  If any
+other error code is thrown, it is treated as an unexpected error.<p>
+
+For example,<p>
+
+<pre>
+    validate sat {
+        qsat validate $parms(sat)
+    }
+</pre>
+
+The <i>script</i> can contain any number of commands.<p>
+
+</deflist body>
+
+<section "NOTIFIER EVENTS">
+
+order(n) sends the following events using <iref order init>'s
+<code>-subject</code> as the subject:<p>
+
+<deflist events>
+
+<defitem Accepted {<lb>Accepted<rb> <i>name parmdict</i>}>
+
+This event is sent whenever an order is accepted by
+<iref order send>.  The arguments are the order's name
+and parameter dictionary.<p>
+
+<defitem State {<lb>State<rb> <i>state</i>}>
+
+This is sent whenever the <iref order state> changes.  The
+<i>state</i> argument is the new state.<p>
+
+
+</deflist events>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Generalized version of Athena's order processor.<p>
+
+</manpage>
+
+
+
+
+
+
+
+
+

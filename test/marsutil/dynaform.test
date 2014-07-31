@@ -1,0 +1,1183 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    dynaform.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) dynaform(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require marsutil 1.0
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+    #-------------------------------------------------------------------
+    # Setup
+
+    proc cleanup {} {
+        dynaform reset 
+    }
+
+    proc dump {ftype} {
+        return "\n[dynaform dump $ftype]    "
+    }
+
+    proc Echo {args} {
+        return $args
+    }
+
+    #-------------------------------------------------------------------
+    # define
+    #
+    # Subsequent sections will test the metadata commands in detail.
+
+    test define-1.1 {error} -body {
+        dynaform define BADFORM {
+            error "Simulated Error"
+        }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Error in definition script for dynaform type "BADFORM"
+Simulated Error}
+
+    test define-1.2 {success} -body {
+        dynaform define GOODFORM {
+            label "Howdy!"
+        }
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # define br
+
+    test define_br-1.1 {valid item} -body {
+        dynaform define TESTFORM {
+            br
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) br
+    }
+
+    #-------------------------------------------------------------------
+    # define c
+
+    test define_c-1.1 {no args} -body {
+        dynaform define TESTFORM {
+            c 
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) c
+        text  = <>
+        for   = <>
+        span  = <>
+        width = <>
+    }
+
+    test define_c-1.2 {label} -body {
+        dynaform define TESTFORM {
+            c "Howdy!" 
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) c
+        text  = <Howdy!>
+        for   = <>
+        span  = <>
+        width = <>
+    }
+    
+    test define_c-1.3 {label and options} -body {
+        dynaform define TESTFORM {
+            c "Howdy!" -for greeting -span 2 -width 3in
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) c
+        text  = <Howdy!>
+        for   = <greeting>
+        span  = <2>
+        width = <3in>
+    }
+
+
+
+    #-------------------------------------------------------------------
+    # define cc
+
+    test define_cc-1.1 {label} -body {
+        dynaform define TESTFORM {
+            cc "Howdy!"
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) cc
+        text  = <Howdy!>
+        for   = <>
+        span  = <>
+        width = <>
+    }
+    
+    test define_cc-1.2 {label and options} -body {
+        dynaform define TESTFORM {
+            cc "Howdy!" -for greeting -span 2 -width 3in
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) cc
+        text  = <Howdy!>
+        for   = <greeting>
+        span  = <2>
+        width = <3in>
+    }
+
+
+
+    #-------------------------------------------------------------------
+    # define label
+
+    test define_label-1.1 {label} -body {
+        dynaform define TESTFORM {
+            label "Howdy!"
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) label
+        text = <Howdy!>
+        for  = <>
+    }
+    
+    test define_label-1.2 {label and options} -body {
+        dynaform define TESTFORM {
+            label "Howdy!" -for greeting
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) label
+        text = <Howdy!>
+        for  = <greeting>
+    }
+
+    #-------------------------------------------------------------------
+    # define layout
+
+    test define_layout-1.1 {error} -body {
+        dynaform define TESTFORM {
+            layout NONESUCH
+        }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Error in definition script for dynaform type "TESTFORM"
+invalid value "NONESUCH", should be one of: ncolumn, 2column, ribbon}
+
+    test define_layout-1.2 {valid} -body {
+        dynaform define TESTFORM {
+            layout ribbon
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ribbon
+Fields:    
+Items:
+    }
+
+
+    #-------------------------------------------------------------------
+    # define para
+
+    test define_para-1.1 {valid item} -body {
+        dynaform define TESTFORM {
+            para
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) para
+    }
+
+    #-------------------------------------------------------------------
+    # define rc
+
+    test define_rc-1.1 {no args} -body {
+        dynaform define TESTFORM {
+            rc 
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) rc
+        text  = <>
+        for   = <>
+        span  = <>
+        width = <>
+    }
+
+    test define_rc-1.2 {label} -body {
+        dynaform define TESTFORM {
+            rc "Howdy!"
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) rc
+        text  = <Howdy!>
+        for   = <>
+        span  = <>
+        width = <>
+    }
+    
+    test define_rc-1.3 {label and options} -body {
+        dynaform define TESTFORM {
+            rc "Howdy!" -for greeting -span 2 -width 3in
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) rc
+        text  = <Howdy!>
+        for   = <greeting>
+        span  = <2>
+        width = <3in>
+    }
+
+    #-------------------------------------------------------------------
+    # define rcc
+
+    test define_rcc-1.1 {label} -body {
+        dynaform define TESTFORM {
+            rcc "Howdy!"
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) rcc
+        text  = <Howdy!>
+        for   = <>
+        span  = <>
+        width = <>
+    }
+    
+    test define_rcc-1.2 {label and options} -body {
+        dynaform define TESTFORM {
+            rcc "Howdy!" -for greeting -span 2 -width 3in
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    
+Items:
+    (1) rcc
+        text  = <Howdy!>
+        for   = <greeting>
+        span  = <2>
+        width = <3in>
+    }
+
+    #-------------------------------------------------------------------
+    # define selector
+
+    test define_selector-1.1 {no options} -body {
+        dynaform define TESTFORM {
+            label "Before"
+            selector which {
+                case ONE "One" {
+                    label "The first case"
+                }
+
+                case TWO "Two" {
+                    label "The second case"
+                }
+            }
+            label "After"
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    which
+Items:
+    (1) label
+        text = <Before>
+        for  = <>
+    (2) selector
+        field     = <which>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <0>
+        invisible = <0>
+        listcmd   = <>
+        case ONE "One"
+            (3) label
+                text = <The first case>
+                for  = <>
+        case TWO "Two"
+            (4) label
+                text = <The second case>
+                for  = <>
+    (5) label
+        text = <After>
+        for  = <>
+    }
+    
+    test define_selector-1.2 {with options} -body {
+        dynaform define TESTFORM {
+            selector which -tip "Tip" -loadcmd "LoadCmd" -defvalue ONE \
+                -context yes -invisible yes -listcmd "ListCmd" {
+                case ONE "One" { label "First" }
+                case TWO "Two" { label "Second" }
+            }
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    which
+Items:
+    (1) selector
+        field     = <which>
+        tip       = <Tip>
+        loadcmd   = <LoadCmd>
+        defvalue  = <ONE>
+        context   = <yes>
+        invisible = <yes>
+        listcmd   = <ListCmd>
+        case ONE "One"
+            (2) label
+                text = <First>
+                for  = <>
+        case TWO "Two"
+            (3) label
+                text = <Second>
+                for  = <>
+    }
+
+    test define_selector-1.3 {nested} -body {
+        dynaform define TESTFORM {
+            selector a {
+                case ONE "One" {
+                    selector b {
+                        case ALPHA "Alpha" { label "a1b Alpha" } 
+                        case BETA  "Beta"  { label "a1b Beta"  } 
+                    }
+                }
+                case TWO "Two" {
+                    selector b {
+                        case ALPHA "Alpha" { label "a2b Alpha" } 
+                        case BETA  "Beta"  { label "a2b Beta"  } 
+                    }
+                }
+            }
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a, b
+Items:
+    (1) selector
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <0>
+        invisible = <0>
+        listcmd   = <>
+        case ONE "One"
+            (2) selector
+                field     = <b>
+                tip       = <>
+                loadcmd   = <>
+                defvalue  = <>
+                context   = <0>
+                invisible = <0>
+                listcmd   = <>
+                case ALPHA "Alpha"
+                    (3) label
+                        text = <a1b Alpha>
+                        for  = <>
+                case BETA "Beta"
+                    (4) label
+                        text = <a1b Beta>
+                        for  = <>
+        case TWO "Two"
+            (5) selector
+                field     = <b>
+                tip       = <>
+                loadcmd   = <>
+                defvalue  = <>
+                context   = <0>
+                invisible = <0>
+                listcmd   = <>
+                case ALPHA "Alpha"
+                    (6) label
+                        text = <a2b Alpha>
+                        for  = <>
+                case BETA "Beta"
+                    (7) label
+                        text = <a2b Beta>
+                        for  = <>
+    }
+
+
+
+    #-------------------------------------------------------------------
+    # define when
+
+    test define_when-1.1 {no else} -body {
+        dynaform define TESTFORM {
+            text a
+            when {$a ne ""} {
+                text b
+            }
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a, b
+Items:
+    (1) field
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <0>
+        invisible = <0>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <>
+    (2) when
+        expr = <$a ne "">
+        case 1 "true"
+            (3) field
+                field     = <b>
+                tip       = <>
+                loadcmd   = <>
+                defvalue  = <>
+                context   = <0>
+                invisible = <0>
+                ft        = <::marsutil::dynaform::TEXT>
+                width     = <>
+        case 0 "false"
+    }
+    
+    test define_when-1.2 {with else} -body {
+        dynaform define TESTFORM {
+            text a
+            when {$a ne ""} {
+                text b
+            } else {
+                text c
+            }
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a, b, c
+Items:
+    (1) field
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <0>
+        invisible = <0>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <>
+    (2) when
+        expr = <$a ne "">
+        case 1 "true"
+            (3) field
+                field     = <b>
+                tip       = <>
+                loadcmd   = <>
+                defvalue  = <>
+                context   = <0>
+                invisible = <0>
+                ft        = <::marsutil::dynaform::TEXT>
+                width     = <>
+        case 0 "false"
+            (4) field
+                field     = <c>
+                tip       = <>
+                loadcmd   = <>
+                defvalue  = <>
+                context   = <0>
+                invisible = <0>
+                ft        = <::marsutil::dynaform::TEXT>
+                width     = <>
+    }
+    
+    #-------------------------------------------------------------------
+    # define field
+    #
+    # Generic field behavior
+
+    test define_field-1.1 {no options} -body {
+        dynaform define TESTFORM {
+            text a
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a
+Items:
+    (1) field
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <0>
+        invisible = <0>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <>
+    }
+
+    test define_field-1.2 {with options} -body {
+        dynaform define TESTFORM {
+            text a \
+                -tip       "My Tip"   \
+                -loadcmd   "LoadCmd"  \
+                -defvalue  "DefValue" \
+                -context   yes        \
+                -invisible yes        \
+                -width     40
+        }
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a
+Items:
+    (1) field
+        field     = <a>
+        tip       = <My Tip>
+        loadcmd   = <LoadCmd>
+        defvalue  = <DefValue>
+        context   = <yes>
+        invisible = <yes>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <40>
+    }
+
+
+    #-------------------------------------------------------------------
+    # define alias
+    #
+    # This tests both the code that defines aliases and the code that
+    # uses them.
+
+    test define_alias-1.1 {define and use an alias} -body {
+        dynaform fieldtype alias longtext text -width 50
+        dynaform define TESTFORM {
+            longtext a -context yes
+        }
+        
+        # Note that width and context are both set
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a
+Items:
+    (1) field
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <yes>
+        invisible = <0>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <50>
+    }
+
+    test define_alias-1.2 {can shadow an explicit type} -body {
+        dynaform fieldtype alias text text -width 50
+        dynaform define TESTFORM {
+            text a -context yes
+        }
+
+        # Note that width and context are both set.
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a
+Items:
+    (1) field
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <>
+        context   = <yes>
+        invisible = <0>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <50>
+    }
+
+    test define_alias-1.3 {can't alias to an alias} -body {
+        dynaform fieldtype alias text text -width 50
+        dynaform fieldtype alias text text -defvalue DUMMY
+
+        dynaform define TESTFORM {
+            text a
+        }
+
+        # Note that defvalue is set but width is not set.
+        dump TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {
+Form Type: TESTFORM
+Layout:    ncolumn
+Fields:    a
+Items:
+    (1) field
+        field     = <a>
+        tip       = <>
+        loadcmd   = <>
+        defvalue  = <DUMMY>
+        context   = <0>
+        invisible = <0>
+        ft        = <::marsutil::dynaform::TEXT>
+        width     = <>
+    }
+
+    #-------------------------------------------------------------------
+    # asoptions
+    #
+    # Command for use in field type definitions
+
+    test asoptions-1.1 {empty idict} -body {
+        ::marsutil::dynaform::asoptions {}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test asoptions-1.2 {empty values in idict} -body {
+        ::marsutil::dynaform::asoptions {
+            alpha ""
+            beta ""
+            gamma ""
+        } alpha beta gamma 
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test asoptions-1.3 {empty values in idict} -body {
+        ::marsutil::dynaform::asoptions {
+            alpha "dummy1"
+            beta "dummy2"
+            gamma ""
+            delta "dummy3"
+        } alpha beta gamma 
+    } -cleanup {
+        cleanup
+    } -result {-alpha dummy1 -beta dummy2}
+
+    #-------------------------------------------------------------------
+    # formcall
+    #
+    # Command for use in field type definitions
+
+    test formcall-1.1 {call command with dictionary content} -body {
+        set vdict {
+            a 1
+            b 2
+            c 3
+        }
+
+        ::marsutil::dynaform::formcall $vdict \
+            {::marsutil::test::Echo $a $b $c}
+    } -cleanup {
+        cleanup
+    } -result {1 2 3}
+
+    #-------------------------------------------------------------------
+    # formexpr
+    #
+    # Command for use in field type definitions
+
+    test formexpr-1.1 {expr command with dictionary content} -body {
+        set vdict {
+            a 1
+            b 2
+            c 3
+        }
+
+        ::marsutil::dynaform::formexpr $vdict {($a+$b)*$c}
+    } -cleanup {
+        cleanup
+    } -result {9}
+
+    #-------------------------------------------------------------------
+    # list2dict
+    #
+    # Command for use in field type definitions
+
+    test list2dict-1.1 {converts lists to dicts} -body {
+        ::marsutil::dynaform::list2dict {a b c} 
+    } -cleanup {
+        cleanup
+    } -result {a a b b c c}
+
+
+    #-------------------------------------------------------------------
+    # types
+
+    test types-1.1 {no types defined by default} -body {
+        dynaform types
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test types-1.2 {types listed in order} -body {
+        dynaform define THIS {}
+        dynaform define THAT {}
+        dynaform define THEOTHER {}
+
+        dynaform types
+    } -cleanup {
+        cleanup
+    } -result {THIS THAT THEOTHER}
+
+
+    #-------------------------------------------------------------------
+    # allitems 
+
+    test allitems-1.1 {empty type has no items} -body {
+        dynaform define TESTFORM {}
+        dynaform allitems TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test allitems-1.2 {items listed in order of definition} -body {
+        dynaform define TESTFORM {
+            text a
+            text b
+            text c
+            text d
+        }
+        dynaform allitems TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {1 2 3 4}
+
+    #-------------------------------------------------------------------
+    # topitems 
+
+    test topitems-1.1 {empty type has no items} -body {
+        dynaform define TESTFORM {}
+        dynaform topitems TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test topitems-1.2 {items listed in order of definition} -body {
+        dynaform define TESTFORM {
+            text a
+            text b
+            text c
+            text d
+        }
+        dynaform topitems TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {1 2 3 4}
+
+    test topitems-1.3 {non-top items excluded} -body {
+        dynaform define TESTFORM {
+            text a
+            selector b {
+                case 1 One { label first  }
+                case 2 Two { label second }
+            }
+            text c
+            text d
+        }
+
+        # The two labels are items 3 and 4
+        dynaform topitems TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {1 2 5 6}
+
+    #-------------------------------------------------------------------
+    # fields 
+
+    test fields-1.1 {empty type has no fields} -body {
+        dynaform define TESTFORM {}
+        dynaform fields TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test fields-1.2 {type with no fields or selectors has no fields} -body {
+        dynaform define TESTFORM {
+            label "Not a field"
+        }
+        dynaform fields TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test fields-1.3 {fields and selectors have names} -body {
+        dynaform define TESTFORM {
+            text a
+            text b
+            selector c {
+                case 1 One { text d}
+            }
+        }
+        dynaform fields TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {a b c d}
+
+    test fields-1.4 {duplicate field names are OK on different branches} -body {
+        dynaform define TESTFORM {
+            selector a {
+                case 1 One { text b}
+                case 2 Two { text b}
+            }
+        }
+        dynaform fields TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {a b}
+
+    #-------------------------------------------------------------------
+    # context
+
+    test context-1.1 {by default, no context fields} -body {
+        dynaform define TESTFORM {
+            text a
+            text b
+        }
+
+        dynaform context TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test context-1.2 {context fields} -body {
+        dynaform define TESTFORM {
+            text a -context yes
+            text b
+            text c -context yes
+        }
+
+        dynaform context TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {a c}
+
+    #-------------------------------------------------------------------
+    # layout
+
+    test layout-1.1 {default to ncolumn} -body {
+        dynaform define TESTFORM { }
+        dynaform layout TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {ncolumn}
+
+    test layout-1.2 {can be set} -body {
+        dynaform define TESTFORM { layout ribbon }
+        dynaform layout TESTFORM
+    } -cleanup {
+        cleanup
+    } -result {ribbon}
+
+    #-------------------------------------------------------------------
+    # item
+
+    test item-1.1 {can retrieve dictionary} -body {
+        dynaform define TESTFORM { 
+            text a
+            text b -defvalue DefValue
+            text c
+        }
+        dynaform item 2 
+    } -cleanup {
+        cleanup
+    } -result {ftype TESTFORM itype field widget 1 field b tip {} loadcmd {} defvalue DefValue context 0 invisible 0 width {} ft ::marsutil::dynaform::TEXT}
+
+    test item-1.2 {can retrieve one attribute} -body {
+        dynaform define TESTFORM { 
+            text a
+            text b -defvalue DefValue
+            text c
+        }
+        dynaform item 2 defvalue 
+    } -cleanup {
+        cleanup
+    } -result {DefValue}
+
+    #-------------------------------------------------------------------
+    # cases
+    
+    # This is used for [cases], [fill], and [prune]
+    set caseForm {
+        text t -defvalue T
+        selector a -defvalue a1 {
+            case a1 A1 {
+                when {$t eq ""} {
+                    selector b -defvalue a1b11 {
+                        case a1b11 A1B11 { label A1B11 }
+                        case a1b21 A1B21 { label A1B21 }
+                    }
+                } else {
+                    selector b -defvalue a1b12 {
+                        case a1b12 A1B12 { label A1B12 }
+                        case a1b22 A1B22 { label A1B22 }
+                    }
+                }
+            }
+            case a2 A2 {
+                selector b -defvalue a2b1 {
+                    case a2b1 A2B1 { label A2B1 }
+                    case a2b2 A2B2 { label A2B2 }
+                }
+            }
+        }
+    }
+
+    test cases-1.1 {toplevel cases, empty vdict} -body {
+        dynaform define CASEFORM $caseForm
+        dynaform cases CASEFORM a {}
+    } -cleanup {
+        cleanup
+    } -result {a1 a2}
+
+    test cases-1.2 {lower cases, empty vdict} -body {
+        dynaform define CASEFORM $caseForm
+        dynaform cases CASEFORM b {}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test cases-1.3 {lower cases, vdict} -body {
+        dynaform define CASEFORM $caseForm
+        dynaform cases CASEFORM b {a a2}
+    } -cleanup {
+        cleanup
+    } -result {a2b1 a2b2}
+
+    test cases-1.4 {expr fails} -body {
+        dynaform define CASEFORM $caseForm
+        # Note that t is not defined
+        dynaform cases CASEFORM b {a a1}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test cases-1.5 {expr true} -body {
+        dynaform define CASEFORM $caseForm
+        
+        dynaform cases CASEFORM b {t "" a a1}
+    } -cleanup {
+        cleanup
+    } -result {a1b11 a1b21}
+
+    test cases-1.6 {expr false} -body {
+        dynaform define CASEFORM $caseForm
+       
+        dynaform cases CASEFORM b {t "1" a a1}
+    } -cleanup {
+        cleanup
+    } -result {a1b12 a1b22}
+
+
+    #-------------------------------------------------------------------
+    # fill
+
+    test fill-1.1 {retrieves defaults} -body {
+        dynaform define CASEFORM $caseForm
+        
+        # Note that it walks the tree
+        dynaform fill CASEFORM {}
+    } -cleanup {
+        cleanup
+    } -result {t T a a1 b a1b12}
+
+    test fill-1.2 {existing values override} -body {
+        dynaform define CASEFORM $caseForm
+        
+        # Note that it walks the tree
+        dynaform fill CASEFORM {a a2}
+    } -cleanup {
+        cleanup
+    } -result {a a2 t T b a2b1}
+
+    #-------------------------------------------------------------------
+    # prune
+
+    test prune-1.1 {removes defaults} -body {
+        dynaform define CASEFORM $caseForm
+        
+        # Note that it walks the tree
+        dynaform prune CASEFORM [dynaform fill CASEFORM {}]
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test prune-1.2 {non-defaults values override} -body {
+        dynaform define CASEFORM $caseForm
+        
+        # Note that it walks the tree
+        dynaform prune CASEFORM [dynaform fill CASEFORM {a a2}]
+    } -cleanup {
+        cleanup
+    } -result {a a2}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+
+
+
+

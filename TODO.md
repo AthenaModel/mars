@@ -40,7 +40,7 @@
       * lazyupdater
       * timeout
     * File I/O
-      * tabletext
+      * tabletext - Used only by simlib's test DBs
     * Geometry/Coordinate Conversion
       * geometry
       * geoset
@@ -52,10 +52,10 @@
       * logger
       * logreader
     * Math/Modeling
-      * cellmodel
+      * cellmodel - Separate package?
     * SQL Database
       * sqldocument
-      * sqlib
+      * sqlib - merge into sqldocument?
     * Validation Types
       * enum
       * quality

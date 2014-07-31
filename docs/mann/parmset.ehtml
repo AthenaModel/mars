@@ -1,0 +1,369 @@
+<manpage {marsutil(n) parmset(n)} "Parameter Set Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 1.0
+namespace import ::marsutil::parmset
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+parmset(n) defines an object that allows clients to define sets
+of typed parameters, edit them, save them to a file, and load them
+again.  Parameter values are validated on load and edit, and
+<xref jnem_man(1)>-style documentation can be generated
+automatically for inclusion in a man page.<p>
+
+Parameter names must begin with a letter (upper or lower case) and
+may include letters, numbers, underscores, hyphens, and periods.  Periods
+indicate hierarchy; parameter <b>a.b</b> belongs to parameter subset
+<b>a</b>.  Subsets may be nested arbitrarily deeply; parameter
+<b>x.y.z</b> belongs to subset <b>x.y</b>, which in turn belongs
+to subset <b>x</b>.  Thus, collections can be defined within the
+parameter set.  Subsets must be defined explicitly before any
+subsets or parameters they contain.<p>
+
+The file format is simple:<p>
+
+<pre>parm <i>parm</i> <i>value</i></pre>
+
+It has Tcl syntax, so that complicated values containing newlines
+can be entered using braces, as usual.  The file can contain Tcl 
+comments, but there's not much point, as the file is often produced
+by software.<p>
+
+This module defines the parmset(n) type; to define a parameter set,
+create an instance of parmset(n); then define the parameters using
+the <iref define> method.<p>
+
+parmset(n) is a <xref saveable(i)> object.<p>
+
+<subsection "Masters and Slaves">
+
+Parmsets may be linked in a master/slave relationship.  The master
+parmset acquires all of the slave's parameters; a change to one of
+these parameters in either the master or slave will update both
+parmsets and call both parmset's <code>-notifycmd</code> callbacks.
+This allows a library module to define its own parameters yet have
+its parameters included in a global parameter file.<p>
+
+Use the <iref slave add> subcommand to make parmset B a slave of
+parmset A:<p>
+
+<pre>
+    A slave add B
+</pre>
+
+Note that B must not define any parameters which are already defined
+in A or an error will result and A might be left in an anomalous state.<p>
+
+The two parmsets will remain linked as master and slave until either is
+destroyed or the link is broken explicitly using <iref slave free>:<p>
+
+<pre>
+    A slave free B
+</pre>
+
+Additional details:<p>
+
+<ul>
+  <li> A master parmset can have any number of slaves.
+  <li> A slave parmset can have only one master.
+  <li> A master parmset can be made a slave in turn, but
+       slaves cannot be added to a parmset which is already a slave.
+  <li> When <iref load>, <iref lock>, <iref reset>,
+       <iref restore>, <iref set>, <iref setdefault>,
+       and <iref unlock> are called, the changes propagate up the
+       line of master parmsets (if any) and down to all slaves, if any.
+  <li> A change that results in the parmset's <code>-notifycmd</code>
+       callback being called will also result in it being called in
+       the same way in each linked parmset that is also affected by
+       the change.<p>
+</ul>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem parmset {parmset <i>name</i> ?<i>options</i>?}>
+
+Creates a new parmset(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref parmset> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+The <iref parmset> may be created with the following option:<p>
+
+<deflist options>
+
+<defopt {-notifycmd <i>command</i>}>
+
+Specifies a <i>command</i> to be called exactly once for each call to
+the <iref set>, <iref setdefault>, <iref load>, <iref reset> and
+<iref restore>, provided that the call doesn't return an error.
+The <i>command</i> will be called with one additional argument;
+for <iref set> and <iref setdefault> it will be the parameter
+name, and for <iref load>, <iref reset>, and <iref restore>
+it will be the empty string.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of the <iref parmset> object has the following
+subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {$parmset cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem changed {$parmset changed}>
+
+Returns 1 if the parmset's contents have been changed since the
+previous "<iref checkpoint> <code>-saved</code>" or
+"<iref restore> <code>-saved</code>".<p>
+
+<defitem checkpoint {$parmset checkpoint ?-saved?}>
+
+Returns a string which contains the parmset's current state; this
+string can be used to <iref restore> the parmset's state at a
+later time.  The string contains only the parameters which differ from
+the default values.<p>
+
+If <code>-saved</code> is given, clears the <iref changed> flag.<p>
+
+
+<defitem configure {$parmset configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.<p>
+
+<defitem define {$parmset define <i>name vtype defvalue docstring</i>}>
+
+Defines a new parameter called <i>name</i>.  If <i>name</i> belongs to a
+a subset, i.e., if <i>name</i> contains one or more periods,
+then the parent subset must already be defined.<p>
+
+<i>vtype</i> is the
+parameter's type; it must be a type-validation type, i.e., a command
+which has a <i>validate</i> method which validates values of the type.
+Snit provides a basic set of type-validation types, and the facilities
+to build new ones.  In addition, instances of <xref enum(n)>,
+<xref quality(n)>, and <xref range(n)> are also valid
+type-validation types.<p>
+
+<i>defvalue</i> is the parameter's default value, which must be valid.<p>
+
+<i>docstring</i> is a brief text string documenting the parameter.<p>
+
+<defitem docstring {$parmset docstring <i>name</i>}>
+
+Returns the documentation string for the named parameter or subset.<p>
+
+<defitem get {$parmset get <i>name</i>}>
+
+Retrieves the value of the named parameter.<p>
+
+<defitem getdefault {$parmset getdefault <i>name</i>}>
+
+Retrieves the default value of the named parameter.<p>
+
+<defitem islocked {$parmset islocked <i>name</i>}>
+
+Returns 1 if the named parameter is locked, and 0 otherwise.<p>
+
+<defitem items {$parmset items}>
+
+Returns a list of the subsets and parameters, with their item types.
+For example, if the parmset contains
+one subset, <b>a</b>, and one parameter, <b>a.b</b>, then
+<iref items> will return the list <b>a subset a.b parm</b>.  The
+order of the list is the same as for <iref names>, except that
+subset names are included.<p>
+
+<defitem list {$parmset list ?<i>pattern</i>?}>
+
+Returns a human-readable list of parameters whose names match
+the specified wildcard pattern, with their values.  The order
+is the same as for <iref names>.  If no <i>pattern</i> is
+specified, all parameters will be returned.<p>
+
+Note that the return value is a valid Tcl dictionary.<p>
+
+<defitem load {$parmset load <i>filename</i> ?-safe?}>
+
+Loads the parameter set from the named file, and calls
+the <code>-notifycmd</code> on success.<p>
+
+When -safe is not specified, the behavior is as follows: If there is an error
+reading the file, the existing data is untouched.  Parameters not
+found in the file will be reset to their default values.<p>
+When -safe is specified, only valid parameter/value pairs will be
+loaded; Any unknown parameters or bad values will be ignored. Parameters not
+found in the file will be reset to their default values. <p>
+
+<defitem lock {$parmset lock <i>pattern</i>}>
+
+Locks all parameters whose name matchs the glob <i>pattern</i>.  The
+value of a locked parameter may not be changed; attempts to do so will
+cause an error to be thrown.  However, calls to
+<iref set>, <iref setdefault>, and <iref load> are accepted if
+they specify the parameter's current value, thus leaving it
+unchanged.  The <iref reset> command will reset all <b>unlocked</b>
+parameters to their default values, leaving locked parameters alone.<p>
+
+<defitem locked {$parmset locked ?<i>pattern</i>?}>
+
+Returns a list of locked parameter names, grouped by subset, in order of
+definition, which match the specified wildcard pattern; if no
+<i>pattern</i> is specified, the names of all locked parameters
+will be returned.<p>
+
+<defitem manpage {$parmset manpage}>
+
+Returns documentation for the parameter set in the form of a
+<xref jnem_man(5)> definition list.  It can be included in a man
+page as follows:<p>
+
+<pre><lb>expand [myparmset manpage]<rb></pre>
+
+(Where <b>myparmset</b> is the name of the parameter set object, of course.)<p>
+
+<defitem manlinks {$parmset manlinks}>
+
+Returns a table-of-contents list of links for the parameters defined
+in the parameter set.  When used with <iref manpage>, it creates a
+dynamic tree-structured table-of-contents for the parameter entries
+in which the subsets can be expanded and closed again.  This makes it
+much easier to drill down to the desired parameter.<p>
+
+It can be included in a man page as follows:<p>
+
+<pre><lb>expand [myparmset manlinks]<rb></pre>
+
+(Where <b>myparmset</b> is the name of the parameter set object, of
+course.)  It should usually replace the <b>itemlist</b> macro in the
+synopsis section of the man page.<p>
+
+<defitem names {$parmset names ?<i>pattern</i>?}>
+
+Returns a list of the parameter names, grouped by subset, in order of
+definition, which match the specified wildcard pattern; if no
+<i>pattern</i> is specified, all names will be returned.<p>
+
+<defitem reset {$parmset reset}>
+
+Resets all parameter values to their defaults, and calls
+the <code>-notifycmd</code>.<p>
+
+This command does not reset the values of locked parameters.  The
+<iref locked> command will return the names of all locked
+parameters, so that they can be unlocked and re-locked if need be.<p>
+
+<defitem restore {$parmset restore <i>checkpoint</i> ?-saved?}>
+
+Restores the parmset's state back to the saved <i>checkpoint</i>, and calls
+the <code>-notifycmd</code>.  If <code>-saved</code> is specified,
+clears the <iref changed> flag; otherwise it sets it.<p>
+
+<defitem save {$parmset save <i>filename</i>}>
+
+Saves the parameter set to a file; if the file already exists, it
+is copied to "<i>filename</i>.bak".  Parameters whose current values
+are defaulted will not be saved<p>
+
+<defitem set {$parmset set <i>parm value</i>}>
+
+Sets the value of the named parameter, which must be valid, and calls
+the <code>-notifycmd</code> on success.<p>
+
+Returns the new <i>value</i>.<p>
+
+<defitem setdefault {$parmset setdefault <i>parm value</i>}>
+
+Sets both the default and current values of the parameter, and calls
+the <code>-notifycmd</code> on success.<p>
+
+<iref setdefault> is usually used when defining a parameter set with a
+repeated collection of parameters for multiple entities of
+the same type.  The parameters for each entity can be created
+with generic defaults, and then the defaults can be tweaked
+individually as needed.<p>
+
+Returns the new <i>value</i>.<p>
+
+<defitem slave {$parmset slave <i>subcommand</i> ?<i>args</i>?}>
+
+This subcommand is used to link parmsets together in master/slave
+relationships.<p>
+
+<deflist slave>
+
+<defitem "slave add" {$parmset slave add <i>slave</i>}>
+
+Links this parmset with parmset <i>slave</i> in a master/slave
+relationship.  See <xref "Masters and Slaves"> for details about
+master/slave relationships.<p>
+
+Usually the <i>slave</i> will the fully qualified command name of
+a parmset(n) object.  However, it may also be globally-visible
+command prefix which delegates to a real parmset(n) object.<p>
+
+<defitem "slave free" {$parmset slave free <i>slave</i>}>
+
+Breaks the link between this parmset and the named <i>slave</i>.
+This parmset retains the parameter definitions it acquired from
+<i>slave</i>, but changes will no longer propagate from one to the
+other.  (The link is also broken if either parmset(n) is destroyed.)
+See <xref "Masters and Slaves"> for details about master/slave
+relationships.<p>
+
+</deflist slave>
+
+<defitem subset {$parmset subset <i>name docstring</i>}>
+
+Defines and documents a new parameter subset.  If the new subset has a
+a parent subset, i.e., if <i>name</i> contains one or more periods,
+then the parent subset must already be defined.<p>
+
+<defitem type {$parmset type <i>name</i>}>
+
+Returns the validation type for the named parameter.<p>
+
+<defitem unlock {$parmset unlock <i>pattern</i>}>
+
+Unlocks all parameters whose name matches the glob <i>pattern</i>
+(if, indeed, they were locked).<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

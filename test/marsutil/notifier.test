@@ -1,0 +1,485 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    notifier.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) notifier.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require sqlite3
+package require marsutil 1.0
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+    # List of called objects
+    variable callbacks {}
+
+    # List of error messages
+    variable errors {}
+
+    # List of trace
+    variable trace {}
+
+    # Cleanup
+    #
+    # Initialize the notifier to an empty state.
+
+    proc Cleanup {} {
+        variable callbacks
+        variable errors
+
+        set callbacks {}
+        set errors    {}
+        set trace     {}
+
+        ::marsutil::notifier::db eval {
+            DELETE FROM bindings;
+        }
+
+        notifier trace ""
+    }
+
+    # CB args
+    #
+    # args     arguments
+    #
+    # Lappends the args to the callbacks list
+
+    proc CB {args} {
+        variable callbacks
+
+        lappend callbacks $args
+    }
+
+    # Trace args
+    #
+    # Lappends the args to the trace list
+
+    proc Trace {args} {
+        variable trace
+
+        lappend trace $args
+    }
+
+    # bgerror msg
+    
+    proc ::bgerror {msg} {
+        lappend ::marsutil::test::errors $msg
+    }
+
+    # Delete any bindings made by marsutil(n) at load time, if any.
+    Cleanup
+
+    #-------------------------------------------------------------------
+    # bind
+    #
+    # This section tests setting and querying bindings; it does not test
+    # executing them.  See the "send" section for that.
+
+    test bind-1.1 {Error, too many arguments} -body {
+        notifier bind 1 2 3 4 5
+    } -returnCodes {
+        error
+    } -cleanup {
+        Cleanup
+    } -result "wrong # args: should be \"::marsutil::notifier bind subject ?event ?object ?binding???\""
+
+    test bind-1.2 {initially, no subjects bound.} -body {
+        notifier bind
+    } -cleanup {
+        Cleanup
+    } -result {}
+
+    test bind-1.3 {initially, no events bound to subject} -body {
+        notifier bind Dummy1
+    } -cleanup {
+        Cleanup
+    } -result {}
+
+    test bind-1.4 {initially, no objects bound. to subject or event} -body {
+        notifier bind Dummy1 <Event>
+    } -cleanup {
+        Cleanup
+    } -result {}
+
+    test bind-1.5 {initially, no binding for subject, event, object.} -body {
+        notifier bind Dummy1 <Event> Dummy2
+    } -cleanup {
+        Cleanup
+    } -result ""
+
+    test bind-2.1 {can query binding} -body {
+        notifier bind Subject <Event> Object [list Object MyEventCallback]
+        notifier bind Subject <Event> Object
+    } -cleanup {
+        Cleanup
+    } -result {Object MyEventCallback}
+
+    test bind-2.2 {can query bound objects} -body {
+        notifier bind Subject <Event> Object1 [list Object1 MyEventCallback]
+        notifier bind Subject <Event> Object2 [list Object2 MyEventCallback]
+        notifier bind Subject <Event>
+    } -cleanup {
+        Cleanup
+    } -result {Object1 Object2}
+
+    test bind-2.3 {can query bound events} -body {
+        notifier bind Subject <Event1> Object [list Object MyEventCallback]
+        notifier bind Subject <Event2> Object [list Object MyEventCallback]
+        notifier bind Subject
+    } -cleanup {
+        Cleanup
+    } -result {<Event1> <Event2>}
+
+    test bind-2.4 {can query bound subjects} -body {
+        notifier bind Subject1 <Event> Object [list Object MyEventCallback]
+        notifier bind Subject2 <Event> Object [list Object MyEventCallback]
+        notifier bind
+    } -cleanup {
+        Cleanup
+    } -result {Subject1 Subject2}
+
+    test bind-3.1 {can change a binding} -body {
+        notifier bind Subject <Event> Object1 A
+        notifier bind Subject <Event> Object2 B
+
+        notifier bind Subject <Event> Object1 C
+
+        list \
+            [notifier bind Subject <Event> Object1] \
+            [notifier bind Subject <Event> Object2]
+    } -cleanup {
+        Cleanup
+    } -result {C B}
+    
+    test bind-3.2 {can delete a binding} -body {
+        notifier bind Subject <Event> Object1 A
+        notifier bind Subject <Event> Object2 B
+
+        notifier bind Subject <Event> Object1 ""
+
+        list \
+            [notifier bind Subject <Event> Object1] \
+            [notifier bind Subject <Event> Object2]
+    } -cleanup {
+        Cleanup
+    } -result {{} B}
+
+    test bind-4.1 {%s and %o are not substituted in a binding query} -body {
+        notifier bind Subject <Event> Object [list %s %o]
+        notifier bind Subject <Event> Object
+    } -cleanup {
+        Cleanup
+    } -result {%s %o}
+
+    test bind-4.2 {%s and %o are substituted in a binding call} -body {
+        notifier bind Subject <Event> Object [list ::marsutil::test::CB %s %o]
+        notifier send Subject <Event>
+
+        list $callbacks $errors
+    } -cleanup {
+        Cleanup
+    } -result {{{Subject Object}} {}}
+
+    #-------------------------------------------------------------------
+    # forget
+
+    test forget-1.1 {forget subject} -body {
+        notifier bind Subject1 <Event> Object1 A
+        notifier bind Subject1 <Event> Object2 B
+        notifier bind Subject2 <Event> Object1 C
+        notifier bind Subject2 <Event> Object2 D
+
+        notifier forget Subject1
+        notifier bind
+    } -cleanup {
+        Cleanup
+    } -result {Subject2}
+
+    test forget-1.2 {forget object} -body {
+        notifier bind Subject1 <Event> Object1 A
+        notifier bind Subject1 <Event> Object2 B
+        notifier bind Subject2 <Event> Object1 C
+        notifier bind Subject2 <Event> Object2 D
+
+        notifier forget Object1
+        list \
+            [notifier bind Subject1 <Event>] \
+            [notifier bind Subject2 <Event>]
+    } -cleanup {
+        Cleanup
+    } -result {Object2 Object2}
+
+    #-------------------------------------------------------------------
+    # send
+
+    test send-1.1 {send with no arguments} -body {
+        notifier bind Subject <Event> A [list ::marsutil::test::CB A]
+
+        notifier send Subject <Event>
+        set callbacks
+    } -cleanup {
+        Cleanup
+    } -result {A}
+
+    test send-1.2 {send with one arguments} -body {
+        notifier bind Subject <Event> A [list ::marsutil::test::CB A]
+
+        notifier send Subject <Event> a
+        set callbacks
+    } -cleanup {
+        Cleanup
+    } -result {{A a}}
+
+    test send-1.3 {send with two arguments} -body {
+        notifier bind Subject <Event> A [list ::marsutil::test::CB A]
+
+        notifier send Subject <Event> a b
+        set callbacks
+    } -cleanup {
+        Cleanup
+    } -result {{A a b}}
+
+    test send-2.1 {send calls all relevant bindings} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 [list ::marsutil::test::CB A2]
+
+        notifier send Subject <Event> a b c
+        set callbacks
+    } -cleanup {
+        Cleanup
+    } -result {{A1 a b c} {A2 a b c}}
+
+    test send-2.2 {send calls only relevant bindings} -body {
+        notifier bind Subject <Event1> A [list ::marsutil::test::CB E1]
+        notifier bind Subject <Event2> A [list ::marsutil::test::CB E2]
+
+        notifier send Subject <Event1> a b c
+        set callbacks
+    } -cleanup {
+        Cleanup
+    } -result {{E1 a b c}}
+
+    test send-3.1 {send errors are handled by bgerror} -body {
+        notifier bind Subject <Event> A ::nonesuch
+
+        notifier send Subject <Event> a b c
+        set errors
+    } -cleanup {
+        Cleanup
+    } -result {{invalid command name "::nonesuch"}}
+
+    test send-3.2 {on send error, other bindings are still called} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 ::nonesuch
+        notifier bind Subject <Event> A3 [list ::marsutil::test::CB A3]
+
+        notifier send Subject <Event> a b c
+
+        list $callbacks $errors
+    } -cleanup {
+        Cleanup
+    } -result {{{A1 a b c} {A3 a b c}} {{invalid command name "::nonesuch"}}}
+
+    test send-4.1 {can unbind previous binding in callback} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 \
+            [list ::marsutil::notifier bind Subject <Event> A1 ""]
+        notifier bind Subject <Event> A3 [list ::marsutil::test::CB A3]
+
+        notifier send Subject <Event>
+
+        list $callbacks [notifier bind Subject <Event>] $errors
+    } -cleanup {
+        Cleanup
+    } -result {{A1 A3} {A2 A3} {}}
+
+    test send-4.2 {can unbind own binding in callback} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 \
+            [list ::marsutil::notifier bind Subject <Event> A2 ""]
+        notifier bind Subject <Event> A3 [list ::marsutil::test::CB A3]
+
+        notifier send Subject <Event>
+
+        list $callbacks [notifier bind Subject <Event>] $errors
+    } -cleanup {
+        Cleanup
+    } -result {{A1 A3} {A1 A3} {}}
+
+    test send-4.3 {can unbind subsequent binding in callback} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 \
+            [list ::marsutil::notifier bind Subject <Event> A3 ""]
+        notifier bind Subject <Event> A3 [list ::marsutil::test::CB A3]
+
+        notifier send Subject <Event>
+
+        list $callbacks [notifier bind Subject <Event>] $errors
+    } -cleanup {
+        Cleanup
+    } -result {A1 {A1 A2} {}}
+
+    test send-5.1 {can forget subject in callback} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 \
+            [list ::marsutil::notifier forget Subject]
+        notifier bind Subject <Event> A3 [list ::marsutil::test::CB A3]
+
+        notifier send Subject <Event>
+
+        list $callbacks [notifier bind Subject <Event>] $errors
+    } -cleanup {
+        Cleanup
+    } -result {A1 {} {}}
+
+    test send-5.2 {can forget object in callback} -body {
+        notifier bind Subject <Event> A1 [list ::marsutil::test::CB A1]
+        notifier bind Subject <Event> A2 \
+            [list ::marsutil::notifier forget A3]
+        notifier bind Subject <Event> A3 [list ::marsutil::test::CB A3]
+
+        notifier send Subject <Event>
+
+        list $callbacks [notifier bind Subject <Event>] $errors
+    } -cleanup {
+        Cleanup
+    } -result {A1 {A1 A2} {}}
+
+    #-------------------------------------------------------------------
+    # trace
+
+    test trace-1.1 {No trace command initially} -body {
+        notifier trace
+    } -result {}
+
+    test trace-1.3 {Can set trace command} -body {
+        notifier trace ::marsutil::test::Trace
+    } -cleanup {
+        Cleanup
+    } -result {::marsutil::test::Trace}
+
+    test trace-1.3 {Can set and query trace command} -body {
+        notifier trace ::marsutil::test::Trace
+        notifier trace
+    } -cleanup {
+        Cleanup
+    } -result {::marsutil::test::Trace}
+
+    test send-2.1 {sends are traced} -body {
+        notifier bind Subject <Event1> O1 ::marsutil::test::CB
+        notifier bind Subject <Event1> O2 ::marsutil::test::CB
+        notifier bind Subject <Event2> O2 ::marsutil::test::CB
+
+        notifier trace ::marsutil::test::Trace
+
+        notifier send Subject <Event1> a b c
+        notifier send Subject <Event2> d e f
+        notifier send Subject <Event3> g h i
+        set trace
+    } -cleanup {
+        Cleanup
+    } -result {{Subject <Event1> {a b c} {O1 O2}} {Subject <Event2> {d e f} O2} {Subject <Event3> {g h i} {}}}
+
+
+
+    #-------------------------------------------------------------------
+    # rename
+
+    test rename-1.1 {subject is renamed} -body {
+        notifier bind SubjectA <Event> ObjectA dummy
+        notifier bind SubjectB <Event> ObjectB dummy
+        notifier bind SubjectA <Event> ObjectB dummy
+
+        notifier rename SubjectA Fred
+        list [notifier bind] [notifier bind Fred <Event>]
+    } -cleanup {
+        Cleanup
+    } -result {{Fred SubjectB} {ObjectA ObjectB}}
+
+    test rename-1.2 {object is renamed} -body {
+        notifier bind SubjectA <Event> ObjectA dummy
+        notifier bind SubjectB <Event> ObjectB dummy
+        notifier bind SubjectA <Event> ObjectB dummy
+
+        notifier rename ObjectB Fred
+
+        list \
+            [notifier bind SubjectA <Event>] \
+            [notifier bind SubjectB <Event>]
+    } -cleanup {
+        Cleanup
+    } -result {{Fred ObjectA} Fred}
+
+    test rename-2.1 {bindings fixed on subject rename} -body {
+        notifier bind SubjectA <Event> ObjectA [list 1 %o %s]
+        notifier bind SubjectA <Event> ObjectB [list 2 %o %s]
+
+        notifier rename SubjectA Fred
+
+        ::marsutil::notifier::db eval {
+            SELECT binding FROM bindings
+            WHERE subject='Fred'
+        }
+    } -cleanup {
+        Cleanup
+    } -result {{1 ObjectA Fred} {2 ObjectB Fred}}
+
+    test rename-2.2 {bindings fixed on object rename} -body {
+        notifier bind SubjectA <Event> Object [list 1 %o %s]
+        notifier bind SubjectB <Event> Object [list 2 %o %s]
+
+        notifier rename Object Fred
+
+        ::marsutil::notifier::db eval {
+            SELECT binding FROM bindings
+            WHERE object='Fred'
+        }
+    } -cleanup {
+        Cleanup
+    } -result {{1 Fred SubjectA} {2 Fred SubjectB}}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+
+
+
+

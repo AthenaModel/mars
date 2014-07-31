@@ -1,0 +1,137 @@
+<manpage {marsutil(n) range(n)} "Bounded value definition type">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 0.1
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+range(n) defines a bounded value definition type.  Each instance of
+the type defines a range of numeric values, and can do the following
+things:<p>
+
+<ul>
+  <li> Validate that a value belongs to the range.
+  <li> Clamp an arbitrary numeric value within the bounds.
+  <li> Test whether an arbitrary numeric value is within bounds or
+       not.
+  <li> Format values for output.
+</ul><p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem range {range <i>name ?options...?</i>}>
+
+<iref range> defines a new range type called
+<i>name</i>.<p>
+
+A <iref range> can be created with the following <i>options</i>:<p>
+
+<deflist range options>
+
+<defopt {-min <i>value</i>}>
+The minimum numeric <i>value</i> for this range.  The default
+is no minimum.<p>
+
+<defopt {-max <i>value</i>}>
+The maximum numeric <i>value</i> for this range.  The default
+is no maximum.<p>
+
+<defopt {-format <i>format</i>}>
+A <i>format</i> string used to format numeric values belonging
+to this range.  The default is "%4.2f".<p>
+
+</deflist range options>
+
+For example, the following code defines "probability" as a numeric value
+that ranges from 0.0 to 1.0, to be output with three decimal places of
+precision.<p>
+
+<pre>
+range probability -min 0.0 -max 1.0 -format {%5.3f}
+</pre>
+
+The <i>name</i> becomes a Tcl command, defined in the current scope;
+<iref range> returns the fully-qualified form of <i>name</i>.<p>
+
+</deflist>
+
+<section "INSTANCE COMMAND">
+
+Each instance of the <iref range> object has the following
+subcommands:<p>
+
+<deflist>
+
+<defitem cget {$range cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {$range configure <i>option value...</i>}>
+
+Sets the value of one or more options.<p>
+
+<defitem validate {$range validate <i>input</i>}>
+
+Validates that <i>input</i> belongs to the range.  If it does, it is
+returned unchanged.  If it does not, an error is thrown with error
+code <b>INVALID</b>.<p>
+
+<defitem value {$range value <i>input</i>}>
+
+Identical to <iref validate>; it is included so that range(n) types
+can be used interchangeably with <xref quality(n)> types in some
+cases (e.g., <xref mat(n) "mat numerize"><p>
+
+<defitem format {$range format <i>value</i>}>
+
+Given a numeric value of this range type, formats and returns
+the value as specified by the <b>-format</b> string.<p>
+
+<defitem inrange {$range inrange <i>value</i>}>
+
+Returns 1 if the arbitrary <i>value</i> falls within the range's
+<b>-min</b> and <b>-max</b>, and 0 otherwise.<p>
+
+<defitem clamp {$range clamp <i>value</i>}>
+
+Clamps the arbitrary <i>value</i> within the range's 
+<b>-min</b> and <b>-max</b>, and returns the clamped value.<p>
+
+</deflist>
+
+<section "SEE ALSO">
+
+<xref enum(n)>, <xref quality(n)>.
+
+<section ENVIRONMENT>
+
+range(n) requires Tcl 8.5 or later.
+
+To use range(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+

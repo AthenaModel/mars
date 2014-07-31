@@ -1,0 +1,127 @@
+<manpage {marsutil(n) timeout(n)} "Timeout manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 1.0
+namespace import ::marsutil::timeout
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+timeout(n) defines an object that manages scheduling, repetition, and
+cancelling of "after" timeouts and idle handlers.  The caller
+specifies the timeout interval, a Tcl script to call when the timeout
+fires, and whether the timeout should be rescheduled automatically. A
+scheduled timeout is cancelled via the <iref cancel> method or by
+destroying the object; note that the timeout callback can cancel a
+repeating timeout.<p>
+
+Note that the timeout is not automatically scheduled when the object
+is created; instead, the <iref schedule> method must be used
+explicitly.<p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem timeout {timeout <i>name ?options?</i>}>
+
+Creates a new timeout(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref timeout> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+The <iref timeout> may be created with the following options:<p>
+
+<deflist timeout options>
+
+<defopt {-command <i>script</i>}>
+
+Defines a Tcl script to be evaluated in the global scope when the
+timeout fires.  Defaults to "".<p>
+
+<defopt {-interval idle|<i>msecs</i>}>
+
+Specifies the timeout interval, which must be either the string
+<b>idle</b> or the length of the timeout interval in milliseconds
+(a positive integer).  If set to <b>idle</b>, the object schedules
+idle tasks rather than timeouts.  Defaults to 1000 (1 second).<p>
+
+If this value is changed after the object is created, then it takes
+effect the next time <iref schedule> is called.<p>
+
+<defopt {-repetition <i>boolean</i>}>
+
+If true, the timeout will be rescheduled automatically after each call
+of the <code>-command</code>, unless the <code>-command</code> calls
+the <iref cancel> method.  Defaults to false.<p>
+
+</deflist timeout options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of the <iref timeout> object has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {$timeout cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {$timeout configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.<p>
+
+<defitem schedule {$timeout schedule ?-nocomplain?}>
+
+Schedules the timeout to fire after <code>-interval</code>
+milliseconds from the present time.  Normally it's an error to call
+<iref schedule> if the timeout already <iref isScheduled>;
+if <code>-nocomplain</code> is specified, then <iref schedule>
+is a no-op if the timeout <iref isScheduled>.<p>
+
+<defitem cancel {$timeout cancel}>
+
+Cancels any scheduled timeout; if called by the <code>-command</code>,
+prevents <code>-repetition</code>.  After <iref cancel> is called,
+the timeout can only be scheduled for execution by calling
+<iref schedule>.  Note that it is never an error to call
+<iref cancel>.<p>
+
+<defitem isScheduled {$timeout isScheduled}>
+
+Returns 1 if the timeout is scheduled, and 0 if not.<p>
+
+</deflist instance>
+
+<section "SEE ALSO">
+
+<xref timeout(n)>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+

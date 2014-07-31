@@ -43,7 +43,7 @@ there are more then rounding takes place. If not supplied, the default for
 Does a random draw from a discrete probability distribution given a
 vector which defines the distribution, i.e., a vector of numbers
 between 0.0 and 1.0, summing to 1.0.  Returns a number <i>n</i>
-where 0 &le; n &lt; <i>N</i>, where <i>N</i> is the length of
+where 0 &le; n <lb> <i>N</i>, where <i>N</i> is the length of
 <i>vec</i>.<p>
 
 <defitem echo {echo <i>args</i>}>
@@ -122,8 +122,8 @@ or "T" it is multiplied by the appropriate factor.<p>
 <defitem moneysort {moneysort <i>a b</i>}>
 
 Compares two values <i>a</i> and <i>b</i> formatted by <iref moneyfmt>
-and returns -1 if <i>a</i> &lt; <i>b</i>, 0 if <i>a</i> == <i>b</i>,
-and +1 if <i>a</i> &gt; <i>b</i>.<p>
+and returns -1 if <i>a</i> <lb> <i>b</i>, 0 if <i>a</i> == <i>b</i>,
+and +1 if <i>a</i> <rb> <i>b</i>.<p>
 
 <defitem optval {optval <i>varname option</i> ?<i>defvalue</i>?}>
 
@@ -238,6 +238,8 @@ Originally implemented for JNEM as util(n).  Migrated to Mars in
 September, 2008.<p>
 
 </manpage>
+
+
 
 
 

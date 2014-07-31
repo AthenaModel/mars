@@ -1,0 +1,122 @@
+<manpage {marsutil(n) logreader(n)} "Log File Reader">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsutil 1.0
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A logreader(n) object reads and parses a log file given a user-defined
+parsing function.  There are two ways to use a logreader:<p>
+
+<ul>
+  <li> The <iref get> method returns the parsed contents of an
+       entire log file given the file name.<p>
+
+  <li> The <iref newentries> method allows the application to
+       periodically retrieve new entries from an active log file.<p>
+</ul>
+
+logreader(n) places few requirements on either the log file or the
+parsing function. It assumes that:<p>
+
+<ul>
+  <li> Log file entries are written atomically--i.e., that it need not
+       worry about reading a partial entry from the disk.<p>
+
+  <li> A newline character at the end of the file can be ignored.<p>
+</ul>
+
+A log file with newlines between entries will meet these requirements,
+provided that it is output as a line-buffered file:<p>
+
+<pre>
+    set channel [open $filename w]
+    fconfigure $channel -buffering line
+</pre>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem logreader {logreader <i>pathName ?options...?</i>}>
+
+Creates a new <iref logreader> component named <i>pathName</i>.<p>
+
+The <iref logreader> widget may be created with the following option:<p>
+
+<deflist logreader options>
+
+<defopt {-parsecmd <i>cmd</i>}>
+
+A parsing command used to parse the contents of a log file into the proper
+application specific format.  It will be passed one argument, a chunk
+of zero or more entries from the log file.  The input may be parsed in
+any way desired by the application.  Required.
+
+</deflist logreader options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem get {$logreader get <i>file</i>}>
+
+Returns the parsed content of the named <i>file</i>, as parsed by the
+<code>-parsecmd</code>.<p>
+
+<defitem newentries {$logreader newentries <i>file</i>}>
+
+Given a new <i>file</i> name, reads all entries from the file and
+returns the parsed content, leaving the file open.  Subsequent calls
+parse and return any new entries; if there are none,
+<code>-parsecmd</code> will be called on the empty string.  When
+<iref newentries> is called on a different file, the current file is
+closed and the new file is opened.<p>
+
+<defitem close {$logreader close}>
+
+Explicitly closes the current log file, if any.<p>
+
+<defitem filename {$logreader filename}>
+
+Returns the name of the most recently read log file, as it was passed
+to <iref get> or <iref newentries>.<p>
+
+<defitem isfileopen {$logreader isfileopen}>
+
+Returns 1 if the current file is open, else 0.
+
+</deflist>
+
+<section ENVIRONMENT>
+
+marsutil(n) requires Tcl 8.5 or later.
+
+To use marsutil(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Dave Jaffe<br>
+Will Duquette<p>
+
+<section HISTORY>
+
+07/05/2005 DJ Original package.
+06/05/2006 WHD Minor clean-up.
+
+</manpage>
+
+
+

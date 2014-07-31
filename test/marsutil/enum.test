@@ -1,0 +1,335 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    enum.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) enum(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require marsutil 1.0
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+    #-------------------------------------------------------------------
+    # Setup
+
+    enum goodness {
+        VG "Very Good"
+        G  "Good"
+        N  "Neutral"
+        B  "Bad"
+        VB "Very Bad"
+    }
+
+    enum badness {}
+
+    # Don't allow lookups by index number; thus, shortnames can be
+    # integers.
+    enum noindex {
+        ALL "All Items"
+        0   "No Items"
+        1   "1 Item"
+        2   "2 Items"
+        3   "3 Items"
+    } -noindex
+
+    #-------------------------------------------------------------------
+    # Creation Errors
+
+    test enum_creation-1.1 {invalid input} -body {
+        enum %AUTO% foo
+    } -returnCodes {
+        error
+    } -result {Error in constructor: Assertion failed: [llength $deflist] % 2 == 0}
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test enum_validate-1.1 {valid input} -body {
+        goodness validate VG
+    } -result {VG}
+
+    test enum_validate-1.2 {valid input translated to short name} -body {
+        goodness validate "Very Good"
+    } -result {VG}
+
+    test enum_validate-1.3 {invalid input} -body {
+        goodness validate VVG
+    } -returnCodes {
+        error
+    } -result {invalid value "VVG", should be one of: VG, G, N, B, VB}
+
+    test enum_validate-1.4 {index numbers are invalid with -noindex} -body {
+        noindex validate 4
+    } -returnCodes {
+        error
+    } -result {invalid value "4", should be one of: ALL, 0, 1, 2, 3}
+
+    test enum_validate-2.1 {invalid input yields -errorcode INVALID} -body {
+        catch {goodness validate VVG} result opts
+        dict get $opts -errorcode
+    } -result {INVALID}
+
+    #-------------------------------------------------------------------
+    # name
+
+    test enum_name-1.1 {with long name} -body {
+        list \
+            [goodness name "Very Bad"] \
+            [goodness name "Bad"] \
+            [goodness name "Neutral"] \
+            [goodness name "Good"] \
+            [goodness name "Very Good"]
+    } -result {VB B N G VG}
+
+    test enum_name-1.2 {with short name} -body {
+        list \
+            [goodness name VB] \
+            [goodness name B] \
+            [goodness name N] \
+            [goodness name G] \
+            [goodness name VG]
+    } -result {VB B N G VG}
+
+    test enum_name-1.3 {with index} -body {
+        list \
+            [goodness name 0] \
+            [goodness name 1] \
+            [goodness name 2] \
+            [goodness name 3] \
+            [goodness name 4]
+    } -result {VG G N B VB}
+
+    test enum_name-1.4 {input error} -body {
+        goodness name NA
+    } -result {}
+
+    test enum_name-1.5 {case-insensitive matching} -body {
+        list \
+            [goodness name vb] \
+            [goodness name "very good"]
+    } -result {VB VG}
+
+    test enum_name-1.6 {name with -noindex} -body {
+        noindex name 0
+    } -result {0}
+
+
+    #-------------------------------------------------------------------
+    # longname
+
+    test enum_longname-1.1 {longname: with name} -body {
+        list \
+            [goodness longname VB] \
+            [goodness longname B] \
+            [goodness longname N] \
+            [goodness longname G] \
+            [goodness longname VG]
+    } -result {{Very Bad} Bad Neutral Good {Very Good}}
+
+    test enum_longname-1.2 {longname: with long name} -body {
+        list \
+            [goodness longname "Very Bad"] \
+            [goodness longname "Bad"] \
+            [goodness longname "Neutral"] \
+            [goodness longname "Good"] \
+            [goodness longname "Very Good"]
+    } -result {{Very Bad} Bad Neutral Good {Very Good}}
+
+    test enum_longname-1.3 {longname: with index} -body {
+        list \
+            [goodness longname 4] \
+            [goodness longname 3] \
+            [goodness longname 2] \
+            [goodness longname 1] \
+            [goodness longname 0]
+    } -result {{Very Bad} Bad Neutral Good {Very Good}}
+
+    test enum_longname-1.4 {longname: input error} -body {
+        goodness longname NA
+    } -result {}
+
+    test enum_longname-1.5 {longname: case-insensitive matching} -body {
+        list \
+            [goodness longname vb] \
+            [goodness longname "very good"]
+    } -result {{Very Bad} {Very Good}}
+
+    test enum_longname-1.6 {name with -noindex} -body {
+        noindex longname 0
+    } -result {No Items}
+
+    #-------------------------------------------------------------------
+    # index
+
+    test enum_index-1.1 {index: from name} -body {
+        list \
+            [goodness index VB] \
+            [goodness index B] \
+            [goodness index N] \
+            [goodness index G] \
+            [goodness index VG]
+    } -result {4 3 2 1 0}
+
+    test enum_index-1.2 {index: from longname} -body {
+        list \
+            [goodness index "Very Bad"] \
+            [goodness index "Bad"] \
+            [goodness index "Neutral"] \
+            [goodness index "Good"] \
+            [goodness index "Very Good"]
+    } -result {4 3 2 1 0}
+
+    test enum_index-1.3 {index: from index} -body {
+        list \
+            [goodness index 0] \
+            [goodness index 1] \
+            [goodness index 2] \
+            [goodness index 3] \
+            [goodness index 4]
+    } -result {0 1 2 3 4}
+
+    test enum_index-1.4 {index: input errors} -body {
+        list \
+            [goodness index NA] \
+            [goodness index 5]
+    } -result {-1 -1}
+
+    test enum_index-1.5 {index: case-insensitive matching} -body {
+        list \
+            [goodness index vb] \
+            [goodness index "very good"]
+    } -result {4 0}
+
+    test enum_index-1.6 {index with -noindex} -body {
+        noindex index 0
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # names
+
+    test enum_names-1.1 {names: nominal case} -body {
+        goodness names
+    } -result {VG G N B VB}
+
+    #-------------------------------------------------------------------
+    # longnames
+
+    test enum_longnames-1.1 {longnames: nominal case} -body {
+        goodness longnames
+    } -result {{Very Good} Good Neutral Bad {Very Bad}}
+
+    #-------------------------------------------------------------------
+    # add
+    #
+    # Note that "add" is used in the constructor as well.
+
+    test enum_add-1.1 {add: add to existing enum} -setup {
+        enum myenum {
+            A Aaa
+            B Bbb
+        }
+    } -body {
+        myenum add [list C Ccc D Ddd]
+        list [myenum names] [myenum longnames]
+    } -cleanup {
+        myenum destroy
+    } -result {{A B C D} {Aaa Bbb Ccc Ddd}}
+
+    #-----------------------------------------------------------------------
+    # size 
+
+    test enum_size-1.1 {size: empty and full sizes} -body {
+        list [goodness size] [badness size]
+    } -result {5 0}
+
+    #-------------------------------------------------------------------
+    # deflist
+
+    test enum_deflist-1.1 {Empty deflist} -setup {
+        enum myenum {}
+    } -body {
+        myenum deflist
+    } -cleanup {
+        myenum destroy
+    } -result {}
+
+    test enum_deflist-1.2 {Non-empty deflist} -body {
+        goodness deflist
+    } -result {VG {Very Good} G Good N Neutral B Bad VB {Very Bad}}
+
+
+    #-------------------------------------------------------------------
+    # Comparisons
+
+    test enum_comparisons-1.1 {a == b} -body {
+        list \
+            [goodness eq "Very Good" VG] \
+            [goodness lt "Very Good" VG] \
+            [goodness gt "Very Good" VG] \
+            [goodness le "Very Good" VG] \
+            [goodness ge "Very Good" VG]
+    } -result {1 0 0 1 1}
+
+    test enum_comparisons-1.2 {a > b} -body {
+        list \
+            [goodness eq "Good" VG] \
+            [goodness lt "Good" VG] \
+            [goodness gt "Good" VG] \
+            [goodness le "Good" VG] \
+            [goodness ge "Good" VG]
+    } -result {0 0 1 0 1}
+
+    test enum_comparisons-1.3 {a < b} -body {
+        list \
+            [goodness eq VG "Good"] \
+            [goodness lt VG "Good"] \
+            [goodness gt VG "Good"] \
+            [goodness le VG "Good"] \
+            [goodness ge VG "Good"]
+    } -result {0 1 0 1 0}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+
+
+
+

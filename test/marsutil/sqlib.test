@@ -1,0 +1,770 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    sqlib.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) sqlib.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require sqlite3
+package require marsutil 1.0
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+
+    # Define variables
+    set db  ::marsutil::test::db
+    set db2 ::marsutil::test::db2
+
+    #-------------------------------------------------------------------
+    # tables
+
+    test tables-1.1 {Lists persistent tables} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+        }
+    } -body {
+        sqlib tables $db 
+    } -cleanup {
+        $db close
+    } -result {first second sqlite_sequence}
+
+    test tables-1.2 {Lists temporary tables} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+            CREATE TEMP TABLE third(g,h,i);
+        }
+    } -body {
+        sqlib tables $db 
+    } -cleanup {
+        $db close
+    } -result {first second sqlite_sequence third}
+
+    test tables-1.3 {Lists attached tables} -setup {
+        sqlite3 $db  :memory:
+        sqlite3 $db2 test.db
+
+        $db2 eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+        }
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+            ATTACH DATABASE 'test.db' AS test;
+        }
+    } -body {
+        sqlib tables $db 
+    } -cleanup {
+        $db close
+        $db2 close
+        removeFile test.db
+    } -result {first second sqlite_sequence test.first test.second test.sqlite_sequence}
+
+    #-------------------------------------------------------------------
+    # columns
+
+    test columns-1.1 {returns column names} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE mytable(a, b, c, d);
+        }
+    } -body {
+        sqlib columns $db mytable
+    } -cleanup {
+        $db close
+    } -result {a b c d}
+
+    test columns-1.2 {table is unknown} -setup {
+        sqlite3 $db :memory:
+    } -body {
+        sqlib columns $db NONESUCH
+    } -cleanup {
+        $db close
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # schema
+
+    test schema-1.1 {Lists persistent schema} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+            CREATE INDEX first_index ON first(a,b);
+            CREATE VIEW third AS SELECT d,e FROM second;
+        }
+    } -body {
+        sqlib schema $db 
+    } -cleanup {
+        $db close
+    } -result {CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+
+CREATE TABLE sqlite_sequence(name,seq);
+
+CREATE TABLE second(d,e,f);
+
+CREATE INDEX first_index ON first(a,b);
+
+CREATE VIEW third AS SELECT d,e FROM second}
+
+    test schema-1.2 {Lists persistent schema with pattern} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+            CREATE INDEX first_index ON first(a,b);
+            CREATE VIEW third AS SELECT d,e FROM second;
+        }
+    } -body {
+        sqlib schema $db first*
+    } -cleanup {
+        $db close
+    } -result {CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+
+CREATE INDEX first_index ON first(a,b)}
+
+    test schema-1.3 {Lists temporary schema} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TEMP TABLE third(g,h,i);
+        }
+    } -body {
+        sqlib schema $db 
+    } -cleanup {
+        $db close
+    } -result {CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+
+CREATE TABLE sqlite_sequence(name,seq);
+
+CREATE TABLE third(g,h,i)}
+
+    test schema-1.4 {Lists temporary schema with wildcard} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TEMP TABLE third(g,h,i);
+        }
+    } -body {
+        sqlib schema $db *ird
+    } -cleanup {
+        $db close
+    } -result {CREATE TABLE third(g,h,i)}
+
+
+    #-------------------------------------------------------------------
+    # schema
+
+    test clear-1.1 {Clears non-sqlite entities from db} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TABLE second(d,e,f);
+            CREATE INDEX first_index ON first(a,b);
+            CREATE VIEW third AS SELECT d,e FROM second;
+        }
+    } -body {
+        sqlib clear $db
+        $db eval {SELECT type, name FROM sqlite_master}
+    } -cleanup {
+        $db close
+    } -result {table sqlite_sequence}
+
+    test clear-1.2 {Clears temporary non-sqlite entities from db} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TEMP TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            CREATE TEMP TABLE second(d,e,f);
+            CREATE INDEX first_index ON first(a,b);
+            CREATE TEMP VIEW third AS SELECT d,e FROM second;
+        }
+    } -body {
+        sqlib clear $db
+        $db eval {SELECT type, name FROM sqlite_temp_master}
+    } -cleanup {
+        $db close
+    } -result {table sqlite_sequence}
+
+    test clear-1.3 {Deletes entries from sqlite entities in db} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE first(a INTEGER PRIMARY KEY AUTOINCREMENT,b,c);
+            INSERT INTO first(b) VALUES(1);
+            INSERT INTO first(b) VALUES(2);
+        }
+    } -body {
+        sqlib clear $db
+        $db eval {SELECT * FROM sqlite_sequence}
+    } -cleanup {
+        $db close
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # compare
+
+    # TBD, however it has been manually tested on large RDBs.
+
+    #-------------------------------------------------------------------
+    # saveas
+    
+    # TBD, hwoever it has been manually tested on large RDBs.
+
+    #-------------------------------------------------------------------
+    # query
+
+    proc query_setup {} {
+        variable db
+        sqlite3 $db :memory:
+        $db eval {
+            CREATE TABLE names(first, last, middle, age INTEGER);
+            INSERT INTO names VALUES("Andrew", "Alpha", "A", 10);
+            INSERT INTO names VALUES("Bill", "Beta", "B", 20);
+            INSERT INTO names VALUES("George", "Gamma", "G", 30);
+        }
+    }
+
+    proc query_cleanup {} {
+        variable db
+        $db close
+    }
+
+    test query-1.1 {mc output, no labels} -setup {
+        query_setup
+    } -body {
+        sqlib query $db {SELECT * FROM names} -mode mc
+    } -cleanup {
+        query_cleanup
+    } -result {first  last  middle age 
+------ ----- ------ --- 
+Andrew Alpha A      10  
+Bill   Beta  B      20  
+George Gamma G      30  
+}
+    
+    test query-1.2 {mc output, labels} -setup {
+        query_setup
+    } -body {
+        sqlib query $db {SELECT * FROM names} -mode mc -labels {F L M A}
+    } -cleanup {
+        query_cleanup
+    } -result {F      L     M A  
+------ ----- - -- 
+Andrew Alpha A 10 
+Bill   Beta  B 20 
+George Gamma G 30 
+}
+
+
+    test query-2.1 {list output, no labels} -setup {
+        query_setup
+    } -body {
+        sqlib query $db {SELECT * FROM names} -mode list
+    } -cleanup {
+        query_cleanup
+    } -result {first   Andrew
+last    Alpha
+middle  A
+age     10
+
+first   Bill
+last    Beta
+middle  B
+age     20
+
+first   George
+last    Gamma
+middle  G
+age     30
+}
+    
+    test query-2.2 {list output, labels} -setup {
+        query_setup
+    } -body {
+        sqlib query $db {SELECT * FROM names} -mode list -labels {F L M A}
+    } -cleanup {
+        query_cleanup
+    } -result {F  Andrew
+L  Alpha
+M  A
+A  10
+
+F  Bill
+L  Beta
+M  B
+A  20
+
+F  George
+L  Gamma
+M  G
+A  30
+}
+
+
+    test query-3.1 {csv output, no labels} -setup {
+        query_setup
+    } -body {
+        sqlib query $db {SELECT * FROM names} -mode csv
+    } -cleanup {
+        query_cleanup
+    } -result {"first","last","middle","age"
+"Andrew","Alpha","A",10
+"Bill","Beta","B",20
+"George","Gamma","G",30
+}
+    
+    test query-3.2 {csv output, labels} -setup {
+        query_setup
+    } -body {
+        sqlib query $db {SELECT * FROM names} -mode csv -labels {F L M A}
+    } -cleanup {
+        query_cleanup
+    } -result {"F","L","M","A"
+"Andrew","Alpha","A",10
+"Bill","Beta","B",20
+"George","Gamma","G",30
+}
+
+    test query-4.1 {queries can reference variables in caller's scope} -setup {
+        query_setup
+    } -body {
+        set limit 25
+        sqlib query $db {SELECT * FROM names WHERE age < $limit} -mode csv
+    } -cleanup {
+        query_cleanup
+    } -result {"first","last","middle","age"
+"Andrew","Alpha","A",10
+"Bill","Beta","B",20
+}
+
+    #-------------------------------------------------------------------
+    # mat
+
+    # TBD
+
+    #-------------------------------------------------------------------
+    # insert
+
+    test insert-1.1 {Inserts dict into table} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE mytable(a,b,c);
+        }
+    } -body {
+        sqlib insert $db mytable {
+            a "The First" 
+            b "The Second"
+            c "The Third"
+        }
+
+        $db eval {SELECT * FROM mytable} row {}
+        array get row
+    } -result {a {The First} b {The Second} * {a b c} c {The Third}}
+
+
+    #-------------------------------------------------------------------
+    # replace
+
+    test replace-1.1 {Inserts dict into table} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE mytable(a,b,c);
+        }
+    } -body {
+        sqlib replace $db mytable {
+            a "The First" 
+            b "The Second"
+            c "The Third"
+        }
+
+        $db eval {SELECT * FROM mytable} row {}
+        array get row
+    } -result {a {The First} b {The Second} * {a b c} c {The Third}}
+
+    test replace-1.2 {Replaces dict in table} -setup {
+        sqlite3 $db :memory:
+
+        $db eval {
+            CREATE TABLE mytable(a TEXT PRIMARY KEY,b,c);
+        }
+
+        sqlib insert $db mytable {
+            a "The First" 
+            b "The Second"
+            c "The Third"
+        }
+
+    } -body {
+        sqlib replace $db mytable {
+            a "The First" 
+            b "The New Second"
+            c "The New Third"
+        }
+
+        $db eval {SELECT * FROM mytable} row {}
+        array get row
+    } -result {a {The First} b {The New Second} * {a b c} c {The New Third}}
+
+    #-------------------------------------------------------------------
+    # grab
+
+    test grab-1.1 {grabs nothing if no table is given} -setup {
+        sqlite3 $db :memory:
+    } -body {
+        sqlib grab $db
+    } -result {}
+
+    test grab-1.2 {grabs nothing if table is empty} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE mytable(a,b,c)}
+    } -body {
+        sqlib grab $db mytable {}
+    } -result {}
+
+    test grab-1.3 {grabs nothing if all rows are excluded} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE mytable(a,b,c)}
+        sqlib insert $db mytable {a 1 b 2 c 3}
+    } -body {
+        sqlib grab $db mytable {a=2}
+    } -result {}
+
+    test grab-1.4 {grabs all rows from table} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE mytable(a INTEGER, b, c)}
+        sqlib insert $db mytable {a 1 b 2 c 3}
+        sqlib insert $db mytable {a 4 b 5 c 6}
+    } -body {
+        sqlib grab $db mytable {}
+    } -result {mytable {1 2 3 4 5 6}}
+
+    test grab-1.5 {grabs particular row from table} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE mytable(a,b,c)}
+        sqlib insert $db mytable {a P b Q c R}
+        sqlib insert $db mytable {a X b Y c Z}
+    } -body {
+        sqlib grab $db mytable {b='Y'}
+    } -result {mytable {X Y Z}}
+
+    test grab-1.6 {grab condition includes variable} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE mytable(a,b,c)}
+        sqlib insert $db mytable {a P b Q c R}
+        sqlib insert $db mytable {a X b Y c Z}
+    } -body {
+        set a P
+        sqlib grab $db mytable {a=$a}
+    } -result {mytable {P Q R}}
+
+    test grab-1.7 {grab from multiple tables} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1,x2,x3)}
+        $db eval {CREATE TABLE tabley(y1,y2,y3)}
+        sqlib insert $db tablex {x1 A x2 B x3 C}
+        sqlib insert $db tablex {x1 D x2 E x3 F}
+        sqlib insert $db tabley {y1 G y2 H y3 I}
+        sqlib insert $db tabley {y1 J y2 K y3 L}
+    } -body {
+        set x1 D
+        set y2 K
+        sqlib grab $db tablex {x1=$x1} tabley {y2=$y2}
+    } -result {tablex {D E F} tabley {J K L}}
+
+    test grab-1.8 {grab returns NULLs as empty strings} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1,x2,x3)}
+        sqlib insert $db tablex {x1 A x2 B}
+        sqlib insert $db tablex {x1 D x3 F}
+    } -body {
+        sqlib grab $db tablex {}
+    } -result {tablex {A B {} D {} F}}
+
+    test grab-1.9 {grab returns NULLs as "nullvalue"} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1,x2,x3)}
+        sqlib insert $db tablex {x1 A x2 B}
+        sqlib insert $db tablex {x1 D x3 F}
+        $db nullvalue @
+    } -body {
+        sqlib grab $db tablex {}
+    } -cleanup {
+        $db nullvalue ""
+    } -result {tablex {A B @ D @ F}}
+
+    test grab-1.10 {-insert sets INSERT tag} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE mytable(a INTEGER, b, c)}
+        sqlib insert $db mytable {a 1 b 2 c 3}
+    } -body {
+        sqlib grab $db -insert mytable {}
+    } -result {{mytable INSERT} {1 2 3}}
+
+    #-------------------------------------------------------------------
+    # ungrab
+
+    test ungrab-1.1 {does nothing if no data} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1,x2,x3)}
+    } -body {
+        sqlib ungrab $db {}
+        sqlib query $db {SELECT * FROM tablex}
+    } -result {}
+
+    test ungrab-1.2 {INSERT tag} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1 TEXT PRIMARY KEY,x2,x3)}
+    } -body {
+        sqlib ungrab $db {
+            {tablex INSERT} {
+                A B C
+                D E F
+            }
+        }
+        sqlib query $db {SELECT * FROM tablex}
+    } -result {x1 x2 x3 
+-- -- -- 
+A  B  C  
+D  E  F  
+}
+
+    test ungrab-1.3 {replaces in tables} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1 INTEGER PRIMARY KEY,x2,x3)}
+        sqlib ungrab $db {
+            {tablex INSERT} {
+                1 B C
+                2 E F
+            }
+        }
+    } -body {
+        sqlib ungrab $db {
+            tablex {
+                1 P Q
+                2 R S
+            }
+        }
+        sqlib query $db {SELECT * FROM tablex}
+    } -result {x1 x2 x3 
+-- -- -- 
+1  P  Q  
+2  R  S  
+}
+
+    test ungrab-1.4 {multiple tables} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1 INTEGER PRIMARY KEY,x2,x3)}
+        $db eval {CREATE TABLE tabley(y1 INTEGER PRIMARY KEY,y2,y3)}
+    } -body {
+        sqlib ungrab $db {
+            {tablex INSERT} {1 B C} 
+            {tabley INSERT} {2 E F}
+        }
+        sqlib grab $db tablex {} tabley {}
+    } -cleanup {
+        $db close
+    } -result {tablex {1 B C} tabley {2 E F}}
+
+    test ungrab-1.5 {INSERT restores NULLs} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1 INTEGER PRIMARY KEY,x2,x3)}
+        $db nullvalue "-NULL-"
+    } -body {
+        sqlib ungrab $db {
+            {tablex INSERT} {1 B -NULL- 2 -NULL- F}
+        }
+        $db nullvalue "@"
+        $db eval {SELECT * FROM tablex ORDER BY x1}
+    } -cleanup {
+        $db nullvalue ""
+        $db close
+    } -result {1 B @ 2 @ F}
+
+    test ungrab-1.6 {UPDATE restores NULLs} -setup {
+        sqlite3 $db :memory:
+        $db eval {CREATE TABLE tablex(x1 INTEGER PRIMARY KEY,x2,x3)}
+        sqlib ungrab $db {
+            {tablex INSERT} {1 A B 2 C D}
+        }
+        $db nullvalue "-NULL-"
+    } -body {
+        sqlib ungrab $db {
+            tablex {1 E -NULL- 2 -NULL- F}
+        }
+
+        $db nullvalue "@"
+        $db eval {SELECT * FROM tablex ORDER BY x1}
+    } -cleanup {
+        $db nullvalue ""
+        $db close
+    } -result {1 E @ 2 @ F}
+
+    test ungrab-1.6 {unknown tables throw an error} -setup {
+        sqlite3 $db :memory:
+    } -body {
+        sqlib ungrab $db [list tablex {1 B}]
+    } -returnCodes {
+        error
+    } -cleanup {
+        $db close
+    } -result {Unknown table: "tablex"}
+
+
+    #-------------------------------------------------------------------
+    # fklist
+
+    proc fk_setup {} {
+        variable db
+        sqlite3 $db :memory:
+
+        $db eval {
+            PRAGMA foreign_keys=1;
+            
+            CREATE TABLE first(
+                first_id INTEGER PRIMARY KEY,
+                name TEXT
+            );
+
+            CREATE TABLE second(
+                second_id INTEGER PRIMARY KEY,
+                first_id INTEGER REFERENCES first(first_id)
+                         ON DELETE CASCADE,
+                parent INTEGER REFERENCES second(second_id)
+                         ON DELETE CASCADE,
+                name TEXT
+            );
+
+            CREATE TABLE third(
+                third_id INTEGER PRIMARY KEY,
+                second_id REFERENCES second(second_id),
+                name TEXT
+            );
+
+            INSERT INTO first(first_id,name) VALUES(1,'A');
+            INSERT INTO first(first_id,name) VALUES(2,'B');
+            INSERT INTO first(first_id,name) VALUES(3,'C');
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(1,1,1,"X");
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(2,2,1,"Y");
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(3,3,2,"Z");
+
+            INSERT INTO second(second_id,first_id,parent,name)
+            VALUES(4,2,NULL,"W");
+        }
+    }
+
+    test fklist-1.1 {no such table} -setup {
+        fk_setup
+    } -body {
+        sqlib fklist $db nonesuch
+    } -returnCodes {
+        error
+    } -cleanup {
+        $db close
+    } -result {unknown table: "nonesuch"}
+    
+    test fklist-1.2 {no dependencies} -setup {
+        fk_setup
+    } -body {
+        sqlib fklist $db third
+    } -cleanup {
+        $db close
+    } -result {}
+
+    test fklist-1.3 {only direct dependencies} -setup {
+        fk_setup
+    } -body {
+        sqlib fklist $db second
+    } -cleanup {
+        $db close
+    } -result {third}
+
+    test fklist-1.4 {-indirect with only direct dependencies} -setup {
+        fk_setup
+    } -body {
+        sqlib fklist $db second -indirect
+    } -cleanup {
+        $db close
+    } -result {third}
+
+    test fklist-1.5 {only direct when indirect exist} -setup {
+        fk_setup
+    } -body {
+        sqlib fklist $db first
+    } -cleanup {
+        $db close
+    } -result {second}
+
+    test fklist-1.6 {-indirect when indirect exist} -setup {
+        fk_setup
+    } -body {
+        sqlib fklist $db first -indirect
+    } -cleanup {
+        $db close
+    } -result {second third}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+
+
+
+

@@ -1,0 +1,311 @@
+<manpage {marsutil(n) sqlib(n)} "SQLite Utilities">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 0.1
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+sqlib(n) defines a number of utility commands for use with
+SQLite database files.<p>
+
+SQLite databases are accessed through a command created via the
+<code>sqlite3</code> command; the sqlib(n) commands take such a
+database access command as their first argument.<p>
+
+<section COMMANDS>
+
+<deflist>
+
+<defitem "sqlib clear" {sqlib clear <i>db</i>}>
+
+Deletes all persistent and temporary schema elements (tables, indices,
+views, triggers) from the database with the fully qualified handle
+<i>db</i>.  SQLite3 special tables (e.g., <b>sqlite_sequence</b>)
+cannot usually be dropped, but all entries are deleted.  Databases
+attached to <i>db</i> using the "DATABASE ATTACH" SQL statement are
+ignored.<p>
+
+<defitem "sqlib saveas" {sqlib saveas <i>db filename</i>}>
+
+Saves a copy of the persistent contents of the database with
+the fully qualified handle <i>db</i>.  The copy will be saved as a new
+database file with the specified <i>filename</i>.  It's an error if a
+file with that name already exists.<p>
+
+Temporary tables and databases attached to <i>db</i> using the "DATABASE
+ATTACH" SQL statement are ignored.<p>
+
+<b>Warning:</b> if the <i>db</i> is in the middle of a transaction,
+the transaction will be committed before the copy is saved, and a new
+transaction will begin.<p>
+
+<defitem "sqlib compare" {sqlib compare <i>db1 db2</i>}>
+
+Compares the persistent contents of <i>db1</i> and <i>db2</i>, both of
+which should be fully-qualified database handles.  First the schemas
+are compared, followed by the data in the tables.  (Note that this can
+be a lengthy process if the databases are large.)  Returns a string
+describing the first difference found, or the empty string if no
+differences are found.<p>
+
+Temporary tables and databases attached to <i>db</i> using the "DATABASE
+ATTACH" SQL statement are ignored.<p>
+
+<defitem "sqlib tables" {sqlib tables <i>db</i>}>
+
+Returns a list of the names of the tables defined in the
+SQLite database with the fully-qualified handle <i>db</i>.  The list
+includes all accessible tables, including SQLite3 internal tables
+(except for <b>sqlite_master</b> and <b>sqlite_temp_master</b>),
+temporary tables, and tables in databases attached to <i>db</i>
+using the "DATABASE ATTACH" SQL statement.<p>
+
+<defitem "sqlib schema" {sqlib schema <i>db</i> ?<i>table</i>?}>
+
+Returns the SQL CREATE statements used to define all tables,
+views, and indices in database <i>db</i>.  If <i>table</i> is specified,
+it may be a table/view/index name, or a glob pattern; in this
+case the output is restricted to those tables, views, and indices
+whose names match <i>table</i>.<p>
+
+The output includes all persistent and temporary tables, indices,
+views, and triggers in the database.  Entities in databases attached
+to <i>db</i> using the "DATABASE ATTACH" SQL statement are ignored.<p>
+
+<defitem "sqlib query" {sqlib query <i>db sql</i> ?<i>options...</i>?}>
+
+Performs an arbitrary <i>sql</i> query on database <i>db</i>,
+formatting any results in multiple columns for display.  Newlines
+in data values are escaped, and long text strings are truncated.<p>
+
+<i>sql</i> can contain any SQL statements understood by SQLite, but in
+practice there's no reason to use this command except for SELECT
+queries.<p>
+
+<b>Note:</b> as of Mars 2.17, the <i>sql</i> query can reference
+variables in the caller's context, as it can for the normal
+SQLite3 <code>eval</code> subcommand.<p>
+
+The command supports the following options:<p>
+
+<deflist query>
+
+<defopt {-mode mc|list|csv}>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
+
+When <b>-mode</b> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.<p>
+
+When <b>-mode</b> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.<p>
+
+When <b>-mode</b> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Normally <iref sqlib query> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.<p>
+
+<defopt {-maxcolwidth <i>chars</i>}>
+
+Sets the maximum column width, in characters, when <b>-mode</b> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".<p>
+
+If <b>-maxcolwidth</b> is set to 0, values will not be
+truncated; this is often a Bad Thing, as it can result in extremely
+wide output.<p>
+
+<defopt {-headercols <i>num</i>}>
+
+Sets the number of header columns.  When <b>-mode</b> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".<p>
+
+</deflist query>
+
+<defitem "sqlib mat" {sqlib mat <i>db table iname jname ename</i> ?<i>options...</i>?}>
+
+Extracts a <xref mat(n)> matrix from a <i>table</i> in database
+<i>db</i>.  The values in the table's <i>iname</i> column define the
+rows of the matrix, the values in the table's <i>jname</i> column
+define the columns, and the <i>ename</i> column provides the elements
+of the matrix.<p>
+
+The command supports the following options:<p>
+
+<deflist mat>
+
+<defopt {-ikeys <i>keys</i>}>
+
+<i>keys</i> is a list of the values from the <i>iname</i> column
+which should be included in the matrix; the rows of the matrix will
+have the same order as the <i>keys</i>.  <i>keys</i> may be a subset
+of the values which appear in that column.<p>
+
+If <i>keys</i> is not given, each unique value in the <i>iname</i>
+column will have a row in the matrix, in order by first appearance.<p>
+
+<defopt {-jkeys <i>keys</i>}>
+
+<i>keys</i> is a list of the values from the <i>jname</i> column
+which should be included in the matrix; the columns of the matrix will
+have the same order as the <i>keys</i>.  <i>keys</i> may be a subset
+of the values which appear in that column.<p>
+
+If <i>keys</i> is not given, each unique value in the <i>jname</i>
+column will have a column in the matrix, in order by first appearance.<p>
+
+<defopt {-defvalue <i>value</i>}>
+
+The matrix will be initialized with the specified <i>value</i>, or
+with the empty string if <code>-defvalue</code> is omitted.<p>
+
+<defopt {-returnkeys <i>flag</i>}>
+
+Normally, the command returns the desired matrix.  If the <i>flag</i>
+is true, then the command will return a list of three elements:
+the matrix, the list of row keys, and the list of column keys.  This
+option is usually used when <code>-ikeys</code> or <code>-jkeys</code>
+is omitted, since they order of the rows and columns in the matrix
+might otherwise be obscure.<p>
+
+</deflist mat>
+
+<defitem "sqlib insert" {sqlib insert <i>db table dict</i>}>
+
+Inserts the contents of dictionary <i>dict</i> into the <i>db</i> as a
+row in the named <i>table</i>.  The dictionary keys must be the same
+as the column names in the table.  <b>It's an error if a row already
+exists with the same key column values.</b><p>
+
+This will be less efficient than an explicit "INSERT INTO" with
+hardcoded column names, but where performance isn't an issue it wins
+on maintainability.<p>
+
+Compare to <iref sqlib replace>.<p>
+
+<defitem "sqlib replace" {sqlib replace <i>db table dict</i>}>
+
+Inserts the contents of dictionary <i>dict</i> into the <i>db</i> as a
+row in the named <i>table</i>.  The dictionary keys must be the same
+as the column names in the table.  <b>If there's already a row with
+matching key columns, it will be replaced.</b><p>
+
+This will be less efficient than an explicit "INSERT OR REPLACE INTO"
+with hardcoded column names, but where performance isn't an issue it
+wins on maintainability.<p>
+
+Compare to <iref sqlib insert>.<p>
+
+<defitem "sqlib grab" {sqlib grab ?-insert? <i>db</i> <i>table condition</i> ?<i>table condition...</i>?}>
+
+Grabs a collection of rows from one or more tables in the 
+database, and returns them to the user as one value.  The grabbed data
+can later be restored to the database using <iref sqlib ungrab>.
+For example, an operation that updates rows in the database might
+grab the rows prior to the change so that the original values can
+be restored afterwards.<p>
+
+The returned value is called a "grab data set".  It is a flat list
+structure {<i>tableSpec values tableSpec values...</i>} where
+<i>tableSpec</i> identifies the table and <i>values</i> is a flat list of
+column values for all of the grabbed rows from the table.  As returned
+by <iref sqlib grab>, the <i>tableSpec</i> is simply the name of the
+table; if the optional <code>-insert</code> option is included, 
+however, it will be a list {<i>tableName</i> INSERT}.  The
+INSERT tag tells <iref sqlib ungrab> to use INSERT to put the data
+in the table rather than UPDATE.<p>
+
+NULL values are retrieved as the SQLite3 "nullvalue", which defaults
+to the empty string.<p>
+
+For example,<p>
+
+<pre>
+    set data [sqlib grab $db table1 {x=5} table2 {y=10}]
+</pre>
+
+will grab all rows from table1 where x = 5, and all rows from
+table2 where y = 10.<p>
+
+The result of calling <iref sqlib grab> can be passed to
+the <iref sqlib ungrab> command to put the rows
+back in the database.<p>
+
+<defitem "sqlib ungrab" {sqlib ungrab <i>db data</i>}>
+
+Given a "grab data set" produced by <iref sqlib grab> or some
+other command, this command puts the data back into the database
+using either UPDATE or INSERT, as determined by the optional
+INSERT tag in each table's table specification.  For example, the
+following code grabs rows from the database, modifies them, and
+then restores the original values.<p>
+
+<pre>
+    set data [sqlib grab $db table1 {x=5} table2 {y=10}]
+    ...
+    # Code that updates the grabbed rows.
+    ...
+    sqlib ungrab $db $data
+</pre>
+
+If the <code>-insert</code> tag is included in the <iref sqlib grab> 
+call, this command can also be used to re-insert deleted rows.<p>
+
+Note that the schemas of the relevant tables should not be altered
+between grabbing and ungrabbing, or the ungrabbing will have
+unpredictable results.<p>
+
+Whether updating or inserting, values that match the 
+SQLite3 "nullvalue" will be inserted as NULL.  When updating, however,
+it is assumed that key columns do not contain NULL.<p>
+
+<defitem "sqlib fklist" {sqlib fklist <i>db table</i> ?-indirect?}>
+
+Returns a list of the tables with foreign keys that reference the
+specified <i>table</i>, excluding <i>table</i> itself.  If the
+<code>-indirect</code> option is included, the list also includes the
+tables that depend indirectly on <i>table</i>.  It is an error if
+<i>table</i> is unknown.<p>
+
+</deflist>
+
+<section ENVIRONMENT>
+
+sqlib(n) requires Tcl 8.5 or later, and SQLite 3.2 or later.<p>
+
+To use sqlib(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+

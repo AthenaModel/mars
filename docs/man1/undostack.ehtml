@@ -1,0 +1,191 @@
+<manpage {marsutil(n) undostack(n)} "Undo stack manager">
+
+<swallow {
+# So we can get enum docs.
+package require simlib
+namespace import ::simlib::*
+}>
+
+<section SYNOPSIS>
+
+<pre>
+package require util 1.0
+namespace import ::marsutil::undostack
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+An instance of the undostack(n) type is an object that manages an
+undo stack within a Runtime Database (RDB), e.g., in an
+<xref sqldocument(n)>.  Multiple independent stacks can coexist in a
+single RDB.<p>
+
+The mechanism is patterned after the <xref tk:text(n)> widget's undo
+mechanism.<p>
+
+<subsection "Tag Names">
+
+Each undostack(n) object is given a <code>-tag</code> on creation.
+The value of this option is used to tag the stack's entries in the
+RDB.  It is an error to define to instances of undostack(n) with the
+same tag in the same RDB.<p>
+
+<subsection "Persistent Undo Stacks">
+
+The undo stack stores its data in an RDB, and is designed so that the
+undo information can be preserved across software restarts.  This
+places an additional requirement on the client: it must define its
+undo scripts so that they remain valid across software restarts.  For
+example, undo scripts should not reference GUI objects with arbitrary
+names generated at run-time.<p>
+
+
+<section "DATABASE SCHEMA">
+
+undostack(n) stores all of its working data in an
+<xref sqldocument(n)> "run-time database", or RDB.  
+The names of all of the tables, views, indices, and so forth defined
+by undostack(n) begin with the string "undostack_".<p>
+
+undostack(n) registers the following schema definitions with
+<xref sqldocument(n)>:<p>
+
+<pre>
+<::simlib::undostack sqlsection schema>
+</pre>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem undostack {undostack <i>name ?options...?</i>}>
+
+Creates a new <iref undostack> object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref undostack> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+<iref undostack> takes the following options:<p>
+
+<deflist undostack options>
+
+<defopt {-automark <i>flag</i>}>
+
+If <b>on</b> (the default), marks will be inserted in the
+automatically.  If <b>off</b>, they will not.  When <iref edit undo>
+is called, it undoes back to the last mark.<p>
+
+<defopt {-rdb <i>name</i>}>
+
+Specifies the name of an <xref sqldocument(n)> object
+which undostack(n) will use to store its data.
+See <xref "DATABASE SCHEMA">.<p>
+
+This option must be set at creation time, and cannot be changed
+thereafter.<p>
+
+<defopt {-tag <i>name</i>}>
+
+Specifies the <u>name</u> of a tag used to identify this stack
+in the RDB.  The tag must be unique for this RDB.<p>
+
+This option must be set at creation time, and cannot be changed
+thereafter.<p>
+
+<defopt {-undo <i>flag</i>}>
+
+If <b>on</b> (the default), then undostack(n) will retain undo data;
+if <b>off</b> it will not.
+
+</deflist undostack options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem add {$obj add <i>script</i>}>
+
+Adds an undo script to the stack.  If <code>-automark</code> is
+<b>on</b>, then the script will be marked; <iref edit undo> will
+undo this entry by itself.  Otherwise, it will be undo with previous
+entries back to the most recent <iref edit mark>.<p>
+
+If <code>-undo</code> is <b>off</b>, then this call does nothing.<p>
+
+<defitem cget {$obj cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {$obj configure <i>option value</i>}>
+
+Sets the <i>value</i> of the specified <i>option</i> (if the option is
+not read-only).<p>
+
+<defitem edit {$obj edit <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands is the public interface to the undo stack.
+It is expected that the client will delegate its <iref edit>
+subcommand to the undostack(n)'s <iref edit> command.<p>
+
+<deflist edit>
+
+<defitem "edit canundo" {$obj edit canundo}>
+
+Returns 1 if there's a command on the stack to be undone, and 0 otherwise.<p>
+
+<defitem "edit reset" {$obj edit reset}>
+
+Clears the undo stack.<p>
+
+<defitem "edit mark" {$obj edit mark}>
+
+Adds a mark to the undo stack.  The <iref edit undo> command
+undoes all operations back to the last mark (or until the stack
+is empty).  This allows a set of undostack(n) commands relating to a
+single client operation to be undone as a group.<p>
+
+Alternatively, the <code>-automark</code> option may be set to
+<b>on</b>, and each <iref add> command will mark its script
+automatically, allowing them to be undone individually.<p>
+
+<defitem "edit undo" {$obj edit undo}>
+
+Undoes all commands back to the most recent mark, or until the
+stack is empty if there are no marks.  It's an error if there is
+if <code>-undo</code> is <b>off</b> or if the stack is already empty.<p>
+
+</deflist edit>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

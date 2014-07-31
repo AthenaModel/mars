@@ -1,0 +1,110 @@
+<manpage {marsutil(n) cmdinfo(n)} "Tcl Command Introspection">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 1.0
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref cmdinfo(n)> provides a number of subcommands useful for
+introspection on Tcl commands.<p>
+
+<section "COMMAND TYPES">
+
+The <iref cmdinfo type> command determines the type of any given
+command.  <xref cmdinfo(n)> recognizes the following types:<p>
+
+<ul>
+  <li><b>proc</b>: A normal Tcl command procedure.
+  <li><b>nse</b>: A "namespace ensemble" command.
+  <li><b>alias</b>: An alias.
+  <li><b>bin</b>: A binary command
+  <li><b>wbin</b>: A Tk widget
+  <li><b>wproc</b>: A normal Tcl command procedure acting as a Tk widget.
+  <li><b>wnse</b>: A "namespace ensemble" command acting as a Tk widget.
+  <li><b>walias</b>: An alias acting as a Tk widget.
+  <li><b>bwid</b>: A BWidgets special widget.
+  <li><b>ns</b>: A namespace.
+</ul>
+
+A command will be classified as a <b>bin</b> if no better category is
+found.  This will usually mean that the command is a binary command
+implemented in C or C++.<p>
+
+The <b>bwid</b> type works around a feature of the BWidget package.
+BWidget creates a number of special widgets with "#" in their names;
+classifying them separately makes it easy to filter them out of
+command listing.<p>
+
+The <b>ns</b> type is never actually returned by <iref cmdinfo type>;
+however, <iref cmdinfo list> returns a list of both the commands and
+namespaces within a given namespace, sorted in dictionary order, and
+so its convenient to define a type for the namespaces.<p>
+
+<section COMMANDS>
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "cmdinfo exists" {cmdinfo exists <i>name</i>}>
+
+Returns 1 if a command with the specified <i>name</i> is defined in the
+caller's scope, and 0 otherwise.<p>
+
+<defitem "cmdinfo type" {cmdinfo type <i>name</i>}>
+
+Returns the type of the command with the specified <i>name</i>; see
+<xref "COMMAND TYPES">.<p>
+
+<defitem "cmdinfo list" {cmdinfo list <i>ns</i>}>
+
+Returns a list of the commands and namespaces defined as children of
+namespace <i>ns</i>.  The list has the form of a dictionary whose keys
+are the fully qualified command and namespace names and whose values
+are <xref "COMMAND TYPES"> for each.<p>
+
+Note that a namespace can appear twice, as both a namespace and a
+namespace ensemble.  Consequently, all namespace names will be
+formatted with a trailing "::" to ensure uniqueness.<p>
+
+<defitem "cmdinfo submap" {cmdinfo submap <i>nse</i>}>
+
+Returns a dictionary of the subcommand mappings for namespace ensemble
+<i>nse</i>.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
+

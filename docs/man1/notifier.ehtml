@@ -1,0 +1,194 @@
+<manpage {marsutil(n) notifier(n)} "Event Notification Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 1.0
+namespace import ::marsutil::notifier
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+notifier(n) allows objects to bind callbacks to events sent by other
+objects.  An object which sends an event is called a subject; a
+subject can send any number of distinct events.  Any number of objects
+can bind callbacks to a particular event sent by a particular subject.
+Event bindings can be queried and deleted.<p>
+
+If a subject or object is destroyed, all related bindings can be
+deleted <i>en masse</i>.  In addition, if a subject or object's name
+changes, all related bindings can be updated.<p>
+
+<section EVENTS>
+
+An event binding is defined by four things:<p>
+
+<ul>
+  <li> A <b>subject</b>: the object which will be sending the event.
+       It will usually be an object name, i.e., a fully-qualified Tcl
+       command; however, "virtual" objects, i.e., objects which are
+       not represented as commands, can also be used.<p>
+
+  <li> The <b>event</b> itself: an occurrence in the life of the
+       <b>subject</b> which other objects might care about.  An event
+       has a name, and might also have arguments.  Consistent with Tk
+       usage, event names typically appear in camel-case in angle
+       brackets, e.g., <code><lb>MyEvent<rb></code>, but this is not
+       required.  Each subject must document in some way the
+       names and arguments of the events it can send.<p>
+
+  <li> An <b>object</b> which wishes to receive the event.  As for
+       subjects, this is usually a fully-qualified Tcl command name,
+       although this is not required.<p>
+
+  <li> The <b>binding</b> proper, a command prefix to which the
+       event's arguments will be appended.<p>
+</ul>
+
+The subject can send an event using the <iref notifier send>
+command.  When the event is sent, any bindings bound to that subject
+and event will be called, with the event's arguments appended.  Errors
+are handled by the <b>bgerror</b> command.  Note that the order in
+which the bindings are called is undefined.  If several objects have
+bindings on a single subject and event, and if one of those bindings
+throws an error, the others will still be called.<p>
+
+Event bindings are created, updated, and queried using the
+<iref notifier bind> command.<p>
+
+When an object that may be the subject or object of a binding is
+destroyed, its name should be passed to <iref notifier forget>,
+which will delete all bindings which reference it.<p>
+
+<section SUBSTITUTIONS>
+
+It is possible to reassign bindings from one subject or object
+to another object using the <iref notifier rename> command.
+For example, if an object's name is changed using Tcl's <b>rename</b>
+command, all bindings which reference that object can be updated to
+use the new name.  Similarly, if object B is wrapping object A, all
+of A's bindings can be updated to reference object B instead.<p>
+
+Using <iref notifier rename> presents a problem if the bound
+callbacks reference the renamed object.  Consequently, the
+command bound to an event may include the following
+%-substitutions:<p>
+
+<table border=0 cellpadding=2>
+<tr><td><code>%s</code></td> <td>The subject's name</td></tr>
+<tr><td><code>%o</code></td> <td>The object's name</td></tr>
+</table><p>
+
+When the callback is called, these substitutions will be replaced with
+the current subject and object names.<p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem "notifier bind" {notifier bind ?<i>subject</i> ?<i>event</i> ?<i>object</i> ?<i>binding</i>????}>
+
+This subcommand is used to query and define event bindings.<p>
+
+<ul>
+  <li> If called with all four arguments, the <i>subject</i>, the
+       <i>event</i>, the <i>object</i>, and the <i>binding</i>, it
+       either adds or deletes a binding.<p>
+
+       If <i>binding</i> is the empty string, the subcommand deletes
+       any existing binding for this <i>subject</i>, <i>event</i>, and
+       <i>object</i>.  Otherwise, the <i>binding</i> callback is bound to the
+       event, replacing any previous callback.<p>
+       
+  <li> If the <i>binding</i> is omitted altogether, the subcommand
+       returns the command which is bound to the <i>subject</i>
+       and <i>event</i> for this <i>object</i>.<p>
+
+  <li> If the <i>object</i> is omitted as well, the subcommand
+       returns a list of the names of the objects
+       which are bound to that <i>subject</i> and <i>event</i>.<p>
+
+  <li> If the <i>event</i> is omitted, the subcommand returns a
+       list of the names of the <i>subject</i>'s events that have active
+       bindings.<p>
+
+  <li> Finally, if called with no arguments, the subcommand returns a
+       list of the names of the subjects that have active bindings.<p>
+</ul>
+
+<defitem "notifier forget" {notifier forget <i>object</i>}>
+
+Deletes any bindings for which <i>object</i> is either the subject or
+the object.  This subcommand is commonly used in object destructors to
+clean up all of an object's bindings.<p>
+
+<defitem "notifier rename" {notifier rename <i>object newname</i>}>
+
+This subcommand tells the notifier that an <i>object</i> has changed its
+name.  All bindings involving the <i>object</i> as either the subject
+or object will be updated to reference the <i>newname</i> instead.<p>
+
+This subcommand is useful if an object's name is changed using
+Tcl's <b>rename</b> command, or when bindings have been redirected
+from one object to another.  For example, if object A wraps object B,
+it can use this subcommand to take over B's bindings.  In this latter
+case, it will usually be necessary to tell object B to call itself
+A when sending events, i.e., when calling <iref notifier send>.
+Conventionally, this is done by setting B's <code>-subject</code>
+option to A's name.<p>
+
+<defitem "notifier send" {notifier send <i>subject event</i> ?<i>args...</i>?}>
+
+Directs the notifier that the <i>event</i> has occurred in the
+<i>subject</i>.  The notifier then calls all callbacks bound to that
+<i>subject</i> and <i>event</i>, passing along the <i>args</i>, if
+any.  Note that there need be no bound callbacks.<p>
+
+All callbacks will be called; any errors will be passed to
+<b>bgerror</b>.  This subcommand will return an error only if a bound
+callback returns an error and <b>bgerror</b> is not defined.<p>
+
+The order of execution of the bindings is undefined, and should not be
+relied upon.  If the sequence of execution of a set of bindings is
+important, write one binding that does the whole job in the
+right order.<p>
+
+<defitem "notifier trace" {notifier trace ?<i>cmd</i>?}>
+
+Sets/queries the notifier(n) trace command, which (if defined) is
+called each time an event is sent.  If given, <i>cmd</i> must
+be the prefix of a command expecting four additional arguments: the
+subject, the event, the event arguments, and a list of the objects
+which receive the event.  To disable tracing, pass an empty string as
+<i>cmd</i>.<p>
+
+Tracing is disabled by default.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later and sqlite3 3.3 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

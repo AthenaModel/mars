@@ -1,0 +1,211 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    statecontroller.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n), statecontroller.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+package require marsutil 1.0
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::marsutil::test {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Import the code to be tested
+    namespace import ::marsutil::*
+    namespace import ::marsutil::*
+
+    # Setup for tests
+
+    snit::type controlled {
+        option -state -default normal
+    }
+
+    snit::type fakemenuType {
+        variable states -array {
+            "First"  normal
+            "Second" normal
+        }
+
+        method entryconfigure {label opt state} {
+            set states($label) $state
+        }
+
+        method get {label} { return $states($label) }
+    }
+
+    controlled obj1
+    controlled obj2
+    fakemenuType fakemenu
+
+    proc create {args} {
+        statecontroller sc -events {::test <State>} {*}$args
+    }
+
+    proc cleanup {} {
+        obj1 configure -state normal
+        obj2 configure -state normal
+        fakemenu entryconfigure "First"  -state normal
+        fakemenu entryconfigure "Second" -state normal
+        sc destroy
+    }
+
+    proc ::bgerror {message} {
+        puts $message
+        puts $::errorInfo
+    }
+
+    #-------------------------------------------------------------------
+    # state controller
+
+    test sc-1.1 {Created as expected} -body {
+        create -condition 0
+    } -cleanup {
+        cleanup
+    } -result {::marsutil::test::sc}
+
+
+    test sc-1.2 {Update has no effect if nothing's controlled} -setup {
+        create -condition 0
+    } -body {
+        sc update
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    test sc-1.3 {Can control multiple objects} -setup {
+        create -condition 0
+    } -body {
+        sc control [namespace current]::obj1
+        sc control [namespace current]::obj2
+        sc update
+        list [obj1 cget -state] [obj2 cget -state]
+    } -cleanup {
+        cleanup
+    } -result {disabled disabled}
+
+
+    test sc-1.3 {Can control multiple objects} -setup {
+        create -condition 0
+    } -body {
+        sc control [namespace current]::obj1
+        sc control [namespace current]::obj2
+        sc update
+        list [obj1 cget -state] [obj2 cget -state]
+    } -cleanup {
+        cleanup
+    } -result {disabled disabled}
+
+
+    test sc-1.4 {Can specify object dictionaries} -setup {
+        create -condition {$flag}
+    } -body {
+        sc control [namespace current]::obj1 flag 0
+        sc control [namespace current]::obj2 flag 1
+        sc update
+        list [obj1 cget -state] [obj2 cget -state]
+    } -cleanup {
+        cleanup
+    } -result {disabled normal}
+
+
+    test sc-1.5 {Can reference object in condition} -setup {
+        create -condition {[namespace tail $obj] eq "obj1"}
+    } -body {
+        sc control [namespace current]::obj1
+        sc control [namespace current]::obj2
+        sc update
+        list [obj1 cget -state] [obj2 cget -state]
+    } -cleanup {
+        cleanup
+    } -result {normal disabled}
+
+
+    test sc-1.6 {Forgets non-existent objects} -setup {
+        create -condition {0}
+    } -body {
+        sc control [namespace current]::obj1
+        sc control [namespace current]::nonesuch
+        sc update
+        obj1 cget -state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+
+    test sc-1.7 {Handles menu items} -setup {
+        create -condition {$flag}
+    } -body {
+        sc control [list [namespace current]::fakemenu First]  flag 1
+        sc control [list [namespace current]::fakemenu Second] flag 0
+        sc update
+        list [fakemenu get First] [fakemenu get Second]
+    } -cleanup {
+        cleanup
+    } -result {normal disabled}
+
+
+    test sc-1.8 {Can update on event} -setup {
+        create -condition 0
+    } -body {
+        sc control [namespace current]::obj1
+        sc control [namespace current]::obj2
+        notifier send ::test <State>
+        list [obj1 cget -state] [obj2 cget -state]
+    } -cleanup {
+        cleanup
+    } -result {disabled disabled}
+
+
+    test sc-1.9 {Can update specific objects} -setup {
+        create -condition 0
+    } -body {
+        sc control [namespace current]::obj1
+        sc control [namespace current]::obj2
+        sc update [namespace current]::obj1
+        list [obj1 cget -state] [obj2 cget -state]
+    } -cleanup {
+        cleanup
+    } -result {disabled normal}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    rename ::bgerror ""
+
+    cleanupTests
+}
+
+namespace delete ::marsutil::test
+
+
+
+

@@ -1,0 +1,134 @@
+<manpage {marsutil(n) zcurve(n)} "Z-curve Function">
+
+<section SYNOPSIS>
+
+<pre>
+package require util 0.1
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A zcurve is a piecewise-linear function with three segments, called a
+Z-curve because of its shape.  Here's a stereotypical 
+example, Z(x):<p>
+
+<pre>
+        |            a                    |
+     lo |------------+                    |     
+        |             \                   |
+        |              \                  |
+        |               \                 |
+        |                \                |
+        |                 \               |
+        |                  \              |
+        |                   \             |
+        |                    +------------| hi
+        |                    b            |
+        +----------------+----------------+
+       -x                0               +x
+</pre>
+
+The function is defined for all values of <i>x</i>; the only real
+constraint is that <i>a</i> <lb>= <i>b</i>.  Note that the name "lo"
+signifies the Y-value at the low end of the X-axis, and "hi"
+signifies the Y-value at the high end of the X-axis.  If 
+<i>lo</i> <lb> <i>hi</i> the curve that slopes up from
+left to right instead of down.<p>
+
+If <i>a</i> equals <i>b</i> (within an epsilon)
+then Z(<i>a</i>) equals Z(<i>b</i>) equals the average of <i>lo</i>
+and <i>hi</i>.<p>
+
+Practically speaking, different kinds of Z-curves will have standard
+limits for the four parameters; to validate these, define an instance
+of <iref zcurve> and specified the desired <b>-xmin</b>,
+<b>-xmax</b>, <b>-ymin</b>, and <b>-ymax</b>.<p>
+
+<section COMMANDS>
+
+<deflist>
+
+<defitem "zcurve eval" {zcurve eval <i>curve x</i>}>
+
+Computes and returns the value of Z(<i>x</i>) for the Z-curve defined
+by <i>curve</i>, which is a list {<i>lo a b hi</i>}.<p>
+
+<defitem "zcurve validate" {zcurve validate <i>curve</i>}>
+
+Validates that <i>curve</i> defines a valid Z-curve, a list
+{<i>lo a b hi</i>}, where all four elements are numbers and <i>a</i>
+<lb>= <i>b</i>.<p>
+
+<defitem "zcurve" {zcurve <i>object</i> ?<i>option value...</i>?}>
+
+Creates a Z-curve type with minimum and maximum limits for the for
+parameters {<i>lo a b hi</i>}.  The limits are set using the following
+options, which can only be set at creation time:<p>
+
+<deflist options>
+
+<defopt {-xmin <i>xmin</i>}>
+<defopt {-xmax <i>xmax</i>}>
+
+Sets the minimum and maximum values for <i>a</i> and <i>b</i>.<p>
+
+<defopt {-ymin <i>ymin</i>}>
+<defopt {-ymax <i>ymax</i>}>
+
+Sets the minimum and maximum values for <i>lo</i> and <i>hi</i>.<p>
+
+</deflist options>
+
+</deflist>
+
+<section "INSTANCE COMMAND">
+
+An instance of <iref zcurve> has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem "eval" {$object eval <i>curve x</i>}>
+
+Computes and returns the value of Z(<i>x</i>) for the Z-curve defined
+by <i>curve</i>, which is a list {<i>lo a b hi</i>}.<p>
+
+Note that there is no difference between this call and
+<iref zcurve eval>.  In particular, no check is done to verify that
+<i>curve</i> is valid with respect to this instance's limits.<p>
+
+<defitem "validate" {$object validate <i>curve</i>}>
+
+This call performs the same checks as <iref zcurve validate>, and
+then verifies that the four parameters {<i>lo a b hi</i>} are within
+the minimum and maximum limits.  On success, returns <i>curve</i>.<p>
+
+</deflist>
+
+<section ENVIRONMENT>
+
+zcurve(n) requires Tcl 8.5 or later.
+
+To use zcurve(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
