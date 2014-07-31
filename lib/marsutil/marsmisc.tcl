@@ -14,8 +14,6 @@
 #
 # TODO:
 #
-#    * kiteutils/control
-#      * bgcatch
 #    * code
 #      * getcode
 #    * marsmisc
@@ -51,7 +49,6 @@
 
 namespace eval ::marsutil:: {
     namespace export    \
-        bgcatch         \
         commafmt        \
         count           \
         discrete        \
@@ -80,23 +77,6 @@ namespace eval ::marsutil:: {
 # Control Structures
 
 
-# bgcatch script
-#
-# script    An arbitrary Tcl script
-#
-# Evaluates script in the caller's context.  If the script throws
-# an error, bgcatch passes the error to bgerror, and returns normally.
-# bgcatch returns nothing.
-
-proc ::marsutil::bgcatch {script} {
-    set code [catch [list uplevel 1 $script] result]
-
-    if {$code} {
-        bgerror $result
-    }
-
-    return
-}
 
 # restrict varname vtype defval
 #

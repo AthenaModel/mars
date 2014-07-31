@@ -21,12 +21,6 @@ versions will so indicate.<p>
 
 <deflist>
 
-<defitem bgcatch {bgcatch <i>script</i>}>
-
-Executes an arbitrary Tcl <i>script</i> in the caller's context.  If
-the script throws an error, the error is handled by
-<code>bgerror</code>.  <iref bgcatch> never returns a value.<p>
-
 <defitem commafmt {commafmt <i>value ?options...?</i> }>
 
 Formats numbers as integers with commas inserted every three digits. This

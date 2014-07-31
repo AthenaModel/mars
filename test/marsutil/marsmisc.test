@@ -29,25 +29,6 @@ package require marsutil
 namespace import ::marsutil::*
 
 #-------------------------------------------------------------------
-# bgcatch
-
-test bgcatch-1.1 {Script called in caller's context} -body {
-    set a [clock clicks]
-    bgcatch {set b $a}
-    expr {$a == $b}
-} -result {1}
-
-test bgcatch-1.2 {Script called in caller's context} -setup {
-    proc ::bgerror {msg} {
-        puts -nonewline "bgerror: $msg"
-    }
-} -body {
-    bgcatch {error "Simulated Error"}
-} -cleanup {
-    rename ::bgerror ""
-} -output {bgerror: Simulated Error}
-
-#-------------------------------------------------------------------
 # commafmt
 
 test commafmt-1.1 {Small integers are left alone} -body {
