@@ -16,8 +16,6 @@
 #
 #    * kiteutils/control
 #      * bgcatch
-#    * kiteutils/dictx
-#      dictglob
 #    * code
 #      * getcode
 #    * marsmisc
@@ -56,7 +54,6 @@ namespace eval ::marsutil:: {
         bgcatch         \
         commafmt        \
         count           \
-        dictglob        \
         discrete        \
         echo            \
         getcode         \
@@ -127,34 +124,6 @@ proc ::marsutil::restrict {varname vtype defval} {
     return
 }
 
-
-
-#-----------------------------------------------------------------------
-# Dict Functions
-
-# dictglob dict key pattern ?key pattern...?
-#
-# dict     A dictionary
-# key      A key
-# pattern  A pattern to match
-#
-# Returns one if the dictionary has the specified keys and values.
-# Matching is by [string match].  If a key isn't in the dictionary,
-# the match fails.
-
-proc ::marsutil::dictglob {dict args} {
-    foreach {key pattern} $args {
-        if {![dict exists $dict $key]} {
-            return 0
-        }
-
-        if {![string match $pattern [dict get $dict $key]]} {
-            return 0
-        } 
-    }
-
-    return 1
-}
 
 
 #-----------------------------------------------------------------------

@@ -231,37 +231,6 @@ test restrict-1.3 {valid values get canonicalized} -body {
 } -result {THAT}
 
 
-#-------------------------------------------------------------------
-# dictglob
-
-test dictglob-1.1 {Match succeeds with empty dict and no keys} -body {
-    dictglob {}
-} -result {1}
-
-test dictglob-1.2 {Match succeeds with no keys} -body {
-    dictglob {a 1 b 2}
-} -result {1}
-
-test dictglob-1.3 {Match fails if specified key is not present.} -body {
-    dictglob {a 1 b 2} c 3
-} -result {0}
-
-test dictglob-1.4 {Match fails if dict is empty and keys given.} -body {
-    dictglob {} c 3
-} -result {0}
-
-test dictglob-1.5 {Match fails if value doesn't match.} -body {
-    dictglob {a 123 b 456} b 4
-} -result {0}
-
-test dictglob-1.6 {Match succeeds if key and pattern match.} -body {
-    dictglob {a 123 b 456} a *2*
-} -result {1}
-
-test dictglob-1.7 {Match succeeds if key and value match.} -body {
-    dictglob {a 123 b 456} a 1* b 4*
-} -result {1}
-
 
 #-------------------------------------------------------------------
 # let

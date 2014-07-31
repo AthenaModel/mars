@@ -43,13 +43,6 @@ there are more then rounding takes place. If not supplied, the default for
 
 </deflist>
 
-<defitem dictglob {dictglob <i>dict key pattern</i> ?<i>key pattern...</i>?}>
-
-Returns 1 if dictionary <i>dict</i> has the specified keys if
-the corresponding value match the patterns,
-and 0 otherwise.  Values are compared to patterns using the "string
-match" command.  Note that the <i>dict</i> can contain keys other than
-those specified.<p>
 
 <defitem discrete {discrete <i>vec</i>}>
 
