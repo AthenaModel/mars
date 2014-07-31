@@ -1,9 +1,9 @@
 project athena-mars "3.0a2" "Mars Simulation Support Library"
 poc William.H.Duquette@jpl.nasa.gov
-lib marsutil
+provide marsutil
 
 require snit 2.3
-require textutil::expander 1.3.1
+require kiteutils 0.0 -local
 
 shell {
     package require marsutil 3.0

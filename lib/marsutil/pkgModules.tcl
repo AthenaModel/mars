@@ -23,7 +23,7 @@ package provide marsutil 3.0a2
 
 # -kite-require-start  REQUIRE EXTERNAL PACKAGES HERE
 package require snit 2.3
-package require textutil::expander 1.3.1
+package require kiteutils 0.0
 # -kite-require-end
 
 
@@ -38,9 +38,3 @@ namespace eval ::marsutil:: {
 # Modules
 
 source [file join $::marsutil::library marsmisc.tcl   ]
-source [file join $::marsutil::library tclchecker.tcl ]
-source [file join $::marsutil::library smartinterp.tcl]
-source [file join $::marsutil::library template.tcl   ]
-source [file join $::marsutil::library ehtml.tcl      ]
-source [file join $::marsutil::library manpage.tcl    ]
-source [file join $::marsutil::library marsdoc.tcl    ]
