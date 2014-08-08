@@ -23,6 +23,8 @@ package provide marsutil 3.0a2
 
 # -kite-require-start  REQUIRE EXTERNAL PACKAGES HERE
 package require snit 2.3
+package require sqlite3 3.8
+package require comm 4.6
 package require kiteutils 0.0
 # -kite-require-end
 
@@ -32,10 +34,40 @@ package require kiteutils 0.0
 namespace eval ::marsutil:: {
     variable library [file dirname [info script]]
 
-    namespace import ::kiteutils::lshift
+    namespace import ::kiteutils::*
 }
 
 #-----------------------------------------------------------------------
 # Modules
 
-source [file join $::marsutil::library marsmisc.tcl   ]
+source [file join $::marsutil::library marsmisc.tcl       ]
+source [file join $::marsutil::library logger.tcl         ]
+source [file join $::marsutil::library logreader.tcl      ]
+source [file join $::marsutil::library simclock.tcl       ]
+source [file join $::marsutil::library zulu.tcl           ]
+source [file join $::marsutil::library notifier.tcl       ]
+source [file join $::marsutil::library enum.tcl           ]
+source [file join $::marsutil::library quality.tcl        ]
+source [file join $::marsutil::library range.tcl          ]
+source [file join $::marsutil::library vec.tcl            ]
+source [file join $::marsutil::library mat.tcl            ]
+source [file join $::marsutil::library parmset.tcl        ]
+source [file join $::marsutil::library commserver.tcl     ]
+source [file join $::marsutil::library commclient.tcl     ]
+source [file join $::marsutil::library gtclient.tcl       ]
+source [file join $::marsutil::library gtserver.tcl       ]
+source [file join $::marsutil::library zcurve.tcl         ]
+source [file join $::marsutil::library sqlib.tcl          ]
+source [file join $::marsutil::library sqldocument.tcl    ]
+source [file join $::marsutil::library statecontroller.tcl]
+source [file join $::marsutil::library timeout.tcl        ]
+source [file join $::marsutil::library lazyupdater.tcl    ]
+source [file join $::marsutil::library eventq.tcl         ]
+source [file join $::marsutil::library cmdinfo.tcl        ]
+source [file join $::marsutil::library tabletext.tcl      ]
+source [file join $::marsutil::library cellmodel.tcl      ]
+source [file join $::marsutil::library dynaform.tcl       ]
+source [file join $::marsutil::library dynaform_fields.tcl]
+source [file join $::marsutil::library order.tcl          ]
+source [file join $::marsutil::library undostack.tcl      ]
+source [file join $::marsutil::library gradient.tcl       ]

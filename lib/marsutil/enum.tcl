@@ -1,20 +1,26 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	enum.tcl
+#   enum.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) module: enum objects
+#   Mars: marsutil(n) module: enum objects
 #
 #	A enum is an object that defines an enumerated type.  Each
-#       value in the enum has two names, a longname and a shortname.
-#       The enum object can determine whether values belong to the
-#       type, and convert long names to short names and vice versa.
+#   value in the enum has two names, a longname and a shortname.
+#   The enum object can determine whether values belong to the
+#   type, and convert long names to short names and vice versa.
 #
-#       Note that a enum object does not store individual values;
-#       rather, it defines the set of values for the enum.
+#   Note that a enum object does not store individual values;
+#   rather, it defines the set of values for the enum.
 #
 #-----------------------------------------------------------------------
 
@@ -271,14 +277,14 @@ snit::type ::marsutil::enum {
         }
 
         # NEXT, is it a short name?
-        set ndx [lsearchi $shortnames $input]
+        set ndx [lsearch -nocase $shortnames $input]
 
         if {$ndx != -1} {
             return $ndx
         }
 
         # NEXT, is it a long name?
-        set ndx [lsearchi $longnames $input]
+        set ndx [lsearch -nocase $longnames $input]
 
         if {$ndx != -1} {
             return $ndx

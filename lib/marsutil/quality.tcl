@@ -1,21 +1,27 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	quality.tcl
+#   quality.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) module: quality objects
+#   Quality objects
 #
 #	A quality is a rating scale that relates names to specific 
 #	numeric values.  Each value in fact has two names: a long name
-#       and a short name, e.g., "Very Good" and "VG".  The quality
+#   and a short name, e.g., "Very Good" and "VG".  The quality
 # 	object can convert names to numeric values; it can also convert
-#       arbitrary numeric values back to long or short names.
+#   arbitrary numeric values back to long or short names.
 #
-#       Note that a quality object does not store individual values;
-#       rather, it defines the set of values for the quality.
+#   Note that a quality object does not store individual values;
+#   rather, it defines the set of values for the quality.
 #
 #-----------------------------------------------------------------------
 
@@ -224,14 +230,14 @@ snit::type ::marsutil::quality {
     # Returns -1 if there's no match.
     method index {input} {
         # FIRST, is it a short name?
-        set ndx [lsearchi $shortnames $input]
+        set ndx [lsearch -nocase $shortnames $input]
 
         if {$ndx != -1} {
             return $ndx
         }
 
         # NEXT, is it a long name?
-        set ndx [lsearchi $longnames $input]
+        set ndx [lsearch -nocase $longnames $input]
 
         if {$ndx != -1} {
             return $ndx

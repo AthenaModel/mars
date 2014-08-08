@@ -19,496 +19,482 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     eval ::tcltest::configure $argv
 }
 
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil 1.0
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
 
-#-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
+#-------------------------------------------------------------------
+# Setup
 
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
-
-    # Import tcltest(n)
-    namespace import ::tcltest::*
-
-    # Import the code to be tested
-    namespace import ::marsutil::*
-
-    #-------------------------------------------------------------------
-    # Setup
-
-    proc setup {} {
-        logger log
-        simclockType myclock
-    }
-
-    proc cleanup {} {
-        log destroy
-        myclock destroy
-    }
-
-    proc context {} { 
-        return [list appkey appval]
-    }
-
-    #-------------------------------------------------------------------
-    # typemethod levels
-
-    test logger_levels-1.1 {list of levels} -body {
-        # Make sure it's been converted from a string to a list.
-        lrange [logger levels] 0 end
-    } -result {silent fatal error warning normal detail debug}
-
-    #-------------------------------------------------------------------
-    # typemethod modes
-
-    test logger_modes-1.1 {list of modes} -body {
-        # Make sure it's been converted from a string to a list.
-        lrange [logger modes] 0 end
-    } -result {silent level all}
-
-    #-------------------------------------------------------------------
-    # typemethod unflatten
-
-    # TBD
-
-    #-------------------------------------------------------------------
-    # -verbosity
-
-    test logger_verbosity-1.1 {default value} -setup {
-        setup
-    } -body {
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {detail}
-
-    test logger_verbosity-1.2 {configure/cget silent} -setup {
-        setup
-    } -body {
-        log configure -verbosity silent
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {silent}
-
-    test logger_verbosity-1.3 {configure/cget fatal} -setup {
-        setup
-    } -body {
-        log configure -verbosity fatal
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {fatal}
-
-    test logger_verbosity-1.4 {configure/cget error} -setup {
-        setup
-    } -body {
-        log configure -verbosity error
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {error}
-
-    test logger_verbosity-1.5 {configure/cget warning} -setup {
-        setup
-    } -body {
-        log configure -verbosity warning
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {warning}
-
-    test logger_verbosity-1.6 {configure/cget normal} -setup {
-        setup
-    } -body {
-        log configure -verbosity normal
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {normal}
-
-    test logger_verbosity-1.7 {configure/cget detail} -setup {
-        setup
-    } -body {
-        log configure -verbosity detail
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {detail}
-
-    test logger_verbosity-1.8 {configure/cget debug} -setup {
-        setup
-    } -body {
-        log configure -verbosity debug
-        log cget -verbosity
-    } -cleanup {
-        cleanup
-    } -result {debug}
-
-    test logger_verbosity-2.1 {-verbosity silent, output} -setup {
-        setup
-    } -body {
-        log configure -verbosity silent
-        log fatal   test 1
-        log warning test 2
-        log normal  test 3
-        log detail  test 4
-        log debug   test 6
-    } -cleanup {
-        cleanup
-    } -match glob -output {}
-
-    test logger_verbosity-2.2 {-verbosity fatal, output} -setup {
-        setup
-    } -body {
-        log configure -verbosity fatal
-        log fatal   test 1
-        log warning test 2
-        log normal  test 3
-        log detail  test 4
-        log debug  test 6
-    } -cleanup {
-        cleanup
-    } -match glob -output {* fatal test 1
+proc setup {} {
+    logger log
+    simclockType myclock
 }
 
-    test logger_verbosity-2.3 {-verbosity warning, output} -setup {
-        setup
-    } -body {
-        log configure -verbosity warning
-        log fatal   test 1
-        log warning test 2
-        log normal  test 3
-        log detail  test 4
-        log debug  test 6
-    } -cleanup {
-        cleanup
-    } -match glob -output {* fatal test 1
+proc cleanup {} {
+    log destroy
+    myclock destroy
+}
+
+proc context {} { 
+    return [list appkey appval]
+}
+
+#-------------------------------------------------------------------
+# typemethod levels
+
+test logger_levels-1.1 {list of levels} -body {
+    # Make sure it's been converted from a string to a list.
+    lrange [logger levels] 0 end
+} -result {silent fatal error warning normal detail debug}
+
+#-------------------------------------------------------------------
+# typemethod modes
+
+test logger_modes-1.1 {list of modes} -body {
+    # Make sure it's been converted from a string to a list.
+    lrange [logger modes] 0 end
+} -result {silent level all}
+
+#-------------------------------------------------------------------
+# typemethod unflatten
+
+# TBD
+
+#-------------------------------------------------------------------
+# -verbosity
+
+test logger_verbosity-1.1 {default value} -setup {
+    setup
+} -body {
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {detail}
+
+test logger_verbosity-1.2 {configure/cget silent} -setup {
+    setup
+} -body {
+    log configure -verbosity silent
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {silent}
+
+test logger_verbosity-1.3 {configure/cget fatal} -setup {
+    setup
+} -body {
+    log configure -verbosity fatal
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {fatal}
+
+test logger_verbosity-1.4 {configure/cget error} -setup {
+    setup
+} -body {
+    log configure -verbosity error
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {error}
+
+test logger_verbosity-1.5 {configure/cget warning} -setup {
+    setup
+} -body {
+    log configure -verbosity warning
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {warning}
+
+test logger_verbosity-1.6 {configure/cget normal} -setup {
+    setup
+} -body {
+    log configure -verbosity normal
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {normal}
+
+test logger_verbosity-1.7 {configure/cget detail} -setup {
+    setup
+} -body {
+    log configure -verbosity detail
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {detail}
+
+test logger_verbosity-1.8 {configure/cget debug} -setup {
+    setup
+} -body {
+    log configure -verbosity debug
+    log cget -verbosity
+} -cleanup {
+    cleanup
+} -result {debug}
+
+test logger_verbosity-2.1 {-verbosity silent, output} -setup {
+    setup
+} -body {
+    log configure -verbosity silent
+    log fatal   test 1
+    log warning test 2
+    log normal  test 3
+    log detail  test 4
+    log debug   test 6
+} -cleanup {
+    cleanup
+} -match glob -output {}
+
+test logger_verbosity-2.2 {-verbosity fatal, output} -setup {
+    setup
+} -body {
+    log configure -verbosity fatal
+    log fatal   test 1
+    log warning test 2
+    log normal  test 3
+    log detail  test 4
+    log debug  test 6
+} -cleanup {
+    cleanup
+} -match glob -output {* fatal test 1
+}
+
+test logger_verbosity-2.3 {-verbosity warning, output} -setup {
+    setup
+} -body {
+    log configure -verbosity warning
+    log fatal   test 1
+    log warning test 2
+    log normal  test 3
+    log detail  test 4
+    log debug  test 6
+} -cleanup {
+    cleanup
+} -match glob -output {* fatal test 1
 * warning test 2
 }
 
-    test logger_verbosity-2.4 {-verbosity normal, output} -setup {
-        setup
-    } -body {
-        log configure -verbosity normal
-        log fatal   test 1
-        log warning test 2
-        log normal  test 3
-        log detail  test 4
-        log debug  test 6
-    } -cleanup {
-        cleanup
-    } -match glob -output {* fatal test 1
+test logger_verbosity-2.4 {-verbosity normal, output} -setup {
+    setup
+} -body {
+    log configure -verbosity normal
+    log fatal   test 1
+    log warning test 2
+    log normal  test 3
+    log detail  test 4
+    log debug  test 6
+} -cleanup {
+    cleanup
+} -match glob -output {* fatal test 1
 * warning test 2
 * normal test 3
 }
 
-    test logger_verbosity-2.5 {-verbosity detail, output} -setup {
-        setup
-    } -body {
-        log configure -verbosity detail
-        log fatal   test 1
-        log warning test 2
-        log normal  test 3
-        log detail  test 4
-        log debug   test 6
-    } -cleanup {
-        cleanup
-    } -match glob -output {* fatal test 1
+test logger_verbosity-2.5 {-verbosity detail, output} -setup {
+    setup
+} -body {
+    log configure -verbosity detail
+    log fatal   test 1
+    log warning test 2
+    log normal  test 3
+    log detail  test 4
+    log debug   test 6
+} -cleanup {
+    cleanup
+} -match glob -output {* fatal test 1
 * warning test 2
 * normal test 3
 * detail test 4
 }
 
-    test logger_verbosity-2.7 {-verbosity debug, output} -setup {
-        setup
-    } -body {
-        log configure -verbosity debug
-        log fatal   test 1
-        log warning test 2
-        log normal  test 3
-        log detail  test 4
-        log debug   test 6
-    } -cleanup {
-        cleanup
-    } -match glob -output {* fatal test 1
+test logger_verbosity-2.7 {-verbosity debug, output} -setup {
+    setup
+} -body {
+    log configure -verbosity debug
+    log fatal   test 1
+    log warning test 2
+    log normal  test 3
+    log detail  test 4
+    log debug   test 6
+} -cleanup {
+    cleanup
+} -match glob -output {* fatal test 1
 * warning test 2
 * normal test 3
 * detail test 4
 * debug test 6
 }
 
-    #-------------------------------------------------------------------
-    # message flattening
+#-------------------------------------------------------------------
+# message flattening
 
 
-    # Note: the -output has twice as many "\" characters as it should,
-    # because glob matching evaluates them.
-    test logger_flattening-1.1 {message flattening} -setup {
-        setup
-    } -body {
-        log normal  test {A\nB
+# Note: the -output has twice as many "\" characters as it should,
+# because glob matching evaluates them.
+test logger_flattening-1.1 {message flattening} -setup {
+    setup
+} -body {
+    log normal  test {A\nB
 C}
-    } -cleanup {
-        cleanup
-    } -match glob -output {* normal test {A\\\\nB\\nC}
+} -cleanup {
+    cleanup
+} -match glob -output {* normal test {A\\\\nB\\nC}
 }
 
-    #-------------------------------------------------------------------
-    # -logfile
+#-------------------------------------------------------------------
+# -logfile
 
-    test logger_logfile-1.1 {default value} -setup {
-        setup
-    } -body {
-        log cget -logfile
-    } -cleanup {
-        cleanup
-    } -result {}
+test logger_logfile-1.1 {default value} -setup {
+    setup
+} -body {
+    log cget -logfile
+} -cleanup {
+    cleanup
+} -result {}
 
-    test logger_logfile-1.2 {invalid file} -setup {
-        setup
-    } -body {
-        catch {log configure -logfile foo/bar/baz/quux/nonesuch.log} result
-        list [log cget -logfile] $result
-    } -cleanup {
-        cleanup
-    } -result {{} {couldn't open "foo/bar/baz/quux/nonesuch.log": no such file or directory}}
+test logger_logfile-1.2 {invalid file} -setup {
+    setup
+} -body {
+    catch {log configure -logfile foo/bar/baz/quux/nonesuch.log} result
+    list [log cget -logfile] $result
+} -cleanup {
+    cleanup
+} -result {{} {couldn't open "foo/bar/baz/quux/nonesuch.log": no such file or directory}}
 
-    test logger_logfile-1.3 {output goes to file} -setup {
-        setup
-    } -body {
-        # Make a blank file; this ensures that tcltest will
-        # delete file when we're done.
-        makeFile {} logger_5_2.log
+test logger_logfile-1.3 {output goes to file} -setup {
+    setup
+} -body {
+    # Make a blank file; this ensures that tcltest will
+    # delete file when we're done.
+    tcltest::makeFile {} logger_5_2.log
 
-        # Open the file, and write a couple of messages.
-        log configure -logfile logger_5_2.log
-        log normal test 1
-        log warning test 2
+    # Open the file, and write a couple of messages.
+    log configure -logfile logger_5_2.log
+    log normal test 1
+    log warning test 2
 
-        # Retrieve the file's contents.
-        viewFile logger_5_2.log
-    } -cleanup {
-        cleanup
-    } -match glob -result {* normal test 1
+    # Retrieve the file's contents.
+    tcltest::viewFile logger_5_2.log
+} -cleanup {
+    cleanup
+} -match glob -result {* normal test 1
 * warning test 2}
 
-    test logger_logfile-1.4 {closing log file} -setup {
-        setup
-    } -body {
-        # Make a blank file; this ensures that tcltest will
-        # delete file when we're done.
-        makeFile {} logger_5_3.log
+test logger_logfile-1.4 {closing log file} -setup {
+    setup
+} -body {
+    # Make a blank file; this ensures that tcltest will
+    # delete file when we're done.
+    tcltest::makeFile {} logger_5_3.log
 
-        # Open the file, and write a couple of messages.
-        log configure -logfile logger_5_3.log
-        log normal test 1
+    # Open the file, and write a couple of messages.
+    log configure -logfile logger_5_3.log
+    log normal test 1
 
-        log configure -logfile ""
-        log warning test 2
+    log configure -logfile ""
+    log warning test 2
 
-        # Retrieve the file's contents.
-        viewFile logger_5_3.log
-    } -cleanup {
-        cleanup
-    } -match glob -result {* normal test 1} \
-        -output {* warning test 2
+    # Retrieve the file's contents.
+    tcltest::viewFile logger_5_3.log
+} -cleanup {
+    cleanup
+} -match glob -result {* normal test 1} \
+    -output {* warning test 2
 }
 
-    test logger_logfile-1.5 {terminates file output, opens new file} -setup {
-        setup
-    } -body {
-        # Make a blank file; this ensures that tcltest will
-        # delete file when we're done.
-        makeFile {} logger_5_4a.log
-        makeFile {} logger_5_4b.log
+test logger_logfile-1.5 {terminates file output, opens new file} -setup {
+    setup
+} -body {
+    # Make a blank file; this ensures that tcltest will
+    # delete file when we're done.
+    tcltest::makeFile {} logger_5_4a.log
+    tcltest::makeFile {} logger_5_4b.log
 
-        # Open the file, and write a couple of messages.
-        log configure -logfile logger_5_4a.log
-        log normal test 1
+    # Open the file, and write a couple of messages.
+    log configure -logfile logger_5_4a.log
+    log normal test 1
 
-        log configure -logfile logger_5_4b.log
-        log warning test 2
+    log configure -logfile logger_5_4b.log
+    log warning test 2
 
-        # Retrieve the files' contents.
-        list [viewFile logger_5_4a.log] [viewFile logger_5_4b.log]
-    } -cleanup {
-        cleanup
-    } -match glob -result {{* normal test 1} {* warning test 2}}
+    # Retrieve the files' contents.
+    list [tcltest::viewFile logger_5_4a.log] [tcltest::viewFile logger_5_4b.log]
+} -cleanup {
+    cleanup
+} -match glob -result {{* normal test 1} {* warning test 2}}
 
-    #-------------------------------------------------------------------
-    # -simclock 
+#-------------------------------------------------------------------
+# -simclock 
 
-    test logger_simclock-1.1 {-simclock adds Zulu time.} -setup {
-        setup
-    } -body {
-        log configure -simclock [namespace current]::myclock
-        log normal test 1
-    } -cleanup {
-        cleanup
-    } -match glob -output {* normal test 1 010000ZJAN70
+test logger_simclock-1.1 {-simclock adds Zulu time.} -setup {
+    setup
+} -body {
+    log configure -simclock [namespace current]::myclock
+    log normal test 1
+} -cleanup {
+    cleanup
+} -match glob -output {* normal test 1 010000ZJAN70
 }
 
-    #-------------------------------------------------------------------
-    # verbmode
+#-------------------------------------------------------------------
+# verbmode
 
-    test logger_verbmode-1.1 {defaults to "level".} -setup {
-        setup
-    } -body {
-        log fatal test 1
-        log normal test 2
-        log debug test 3
-        list [log verbmode test] [log cget -verbosity]
-    } -cleanup {
-        cleanup
-    } -match glob -result {level detail} -output {* fatal test 1
+test logger_verbmode-1.1 {defaults to "level".} -setup {
+    setup
+} -body {
+    log fatal test 1
+    log normal test 2
+    log debug test 3
+    list [log verbmode test] [log cget -verbosity]
+} -cleanup {
+    cleanup
+} -match glob -result {level detail} -output {* fatal test 1
 * normal test 2
 }
 
-    test logger_verbmode-1.2 {silent means no logging.} -setup {
-        setup
-    } -body {
-        log verbmode test silent
-        log fatal test 1
-        log normal test 2
-        log debug test 3
-        list [log verbmode test] [log cget -verbosity]
-    } -cleanup {
-        cleanup
-    } -result {silent detail} -output {}
+test logger_verbmode-1.2 {silent means no logging.} -setup {
+    setup
+} -body {
+    log verbmode test silent
+    log fatal test 1
+    log normal test 2
+    log debug test 3
+    list [log verbmode test] [log cget -verbosity]
+} -cleanup {
+    cleanup
+} -result {silent detail} -output {}
 
-    test logger_verbmode-1.3 {all means -verbosity is ignored.} -setup {
-        setup
-    } -body {
-        log verbmode test all
-        log fatal test 1
-        log normal test 2
-        log debug test 3
-        list [log verbmode test] [log cget -verbosity]
-    } -cleanup {
-        cleanup
-    } -match glob -result {all detail} -output {* fatal test 1
-* normal test 2
-* debug test 3
-}
-
-    test logger_verbmode-1.4 {all overrides -verbosity silent.} -setup {
-        setup
-    } -body {
-        log configure -verbosity silent
-        log verbmode test all
-        log fatal test 1
-        log normal test 2
-        log debug test 3
-        list [log verbmode test] [log cget -verbosity]
-    } -cleanup {
-        cleanup
-    } -match glob -result {all silent} -output {* fatal test 1
+test logger_verbmode-1.3 {all means -verbosity is ignored.} -setup {
+    setup
+} -body {
+    log verbmode test all
+    log fatal test 1
+    log normal test 2
+    log debug test 3
+    list [log verbmode test] [log cget -verbosity]
+} -cleanup {
+    cleanup
+} -match glob -result {all detail} -output {* fatal test 1
 * normal test 2
 * debug test 3
 }
 
-    #-------------------------------------------------------------------
-    # components
-
-    test logger_components-1.1 {initially empty.} -setup {
-        setup
-    } -body {
-        log components
-    } -cleanup {
-        cleanup
-    } -result {}
-
-    test logger_components-1.2 {component known when verbmode accessed.} -setup {
-        setup
-    } -body {
-        log verbmode test1
-        log verbmode test2 silent
-        lsort [log components]
-    } -cleanup {
-        cleanup
-    } -result {test1 test2}
-
-    test logger_components-1.3 {component known when logged.} -setup {
-        setup
-    } -body {
-        log configure -verbosity silent
-        log normal test1 1
-        log normal test2 2
-        lsort [log components]
-    } -cleanup {
-        cleanup
-    } -result {test1 test2}
-
-    #-----------------------------------------------------------------------
-    # timestamp format
-
-    test logger_timestamp-1.1 {timestamp format} -setup {
-        setup
-    } -body {
-        log normal test 1
-    } -cleanup {
-        cleanup
-    } -match regexp -output {\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d .*}
-
-    #-----------------------------------------------------------------------
-    # -entrycmd
-
-    test logger_entrycmd-1.1 {-entrycmd} -setup {
-        setup
-    } -body {
-        log configure -entrycmd {set logger10_1_entry}
-        log normal test 1
-        set logger10_1_entry
-    } -cleanup {
-        cleanup
-    } -match glob -result {* normal test 1} \
-        -output {* normal test 1
+test logger_verbmode-1.4 {all overrides -verbosity silent.} -setup {
+    setup
+} -body {
+    log configure -verbosity silent
+    log verbmode test all
+    log fatal test 1
+    log normal test 2
+    log debug test 3
+    list [log verbmode test] [log cget -verbosity]
+} -cleanup {
+    cleanup
+} -match glob -result {all silent} -output {* fatal test 1
+* normal test 2
+* debug test 3
 }
 
-    #-----------------------------------------------------------------------
-    # -logdir
+#-------------------------------------------------------------------
+# components
 
-    test logger_logdir-1.1 {-logdir} -body {
-        # FIRST, create and then destroy the test directory; this
-        # should ensure that it's empty.
-        set logdir [file join [pwd] loggertest]
-        makeDirectory $logdir
-        removeDirectory $logdir
+test logger_components-1.1 {initially empty.} -setup {
+    setup
+} -body {
+    log components
+} -cleanup {
+    cleanup
+} -result {}
 
-        # NEXT, create a logger with that directory.  It should create
-        # it and also create a logfile.
-        logger log -logdir $logdir
-        set a [file exists [file join $logdir log00001_start.log]]
+test logger_components-1.2 {component known when verbmode accessed.} -setup {
+    setup
+} -body {
+    log verbmode test1
+    log verbmode test2 silent
+    lsort [log components]
+} -cleanup {
+    cleanup
+} -result {test1 test2}
 
-        # NEXT, add a new log without a label
-        log newlog
-        set b [file exists [file join $logdir log00002.log]]
+test logger_components-1.3 {component known when logged.} -setup {
+    setup
+} -body {
+    log configure -verbosity silent
+    log normal test1 1
+    log normal test2 2
+    lsort [log components]
+} -cleanup {
+    cleanup
+} -result {test1 test2}
 
-        # NEXT, add a new log with a label
-        log newlog LABEL
-        set c [file exists [file join $logdir log00003_LABEL.log]]
+#-----------------------------------------------------------------------
+# timestamp format
 
-        log destroy
+test logger_timestamp-1.1 {timestamp format} -setup {
+    setup
+} -body {
+    log normal test 1
+} -cleanup {
+    cleanup
+} -match regexp -output {\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d .*}
 
-        list $a $b $c
-    } -cleanup {
-        removeDirectory $logdir
-    } -result {1 1 1}
+#-----------------------------------------------------------------------
+# -entrycmd
 
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
+test logger_entrycmd-1.1 {-entrycmd} -setup {
+    setup
+} -body {
+    log configure -entrycmd {set logger10_1_entry}
+    log normal test 1
+    set logger10_1_entry
+} -cleanup {
+    cleanup
+} -match glob -result {* normal test 1} \
+    -output {* normal test 1
 }
 
-namespace delete ::marsutil::test
+#-----------------------------------------------------------------------
+# -logdir
+
+test logger_logdir-1.1 {-logdir} -body {
+    # FIRST, create and then destroy the test directory; this
+    # should ensure that it's empty.
+    set logdir [file join [pwd] loggertest]
+    tcltest::makeDirectory $logdir
+    tcltest::removeDirectory $logdir
+
+    # NEXT, create a logger with that directory.  It should create
+    # it and also create a logfile.
+    logger log -logdir $logdir
+    set a [file exists [file join $logdir log00001_start.log]]
+
+    # NEXT, add a new log without a label
+    log newlog
+    set b [file exists [file join $logdir log00002.log]]
+
+    # NEXT, add a new log with a label
+    log newlog LABEL
+    set c [file exists [file join $logdir log00003_LABEL.log]]
+
+    log destroy
+
+    list $a $b $c
+} -cleanup {
+    tcltest::removeDirectory $logdir
+} -result {1 1 1}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
 

@@ -1,19 +1,25 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    gradient.tcl
+#   gradient.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    marsutil(n) Module: Color Gradient Computer
+#   marsutil(n) Module: Color Gradient Computer
 #
-#    This module defines the "gradient" type, which is used to compute
-#    color gradients, linear interpolations between two colors.  
-#    A gradient is defined by its endpoints and by a min and max
-#    input level.  Then, given an input level a gradient object computes
-#    an output color in which R, G, and B are each interpolated
-#    separately.
+#   This module defines the "gradient" type, which is used to compute
+#   color gradients, linear interpolations between two colors.  
+#   A gradient is defined by its endpoints and by a min and max
+#   input level.  Then, given an input level a gradient object computes
+#   an output color in which R, G, and B are each interpolated
+#   separately.
 #
 #-----------------------------------------------------------------------
 

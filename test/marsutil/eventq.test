@@ -1,0 +1,874 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    eventq.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) eventq(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+# Import the code to be tested
+namespace import ::marsutil::*
+
+# Create the RDB
+sqldocument rdb
+rdb register ::marsutil::eventq
+rdb open :memory:
+rdb clear
+
+# Initialize the event queue
+eventq init ::rdb
+
+# Initialize variable for event trace
+variable trace ""
+
+# bgerror: set trace to error
+proc ::bgerror {msg} {
+    set ::trace "$msg\n$::errorInfo"
+}
+
+# Allow for cleanup
+proc cleanup {} {
+    eventq restart
+
+    eventq destroy *
+
+    set trace ""
+}
+
+# lfilter list pattern
+#
+# list       A list of values
+# pattern    A glob pattern
+#
+# Returns a list of the values that match the pattern, preserving
+# order.
+#
+# TBD: Add this to marsutil(n)!
+
+proc lfilter {list pattern} {
+    set out [list]
+    
+    foreach value $list {
+        if {[string match $pattern $value]} {
+            lappend out $value
+        }
+    }
+
+    return $out
+}
+
+
+# pprint block
+#
+# Pretty-prints a result block so that the test looks nice
+
+proc pprint {block} {
+    set block [string map [list \" \'] $block]
+    return "\n$block"
+}
+
+
+#-------------------------------------------------------------------
+# Initial state
+
+test init-1.1 {Initial time is 0} -body {
+    eventq now
+} -cleanup {
+    cleanup
+} -result {-1}
+
+test init-1.2 {No event types defined by default} -body {
+    eventq etypes
+} -cleanup {
+    cleanup
+} -result {}
+
+test init-1.3 {No events in queue by default} -body {
+    eventq size
+} -cleanup {
+    cleanup
+} -result {0}
+
+test init-1.4 {No events have occurred by default} -body {
+    eventq eventcount
+} -cleanup {
+    cleanup
+} -result {0}
+
+test init-1.5 {Initial schema} -body {
+    lfilter [rdb tables] eventq_*
+} -cleanup {
+    cleanup
+} -result {eventq_queue}
+
+
+#-------------------------------------------------------------------
+# define
+#
+# 1.*: Error checking
+# 2.*: Basic operation
+# 3.*: Redefinition of Events
+
+test define-1.1 {Event type names cannot begin with a number} -body {
+    eventq define 1event {} {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "1event"}
+
+test define-1.2 {Event type names cannot begin with an "_"} -body {
+    eventq define _event {} {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "_event"}
+
+test define-1.3 {Event type names cannot contain odd characters} -body {
+    eventq define ev@nt {} {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "ev@nt"}
+
+test define-1.4 {Event argument names cannot contain odd chars} -body {
+    eventq define arrival {goodarg bad!arg} {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "bad!arg"}
+
+test define-1.5 {Cannot redefine args} -body {
+    eventq define arrival {a} { }
+    eventq define arrival {a b} { }
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {redefined arguments for event "arrival" as "a b"}
+
+
+# 2.*: Basic Operation
+
+test define-2.1 {Define event with no args} -body {
+    eventq define arrival {} {
+        # Body
+    }
+} -cleanup {
+    cleanup
+} -result {}
+
+test define-2.2 {Define event with args} -body {
+    eventq define arrival {a b c} {
+        # Body
+    }
+} -cleanup {
+    cleanup
+} -result {}
+
+
+test define-2.3 {Type names can contain numbers and underscores} -body {
+    eventq define event_1234 {} { }
+} -cleanup {
+    cleanup
+} -result {}
+
+test define-2.4 {Arg names can contain numbers and underscores} -body {
+    eventq define arrival {arg_1234} { }
+} -cleanup {
+    cleanup
+} -result {}
+
+test define-2.5 {Defining an event type makes it visible} -body {
+    eventq define arrival {} {
+        # Body
+    }
+
+    eventq define departure {} {
+        # Body
+    }
+
+    eventq etypes
+} -cleanup {
+    cleanup
+} -result {arrival departure}
+
+test define-2.6 {Defining an event type defines tables} -body {
+    eventq define arrival {} {
+        # Body
+    }
+
+    eventq define departure {} {
+        # Body
+    }
+
+    lfilter [rdb tables] eventq_*
+} -cleanup {
+    cleanup
+} -result {eventq_etype_arrival eventq_etype_departure eventq_queue}
+
+test define-2.7 {Event type schema retained on clear of RDB} -body {
+    eventq define arrival {} {
+        # Body
+    }
+
+    eventq define departure {} {
+        # Body
+    }
+
+    rdb clear
+
+    lfilter [rdb tables] eventq_*
+} -cleanup {
+    cleanup
+} -result {eventq_etype_arrival eventq_etype_departure eventq_queue}
+
+
+test define-2.8 {Defining an event type defines handlers} -body {
+    eventq define arrival {} {
+        # Body
+    }
+
+    list \
+        [info command "::eventq_handler_arrival"]  \
+        [info command "::eventq_schedule_arrival"]
+} -cleanup {
+    cleanup
+} -result {::eventq_handler_arrival ::eventq_schedule_arrival}
+
+test define-3.1 {Can redefine an event body} -body {
+    eventq define arrival {} {+body1+}
+    eventq define arrival {} {+body2+}
+    
+    string trim [info body ::eventq_handler_arrival]
+} -cleanup {
+    cleanup
+} -match glob -result {*+body2+*}
+
+#-------------------------------------------------------------------
+# destroy
+
+test destroy-1.1 {Event types can be destroyed} -body {
+    eventq define arrival {dummy} { }
+
+    set a [list]
+    lappend a [eventq etypes]
+    lappend a [info command "::eventq_handler_arrival"]
+    lappend a [info command "::eventq_schedule_arrival"]
+
+    eventq destroy arrival
+    
+    set b [list]
+    lappend b [eventq etypes]
+    lappend b [info command "::eventq_handler_arrival"]
+    lappend b [info command "::eventq_schedule_arrival"]
+        
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {{arrival ::eventq_handler_arrival ::eventq_schedule_arrival} {{} {} {}}}
+
+test destroy-1.2 {Event types are destroyed by glob match} -body {
+    eventq define arrival1  {dummy} { }
+    eventq define arrival2  {dummy} { }
+    eventq define departure {dummy} { }
+
+    set a [eventq etypes]
+
+    eventq destroy arrival*
+    
+    set b [eventq etypes]
+        
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {{arrival1 arrival2 departure} departure}
+
+test destroy-1.4 {Schema definitions are destroyed} -body {
+    eventq define arrival {} { }
+
+    eventq destroy arrival
+
+    lfilter [rdb tables] eventq*
+} -cleanup {
+    cleanup
+} -result {eventq_queue}
+
+test destroy-1.5 {Scheduled events are destroyed} -body {
+    eventq define arrival {} { }
+    eventq schedule arrival 1
+
+    eventq destroy arrival
+
+    rdb query {SELECT * FROM eventq_queue}
+} -cleanup {
+    cleanup
+} -result {}
+
+#-------------------------------------------------------------------
+# schedule
+#
+# 1.*: Error Checking
+# 2.*: Normal Operations
+
+# 1.*: Error Checking
+
+test schedule-1.1 {Invalid event type} -body {
+    eventq schedule nonesuch 1 a b c
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {no such event type: "nonesuch"}
+
+test schedule-1.2 {Invalid sim time} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival foo a b c
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "foo", expected integer}
+
+test schedule-1.3 {t not in future} -body {
+    eventq define arrival  {dummy} { }
+    eventq advance 0
+    eventq schedule arrival 0 dummy
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {specified time not in future: "0"}
+
+test schedule-2.1 {Can schedule with no args} -body {
+    eventq define arrival {} { }
+    eventq schedule arrival 1
+} -cleanup {
+    cleanup
+} -result {1}
+
+test schedule-2.2 {Can schedule with args} -body {
+    eventq define arrival {a b} { }
+    eventq schedule arrival 1 A B
+    eventq size
+} -cleanup {
+    cleanup
+} -result {1}
+
+test schedule-2.3 {returns event IDs} -body {
+    eventq define arrival  {dummy} { }
+
+    set a [eventq schedule arrival 1 a]
+    set b [eventq schedule arrival 1 b]
+    set c [eventq schedule arrival 1 c]
+    
+    list $a $b $c
+} -cleanup {
+    cleanup
+} -result {1 2 3}
+
+test schedule-2.4 {scheduling increases queue size} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    eventq schedule arrival 1 b
+    eventq schedule arrival 1 c
+
+    eventq size
+} -cleanup {
+    cleanup
+} -result {3}
+
+test schedule-2.5 {scheduling increases event count} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    eventq schedule arrival 1 b
+    eventq schedule arrival 1 c
+
+    eventq eventcount
+} -cleanup {
+    cleanup
+} -result {3}
+
+test schedule-2.6 {events appear in eventq_queue} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    pprint [rdb query {SELECT * FROM eventq_queue}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   
+-- - ------- 
+1  1 arrival 
+2  2 arrival 
+3  3 arrival 
+}
+
+test schedule-2.7 {events appear in eventq_queue_$etype} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    pprint [rdb query {SELECT * FROM eventq_queue_arrival}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   dummy 
+-- - ------- ----- 
+1  1 arrival a     
+2  2 arrival b     
+3  3 arrival c     
+}
+
+test schedule-2.8 {can schedule events at time 0} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 0 a
+
+    pprint [rdb query {SELECT * FROM eventq_queue_arrival}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   dummy 
+-- - ------- ----- 
+1  0 arrival a     
+}
+
+#-------------------------------------------------------------------
+# undo schedule
+
+test undo_schedule-1.1 {No events} -body {
+    eventq undo schedule
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {No event has been scheduled}
+
+test undo_schedule-1.2 {Latest event already gone} -setup {
+    eventq define arrival  {dummy} { }
+} -body {
+    eventq schedule arrival 1 a
+    set id [eventq schedule arrival 2 b]
+    eventq cancel $id
+    eventq undo schedule
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {most recent scheduled event no longer exists}
+
+test undo_schedule-2.1 {Undo resets event counter} -setup {
+    eventq define arrival  {dummy} { }
+} -body {
+    eventq schedule arrival 1 a
+    set id [eventq schedule arrival 2 b]
+    eventq undo schedule
+    eventq schedule arrival 3 c
+
+    # Event IDs should be 1 and 2
+    pprint [rdb query {SELECT * FROM eventq_queue_arrival}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   dummy 
+-- - ------- ----- 
+1  1 arrival a     
+2  3 arrival c     
+}
+
+#-------------------------------------------------------------------
+# reschedule
+#
+# 1.*: Error Checking
+# 2.*: Normal Operations
+#
+# Note: The advance-* tests verify that an event that is rescheduled
+# in its own handler is not removed from the queue.
+
+# 1.*: Error Checking
+
+test reschedule-1.1 {Invalid event id} -body {
+    eventq reschedule nonesuch 1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {no such event ID: "nonesuch"}
+
+test reschedule-1.2 {Invalid sim time} -body {
+    eventq define arrival  {dummy} { }
+    set id [eventq schedule arrival 1 a]
+
+    eventq reschedule $id foo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "foo", expected integer}
+
+test reschedule-1.3 {Invalid sim time} -body {
+    eventq define arrival  {dummy} { }
+    eventq advance 0
+    set id [eventq schedule arrival 1 a]
+    
+    eventq reschedule $id 0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {specified time not in future: "0"}
+
+# 2.*: Normal operation
+
+test reschedule-2.1 {scheduling leaves queue size unchanged} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    set id [eventq schedule arrival 1 b]
+    eventq schedule arrival 1 c
+
+    set a [eventq size]
+
+    eventq reschedule $id 2
+
+    set b [eventq size]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {3 3}
+
+test reschedule-2.2 {scheduling leaves event count unchanged} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    set id [eventq schedule arrival 1 b]
+    eventq schedule arrival 1 c
+
+    set a [eventq eventcount]
+
+    eventq reschedule $id 2
+
+    set b [eventq eventcount]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {3 3}
+
+test reschedule-2.3 {changes appear in eventq_queue} -body {
+    eventq define arrival  {dummy} { }
+
+    eventq schedule arrival 1 a
+    set id [eventq schedule arrival 2 b]
+    eventq schedule arrival 3 c
+
+    eventq reschedule $id 4
+
+    pprint [rdb query {SELECT * FROM eventq_queue}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   
+-- - ------- 
+1  1 arrival 
+2  4 arrival 
+3  3 arrival 
+}
+
+#-------------------------------------------------------------------
+# cancel
+#
+# 1.*: Error Checking
+# 2.*: Normal Operations
+
+# 1.* Error Checking
+
+test cancel-1.1 {Invalid event id: non-numeric} -body {
+    eventq cancel foo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {no event with id: "foo"}
+
+test cancel-1.2 {Invalid event id:numeric} -body {
+    eventq cancel 3
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {no event with id: "3"}
+
+# 2.*: Normal Operations
+
+test cancel-2.1 {event is cancelled from eventq_queue} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    eventq cancel 2
+
+    pprint [rdb query {SELECT * FROM eventq_queue}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   
+-- - ------- 
+1  1 arrival 
+3  3 arrival 
+}
+
+test cancel-2.2 {event is cancelled from eventq_etype_$etype} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    eventq cancel 2
+
+    pprint [rdb query {SELECT * FROM eventq_etype_arrival}]
+} -cleanup {
+    cleanup
+} -result {
+id dummy 
+-- ----- 
+1  a     
+3  c     
+}
+
+test cancel-2.3 {queue size decreases} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    set a [eventq size]
+
+    eventq cancel 2
+
+    set b [eventq size]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {3 2}
+
+
+#-------------------------------------------------------------------
+# undo cancel
+
+test undo_cancel-1.1 {canceled event can be restored} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    set id [eventq schedule arrival 2 b]
+    eventq schedule arrival 3 c
+
+    set undoToken [eventq cancel $id]
+    eventq undo cancel $undoToken
+    pprint [rdb query {SELECT * FROM eventq_etype_arrival}]
+} -cleanup {
+    cleanup
+} -result {
+id dummy 
+-- ----- 
+1  a     
+2  b     
+3  c     
+}
+
+
+#-------------------------------------------------------------------
+# advance
+#
+# 1.*: Error Checking
+# 2.*: Normal Behavior
+# 3.*: Error thrown in event handler
+
+
+# 1.*: Error Checking
+
+test advance-1.1 {max_t not numeric} -body {
+    eventq advance foo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "foo", expected integer}
+
+test advance-1.2 {max_t not in future} -body {
+    eventq advance 1
+    eventq advance 1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {specified time not in future: "1"}
+
+# Normal Behavior
+
+test advance-2.1 {ends when there are no more events} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    eventq advance 10
+    list [eventq size] [rdb query {SELECT * FROM eventq_queue}]
+} -cleanup {
+    cleanup
+} -result {0 {}}
+
+test advance-2.2 {ends when max_t is reached} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    eventq advance 2
+    list [eventq size] [rdb eval {SELECT id FROM eventq_queue}]
+} -cleanup {
+    cleanup
+} -result {1 3}
+
+test advance-2.3 {sim time advances to max_t} -body {
+    eventq define arrival {dummy} { }
+    eventq schedule arrival 1 a
+    eventq schedule arrival 2 b
+    eventq schedule arrival 3 c
+
+    eventq advance 10
+    eventq now
+} -cleanup {
+    cleanup
+} -result {10}
+
+test advance-2.4 {trace event exeuctions} -body {
+    eventq define arrival {a b} { 
+        variable trace
+
+        append trace "$t: arrival   $id a=$a b=$b\n"
+    }
+
+    eventq define departure {c} { 
+        variable trace
+
+        append trace "$t: departure $id c=$c\n"
+    }
+
+    eventq schedule departure 7 CC
+    eventq schedule arrival   5 AA BB
+    eventq schedule departure 3 C
+    eventq schedule arrival   1 A B
+
+    eventq advance 10
+
+    pprint $trace
+} -cleanup {
+    cleanup
+} -result {
+1: arrival   4 a=A b=B
+3: departure 3 c=C
+5: arrival   2 a=AA b=BB
+7: departure 1 c=CC
+}
+
+test advance-2.5 {event can reschedule itself} -body {
+    eventq define arrival {a} { 
+        eventq reschedule $id 4
+    }
+
+    eventq schedule arrival 1 A
+
+    eventq advance 2
+    pprint [rdb query {SELECT * FROM eventq_queue_arrival}]
+} -cleanup {
+    cleanup
+} -result {
+id t etype   a 
+-- - ------- - 
+1  4 arrival A 
+}
+
+test advance-2.6 {can advance to 0} -body {
+    eventq advance 0
+    eventq now
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test advance-3.1 {error thrown in event handler} -body {
+    eventq define arrival {a b} { 
+        error "Simulated Error"
+    }
+    eventq schedule arrival 1 foo bar
+
+    eventq advance 10
+
+    pprint "$trace\n"
+} -cleanup {
+    cleanup
+} -result {
+Error in event arrival 1:
+Data: 1 1 arrival foo bar
+Error: Simulated Error
+Simulated Error
+    while executing
+'error 'Simulated Error''
+    (procedure '::eventq_handler_arrival' line 9)
+    invoked from within
+'$etypes(handler-$etype) $id'
+}
+
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
+
+
+

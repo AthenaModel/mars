@@ -1,0 +1,325 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    mat.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) mat(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
+
+
+#-------------------------------------------------------------------
+# Setup
+
+quality goodness {
+    VG "Very Good" 0.9
+    G  "Good"      0.7
+    N  "Neutral"   0.5
+    B  "Bad"       0.3
+    VB "Very Bad"  0.1
+}
+
+#-------------------------------------------------------------------
+# new
+
+test mat_new-1.1 {creating a matrix with default values} -body {
+    mat new 2 3
+} -result {{{} {} {}} {{} {} {}}}
+
+test mat_new-1.2 {creating a matrix with a specified value} -body {
+    mat new 2 3 0
+} -result {{0 0 0} {0 0 0}}
+
+test mat_new-1.3 {invalid number of rows} -body {
+    mat new -1 3
+} -returnCodes {
+    error
+} -result {Assertion failed: $m >= 1 && $n >= 1}
+
+test mat_new-1.4 {invalid number of columns} -body {
+    mat new 2 -1
+} -returnCodes {
+    error
+} -result {Assertion failed: $m >= 1 && $n >= 1}
+
+#-------------------------------------------------------------------
+# rows
+
+test mat_rows-1.1 {nominal case} -body {
+    mat rows [mat new 2 3]
+} -result {2}
+
+#-------------------------------------------------------------------
+# cols
+
+test mat_cols-1.1 {nominal case} -body {
+    mat cols [mat new 2 3]
+} -result {3}
+
+#-------------------------------------------------------------------
+# equal
+
+test mat_equal-1.1 {matrices are equal} -body {
+    set mat1 {{1 2} {3 4}}
+    set mat2 {{1 2} {3 4}}
+
+    mat equal $mat1 $mat2
+} -result {1}
+
+test mat_equal-1.2 {elements are not equal} -body {
+    set mat1 {{1 2} {3 4}}
+    set mat2 {{1 2} {3 5}}
+
+    mat equal $mat1 $mat2
+} -result {0}
+
+test mat_equal-1.3 {number of rows differs} -body {
+    set mat1 {{1 2} {3 4} {5 6}}
+    set mat2 {{1 2} {3 5}}
+
+    mat equal $mat1 $mat2
+} -result {0}
+
+test mat_equal-1.4 {number of columns differs} -body {
+    set mat1 {{1 2 3} {4 5 6}}
+    set mat2 {{1 2} {3 4}}
+
+    mat equal $mat1 $mat2
+} -result {0}
+
+#-------------------------------------------------------------------
+# add
+
+test mat_add-1.1 {nominal case} -body {
+    set mat1 {{1 2} {3 4}}
+    set mat2 {{5 6} {7 8}}
+
+    mat add $mat1 $mat2
+} -result {{6 8} {10 12}}
+
+test mat_add-1.2 {row mismatch} -body {
+    set mat1 {{1 2} {3 4} {7 8}}
+    set mat2 {{5 6} {7 8}}
+
+    mat add $mat1 $mat2
+} -returnCodes {
+    error
+} -result {Assertion failed: $m1 == $m2 && $n1 == $n2}
+
+test mat_add-1.3 {col mismatch} -body {
+    set mat1 {{1 2 3} {3 4 5}}
+    set mat2 {{5 6}   {7 8}}
+
+    mat add $mat1 $mat2
+} -returnCodes {
+    error
+} -result {Assertion failed: $m1 == $m2 && $n1 == $n2}
+
+#-------------------------------------------------------------------
+# scalarmul
+
+test mat_scalarmul-1.1 {nominal case} -body {
+    set mat {{1 2} {3 4}}
+
+    mat scalarmul $mat 5
+} -result {{5 10} {15 20}}
+
+#-------------------------------------------------------------------
+# rowvec
+
+test mat_rowvec-1.1 {normal case} -body {
+    set mat {{1 2} {3 4}}
+    list [mat rowvec $mat 0] [mat rowvec $mat 1]
+} -result {{1 2} {3 4}}
+
+#-------------------------------------------------------------------
+# colvec
+
+test mat_colvec-1.1 {normal case} -body {
+    set mat {{1 2} {3 4}}
+    list [mat colvec $mat 0] [mat colvec $mat 1]
+} -result {{1 3} {2 4}}
+
+#-------------------------------------------------------------------
+# pprint
+
+test mat_pprint-1.2 {Explicit labels} -body {
+    set mat {{aaa bbbb} {cccc ddd}}
+    mat pprint $mat {"R1" "Row 2"} {"C1" "Column 2"}
+} -result {        C1 Column 2
+R1     aaa     bbbb
+Row 2 cccc      ddd
+}
+
+test mat_pprint-1.2 {Default labels} -body {
+    set mat {
+        {aaa bbbb} 
+        {cccc ddd}
+        {eee fffff}
+        {gg hh}
+        {iii jjj}
+        {kkk lll}
+        {mmm nnn}
+        {ooo ppp}
+        {qqqq rrrr}
+        {ssss tttt}
+        {uuuu vvvv}
+    }
+    mat pprint $mat 
+} -result {       Col 0 Col 1
+Row  0   aaa  bbbb
+Row  1  cccc   ddd
+Row  2   eee fffff
+Row  3    gg    hh
+Row  4   iii   jjj
+Row  5   kkk   lll
+Row  6   mmm   nnn
+Row  7   ooo   ppp
+Row  8  qqqq  rrrr
+Row  9  ssss  tttt
+Row 10  uuuu  vvvv
+}
+
+#-------------------------------------------------------------------
+# pprintf
+
+test mat_pprintf-1.1 {normal case} -body {
+    set mat {{2.22 3.333} {4.4444 5.55555}}
+    mat pprintf $mat  {%3.1f} {"R1" "R2"} {"C1" "C2"}
+} -result {    C1  C2
+R1 2.2 3.3
+R2 4.4 5.6
+}
+
+test mat_pprintf-1.2 {default labels} -body {
+    set mat {{2.22 3.333} {4.4444 5.55555}}
+    mat pprintf $mat  {%3.1f}
+} -result {      Col 0 Col 1
+Row 0   2.2   3.3
+Row 1   4.4   5.6
+}
+
+#-------------------------------------------------------------------
+# pprintq
+
+test mat_pprintq-1.1 {normal case} -body {
+    set clabels {"Col A" "Col B"}
+    set rlabels {"Row 1" "Row 2"}
+    set mat {{0.9 0.7} {0.5 0.3}}
+    mat pprintq $mat [namespace current]::goodness $rlabels $clabels 
+} -result {        Col A   Col B
+Row 1 VG= 0.9  G= 0.7
+Row 2  N= 0.5  B= 0.3
+}
+
+test mat_pprintq-1.2 {Default labels} -body {
+    set mat {{0.9 0.7} {0.5 0.3}}
+    mat pprintq $mat [namespace current]::goodness
+} -result {        Col 0   Col 1
+Row 0 VG= 0.9  G= 0.7
+Row 1  N= 0.5  B= 0.3
+}
+
+#-------------------------------------------------------------------
+# numerize
+
+test mat_numerize-1.1 {normal case} -body {
+    mat numerize {{VG G} {N B}} [namespace current]::goodness
+} -result {{0.9 0.7} {0.5 0.3}}
+
+test mat_numerize-1.2 {numbers are preserved} -body {
+    mat numerize {{0.8 0.6} {0.4 0.2}} [namespace current]::goodness
+} -result {{0.8 0.6} {0.4 0.2}}
+
+test mat_numerize-1.3 {invalid symbol} -body {
+    mat numerize {{NA G} {N B}} [namespace current]::goodness
+} -returnCodes {
+    error
+} -result {Unknown name: "NA"}
+
+#-------------------------------------------------------------------
+# format
+
+test mat_format-1.1 {normal case} -body {
+    mat format {{1 2} {3 4}} %5.3f
+} -result {{1.000 2.000} {3.000 4.000}}
+
+#-------------------------------------------------------------------
+# sub
+
+test mat_sub-1.1 {nominal case} -body {
+    set mat1 {{5 6} {7 8}}
+    set mat2 {{1 2} {3 4}}
+
+    mat sub $mat1 $mat2
+} -result {{4 4} {4 4}}
+
+test mat_sub-1.2 {row mismatch} -body {
+    set mat1 {{1 2} {3 4} {7 8}}
+    set mat2 {{5 6} {7 8}}
+
+    mat sub $mat1 $mat2
+} -returnCodes {
+    error
+} -result {Assertion failed: $m1 == $m2 && $n1 == $n2}
+
+test mat_sub-1.3 {col mismatch} -body {
+    set mat1 {{1 2 3} {3 4 5}}
+    set mat2 {{5 6}   {7 8}}
+
+    mat sub $mat1 $mat2
+} -returnCodes {
+    error
+} -result {Assertion failed: $m1 == $m2 && $n1 == $n2}
+
+#-------------------------------------------------------------------
+# filter
+
+test mat_filter-1.1 {filter with arbitrary command} -body {
+    set mat1 {{0.9 0.7} {0.3 0.1}}
+
+    mat filter $mat1 [list [namespace current]::goodness name]
+} -result {{VG G} {B VB}}
+
+test mat_filter-1.2 {filter for validation} -returnCodes {
+    error
+} -body {
+    set mat1 {{0.9 0.7} {0.3 FOO}}
+
+    mat filter $mat1 [list [namespace current]::goodness validate]
+} -result {element 1 1: invalid value "FOO", should be a real number, or one of: VG, G, N, B, VB}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
+
+
+
+
+
+
+

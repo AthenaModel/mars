@@ -18,673 +18,660 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2.2 
     eval ::tcltest::configure $argv
 }
+
+# Import tcltest(n)
+namespace import ::tcltest::test
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil 1.0
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
 
-#-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
 
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
+#-------------------------------------------------------------------
+# Setup
 
-    # Import tcltest(n)
-    namespace import ::tcltest::*
-
-    # Import the code to be tested
-    namespace import ::marsutil::*
-
-    #-------------------------------------------------------------------
-    # Setup
-
-    proc setup {} {
-        quality goodness {
-            VG "Very Good" 0.9
-            G  "Good"      0.7
-            N  "Neutral"   0.5
-            B  "Bad"       0.3
-            VB "Very Bad"  0.1
-        }
-
-        quality grade {
-            A "Grade A"  90 95 100
-            B "Grade B"  80 85  90
-            C "Grade C"  70 75  80
-            D "Grade D"  60 65  70
-            F "Grade F"   0 30  60
-        } -bounds yes -format {%3d}
-
-        quality nomax {
-            G  "Good"      0.7
-            N  "Neutral"   0.5
-            B  "Bad"       0.3
-        } -min 0.0
-
-        quality nomin {
-            G  "Good"      0.7
-            N  "Neutral"   0.5
-            B  "Bad"       0.3
-        } -max 1.0
-
-        quality minmax {
-            G  "Good"      0.7
-            N  "Neutral"   0.5
-            B  "Bad"       0.3
-        } -min 0.0 -max 1.0
-
-        quality rounding {
-            VG "Very Good" 0.9
-            G  "Good"      0.7
-            N  "Neutral"   0.5
-            B  "Bad"       0.3
-            VB "Very Bad"  0.1
-        } -format %.1f
-
+proc setup {} {
+    quality goodness {
+        VG "Very Good" 0.9
+        G  "Good"      0.7
+        N  "Neutral"   0.5
+        B  "Bad"       0.3
+        VB "Very Bad"  0.1
     }
 
-    proc cleanup {} {
-        goodness destroy
-        grade    destroy
-        nomax    destroy
-        nomin    destroy
-        minmax   destroy
-        rounding destroy
-    }
+    quality grade {
+        A "Grade A"  90 95 100
+        B "Grade B"  80 85  90
+        C "Grade C"  70 75  80
+        D "Grade D"  60 65  70
+        F "Grade F"   0 30  60
+    } -bounds yes -format {%3d}
+
+    quality nomax {
+        G  "Good"      0.7
+        N  "Neutral"   0.5
+        B  "Bad"       0.3
+    } -min 0.0
+
+    quality nomin {
+        G  "Good"      0.7
+        N  "Neutral"   0.5
+        B  "Bad"       0.3
+    } -max 1.0
+
+    quality minmax {
+        G  "Good"      0.7
+        N  "Neutral"   0.5
+        B  "Bad"       0.3
+    } -min 0.0 -max 1.0
+
+    quality rounding {
+        VG "Very Good" 0.9
+        G  "Good"      0.7
+        N  "Neutral"   0.5
+        B  "Bad"       0.3
+        VB "Very Bad"  0.1
+    } -format %.1f
 
-    #-------------------------------------------------------------------
-    # validate
-
-    test quality_validate-1.1 {valid numeric input} -setup {
-        setup
-    } -body {
-        goodness validate 0.9
-    } -cleanup {
-        cleanup
-    } -result {0.9}
-
-    test quality_validate-1.1b {valid symbolic input} -setup {
-        setup
-    } -body {
-        goodness validate G
-    } -cleanup {
-        cleanup
-    } -result {0.7}
-
-
-    test quality_validate-1.2 {invalid input} -setup {
-        setup
-    } -body {
-        goodness validate VVG
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "VVG", should be a real number, or one of: VG, G, N, B, VB}
-
-    test quality_validate-1.3 {invalid input: -min only} -setup {
-        setup
-    } -body {
-        nomax validate -1.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "-1.0", should be a real number no less than 0.0, or one of: G, N, B}
-
-    test quality_validate-1.4 {invalid input: -max only} -setup {
-        setup
-    } -body {
-        nomin validate 2.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "2.0", should be a real number no greater than 1.0, or one of: G, N, B}
-
-    test quality_validate-1.5 {invalid input: -min and -max} -setup {
-        setup
-    } -body {
-        minmax validate 2.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "2.0", should be a real number in range 0.0, 1.0, or one of: G, N, B}
-
-    test quality_validate-2.1 {error code is INVALID} -setup {
-        setup
-    } -body {
-        catch { goodness validate VVG } result opts
-        dict get $opts -errorcode
-    } -cleanup {
-        cleanup
-    } -result {INVALID}
-
-
-    #-------------------------------------------------------------------
-    # value
-
-    test quality_value-1.1 {with short name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness value VB] \
-            [goodness value B] \
-            [goodness value N] \
-            [goodness value G] \
-            [goodness value VG]
-    } -cleanup {
-        cleanup
-    } -result {0.1 0.3 0.5 0.7 0.9}
-
-    test quality_value-1.2 {with long name} -setup {
-        setup
-    } -body {
-            list \
-                [goodness value "Very Bad"] \
-                [goodness value "Bad"] \
-                [goodness value "Neutral"] \
-                [goodness value "Good"] \
-                [goodness value "Very Good"]
-    } -cleanup {
-        cleanup
-    } -result {0.1 0.3 0.5 0.7 0.9}
-
-    test quality_value-1.3 {with approximate value} -setup {
-        setup
-    } -body {
-        goodness value 0.55
-    } -cleanup {
-        cleanup
-    } -result {0.55}
-
-    test quality_value-1.4 {input error} -returnCodes error -setup {
-        setup
-    } -body {
-        goodness value NA
-    } -cleanup {
-        cleanup
-    } -result {Unknown name: "NA"}
-
-    test quality_value-1.5 {out of range error} -setup {
-        setup
-    } -body {
-        goodness configure -min 0.0 -max 1.0
-        goodness value 2.0
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Out of range: "2.0"}
-
-    test quality_value-1.6 {case-insensitive matching} -setup {
-        setup
-    } -body {
-        list \
-            [goodness value vb] \
-            [goodness value "very good"]
-    } -cleanup {
-        cleanup
-    } -result {0.1 0.9}
-
-    #-----------------------------------------------------------------------
-    # name
-
-    test quality_name-1.1 {with approximate value} -setup {
-        setup
-    } -body {
-        list \
-            [goodness name 0.0] \
-            [goodness name 0.15] \
-            [goodness name 0.35] \
-            [goodness name 0.55] \
-            [goodness name 0.75] \
-            [goodness name 0.85] \
-            [goodness name 1.0]
-    } -cleanup {
-        cleanup
-    } -result {VB VB B N G VG VG}
-
-    test quality_name-1.2 {with long name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness name "Very Bad"] \
-            [goodness name "Bad"] \
-            [goodness name "Neutral"] \
-            [goodness name "Good"] \
-            [goodness name "Very Good"]
-    } -cleanup {
-        cleanup
-    } -result {VB B N G VG}
-
-    test quality_name-1.3 {input error} -setup {
-        setup
-    } -body {
-        goodness name NA
-    } -cleanup {
-        cleanup
-    } -result {}
-
-    test quality_name-1.4 {case-insensitive matching} -setup {
-        setup
-    } -body {
-        list \
-            [goodness name vb] \
-            [goodness name "very good"]
-    } -cleanup {
-        cleanup
-    } -result {VB VG}
-
-    test quality_name-1.5 {round to format on index/name} -setup {
-        setup
-    } -body {
-        # 0.8 is the cutoff between G and VG; anything that rounds
-        # to 0.8 or higher should be VG.
-        list \
-            [rounding name 0.7]  \
-            [rounding name 0.8]  \
-            [rounding name 0.81] \
-            [rounding name 0.79]
-    } -cleanup {
-        cleanup
-    } -result {G VG VG VG}
-
-
-    #-------------------------------------------------------------------
-    # longname
-
-    test quality_longname-1.1 {with approximate value} -setup {
-        setup
-    } -body {
-        list \
-            [goodness longname 0.0] \
-            [goodness longname 0.15] \
-            [goodness longname 0.35] \
-            [goodness longname 0.55] \
-            [goodness longname 0.75] \
-            [goodness longname 0.85] \
-            [goodness longname 1.0]
-    } -cleanup {
-        cleanup
-    } -result {{Very Bad} {Very Bad} Bad Neutral Good {Very Good} {Very Good}}
-
-    test quality_longname-1.2 {with name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness longname VB] \
-            [goodness longname B] \
-            [goodness longname N] \
-            [goodness longname G] \
-            [goodness longname VG]
-    } -cleanup {
-        cleanup
-    } -result {{Very Bad} Bad Neutral Good {Very Good}}
-
-    test quality_longname-1.3 {input error} -setup {
-        setup
-    } -body {
-        goodness longname NA
-    } -cleanup {
-        cleanup
-    } -result {}
-
-    test quality_longname-1.4 {case-insensitive matching} -setup {
-        setup
-    } -body {
-        list \
-            [goodness longname vb] \
-            [goodness longname "very good"]
-    } -cleanup {
-        cleanup
-    } -result {{Very Bad} {Very Good}}
-
-    test quality_longname-1.5 {round to format on index/name} -setup {
-        setup
-    } -body {
-        # 0.8 is the cutoff between G and VG; anything that rounds
-        # to 0.8 or higher should be VG.
-        list \
-            [rounding longname 0.7]  \
-            [rounding longname 0.8]  \
-            [rounding longname 0.81] \
-            [rounding longname 0.79]
-    } -cleanup {
-        cleanup
-    } -result {Good {Very Good} {Very Good} {Very Good}}
-
-
-    #-------------------------------------------------------------------
-    # format
-
-    test quality_format-1.1 {with arbitrary value} -setup {
-        setup
-    } -body {
-        goodness format 0.8359
-    } -cleanup {
-        cleanup
-    } -result {0.84}
-
-    test quality_format-1.2 {with new -format} -setup {
-        setup
-    } -body {
-        goodness configure -format %6.3f
-        goodness format 0.8359
-    } -cleanup {
-        cleanup
-    } -result { 0.836}
-
-    test quality_format-1.3 {input error} -setup {
-        setup
-    } -body {
-        goodness format NA
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Assertion failed: [string is double -strict $value]}
-
-    #-------------------------------------------------------------------
-    # names
-
-    test quality_names-1.1 {names} -setup {
-        setup
-    } -body {
-        goodness names
-    } -cleanup {
-        cleanup
-    } -result {VG G N B VB}
-
-    #-------------------------------------------------------------------
-    # longnames
-
-    test quality_longnames-1.1 {longnames} -setup {
-        setup
-    } -body {
-        goodness longnames
-    } -cleanup {
-        cleanup
-    } -result {{Very Good} Good Neutral Bad {Very Bad}}
-
-    #-------------------------------------------------------------------
-    # clamp
-
-    test quality_clamp-1.1 {no min or max} -setup {
-        setup
-    } -body {
-        goodness clamp 100
-    } -cleanup {
-        cleanup
-    } -result {100}
-
-    test quality_clamp-1.2 {below min} -setup {
-        setup
-    } -body {
-        goodness configure -min 0.0
-        goodness clamp -0.1
-    } -cleanup {
-        cleanup
-    } -result {0.0}
-
-    test quality_clamp-1.3 {above max} -setup {
-        setup
-    } -body {
-        goodness configure -max 1.0
-        goodness clamp 1.1
-    } -cleanup {
-        cleanup
-    } -result {1.0}
-
-    test quality_clamp-1.4 {within min and max} -setup {
-        setup
-    } -body {
-        goodness configure -min 0.0 -max 1.0
-        goodness clamp 0.5
-    } -cleanup {
-        cleanup
-    } -result {0.5}
-
-    #-------------------------------------------------------------------
-    # inrange
-
-    test quality_inrange-1.1 {no min or max} -setup {
-        setup
-    } -body {
-        goodness inrange 100
-    } -cleanup {
-        cleanup
-    } -result {1}
-
-    test quality_inrange-1.2 {below min} -setup {
-        setup
-    } -body {
-        goodness configure -min 0.0
-        goodness inrange -0.1
-    } -cleanup {
-        cleanup
-    } -result {0}
-
-    test quality_inrange-1.3 {above max} -setup {
-        setup
-    } -body {
-        goodness configure -max 1.0
-        goodness inrange 1.1
-    } -cleanup {
-        cleanup
-    } -result {0}
-
-    test quality_inrange-1.4 {within min and max} -setup {
-        setup
-    } -body {
-        goodness configure -min 0.0 -max 1.0
-        goodness inrange 0.5
-    } -cleanup {
-        cleanup
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # index
-
-
-    test quality_index-1.1 {with approximate value} -setup {
-        setup
-    } -body {
-        list \
-            [goodness index 0.0] \
-            [goodness index 0.15] \
-            [goodness index 0.35] \
-            [goodness index 0.55] \
-            [goodness index 0.75] \
-            [goodness index 0.85] \
-            [goodness index 1.0]
-    } -cleanup {
-        cleanup
-    } -result {4 4 3 2 1 0 0}
-
-    test quality_index-1.2 {with name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness index VB] \
-            [goodness index B] \
-            [goodness index N] \
-            [goodness index G] \
-            [goodness index VG]
-    } -cleanup {
-        cleanup
-    } -result {4 3 2 1 0}
-
-    test quality_index-1.3 {with long name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness index "Very Bad"] \
-            [goodness index "Bad"] \
-            [goodness index "Neutral"] \
-            [goodness index "Good"] \
-            [goodness index "Very Good"]
-    } -cleanup {
-        cleanup
-    } -result {4 3 2 1 0}
-
-    test quality_index-1.4 {invalid name} -setup {
-        setup
-    } -body {
-        goodness index NA
-    } -cleanup {
-        cleanup
-    } -result {-1}
-
-    test quality_index-1.5 {value out of range} -setup {
-        setup
-    } -body {
-        goodness configure -max 1.0
-        goodness index 2.0
-    } -cleanup {
-        cleanup
-    } -result {-1}
-
-    test quality_index-1.6 {case-insensitive matching} -setup {
-        setup
-    } -body {
-        list \
-            [goodness index vb] \
-            [goodness index "very good"]
-    } -cleanup {
-        cleanup
-    } -result {4 0}
-
-    test quality_index-1.7 {round to format on index/name} -setup {
-        setup
-    } -body {
-        # 0.8 is the cutoff between G and VG; anything that rounds
-        # to 0.8 or higher should be VG.
-        list \
-            [rounding index 0.7]  \
-            [rounding index 0.8]  \
-            [rounding index 0.81] \
-            [rounding index 0.79]
-    } -cleanup {
-        cleanup
-    } -result {1 0 0 0}
-
-    #-------------------------------------------------------------------
-    # size
-
-    test quality_size-1.1 {nominal case} -setup {
-        setup
-    } -body {
-        goodness size
-    } -cleanup {
-        cleanup
-    } -result {5}
-
-    #-----------------------------------------------------------------------
-    # strictvalue
-
-    test quality_strictvalue-1.1 {with short name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness strictvalue VB] \
-            [goodness strictvalue B] \
-            [goodness strictvalue N] \
-            [goodness strictvalue G] \
-            [goodness strictvalue VG]
-    } -cleanup {
-        cleanup
-    } -result {0.1 0.3 0.5 0.7 0.9}
-
-    test quality_strictvalue-1.2 {with long name} -setup {
-        setup
-    } -body {
-        list \
-            [goodness strictvalue "Very Bad"] \
-            [goodness strictvalue "Bad"] \
-            [goodness strictvalue "Neutral"] \
-            [goodness strictvalue "Good"] \
-            [goodness strictvalue "Very Good"]
-    } -cleanup {
-        cleanup
-    } -result {0.1 0.3 0.5 0.7 0.9}
-
-    test quality_strictvalue-1.3 {with approximate value} -setup {
-        setup
-    } -body {
-        goodness strictvalue 0.55
-    } -cleanup {
-        cleanup
-    } -result {0.5}
-
-    test quality_strictvalue-1.4 {symbolic input error} -setup {
-        setup
-    } -body {
-        goodness strictvalue NA
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Unknown name: "NA"}
-
-    test quality_strictvalue-1.5 {out of range error} -setup {
-        setup
-    } -body {
-        goodness configure -min 0.0 -max 1.0
-        goodness strictvalue 2.0
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Out of range: "2.0"}
-
-    test quality_strictvalue-1.6 {case-insensitive matching} -setup {
-        setup
-    } -body {
-        list \
-            [goodness strictvalue vb] \
-            [goodness strictvalue "very good"]
-    } -cleanup {
-        cleanup
-    } -result {0.1 0.9}
-
-    #-------------------------------------------------------------------
-    # -bounds yes
-
-    test quality_bounds-1.1 {-min and -max set} -setup {
-        setup
-    } -body {
-        list [grade cget -min] [grade cget -max]
-    } -cleanup {
-        cleanup
-    } -result {0 100}
-    
-    test quality_bounds-1.2 {Binning} -setup {
-        setup
-    } -body {
-        # Using -bounds no with the same values, this should return
-        # D, since the halfway point between 30 and 65 is less than 59.
-        # With the bounds we've specified, it should be F.
-        grade name 59
-    } -cleanup {
-        cleanup
-    } -result {F}
-
-
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
 }
 
-namespace delete ::marsutil::test
+proc cleanup {} {
+    goodness destroy
+    grade    destroy
+    nomax    destroy
+    nomin    destroy
+    minmax   destroy
+    rounding destroy
+}
+
+#-------------------------------------------------------------------
+# validate
+
+test quality_validate-1.1 {valid numeric input} -setup {
+    setup
+} -body {
+    goodness validate 0.9
+} -cleanup {
+    cleanup
+} -result {0.9}
+
+test quality_validate-1.1b {valid symbolic input} -setup {
+    setup
+} -body {
+    goodness validate G
+} -cleanup {
+    cleanup
+} -result {0.7}
+
+
+test quality_validate-1.2 {invalid input} -setup {
+    setup
+} -body {
+    goodness validate VVG
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "VVG", should be a real number, or one of: VG, G, N, B, VB}
+
+test quality_validate-1.3 {invalid input: -min only} -setup {
+    setup
+} -body {
+    nomax validate -1.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "-1.0", should be a real number no less than 0.0, or one of: G, N, B}
+
+test quality_validate-1.4 {invalid input: -max only} -setup {
+    setup
+} -body {
+    nomin validate 2.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "2.0", should be a real number no greater than 1.0, or one of: G, N, B}
+
+test quality_validate-1.5 {invalid input: -min and -max} -setup {
+    setup
+} -body {
+    minmax validate 2.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "2.0", should be a real number in range 0.0, 1.0, or one of: G, N, B}
+
+test quality_validate-2.1 {error code is INVALID} -setup {
+    setup
+} -body {
+    catch { goodness validate VVG } result opts
+    dict get $opts -errorcode
+} -cleanup {
+    cleanup
+} -result {INVALID}
+
+
+#-------------------------------------------------------------------
+# value
+
+test quality_value-1.1 {with short name} -setup {
+    setup
+} -body {
+    list \
+        [goodness value VB] \
+        [goodness value B] \
+        [goodness value N] \
+        [goodness value G] \
+        [goodness value VG]
+} -cleanup {
+    cleanup
+} -result {0.1 0.3 0.5 0.7 0.9}
+
+test quality_value-1.2 {with long name} -setup {
+    setup
+} -body {
+        list \
+            [goodness value "Very Bad"] \
+            [goodness value "Bad"] \
+            [goodness value "Neutral"] \
+            [goodness value "Good"] \
+            [goodness value "Very Good"]
+} -cleanup {
+    cleanup
+} -result {0.1 0.3 0.5 0.7 0.9}
+
+test quality_value-1.3 {with approximate value} -setup {
+    setup
+} -body {
+    goodness value 0.55
+} -cleanup {
+    cleanup
+} -result {0.55}
+
+test quality_value-1.4 {input error} -returnCodes error -setup {
+    setup
+} -body {
+    goodness value NA
+} -cleanup {
+    cleanup
+} -result {Unknown name: "NA"}
+
+test quality_value-1.5 {out of range error} -setup {
+    setup
+} -body {
+    goodness configure -min 0.0 -max 1.0
+    goodness value 2.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Out of range: "2.0"}
+
+test quality_value-1.6 {case-insensitive matching} -setup {
+    setup
+} -body {
+    list \
+        [goodness value vb] \
+        [goodness value "very good"]
+} -cleanup {
+    cleanup
+} -result {0.1 0.9}
+
+#-----------------------------------------------------------------------
+# name
+
+test quality_name-1.1 {with approximate value} -setup {
+    setup
+} -body {
+    list \
+        [goodness name 0.0] \
+        [goodness name 0.15] \
+        [goodness name 0.35] \
+        [goodness name 0.55] \
+        [goodness name 0.75] \
+        [goodness name 0.85] \
+        [goodness name 1.0]
+} -cleanup {
+    cleanup
+} -result {VB VB B N G VG VG}
+
+test quality_name-1.2 {with long name} -setup {
+    setup
+} -body {
+    list \
+        [goodness name "Very Bad"] \
+        [goodness name "Bad"] \
+        [goodness name "Neutral"] \
+        [goodness name "Good"] \
+        [goodness name "Very Good"]
+} -cleanup {
+    cleanup
+} -result {VB B N G VG}
+
+test quality_name-1.3 {input error} -setup {
+    setup
+} -body {
+    goodness name NA
+} -cleanup {
+    cleanup
+} -result {}
+
+test quality_name-1.4 {case-insensitive matching} -setup {
+    setup
+} -body {
+    list \
+        [goodness name vb] \
+        [goodness name "very good"]
+} -cleanup {
+    cleanup
+} -result {VB VG}
+
+test quality_name-1.5 {round to format on index/name} -setup {
+    setup
+} -body {
+    # 0.8 is the cutoff between G and VG; anything that rounds
+    # to 0.8 or higher should be VG.
+    list \
+        [rounding name 0.7]  \
+        [rounding name 0.8]  \
+        [rounding name 0.81] \
+        [rounding name 0.79]
+} -cleanup {
+    cleanup
+} -result {G VG VG VG}
+
+
+#-------------------------------------------------------------------
+# longname
+
+test quality_longname-1.1 {with approximate value} -setup {
+    setup
+} -body {
+    list \
+        [goodness longname 0.0] \
+        [goodness longname 0.15] \
+        [goodness longname 0.35] \
+        [goodness longname 0.55] \
+        [goodness longname 0.75] \
+        [goodness longname 0.85] \
+        [goodness longname 1.0]
+} -cleanup {
+    cleanup
+} -result {{Very Bad} {Very Bad} Bad Neutral Good {Very Good} {Very Good}}
+
+test quality_longname-1.2 {with name} -setup {
+    setup
+} -body {
+    list \
+        [goodness longname VB] \
+        [goodness longname B] \
+        [goodness longname N] \
+        [goodness longname G] \
+        [goodness longname VG]
+} -cleanup {
+    cleanup
+} -result {{Very Bad} Bad Neutral Good {Very Good}}
+
+test quality_longname-1.3 {input error} -setup {
+    setup
+} -body {
+    goodness longname NA
+} -cleanup {
+    cleanup
+} -result {}
+
+test quality_longname-1.4 {case-insensitive matching} -setup {
+    setup
+} -body {
+    list \
+        [goodness longname vb] \
+        [goodness longname "very good"]
+} -cleanup {
+    cleanup
+} -result {{Very Bad} {Very Good}}
+
+test quality_longname-1.5 {round to format on index/name} -setup {
+    setup
+} -body {
+    # 0.8 is the cutoff between G and VG; anything that rounds
+    # to 0.8 or higher should be VG.
+    list \
+        [rounding longname 0.7]  \
+        [rounding longname 0.8]  \
+        [rounding longname 0.81] \
+        [rounding longname 0.79]
+} -cleanup {
+    cleanup
+} -result {Good {Very Good} {Very Good} {Very Good}}
+
+
+#-------------------------------------------------------------------
+# format
+
+test quality_format-1.1 {with arbitrary value} -setup {
+    setup
+} -body {
+    goodness format 0.8359
+} -cleanup {
+    cleanup
+} -result {0.84}
+
+test quality_format-1.2 {with new -format} -setup {
+    setup
+} -body {
+    goodness configure -format %6.3f
+    goodness format 0.8359
+} -cleanup {
+    cleanup
+} -result { 0.836}
+
+test quality_format-1.3 {input error} -setup {
+    setup
+} -body {
+    goodness format NA
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Assertion failed: [string is double -strict $value]}
+
+#-------------------------------------------------------------------
+# names
+
+test quality_names-1.1 {names} -setup {
+    setup
+} -body {
+    goodness names
+} -cleanup {
+    cleanup
+} -result {VG G N B VB}
+
+#-------------------------------------------------------------------
+# longnames
+
+test quality_longnames-1.1 {longnames} -setup {
+    setup
+} -body {
+    goodness longnames
+} -cleanup {
+    cleanup
+} -result {{Very Good} Good Neutral Bad {Very Bad}}
+
+#-------------------------------------------------------------------
+# clamp
+
+test quality_clamp-1.1 {no min or max} -setup {
+    setup
+} -body {
+    goodness clamp 100
+} -cleanup {
+    cleanup
+} -result {100}
+
+test quality_clamp-1.2 {below min} -setup {
+    setup
+} -body {
+    goodness configure -min 0.0
+    goodness clamp -0.1
+} -cleanup {
+    cleanup
+} -result {0.0}
+
+test quality_clamp-1.3 {above max} -setup {
+    setup
+} -body {
+    goodness configure -max 1.0
+    goodness clamp 1.1
+} -cleanup {
+    cleanup
+} -result {1.0}
+
+test quality_clamp-1.4 {within min and max} -setup {
+    setup
+} -body {
+    goodness configure -min 0.0 -max 1.0
+    goodness clamp 0.5
+} -cleanup {
+    cleanup
+} -result {0.5}
+
+#-------------------------------------------------------------------
+# inrange
+
+test quality_inrange-1.1 {no min or max} -setup {
+    setup
+} -body {
+    goodness inrange 100
+} -cleanup {
+    cleanup
+} -result {1}
+
+test quality_inrange-1.2 {below min} -setup {
+    setup
+} -body {
+    goodness configure -min 0.0
+    goodness inrange -0.1
+} -cleanup {
+    cleanup
+} -result {0}
+
+test quality_inrange-1.3 {above max} -setup {
+    setup
+} -body {
+    goodness configure -max 1.0
+    goodness inrange 1.1
+} -cleanup {
+    cleanup
+} -result {0}
+
+test quality_inrange-1.4 {within min and max} -setup {
+    setup
+} -body {
+    goodness configure -min 0.0 -max 1.0
+    goodness inrange 0.5
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# index
+
+
+test quality_index-1.1 {with approximate value} -setup {
+    setup
+} -body {
+    list \
+        [goodness index 0.0] \
+        [goodness index 0.15] \
+        [goodness index 0.35] \
+        [goodness index 0.55] \
+        [goodness index 0.75] \
+        [goodness index 0.85] \
+        [goodness index 1.0]
+} -cleanup {
+    cleanup
+} -result {4 4 3 2 1 0 0}
+
+test quality_index-1.2 {with name} -setup {
+    setup
+} -body {
+    list \
+        [goodness index VB] \
+        [goodness index B] \
+        [goodness index N] \
+        [goodness index G] \
+        [goodness index VG]
+} -cleanup {
+    cleanup
+} -result {4 3 2 1 0}
+
+test quality_index-1.3 {with long name} -setup {
+    setup
+} -body {
+    list \
+        [goodness index "Very Bad"] \
+        [goodness index "Bad"] \
+        [goodness index "Neutral"] \
+        [goodness index "Good"] \
+        [goodness index "Very Good"]
+} -cleanup {
+    cleanup
+} -result {4 3 2 1 0}
+
+test quality_index-1.4 {invalid name} -setup {
+    setup
+} -body {
+    goodness index NA
+} -cleanup {
+    cleanup
+} -result {-1}
+
+test quality_index-1.5 {value out of range} -setup {
+    setup
+} -body {
+    goodness configure -max 1.0
+    goodness index 2.0
+} -cleanup {
+    cleanup
+} -result {-1}
+
+test quality_index-1.6 {case-insensitive matching} -setup {
+    setup
+} -body {
+    list \
+        [goodness index vb] \
+        [goodness index "very good"]
+} -cleanup {
+    cleanup
+} -result {4 0}
+
+test quality_index-1.7 {round to format on index/name} -setup {
+    setup
+} -body {
+    # 0.8 is the cutoff between G and VG; anything that rounds
+    # to 0.8 or higher should be VG.
+    list \
+        [rounding index 0.7]  \
+        [rounding index 0.8]  \
+        [rounding index 0.81] \
+        [rounding index 0.79]
+} -cleanup {
+    cleanup
+} -result {1 0 0 0}
+
+#-------------------------------------------------------------------
+# size
+
+test quality_size-1.1 {nominal case} -setup {
+    setup
+} -body {
+    goodness size
+} -cleanup {
+    cleanup
+} -result {5}
+
+#-----------------------------------------------------------------------
+# strictvalue
+
+test quality_strictvalue-1.1 {with short name} -setup {
+    setup
+} -body {
+    list \
+        [goodness strictvalue VB] \
+        [goodness strictvalue B] \
+        [goodness strictvalue N] \
+        [goodness strictvalue G] \
+        [goodness strictvalue VG]
+} -cleanup {
+    cleanup
+} -result {0.1 0.3 0.5 0.7 0.9}
+
+test quality_strictvalue-1.2 {with long name} -setup {
+    setup
+} -body {
+    list \
+        [goodness strictvalue "Very Bad"] \
+        [goodness strictvalue "Bad"] \
+        [goodness strictvalue "Neutral"] \
+        [goodness strictvalue "Good"] \
+        [goodness strictvalue "Very Good"]
+} -cleanup {
+    cleanup
+} -result {0.1 0.3 0.5 0.7 0.9}
+
+test quality_strictvalue-1.3 {with approximate value} -setup {
+    setup
+} -body {
+    goodness strictvalue 0.55
+} -cleanup {
+    cleanup
+} -result {0.5}
+
+test quality_strictvalue-1.4 {symbolic input error} -setup {
+    setup
+} -body {
+    goodness strictvalue NA
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown name: "NA"}
+
+test quality_strictvalue-1.5 {out of range error} -setup {
+    setup
+} -body {
+    goodness configure -min 0.0 -max 1.0
+    goodness strictvalue 2.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Out of range: "2.0"}
+
+test quality_strictvalue-1.6 {case-insensitive matching} -setup {
+    setup
+} -body {
+    list \
+        [goodness strictvalue vb] \
+        [goodness strictvalue "very good"]
+} -cleanup {
+    cleanup
+} -result {0.1 0.9}
+
+#-------------------------------------------------------------------
+# -bounds yes
+
+test quality_bounds-1.1 {-min and -max set} -setup {
+    setup
+} -body {
+    list [grade cget -min] [grade cget -max]
+} -cleanup {
+    cleanup
+} -result {0 100}
+
+test quality_bounds-1.2 {Binning} -setup {
+    setup
+} -body {
+    # Using -bounds no with the same values, this should return
+    # D, since the halfway point between 30 and 65 is less than 59.
+    # With the bounds we've specified, it should be F.
+    grade name 59
+} -cleanup {
+    cleanup
+} -result {F}
+
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
 
 
 

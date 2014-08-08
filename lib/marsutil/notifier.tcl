@@ -1,9 +1,15 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    notifier.tcl
+#   notifier.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
 #    marsutil(n) module: Notifier object

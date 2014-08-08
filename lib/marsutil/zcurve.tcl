@@ -1,55 +1,61 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	zcurve.tcl
+#   zcurve.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) module: zcurve function
+#   Z-curve function
 #
 #	A zcurve is a piecewise-linear function with three segments; 
-#       it's called a Z-curve because of its shape.  Here's a 
-#       stereotypical example, Z(x)
+#   it's called a Z-curve because of its shape.  Here's a 
+#   stereotypical example, Z(x)
 #
-#               |            a                    |
-#           low |------------+                    |     
-#               |             \                   |
-#               |              \                  |
-#               |               \                 |
-#               |                \                |
-#               |                 \               |
-#               |                  \              |
-#               |                   \             |
-#               |                    +------------| high
-#               |                    b            |
-#               +----------------+----------------+
-#             -100               0              +100
+#       |            a                    |
+#   low |------------+                    |     
+#       |             \                   |
+#       |              \                  |
+#       |               \                 |
+#       |                \                |
+#       |                 \               |
+#       |                  \              |
+#       |                   \             |
+#       |                    +------------| high
+#       |                    b            |
+#       +----------------+----------------+
+#     -100               0              +100
 #
-#       The X-axis is shown as running from -100 to +100,
-#       but this is not essential.  The only real constraint is that
-#       a <= b.  "low" is the output value associated with low
-#       input values; "high" is the output value associated with 
-#       high input values.  If "low" < "high" you get a curve
-#       that slopes up from left to right.
+#   The X-axis is shown as running from -100 to +100,
+#   but this is not essential.  The only real constraint is that
+#   a <= b.  "low" is the output value associated with low
+#   input values; "high" is the output value associated with 
+#   high input values.  If "low" < "high" you get a curve
+#   that slopes up from left to right.
 #
-#       If a == b (within an epsilon), then Z(a) equals Z(b) equals
-#       the average of low and high.
+#   If a == b (within an epsilon), then Z(a) equals Z(b) equals
+#   the average of low and high.
 #
-#       The function is computed as follows:
+#   The function is computed as follows:
 #
-#       * If x < a, then Z(x) = low
-#       * Else, if x > b then Z(x) = high
-#       * Else, if (b - a) < epsilon then Z(x) = (low + high)/2.
-#       * Else, Z(x) is on the line from (a,low) to (b,high)
+#   * If x < a, then Z(x) = low
+#   * Else, if x > b then Z(x) = high
+#   * Else, if (b - a) < epsilon then Z(x) = (low + high)/2.
+#   * Else, Z(x) is on the line from (a,low) to (b,high)
 #
-#       The slope of the line between a and b is (rise/run) or
+#   The slope of the line between a and b is (rise/run) or
 #
-#           slope = (high - low) / (b - a)
+#       slope = (high - low) / (b - a)
 #
-#       so when a < x < b
+#   so when a < x < b
 #
-#           Z(x) = low + slope * (x - a)
+#       Z(x) = low + slope * (x - a)
 #
 #-----------------------------------------------------------------------
 

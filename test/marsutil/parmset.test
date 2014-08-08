@@ -18,1456 +18,1437 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2.2 
     eval ::tcltest::configure $argv
 }
+
+# Import tcltest(n)
+namespace import ::tcltest::test
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil 1.0
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
 
-#-----------------------------------------------------------------------
-# Test Suite
+#-------------------------------------------------------------------
+# Set up the test environment
+
+# Variable of notification arguments
+variable notifyList {}
+
+#-------------------------------------------------------------------
+# Setup
+
+snit::integer ::intRange  -min 0 -max 10
+
+proc Setup {} {
+    variable notifyList
+
+    set notifyList {}
+    parmset ps
+}
+
+proc CleanUp {} {
+    variable notifyList
+
+    set notifyList {}
+    ps destroy
+}
+
+proc NotifyCB {parm} {
+    variable notifyList
+
+    lappend notifyList $parm
+}
+
+proc SetupABCs {} {
+    variable notifyList
+    set notifyList {}
+
+    parmset A -notifycmd [list ::NotifyABCs A]
+    parmset B -notifycmd [list ::NotifyABCs B]
+
+    parmset C1 -notifycmd [list ::NotifyABCs C1]
+    C1 define thisOne snit::integer 0 ""
+
+    parmset C2 -notifycmd [list ::NotifyABCs C2]
+    C2 define thatOne snit::integer 1 ""
+
+    B slave add ::C1
+    B slave add ::C2
+    A slave add ::B
+}
+
+proc CleanUpABCs {} {
+    variable notifyList
+    set notifyList {}
+
+    A destroy
+    B destroy
+    C1 destroy
+    C2 destroy
+}
+
+proc NotifyABCs {pset parm} {
+    variable notifyList
+
+    lappend notifyList $pset $parm
+}
+
+# pprint block
 #
-# The tests run in a namespace so as not to interfere with other
-# test suites.
+# Pretty-prints a result block so that the test looks nice
 
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
+proc pprint {block} {
+    return "\n$block"
+}
 
-    # Import tcltest(n)
-    namespace import ::tcltest::*
+# pprintFile block
+#
+# Pretty-prints a tcltest::viewFile block so that the test looks nice
 
-    # Import the code to be tested
-    namespace import ::marsutil::*
+proc pprintFile {block} {
+    return "\n$block\n"
+}
 
-    # Variable of notification arguments
-    variable notifyList {}
+#-------------------------------------------------------------------
+# subset
 
-    #-------------------------------------------------------------------
-    # Setup
+test parmset-1.1 {subset nominal test} -setup {
+    Setup
+} -body {
+    ps subset x   ""
+    ps define x.y snit::integer 0 ""
+    ps items
+}  -cleanup {
+    CleanUp
+} -result {x subset x.y parm}
 
-    snit::integer ::marsutil::test::intRange  -min 0 -max 10
+test parmset-1.2 {subset with no parent} -setup {
+    Setup
+} -body {
+    ps subset x.y ""
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {parent subset "x" has not been defined: "x.y"}
 
-    proc Setup {} {
-        variable notifyList
+#-------------------------------------------------------------------
+# define
 
-        set notifyList {}
-        parmset ps
-    }
+test parmset-2.1 {define with no parent} -setup {
+    Setup
+} -body {
+    ps define x.y.z snit::integer 0 ""
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {parent subset "x.y" has not been defined: "x.y.z"}
 
-    proc CleanUp {} {
-        variable notifyList
+test parmset-2.2 {define with invalid name} -setup {
+    Setup
+} -body {
+    ps define _aBadName snit::integer 0 ""
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {invalid value "_aBadName"}
 
-        set notifyList {}
-        ps destroy
-    }
+test parmset-2.3 {define the same name twice} -setup {
+    Setup
+} -body {
+    ps define Foo snit::integer 0 ""
+    ps define Foo snit::integer 1 ""
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {item already defined: "Foo"}
 
-    proc NotifyCB {parm} {
-        variable notifyList
+#-------------------------------------------------------------------
+# get/set/getdefault
 
-        lappend notifyList $parm
-    }
+test parmset-3.1 {get/set access parameter value} -setup {
+    Setup
+} -body {
+    ps define Foo snit::integer 0 ""
 
-    proc SetupABCs {} {
-        variable notifyList
-        set notifyList {}
+    set a [ps get Foo]
+    ps set Foo 1
+    set b [ps get Foo]
 
-        parmset A -notifycmd [list ::marsutil::test::NotifyABCs A]
-        parmset B -notifycmd [list ::marsutil::test::NotifyABCs B]
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {0 1}
 
-        parmset C1 -notifycmd [list ::marsutil::test::NotifyABCs C1]
-        C1 define thisOne snit::integer 0 ""
-
-        parmset C2 -notifycmd [list ::marsutil::test::NotifyABCs C2]
-        C2 define thatOne snit::integer 1 ""
-
-        B slave add ::marsutil::test::C1
-        B slave add ::marsutil::test::C2
-        A slave add ::marsutil::test::B
-    }
-
-    proc CleanUpABCs {} {
-        variable notifyList
-        set notifyList {}
-
-        A destroy
-        B destroy
-        C1 destroy
-        C2 destroy
-    }
-
-    proc NotifyABCs {pset parm} {
-        variable notifyList
-
-        lappend notifyList $pset $parm
-    }
-
-    # pprint block
-    #
-    # Pretty-prints a result block so that the test looks nice
+test parmset-3.2 {get is case-insensitive} -setup {
+    Setup
+} -body {
+    ps define Foo snit::integer 0 ""
     
-    proc pprint {block} {
-        return "\n$block    "
-    }
+    list [ps get Foo] [ps get foo] [ps get FOO]
+} -cleanup {
+    CleanUp
+} -result {0 0 0}
 
-    # pprintFile block
-    #
-    # Pretty-prints a viewFile block so that the test looks nice
+test parmset-3.3 {set is case-insensitive} -setup {
+    Setup
+} -body {
+    ps define Foo snit::integer 0 ""
     
-    proc pprintFile {block} {
-        return "\n$block\n    "
-    }
+    ps set foo 1
+    ps get Foo
+} -cleanup {
+    CleanUp
+} -result {1}
 
-    #-------------------------------------------------------------------
-    # subset
+test parmset-3.4 {set doesn't touch default value} -setup {
+    Setup
+} -body {
+    ps define Foo snit::integer 0 "Parm A"
 
-    test parmset-1.1 {subset nominal test} -setup {
-        Setup
-    } -body {
-        ps subset x   ""
-        ps define x.y snit::integer 0 ""
-        ps items
-    }  -cleanup {
-        CleanUp
-    } -result {x subset x.y parm}
+    set a [ps getdefault Foo]
+    ps set Foo 1
+    set b [ps get Foo]
+    set c [ps getdefault Foo]
 
-    test parmset-1.2 {subset with no parent} -setup {
-        Setup
-    } -body {
-        ps subset x.y ""
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {parent subset "x" has not been defined: "x.y"}
-    
-    #-------------------------------------------------------------------
-    # define
+    list $a $b $c
+} -cleanup {
+    CleanUp
+} -result {0 1 0}
 
-    test parmset-2.1 {define with no parent} -setup {
-        Setup
-    } -body {
-        ps define x.y.z snit::integer 0 ""
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {parent subset "x.y" has not been defined: "x.y.z"}
+test parmset-3.5 {get non-existing parameter} -setup {
+    Setup
+} -body {
+    ps define p1 snit::integer 0 ""
+    ps define p3 snit::integer 0 ""
 
-    test parmset-2.2 {define with invalid name} -setup {
-        Setup
-    } -body {
-        ps define _aBadName snit::integer 0 ""
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {invalid value "_aBadName"}
+    ps get p2
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {unknown parameter: "p2"}
 
-    test parmset-2.3 {define the same name twice} -setup {
-        Setup
-    } -body {
-        ps define Foo snit::integer 0 ""
-        ps define Foo snit::integer 1 ""
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {item already defined: "Foo"}
+test parmset-3.6 {set non-existing parameter} -setup {
+    Setup
+} -body {
+    ps define p1 snit::integer 0 ""
+    ps define p3 snit::integer 0 ""
 
-    #-------------------------------------------------------------------
-    # get/set/getdefault
+    ps set p2 2
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {unknown parameter: "p2"}
 
-    test parmset-3.1 {get/set access parameter value} -setup {
-        Setup
-    } -body {
-        ps define Foo snit::integer 0 ""
+test parmset-3.7 {set validition check} -setup {
+    Setup
+} -body {
+    ps define p1 ::intRange 0 ""
 
-        set a [ps get Foo]
-        ps set Foo 1
-        set b [ps get Foo]
+    ps set p1 -1
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Invalid p1 value "-1": invalid value "-1", expected integer in range 0, 10}
 
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {0 1}
+#-------------------------------------------------------------------
+# setdefault 
 
-    test parmset-3.2 {get is case-insensitive} -setup {
-        Setup
-    } -body {
-        ps define Foo snit::integer 0 ""
-        
-        list [ps get Foo] [ps get foo] [ps get FOO]
-    } -cleanup {
-        CleanUp
-    } -result {0 0 0}
+test parmset-4.1 {setdefault changes current and default values} -setup {
+    Setup
+} -body {
+    ps define Foo snit::integer 0 "Parm A"
 
-    test parmset-3.3 {set is case-insensitive} -setup {
-        Setup
-    } -body {
-        ps define Foo snit::integer 0 ""
-        
-        ps set foo 1
-        ps get Foo
-    } -cleanup {
-        CleanUp
-    } -result {1}
+    ps set Foo 1
+    set a [ps getdefault Foo]
+    set b [ps get Foo]
 
-    test parmset-3.4 {set doesn't touch default value} -setup {
-        Setup
-    } -body {
-        ps define Foo snit::integer 0 "Parm A"
+    ps setdefault Foo 2
+    set c [ps getdefault Foo]
+    set d [ps get Foo]
 
-        set a [ps getdefault Foo]
-        ps set Foo 1
-        set b [ps get Foo]
-        set c [ps getdefault Foo]
+    list $a $b $c $d
+} -cleanup {
+    CleanUp
+} -result {0 1 2 2}
 
-        list $a $b $c
-    } -cleanup {
-        CleanUp
-    } -result {0 1 0}
+#-------------------------------------------------------------------
+# type
 
-    test parmset-3.5 {get non-existing parameter} -setup {
-        Setup
-    } -body {
-        ps define p1 snit::integer 0 ""
-        ps define p3 snit::integer 0 ""
+test parmset-5.1 {type returns the correct validation type} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
 
-        ps get p2
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {unknown parameter: "p2"}
-    
-    test parmset-3.6 {set non-existing parameter} -setup {
-        Setup
-    } -body {
-        ps define p1 snit::integer 0 ""
-        ps define p3 snit::integer 0 ""
+    set a [ps type pInt]
+    set b [ps type pBool]
+    set c [ps type pDouble]
 
-        ps set p2 2
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {unknown parameter: "p2"}
+    list $a $b $c
+} -cleanup {
+    CleanUp
+} -result {snit::integer snit::boolean snit::double}
 
-    test parmset-3.7 {set validition check} -setup {
-        Setup
-    } -body {
-        ps define p1 ::marsutil::test::intRange 0 ""
+#-------------------------------------------------------------------
+# docstring 
 
-        ps set p1 -1
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {Invalid p1 value "-1": invalid value "-1", expected integer in range 0, 10}
-    
-    #-------------------------------------------------------------------
-    # setdefault 
+test parmset-6.1 {docstring functions as expected} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   "An integer type"
+    ps define pBool   snit::boolean 0   "A boolean type"
+    ps define pDouble snit::double  0.0 "A double type"
 
-    test parmset-4.1 {setdefault changes current and default values} -setup {
-        Setup
-    } -body {
-        ps define Foo snit::integer 0 "Parm A"
+    set a [ps docstring pInt]
+    set b [ps docstring pBool]
+    set c [ps docstring pDouble]
 
-        ps set Foo 1
-        set a [ps getdefault Foo]
-        set b [ps get Foo]
+    list $a $b $c
+} -cleanup {
+    CleanUp
+} -result {{An integer type} {A boolean type} {A double type}}
 
-        ps setdefault Foo 2
-        set c [ps getdefault Foo]
-        set d [ps get Foo]
+#-------------------------------------------------------------------
+# names
 
-        list $a $b $c $d
-    } -cleanup {
-        CleanUp
-    } -result {0 1 2 2}
+test parmset-7.1 {names lists parm names} -setup {
+    Setup
+} -body {
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
 
-    #-------------------------------------------------------------------
-    # type
+    ps define Z1 snit::integer 0 "Parm Z1"
 
-    test parmset-5.1 {type returns the correct validation type} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
+    ps subset X "X Parms"
 
-        set a [ps type pInt]
-        set b [ps type pBool]
-        set c [ps type pDouble]
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
 
-        list $a $b $c
-    } -cleanup {
-        CleanUp
-    } -result {snit::integer snit::boolean snit::double}
-
-    #-------------------------------------------------------------------
-    # docstring 
-
-    test parmset-6.1 {docstring functions as expected} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   "An integer type"
-        ps define pBool   snit::boolean 0   "A boolean type"
-        ps define pDouble snit::double  0.0 "A double type"
-
-        set a [ps docstring pInt]
-        set b [ps docstring pBool]
-        set c [ps docstring pDouble]
-
-        list $a $b $c
-   } -cleanup {
-        CleanUp
-    } -result {{An integer type} {A boolean type} {A double type}}
-
-    #-------------------------------------------------------------------
-    # names
-
-    test parmset-7.1 {names lists parm names} -setup {
-        Setup
-    } -body {
-        ps subset Y "Y Parms"
-        ps define Y.P3 snit::integer 0 "Parm Y.P3"
-        ps define Y.P2 snit::integer 0 "Parm Y.P2"
-
-        ps define Z1 snit::integer 0 "Parm Z1"
-
-        ps subset X "X Parms"
-
-        ps define X.Q2 snit::integer 0 "Parm X.Q2"
-        ps define X.Q1 snit::integer 0 "Parm X.Q1"
-
-        ps define Y.P1 snit::integer 0 "Parm Y.P1"
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"
 
 
-        # Parameter names should be in order of definition, 
-        # grouped by subset.
-        ps names
-    } -cleanup {
-        CleanUp
-    } -result {Y.P3 Y.P2 Y.P1 Z1 X.Q2 X.Q1}
+    # Parameter names should be in order of definition, 
+    # grouped by subset.
+    ps names
+} -cleanup {
+    CleanUp
+} -result {Y.P3 Y.P2 Y.P1 Z1 X.Q2 X.Q1}
 
-    test parmset-7.2 {names provides pattern matching} -setup {
-        Setup
-    } -body {
-        ps subset Y "Y Parms"
-        ps define Y.P3 snit::integer 0 "Parm Y.P3"
-        ps define Y.P2 snit::integer 0 "Parm Y.P2"
+test parmset-7.2 {names provides pattern matching} -setup {
+    Setup
+} -body {
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
 
-        ps define Z1 snit::integer 0 "Parm Z1"
+    ps define Z1 snit::integer 0 "Parm Z1"
 
-        ps subset X "X Parms"
+    ps subset X "X Parms"
 
-        ps define X.Q2 snit::integer 0 "Parm X.Q2"
-        ps define X.Q1 snit::integer 0 "Parm X.Q1"
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
 
-        ps define Y.P1 snit::integer 0 "Parm Y.P1"
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"
 
-        set a [ps names "Y*"]
-        set b [ps names "*1*"]
-        set c "{$a} {$b}"
-    } -cleanup {
-        CleanUp
-    } -result {{Y.P3 Y.P2 Y.P1} {Y.P1 Z1 X.Q1}}
+    set a [ps names "Y*"]
+    set b [ps names "*1*"]
+    set c "{$a} {$b}"
+} -cleanup {
+    CleanUp
+} -result {{Y.P3 Y.P2 Y.P1} {Y.P1 Z1 X.Q1}}
 
-    #-------------------------------------------------------------------
-    # list
+#-------------------------------------------------------------------
+# list
 
-    test parmset-8.1 {list returns the full list of parm value pairs} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
+test parmset-8.1 {list returns the full list of parm value pairs} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
 
-        ps set pInt    1
-        ps set pBool   true
-        ps set pDouble 1.234
+    ps set pInt    1
+    ps set pBool   true
+    ps set pDouble 1.234
 
-        pprint [ps list]
-    } -cleanup {
-        CleanUp
-    } -result {
+    pprint [ps list]
+} -cleanup {
+    CleanUp
+} -result {
 pInt    1
 pBool   true
 pDouble 1.234
-    }
+}
 
-    test parmset-8.2 {list provides pattern matching} -setup {
-        Setup
-    } -body {
-        ps subset Y "Y Parms"
-        ps define Y.P3 snit::integer 0 "Parm Y.P3"
-        ps define Y.P2 snit::integer 0 "Parm Y.P2"
+test parmset-8.2 {list provides pattern matching} -setup {
+    Setup
+} -body {
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
 
-        ps define Z1 snit::integer 0 "Parm Z1"
+    ps define Z1 snit::integer 0 "Parm Z1"
 
-        ps subset X "X Parms"
+    ps subset X "X Parms"
 
-        ps define X.Q2 snit::integer 0 "Parm X.Q2"
-        ps define X.Q1 snit::integer 0 "Parm X.Q1"
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
 
-        ps define Y.P1 snit::integer 0 "Parm Y.P1"
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"
 
-        set a [ps list "Y*"]
-        set b [ps list "*1*"]
-        pprint [set c $a$b]
-    } -cleanup {
-        CleanUp
-    } -result {
+    set a [ps list "Y*"]
+    set b [ps list "*1*"]
+    pprint [set c $a$b]
+} -cleanup {
+    CleanUp
+} -result {
 Y.P3 0
 Y.P2 0
 Y.P1 0
 Y.P1 0
 Z1   0
 X.Q1 0
+}
+
+#-------------------------------------------------------------------
+# items
+
+test parmset-9.1 {items lists subsets and parms, with item type} -setup {
+    Setup
+} -body {
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+
+    ps define Z1 snit::integer 0 "Parm Z1"
+
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
+
+
+    ps subset X "X Parms"
+
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
+
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"
+
+    # Items should be in order of definition, 
+    # grouped by subset.
+    ps items
+} -cleanup {
+    CleanUp
+} -result {Y subset Y.P3 parm Y.P2 parm Y.P1 parm Z1 parm X subset X.Q2 parm X.Q1 parm}
+
+#-------------------------------------------------------------------
+# save/load file operations
+
+test parmset-10.1 {save actually saves and creates a backup} -setup {
+    Setup
+
+    set fileBase parmset.test.10.1
+    set fileSave $fileBase.save
+    set fileBak  $fileSave.bak
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    # value set-1
+    ps set pInt    1
+    ps set pBool   true
+    ps set pDouble 1.234
+
+    # Save for the first time
+    ps save $fileSave
+    set a [ps list]
+
+    # value set-2
+    ps set pInt    1111
+    ps set pBool   off
+    ps set pDouble 3.14
+
+    # Save again, which should cause .bak to have set-1
+    ps save $fileSave
+    set b [ps list]
+
+    # Does .bak have the set-1 values?
+    ps load $fileBak
+    if {[ps list] ne $a} {
+        return error
     }
 
-    #-------------------------------------------------------------------
-    # items
+    # Does .save have the set-2 values?
+    ps load $fileSave
+    if {[ps list] ne $b} {
+        return error
+    }
+} -cleanup {
+     tcltest::removeFile $fileSave
+     tcltest::removeFile $fileBak
 
-    test parmset-9.1 {items lists subsets and parms, with item type} -setup {
-        Setup
-    } -body {
-        ps subset Y "Y Parms"
-        ps define Y.P3 snit::integer 0 "Parm Y.P3"
+     CleanUp
+} -result {}
 
-        ps define Z1 snit::integer 0 "Parm Z1"
+test parmset-10.2 {save only saves non-default values} -setup {
+    Setup
 
-        ps define Y.P2 snit::integer 0 "Parm Y.P2"
+    set fileBase parmset.test.10.2
+    set fileSave $fileBase.save
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
 
+    ps set pInt    999
+    ps set pBool   true
 
-        ps subset X "X Parms"
+    # Save should only store the values set above
+    ps save $fileSave
 
-        ps define X.Q2 snit::integer 0 "Parm X.Q2"
-        ps define X.Q1 snit::integer 0 "Parm X.Q1"
+    pprintFile [tcltest::viewFile $fileSave]
+} -cleanup {
+     tcltest::removeFile $fileSave
 
-        ps define Y.P1 snit::integer 0 "Parm Y.P1"
-
-        # Items should be in order of definition, 
-        # grouped by subset.
-        ps items
-    } -cleanup {
-        CleanUp
-    } -result {Y subset Y.P3 parm Y.P2 parm Y.P1 parm Z1 parm X subset X.Q2 parm X.Q1 parm}
-
-    #-------------------------------------------------------------------
-    # save/load file operations
-
-    test parmset-10.1 {save actually saves and creates a backup} -setup {
-        Setup
-
-        set fileBase parmset.test.10.1
-        set fileSave $fileBase.save
-        set fileBak  $fileSave.bak
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        # value set-1
-        ps set pInt    1
-        ps set pBool   true
-        ps set pDouble 1.234
-
-        # Save for the first time
-        ps save $fileSave
-        set a [ps list]
-
-        # value set-2
-        ps set pInt    1111
-        ps set pBool   off
-        ps set pDouble 3.14
-
-        # Save again, which should cause .bak to have set-1
-        ps save $fileSave
-        set b [ps list]
-
-        # Does .bak have the set-1 values?
-        ps load $fileBak
-        if {[ps list] ne $a} {
-            return error
-        }
-
-        # Does .save have the set-2 values?
-        ps load $fileSave
-        if {[ps list] ne $b} {
-            return error
-        }
-    } -cleanup {
-         removeFile $fileSave
-         removeFile $fileBak
-
-         CleanUp
-    } -result {}
-
-    test parmset-10.2 {save only saves non-default values} -setup {
-        Setup
-
-        set fileBase parmset.test.10.2
-        set fileSave $fileBase.save
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        ps set pInt    999
-        ps set pBool   true
-
-        # Save should only store the values set above
-        ps save $fileSave
-
-        pprintFile [viewFile $fileSave]
-    } -cleanup {
-         removeFile $fileSave
-
-         CleanUp
-    } -match glob -result {
+     CleanUp
+} -match glob -result {
 # File saved *
 
 parm pInt    999
 parm pBool   true
 
 # End of file
-    }
+}
 
-    test parmset-10.3 {save creates any empty file if all values defaulted} -setup {
-        Setup
+test parmset-10.3 {save creates any empty file if all values defaulted} -setup {
+    Setup
 
-        set fileBase parmset.test.10.3
-        set fileSave $fileBase.save
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
+    set fileBase parmset.test.10.3
+    set fileSave $fileBase.save
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
 
-        # Save should create a file with no parameters
-        ps save $fileSave
+    # Save should create a file with no parameters
+    ps save $fileSave
 
-        pprintFile [viewFile $fileSave]
-    } -cleanup {
-         removeFile $fileSave
+    pprintFile [tcltest::viewFile $fileSave]
+} -cleanup {
+     tcltest::removeFile $fileSave
 
-         CleanUp
-    } -match glob -result {
+     CleanUp
+} -match glob -result {
 # File saved *
 
 
 # End of file
-    }
-
-    test parmset-10.4 {load -safe does allows erroneous file content} -setup {
-
-        parmset ps1
-        parmset ps2
-
-        set fileName parmset.test.10.4
-    } -body {
-        ps1 define p1 snit::integer 0   ""
-        ps1 define p2 snit::boolean 0   ""
-        ps1 define p3 snit::double  0.0 ""
-
-        # Change from default values
-        ps1 set p1    99
-        ps1 set p2   yes
-        ps1 set p3   4.4
-
-        # Save values to a file
-        ps1 save $fileSave
-
-        # Define a different set of parms for set 2
-        ps2 define p1 snit::integer   0  ""
-        ps2 define p2 snit::double  9.9  ""
-
-        # Load the set 1 file using -safe
-        # Only p1 should change and no errors should be encountered
-        ps2 load $fileSave -safe
-
-        list [ps2 get p1] [ps2 get p2]
-    } -cleanup {
-        removeFile $fileSave
-
-        ps1 destroy
-        ps2 destroy
-    } -result {99 9.9}
-
-    #-------------------------------------------------------------------
-    # checkpoint/restore operations
-    
-    test parmset-11.1 {checkpoint/restore function properly} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        set a [ps list]
-        set chkpt [ps checkpoint]
-
-        ps set pInt    1
-        ps set pBool   true
-        ps set pDouble 1.234
-
-        ps restore $chkpt
-        set b [ps list]
-
-        expr {$a eq $b}
-    } -cleanup {
-        CleanUp
-    } -result {1}
-
-
-    test parmset-11.2 {changed flag cleared by checkpoint -saved} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        ps reset
-        set a [ps changed]
-
-        ps checkpoint -saved
-        set b [ps changed]
-
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {1 0}
-
-
-    test parmset-11.3 {changed flag not cleared by checkpoint} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        ps reset
-        set a [ps changed]
-
-        ps checkpoint
-        set b [ps changed]
-
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {1 1}
-
-
-    test parmset-11.4 {changed flag cleared by restore -saved} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        set checkpoint [ps checkpoint]
-        set a [ps changed]
-
-        ps restore $checkpoint -saved
-        set b [ps changed]
-
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {1 0}
-
-
-    test parmset-11.5 {changed flag not cleared by restore} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        set checkpoint [ps checkpoint]
-        set a [ps changed]
-
-        ps restore $checkpoint
-        set b [ps changed]
-
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {1 1}
-
-
-    test parmset-11.6 {changed flag set by set} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        # Clear the changed flag
-        ps checkpoint -saved
-        set a [ps changed]
-
-        # Set something
-        ps set pInt 1
-        set b [ps changed]
-
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {0 1}
-
-
-    test parmset-11.7 {changed flag set by reset} -setup {
-        Setup
-    } -body {
-        ps define pInt    snit::integer 0   ""
-        ps define pBool   snit::boolean 0   ""
-        ps define pDouble snit::double  0.0 ""
-
-        # Clear the changed flag
-        ps checkpoint -saved
-        set a [ps changed]
-
-        # Reset something
-        ps reset
-        set b [ps changed]
-
-        list $a $b
-    } -cleanup {
-        CleanUp
-    } -result {0 1}
-
-    #-------------------------------------------------------------------
-    # lock/unlock
-
-    test parmset-12.1 {Can lock parameters} -setup {
-        Setup
-    } -body {
-        ps subset this ""
-        ps define this.one snit::integer 0   ""
-        ps define this.two snit::boolean 0   ""
-
-        ps subset that ""
-        ps define that.one snit::double  0.0 ""
-
-        ps lock this.*
-
-        ps set that.one 5.0
-
-        ps set this.two 1
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {Parameter is locked: "this.two"}
-
-    test parmset-12.2 {Can unlock parameters} -setup {
-        Setup
-    } -body {
-        ps subset this ""
-        ps define this.one snit::integer 0   ""
-        ps define this.two snit::boolean 0   ""
-
-        ps subset that ""
-        ps define that.one snit::double  0.0 ""
-
-        ps lock this.*
-        ps unlock this.*
-
-        ps set this.one 1
-        ps set this.two yes
-    } -cleanup {
-        CleanUp
-    } -result {yes}
-
-    test parmset-12.3 {Can lock parameters with mixed case names} -setup {
-        Setup
-    } -body {
-        ps define thisOne snit::integer 0   ""
-
-        ps lock thisOne
-
-        ps set thisOne 1
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {Parameter is locked: "thisOne"}
-
-    test parmset-12.4 {Can unlock parameters with mixed case names} -setup {
-        Setup
-    } -body {
-        ps define thisOne snit::integer 0   ""
-
-        ps lock *
-        ps unlock thisOne
-
-        ps set thisOne 1
-    } -cleanup {
-        CleanUp
-    } -result {1}
-
-    test parmset-12.5 {Error when locking unknown parm} -setup {
-        Setup
-    } -body {
-        ps lock NoneSuch
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {Pattern matches no parameters: "NoneSuch"}
-
-
-    test parmset-12.6 {Error when unlocking unknown parm} -setup {
-        Setup
-    } -body {
-        ps unlock NoneSuch
-    } -returnCodes {
-        error
-    } -cleanup {
-        CleanUp
-    } -result {Pattern matches no parameters: "NoneSuch"}
-
-    test parmset-12.7 {reset doesn't reset locked parameters} -setup {
-        Setup
-        ps define thisOne snit::integer 0   ""
-    } -body {
-        ps set thisOne 1
-        ps lock thisOne
-        ps reset
-        ps get thisOne
-    } -cleanup {
-        CleanUp
-    } -result {1}
-
-    test parmset-12.8 {islocked shows whether parameter is locked} -setup {
-        Setup
-        ps define thisOne snit::integer 0   ""
-        ps define thatOne snit::integer 0   ""
-    } -body {
-        ps lock thisOne
-        list [ps islocked thisOne] [ps islocked thatOne]
-    } -cleanup {
-        CleanUp
-    } -result {1 0}
-
-
-    test parmset-12.9 {locked lists locked parameter names} -setup {
-        Setup
-        ps define thisOne snit::integer 0   ""
-        ps define thatOne snit::integer 0   ""
-        ps define theOther snit::integer 0 ""
-    } -body {
-        ps lock thisOne
-        ps lock theOther
-        list [ps locked] [ps locked this*]
-    } -cleanup {
-        CleanUp
-    } -result {{thisOne theOther} thisOne}
-
-
-    #-------------------------------------------------------------------
-    # -notifycmd
-
-    test notify-1.1 {set notifies with parm} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-    } -body {
-        ps set thisOne 2
-
-        set notifyList
-    } -cleanup {
-        CleanUp
-    } -result {thisOne}
-
-    test notify-1.2 {set doesn't notify on error} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-    } -body {
-        catch {ps set thisOne BadValue}
-
-        set notifyList
-    } -cleanup {
-        CleanUp
-    } -result {}
-
-    test notify-1.3 {setdefault notifies with parm} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-    } -body {
-        ps setdefault thisOne 1
-        set notifyList
-    } -cleanup {
-        CleanUp
-    } -result {thisOne}
-
-    test notify-1.4 {setdefault doesn't notify on error} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-    } -body {
-        catch {ps setdefault thisOne BadValue}
-        set notifyList
-    } -cleanup {
-        CleanUp
-    } -result {}
-
-    test notify-1.5 {reset notifies only once with ""} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-        set notifyList
-    } -body {
-        ps reset
-    } -cleanup {
-        CleanUp
-    } -result {{}}
-
-    test notify-1.6 {restore notifies only once with ""} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-    } -body {
-        ps restore [ps checkpoint]
-        set notifyList
-    } -cleanup {
-        CleanUp
-    } -result {{}}
-
-    test notify-1.7 {load notifies only once with ""} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-        set filename parmset.test.1.6.save
-        ps save $filename
-    } -body {
-        ps load $filename
-        set notifyList
-    } -cleanup {
-        CleanUp
-        removeFile $filename
-    } -result {{}}
-
-    test notify-1.8 {load doesn't notify on error} -setup {
-        Setup
-        ps configure -notifycmd ::marsutil::test::NotifyCB
-        ps define thisOne snit::integer 0 ""
-        
-        set filename parmset.test.1.6.save
-        makeFile {
-            parm thisOne BadValue
-        } $filename
-    } -body {
-        catch {ps load $filename}
-        set notifyList
-    } -cleanup {
-        CleanUp
-        removeFile $filename
-    } -result {}
-
-    #-------------------------------------------------------------------
-    # Master/Slave
-    #
-    # This section tests all master/slave-related functionality, including
-    # notifications, locking, and so forth.
-    #
-    # The intent is to ensure that all changes propagate to all linked
-    # parmsets in a number of scenarios.  We'll use the following set
-    # of parmsets to test them:
-    #
-    #           +-> C1        A has slave B, which has slaves C1 and C2.
-    #           |
-    #   A -> B -+
-    #           |
-    #           +-> C2
-    #
-    # The operations to be tested are: set, setdefault, load, reset,
-    # lock, and unlock.  They are to be tested at A, B, and C1; we must
-    # then verify in each case that the other parmsets are updated
-    # accordingly, and that the -notifycmds are called in the appropriate
-    # order.  The purpose of C2 is to verify that when a change occurs in
-    # C1 that B and A are updated but not C2.
-
-
-    # General tests
-
-    test slave-1.1 {can add slave} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave
-        list [slave names] [master names]
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {thisOne thisOne}
-
-    test slave-1.2 {Error: can't be slave twice} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave
-        master slave add ::marsutil::test::slave
-    } -returnCodes {
-        error
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {parmset(n) ::marsutil::test::slave already has a master: "::marsutil::test::master"}
-
-    # Error: parameter name collision
-    test slave-1.3 {Error: parameter name collision} -setup {
-        parmset master
-        master define thisOne snit::integer 0 ""
-
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave
-    } -returnCodes {
-        error
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {item already defined: "thisOne"}
-
-    test slave-1.4 {Parmset can be both master and slave} -setup {
-        parmset A
-        parmset B
-        parmset C
-        C define thisOne snit::integer 0 ""
-    } -body {
-        B slave add ::marsutil::test::C
-        A slave add ::marsutil::test::B
-        A names
-    } -cleanup {
-        A destroy
-        B destroy
-        C destroy
-    } -result {thisOne}
-
-    test slave-1.5 {Master can have two slaves} -setup {
-        parmset master
-
-        parmset slave1
-        slave1 define thisOne snit::integer 0 ""
-
-        parmset slave2
-        slave2 define thatOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave1
-        master slave add ::marsutil::test::slave2
-        master names
-    } -cleanup {
-        master destroy
-        slave1 destroy
-        slave2 destroy
-    } -result {thisOne thatOne}
-
-    test slave-1.6 {Can't add subset if slave} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave
-        slave subset nocando ""
-    } -returnCodes {
-        error
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {can't add subset, parmset is slave of "::marsutil::test::master"}
-
-    test slave-1.7 {Can't define parm if slave} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave
-        slave define thatOne snit::integer 0 ""
-    } -returnCodes {
-        error
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {can't define parm, parmset is slave of "::marsutil::test::master"}
-
-    test slave-1.8 {Can't slave add if slave} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-    } -body {
-        master slave add ::marsutil::test::slave
-        slave slave add master
-    } -returnCodes {
-        error
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {can't add slave, parmset is slave of "::marsutil::test::master"}
-
-    test slave-1.9 {Both default and value are grafted} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-        slave set thisOne 5
-    } -body {
-        master slave add ::marsutil::test::slave
-        list [master getdefault thisOne] [master get thisOne]
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {0 5}
-
-    test slave-1.10 {Lock state is grafted} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-        slave lock thisOne
-    } -body {
-        master slave add ::marsutil::test::slave
-        master islocked thisOne
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {1}
-
-    test slave-2.1 {set propagated upward} -setup {
-        SetupABCs
-    } -body {
-        C1 set thisOne 5
-        list [A get thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {5 {A thisOne B thisOne C1 thisOne}}
-
-    test slave-2.2 {set propagated downward} -setup {
-        SetupABCs
-    } -body {
-        A set thisOne 7
-        list [C1 get thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {7 {C1 thisOne B thisOne A thisOne}}
-
-    test slave-2.3 {set propagated outward} -setup {
-        SetupABCs
-    } -body {
-        B set thisOne 9
-        list [A get thisOne] [C1 get thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {9 9 {C1 thisOne A thisOne B thisOne}}
-
-    test slave-3.1 {setdefault propagated upward} -setup {
-        SetupABCs
-    } -body {
-        C1 setdefault thisOne 5
-        list [A getdefault thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {5 {A thisOne B thisOne C1 thisOne}}
-
-    test slave-3.2 {setdefault propagated downward} -setup {
-        SetupABCs
-    } -body {
-        A setdefault thisOne 7
-        list [C1 getdefault thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {7 {C1 thisOne B thisOne A thisOne}}
-
-    test slave-3.3 {setdefault propagated outward} -setup {
-        SetupABCs
-    } -body {
-        B setdefault thisOne 9
-        list [A getdefault thisOne] [C1 getdefault thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {9 9 {C1 thisOne A thisOne B thisOne}}
-
-    test slave-4.1 {reset propagated upward} -setup {
-        SetupABCs
-    } -body {
-        C1 set thisOne 5
-        set notifyList {}
-
-        C1 reset
-
-        list [A get thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {0 {A {} B {} C1 {}}}
-
-    test slave-4.2 {reset propagated downward} -setup {
-        SetupABCs
-    } -body {
-        A set thisOne 7
-        A set thatOne 9
-        set notifyList {}
-
-        A reset
-        list [C1 get thisOne] [C2 get thatOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {0 1 {C1 {} C2 {} B {} A {}}}
-
-    test slave-4.3 {reset propagated outward} -setup {
-        SetupABCs
-    } -body {
-        B set thisOne 2
-        B set thatOne 3
-        set notifyList {}
-
-        B reset
-
-        list \
-            [A get thisOne]  \
-            [A get thatOne]  \
-            [C1 get thisOne] \
-            [C2 get thatOne] \
-            $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {0 1 0 1 {C1 {} C2 {} A {} B {}}}
-
-    test slave-5.1 {load propagated upward} -setup {
-        SetupABCs
-        makeFile {
-            parm thisOne 5
-        } testfile.dat
-    } -body {
-        C1 load testfile.dat
-
-        list [A get thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-        removeFile testfile.dat
-    } -result {5 {A {} B {} C1 {}}}
-
-    test slave-5.2 {load propagated downward} -setup {
-        SetupABCs
-        makeFile {
-            parm thisOne 7
-            parm thatOne 9
-        } testfile.dat
-    } -body {
-        A load testfile.dat
-
-        list [C1 get thisOne] [C2 get thatOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-        removeFile testfile.dat
-    } -result {7 9 {C1 {} C2 {} B {} A {}}}
-
-    test slave-5.3 {load propagated outward} -setup {
-        SetupABCs
-        makeFile {
-            parm thisOne 2
-            parm thatOne 3
-        } testfile.dat
-    } -body {
-        B load testfile.dat
-
-        list \
-            [A get thisOne]  \
-            [A get thatOne]  \
-            [C1 get thisOne] \
-            [C2 get thatOne] \
-            $notifyList
-    } -cleanup {
-        CleanUpABCs
-        removeFile testfile.dat
-    } -result {2 3 2 3 {C1 {} C2 {} A {} B {}}}
-
-    test slave-6.1 {lock propagated upward} -setup {
-        SetupABCs
-    } -body {
-        C1 lock thisOne
-        A islocked thisOne
-    } -cleanup {
-        CleanUpABCs
-    } -result {1}
-
-    test slave-6.2 {lock propagated downward} -setup {
-        SetupABCs
-    } -body {
-        A lock thisOne
-        C1 islocked thisOne
-    } -cleanup {
-        CleanUpABCs
-    } -result {1}
-
-    test slave-6.3 {lock propagated outward} -setup {
-        SetupABCs
-    } -body {
-        B lock thisOne
-        list [A islocked thisOne] [C1 islocked thisOne]
-    } -cleanup {
-        CleanUpABCs
-    } -result {1 1}
-
-    test slave-7.1 {unlock propagated upward} -setup {
-        SetupABCs
-    } -body {
-        C1 unlock thisOne
-        A islocked thisOne
-    } -cleanup {
-        CleanUpABCs
-    } -result {0}
-
-    test slave-7.2 {unlock propagated downward} -setup {
-        SetupABCs
-    } -body {
-        A unlock thisOne
-        C1 islocked thisOne
-    } -cleanup {
-        CleanUpABCs
-    } -result {0}
-
-    test slave-7.3 {unlock propagated outward} -setup {
-        SetupABCs
-    } -body {
-        B unlock thisOne
-        list [A islocked thisOne] [C1 islocked thisOne]
-    } -cleanup {
-        CleanUpABCs
-    } -result {0 0}
-
-    test slave-8.1 {Slaves can be freed} -setup {
-        parmset master
-        parmset slave
-        slave define thisOne snit::integer 0 ""
-        master slave add ::marsutil::test::slave
-    } -body {
-        master slave free ::marsutil::test::slave
-
-        # Show that the link is broken
-        master set thisOne 5
-        slave  set thisOne 10
-        list [master get thisOne] [slave get thisOne]
-    } -cleanup {
-        master destroy
-        slave destroy
-    } -result {5 10}
-
-    test slave-8.2 {Destruction breaks links} -setup {
-        SetupABCs
-    } -body {
-        B destroy
-
-        # If links aren't broken, we should get errors here.
-        A set thisOne 5
-        C1 set thisOne 10
-        list [A get thisOne] [C1 get thisOne]
-    } -cleanup {
-        A destroy
-        C1 destroy
-        C2 destroy
-    } -result {5 10}
-
-    test slave-9.1 {restore propagated upward} -setup {
-        SetupABCs
-    } -body {
-        C1 set thisOne 5
-        set ckpt [C1 checkpoint]
-        C1 reset
-
-        set notifyList {}
-
-        C1 restore $ckpt
-
-        list [A get thisOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {5 {A {} B {} C1 {}}}
-
-    test slave-9.2 {restore propagated downward} -setup {
-        SetupABCs
-    } -body {
-        A set thisOne 7
-        A set thatOne 9
-        set ckpt [A checkpoint]
-        A reset
-        set notifyList {}
-
-        A restore $ckpt
-        list [C1 get thisOne] [C2 get thatOne] $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {7 9 {C1 {} C2 {} B {} A {}}}
-
-    test slave-9.3 {restore propagated outward} -setup {
-        SetupABCs
-    } -body {
-        B set thisOne 2
-        B set thatOne 3
-        set ckpt [B checkpoint]
-        B reset
-        set notifyList {}
-
-        B restore $ckpt
-
-        list \
-            [A get thisOne]  \
-            [A get thatOne]  \
-            [C1 get thisOne] \
-            [C2 get thatOne] \
-            $notifyList
-    } -cleanup {
-        CleanUpABCs
-    } -result {2 3 2 3 {C1 {} C2 {} A {} B {}}}
-
-    test slave-10.1 {slave can be a command prefix} -setup {
-        snit::type slaveowner {
-            typecomponent parm -public parm
-            typeconstructor {
-                ::marsutil::parmset ${type}::parm
-                parm define thisOne snit::integer 0 ""
-
-                set parm ${type}::parm
-            }
-        }
-
-        makeFile {
-            parm thisOne 2
-        } testfile.dat
-
-        parmset master
-    } -body {
-        # The point of this test is that no errors are thrown.
-        master slave add {::marsutil::test::slaveowner parm}
-        master set thisOne 5
-        master setdefault thisOne 10
-        master lock thisOne
-        master unlock thisOne
-        master reset
-        master restore [master checkpoint]
-        master load testfile.dat
-        master slave free {::marsutil::test::slaveowner parm}
-    } -cleanup {
-        master destroy
-        slaveowner destroy
-    } -result {}
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
 }
 
-namespace delete ::marsutil::test
+test parmset-10.4 {load -safe does allows erroneous file content} -setup {
+
+    parmset ps1
+    parmset ps2
+
+    set fileName parmset.test.10.4
+} -body {
+    ps1 define p1 snit::integer 0   ""
+    ps1 define p2 snit::boolean 0   ""
+    ps1 define p3 snit::double  0.0 ""
+
+    # Change from default values
+    ps1 set p1    99
+    ps1 set p2   yes
+    ps1 set p3   4.4
+
+    # Save values to a file
+    ps1 save $fileSave
+
+    # Define a different set of parms for set 2
+    ps2 define p1 snit::integer   0  ""
+    ps2 define p2 snit::double  9.9  ""
+
+    # Load the set 1 file using -safe
+    # Only p1 should change and no errors should be encountered
+    ps2 load $fileSave -safe
+
+    list [ps2 get p1] [ps2 get p2]
+} -cleanup {
+    tcltest::removeFile $fileSave
+
+    ps1 destroy
+    ps2 destroy
+} -result {99 9.9}
+
+#-------------------------------------------------------------------
+# checkpoint/restore operations
+
+test parmset-11.1 {checkpoint/restore function properly} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    set a [ps list]
+    set chkpt [ps checkpoint]
+
+    ps set pInt    1
+    ps set pBool   true
+    ps set pDouble 1.234
+
+    ps restore $chkpt
+    set b [ps list]
+
+    expr {$a eq $b}
+} -cleanup {
+    CleanUp
+} -result {1}
 
 
+test parmset-11.2 {changed flag cleared by checkpoint -saved} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    ps reset
+    set a [ps changed]
+
+    ps checkpoint -saved
+    set b [ps changed]
+
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {1 0}
 
 
+test parmset-11.3 {changed flag not cleared by checkpoint} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    ps reset
+    set a [ps changed]
+
+    ps checkpoint
+    set b [ps changed]
+
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {1 1}
 
 
+test parmset-11.4 {changed flag cleared by restore -saved} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
 
+    set checkpoint [ps checkpoint]
+    set a [ps changed]
+
+    ps restore $checkpoint -saved
+    set b [ps changed]
+
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {1 0}
+
+
+test parmset-11.5 {changed flag not cleared by restore} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    set checkpoint [ps checkpoint]
+    set a [ps changed]
+
+    ps restore $checkpoint
+    set b [ps changed]
+
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {1 1}
+
+
+test parmset-11.6 {changed flag set by set} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    # Clear the changed flag
+    ps checkpoint -saved
+    set a [ps changed]
+
+    # Set something
+    ps set pInt 1
+    set b [ps changed]
+
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {0 1}
+
+
+test parmset-11.7 {changed flag set by reset} -setup {
+    Setup
+} -body {
+    ps define pInt    snit::integer 0   ""
+    ps define pBool   snit::boolean 0   ""
+    ps define pDouble snit::double  0.0 ""
+
+    # Clear the changed flag
+    ps checkpoint -saved
+    set a [ps changed]
+
+    # Reset something
+    ps reset
+    set b [ps changed]
+
+    list $a $b
+} -cleanup {
+    CleanUp
+} -result {0 1}
+
+#-------------------------------------------------------------------
+# lock/unlock
+
+test parmset-12.1 {Can lock parameters} -setup {
+    Setup
+} -body {
+    ps subset this ""
+    ps define this.one snit::integer 0   ""
+    ps define this.two snit::boolean 0   ""
+
+    ps subset that ""
+    ps define that.one snit::double  0.0 ""
+
+    ps lock this.*
+
+    ps set that.one 5.0
+
+    ps set this.two 1
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Parameter is locked: "this.two"}
+
+test parmset-12.2 {Can unlock parameters} -setup {
+    Setup
+} -body {
+    ps subset this ""
+    ps define this.one snit::integer 0   ""
+    ps define this.two snit::boolean 0   ""
+
+    ps subset that ""
+    ps define that.one snit::double  0.0 ""
+
+    ps lock this.*
+    ps unlock this.*
+
+    ps set this.one 1
+    ps set this.two yes
+} -cleanup {
+    CleanUp
+} -result {yes}
+
+test parmset-12.3 {Can lock parameters with mixed case names} -setup {
+    Setup
+} -body {
+    ps define thisOne snit::integer 0   ""
+
+    ps lock thisOne
+
+    ps set thisOne 1
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Parameter is locked: "thisOne"}
+
+test parmset-12.4 {Can unlock parameters with mixed case names} -setup {
+    Setup
+} -body {
+    ps define thisOne snit::integer 0   ""
+
+    ps lock *
+    ps unlock thisOne
+
+    ps set thisOne 1
+} -cleanup {
+    CleanUp
+} -result {1}
+
+test parmset-12.5 {Error when locking unknown parm} -setup {
+    Setup
+} -body {
+    ps lock NoneSuch
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Pattern matches no parameters: "NoneSuch"}
+
+
+test parmset-12.6 {Error when unlocking unknown parm} -setup {
+    Setup
+} -body {
+    ps unlock NoneSuch
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Pattern matches no parameters: "NoneSuch"}
+
+test parmset-12.7 {reset doesn't reset locked parameters} -setup {
+    Setup
+    ps define thisOne snit::integer 0   ""
+} -body {
+    ps set thisOne 1
+    ps lock thisOne
+    ps reset
+    ps get thisOne
+} -cleanup {
+    CleanUp
+} -result {1}
+
+test parmset-12.8 {islocked shows whether parameter is locked} -setup {
+    Setup
+    ps define thisOne snit::integer 0   ""
+    ps define thatOne snit::integer 0   ""
+} -body {
+    ps lock thisOne
+    list [ps islocked thisOne] [ps islocked thatOne]
+} -cleanup {
+    CleanUp
+} -result {1 0}
+
+
+test parmset-12.9 {locked lists locked parameter names} -setup {
+    Setup
+    ps define thisOne snit::integer 0   ""
+    ps define thatOne snit::integer 0   ""
+    ps define theOther snit::integer 0 ""
+} -body {
+    ps lock thisOne
+    ps lock theOther
+    list [ps locked] [ps locked this*]
+} -cleanup {
+    CleanUp
+} -result {{thisOne theOther} thisOne}
+
+
+#-------------------------------------------------------------------
+# -notifycmd
+
+test notify-1.1 {set notifies with parm} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+} -body {
+    ps set thisOne 2
+
+    set notifyList
+} -cleanup {
+    CleanUp
+} -result {thisOne}
+
+test notify-1.2 {set doesn't notify on error} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+} -body {
+    catch {ps set thisOne BadValue}
+
+    set notifyList
+} -cleanup {
+    CleanUp
+} -result {}
+
+test notify-1.3 {setdefault notifies with parm} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+} -body {
+    ps setdefault thisOne 1
+    set notifyList
+} -cleanup {
+    CleanUp
+} -result {thisOne}
+
+test notify-1.4 {setdefault doesn't notify on error} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+} -body {
+    catch {ps setdefault thisOne BadValue}
+    set notifyList
+} -cleanup {
+    CleanUp
+} -result {}
+
+test notify-1.5 {reset notifies only once with ""} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+    set notifyList
+} -body {
+    ps reset
+} -cleanup {
+    CleanUp
+} -result {{}}
+
+test notify-1.6 {restore notifies only once with ""} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+} -body {
+    ps restore [ps checkpoint]
+    set notifyList
+} -cleanup {
+    CleanUp
+} -result {{}}
+
+test notify-1.7 {load notifies only once with ""} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+    set filename parmset.test.1.6.save
+    ps save $filename
+} -body {
+    ps load $filename
+    set notifyList
+} -cleanup {
+    CleanUp
+    tcltest::removeFile $filename
+} -result {{}}
+
+test notify-1.8 {load doesn't notify on error} -setup {
+    Setup
+    ps configure -notifycmd ::NotifyCB
+    ps define thisOne snit::integer 0 ""
+    
+    set filename parmset.test.1.6.save
+    tcltest::makeFile {
+        parm thisOne BadValue
+    } $filename
+} -body {
+    catch {ps load $filename}
+    set notifyList
+} -cleanup {
+    CleanUp
+    tcltest::removeFile $filename
+} -result {}
+
+#-------------------------------------------------------------------
+# Master/Slave
+#
+# This section tests all master/slave-related functionality, including
+# notifications, locking, and so forth.
+#
+# The intent is to ensure that all changes propagate to all linked
+# parmsets in a number of scenarios.  We'll use the following set
+# of parmsets to test them:
+#
+#           +-> C1        A has slave B, which has slaves C1 and C2.
+#           |
+#   A -> B -+
+#           |
+#           +-> C2
+#
+# The operations to be tested are: set, setdefault, load, reset,
+# lock, and unlock.  They are to be tested at A, B, and C1; we must
+# then verify in each case that the other parmsets are updated
+# accordingly, and that the -notifycmds are called in the appropriate
+# order.  The purpose of C2 is to verify that when a change occurs in
+# C1 that B and A are updated but not C2.
+
+
+# General tests
+
+test slave-1.1 {can add slave} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+} -body {
+    master slave add ::slave
+    list [slave names] [master names]
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {thisOne thisOne}
+
+test slave-1.2 {Error: can't be slave twice} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+} -body {
+    master slave add ::slave
+    master slave add ::slave
+} -returnCodes {
+    error
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {parmset(n) ::slave already has a master: "::master"}
+
+# Error: parameter name collision
+test slave-1.3 {Error: parameter name collision} -setup {
+    parmset master
+    master define thisOne snit::integer 0 ""
+
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+} -body {
+    master slave add ::slave
+} -returnCodes {
+    error
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {item already defined: "thisOne"}
+
+test slave-1.4 {Parmset can be both master and slave} -setup {
+    parmset A
+    parmset B
+    parmset C
+    C define thisOne snit::integer 0 ""
+} -body {
+    B slave add ::C
+    A slave add ::B
+    A names
+} -cleanup {
+    A destroy
+    B destroy
+    C destroy
+} -result {thisOne}
+
+test slave-1.5 {Master can have two slaves} -setup {
+    parmset master
+
+    parmset slave1
+    slave1 define thisOne snit::integer 0 ""
+
+    parmset slave2
+    slave2 define thatOne snit::integer 0 ""
+} -body {
+    master slave add ::slave1
+    master slave add ::slave2
+    master names
+} -cleanup {
+    master destroy
+    slave1 destroy
+    slave2 destroy
+} -result {thisOne thatOne}
+
+test slave-1.6 {Can't add subset if slave} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+} -body {
+    master slave add ::slave
+    slave subset nocando ""
+} -returnCodes {
+    error
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {can't add subset, parmset is slave of "::master"}
+
+test slave-1.7 {Can't define parm if slave} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+} -body {
+    master slave add ::slave
+    slave define thatOne snit::integer 0 ""
+} -returnCodes {
+    error
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {can't define parm, parmset is slave of "::master"}
+
+test slave-1.8 {Can't slave add if slave} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+} -body {
+    master slave add ::slave
+    slave slave add master
+} -returnCodes {
+    error
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {can't add slave, parmset is slave of "::master"}
+
+test slave-1.9 {Both default and value are grafted} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+    slave set thisOne 5
+} -body {
+    master slave add ::slave
+    list [master getdefault thisOne] [master get thisOne]
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {0 5}
+
+test slave-1.10 {Lock state is grafted} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+    slave lock thisOne
+} -body {
+    master slave add ::slave
+    master islocked thisOne
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {1}
+
+test slave-2.1 {set propagated upward} -setup {
+    SetupABCs
+} -body {
+    C1 set thisOne 5
+    list [A get thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {5 {A thisOne B thisOne C1 thisOne}}
+
+test slave-2.2 {set propagated downward} -setup {
+    SetupABCs
+} -body {
+    A set thisOne 7
+    list [C1 get thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {7 {C1 thisOne B thisOne A thisOne}}
+
+test slave-2.3 {set propagated outward} -setup {
+    SetupABCs
+} -body {
+    B set thisOne 9
+    list [A get thisOne] [C1 get thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {9 9 {C1 thisOne A thisOne B thisOne}}
+
+test slave-3.1 {setdefault propagated upward} -setup {
+    SetupABCs
+} -body {
+    C1 setdefault thisOne 5
+    list [A getdefault thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {5 {A thisOne B thisOne C1 thisOne}}
+
+test slave-3.2 {setdefault propagated downward} -setup {
+    SetupABCs
+} -body {
+    A setdefault thisOne 7
+    list [C1 getdefault thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {7 {C1 thisOne B thisOne A thisOne}}
+
+test slave-3.3 {setdefault propagated outward} -setup {
+    SetupABCs
+} -body {
+    B setdefault thisOne 9
+    list [A getdefault thisOne] [C1 getdefault thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {9 9 {C1 thisOne A thisOne B thisOne}}
+
+test slave-4.1 {reset propagated upward} -setup {
+    SetupABCs
+} -body {
+    C1 set thisOne 5
+    set notifyList {}
+
+    C1 reset
+
+    list [A get thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {0 {A {} B {} C1 {}}}
+
+test slave-4.2 {reset propagated downward} -setup {
+    SetupABCs
+} -body {
+    A set thisOne 7
+    A set thatOne 9
+    set notifyList {}
+
+    A reset
+    list [C1 get thisOne] [C2 get thatOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {0 1 {C1 {} C2 {} B {} A {}}}
+
+test slave-4.3 {reset propagated outward} -setup {
+    SetupABCs
+} -body {
+    B set thisOne 2
+    B set thatOne 3
+    set notifyList {}
+
+    B reset
+
+    list \
+        [A get thisOne]  \
+        [A get thatOne]  \
+        [C1 get thisOne] \
+        [C2 get thatOne] \
+        $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {0 1 0 1 {C1 {} C2 {} A {} B {}}}
+
+test slave-5.1 {load propagated upward} -setup {
+    SetupABCs
+    tcltest::makeFile {
+        parm thisOne 5
+    } testfile.dat
+} -body {
+    C1 load testfile.dat
+
+    list [A get thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+    tcltest::removeFile testfile.dat
+} -result {5 {A {} B {} C1 {}}}
+
+test slave-5.2 {load propagated downward} -setup {
+    SetupABCs
+    tcltest::makeFile {
+        parm thisOne 7
+        parm thatOne 9
+    } testfile.dat
+} -body {
+    A load testfile.dat
+
+    list [C1 get thisOne] [C2 get thatOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+    tcltest::removeFile testfile.dat
+} -result {7 9 {C1 {} C2 {} B {} A {}}}
+
+test slave-5.3 {load propagated outward} -setup {
+    SetupABCs
+    tcltest::makeFile {
+        parm thisOne 2
+        parm thatOne 3
+    } testfile.dat
+} -body {
+    B load testfile.dat
+
+    list \
+        [A get thisOne]  \
+        [A get thatOne]  \
+        [C1 get thisOne] \
+        [C2 get thatOne] \
+        $notifyList
+} -cleanup {
+    CleanUpABCs
+    tcltest::removeFile testfile.dat
+} -result {2 3 2 3 {C1 {} C2 {} A {} B {}}}
+
+test slave-6.1 {lock propagated upward} -setup {
+    SetupABCs
+} -body {
+    C1 lock thisOne
+    A islocked thisOne
+} -cleanup {
+    CleanUpABCs
+} -result {1}
+
+test slave-6.2 {lock propagated downward} -setup {
+    SetupABCs
+} -body {
+    A lock thisOne
+    C1 islocked thisOne
+} -cleanup {
+    CleanUpABCs
+} -result {1}
+
+test slave-6.3 {lock propagated outward} -setup {
+    SetupABCs
+} -body {
+    B lock thisOne
+    list [A islocked thisOne] [C1 islocked thisOne]
+} -cleanup {
+    CleanUpABCs
+} -result {1 1}
+
+test slave-7.1 {unlock propagated upward} -setup {
+    SetupABCs
+} -body {
+    C1 unlock thisOne
+    A islocked thisOne
+} -cleanup {
+    CleanUpABCs
+} -result {0}
+
+test slave-7.2 {unlock propagated downward} -setup {
+    SetupABCs
+} -body {
+    A unlock thisOne
+    C1 islocked thisOne
+} -cleanup {
+    CleanUpABCs
+} -result {0}
+
+test slave-7.3 {unlock propagated outward} -setup {
+    SetupABCs
+} -body {
+    B unlock thisOne
+    list [A islocked thisOne] [C1 islocked thisOne]
+} -cleanup {
+    CleanUpABCs
+} -result {0 0}
+
+test slave-8.1 {Slaves can be freed} -setup {
+    parmset master
+    parmset slave
+    slave define thisOne snit::integer 0 ""
+    master slave add ::slave
+} -body {
+    master slave free ::slave
+
+    # Show that the link is broken
+    master set thisOne 5
+    slave  set thisOne 10
+    list [master get thisOne] [slave get thisOne]
+} -cleanup {
+    master destroy
+    slave destroy
+} -result {5 10}
+
+test slave-8.2 {Destruction breaks links} -setup {
+    SetupABCs
+} -body {
+    B destroy
+
+    # If links aren't broken, we should get errors here.
+    A set thisOne 5
+    C1 set thisOne 10
+    list [A get thisOne] [C1 get thisOne]
+} -cleanup {
+    A destroy
+    C1 destroy
+    C2 destroy
+} -result {5 10}
+
+test slave-9.1 {restore propagated upward} -setup {
+    SetupABCs
+} -body {
+    C1 set thisOne 5
+    set ckpt [C1 checkpoint]
+    C1 reset
+
+    set notifyList {}
+
+    C1 restore $ckpt
+
+    list [A get thisOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {5 {A {} B {} C1 {}}}
+
+test slave-9.2 {restore propagated downward} -setup {
+    SetupABCs
+} -body {
+    A set thisOne 7
+    A set thatOne 9
+    set ckpt [A checkpoint]
+    A reset
+    set notifyList {}
+
+    A restore $ckpt
+    list [C1 get thisOne] [C2 get thatOne] $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {7 9 {C1 {} C2 {} B {} A {}}}
+
+test slave-9.3 {restore propagated outward} -setup {
+    SetupABCs
+} -body {
+    B set thisOne 2
+    B set thatOne 3
+    set ckpt [B checkpoint]
+    B reset
+    set notifyList {}
+
+    B restore $ckpt
+
+    list \
+        [A get thisOne]  \
+        [A get thatOne]  \
+        [C1 get thisOne] \
+        [C2 get thatOne] \
+        $notifyList
+} -cleanup {
+    CleanUpABCs
+} -result {2 3 2 3 {C1 {} C2 {} A {} B {}}}
+
+test slave-10.1 {slave can be a command prefix} -setup {
+    snit::type slaveowner {
+        typecomponent parm -public parm
+        typeconstructor {
+            ::marsutil::parmset ${type}::parm
+            parm define thisOne snit::integer 0 ""
+
+            set parm ${type}::parm
+        }
+    }
+
+    tcltest::makeFile {
+        parm thisOne 2
+    } testfile.dat
+
+    parmset master
+} -body {
+    # The point of this test is that no errors are thrown.
+    master slave add {::slaveowner parm}
+    master set thisOne 5
+    master setdefault thisOne 10
+    master lock thisOne
+    master unlock thisOne
+    master reset
+    master restore [master checkpoint]
+    master load testfile.dat
+    master slave free {::slaveowner parm}
+} -cleanup {
+    master destroy
+    slaveowner destroy
+} -result {}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests

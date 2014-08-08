@@ -1,30 +1,34 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	zulu.tcl
+#   zulu.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) Tcl Utilities
-#
 #	Zulu-Time Translation
 #
-#       A Zulu-time string is a UTC time in this format:
+#   A Zulu-time string is a UTC time in this format:
 #
-#         ddhhmmZmmmyy
+#      ddhhmmZmmmyy
 #
-#       where
+#   where
 #
-#         dd    Day of month, 01 to 31
-#         hh    Hours, 00 to 23
-#         mm    Minutes, 00 to 59
-#         Z     Literal "Z"
-#         mmm   Three letter month abbreviation, capitalized.
-#         yy    Two-digit year, 1969 to 2068
+#      dd    Day of month, 01 to 31
+#      hh    Hours, 00 to 23
+#      mm    Minutes, 00 to 59
+#      Z     Literal "Z"
+#      mmm   Three letter month abbreviation, capitalized.
+#      yy    Two-digit year, 1969 to 2068
 #
-#       This module has conversions from Zulu-time to Unix seconds
-#       and vice-versa.
+#   This module has conversions from Zulu-time to Unix seconds
+#   and vice-versa.
 #
 #-----------------------------------------------------------------------
 

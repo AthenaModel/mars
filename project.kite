@@ -3,6 +3,8 @@ poc William.H.Duquette@jpl.nasa.gov
 provide marsutil
 
 require snit 2.3
+require sqlite3 3.8
+require comm 4.6
 require kiteutils 0.0 -local
 
 shell {

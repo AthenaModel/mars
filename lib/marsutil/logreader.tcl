@@ -2,10 +2,16 @@
 # TITLE:
 #   logreader.tcl
 #
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
+#
 # AUTHOR:
-#   Dave Jaffe
 #   Will Duquette
-# 
+#   Dave Jaffe
+#
 # DESCRIPTION:
 #   Mars marsutil(n) package: logreader type.
 # 
@@ -24,11 +30,6 @@
 #   the nature of the entries or on how they should be parsed.
 # 
 #-----------------------------------------------------------------------
-
-#-----------------------------------------------------------------------
-# Required packages
-
-package require snit
 
 #-----------------------------------------------------------------------
 # Export public commands

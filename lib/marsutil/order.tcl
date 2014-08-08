@@ -1,20 +1,25 @@
 #-----------------------------------------------------------------------
-# FILE: order.tcl
-#
-#   Mars Order Processor
+# TITLE:
+#   order.tcl
 #
 # PACKAGE:
-#   marsutil(n): Mars Utility API
+#   marsutil(n) -- Tcl Utilities
 #
 # PROJECT:
 #   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
-#-------------------------------------------------------------------
+# DESCRIPTION:
+#   Mars order processing module
+#
+#-----------------------------------------------------------------------
 
-namespace eval ::marsutil:: {
+#-----------------------------------------------------------------------
+# Exported Commands
+
+namespace eval ::marsutil {
     namespace export order
 }
 
@@ -60,10 +65,11 @@ namespace eval ::marsutil:: {
 # Create the metadata definition namespace immediately.
 
 namespace eval ::marsutil::order::define:: {
+    namespace import ::kiteutils::lmaxlen
+    namespace import ::kiteutils::lshift
+    namespace import ::kiteutils::require
     namespace import ::marsutil::dynaform
-    namespace import ::marsutil::lshift
     namespace import ::marsutil::identifier
-    namespace import ::marsutil::require
 }
 
 

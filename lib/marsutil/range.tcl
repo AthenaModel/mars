@@ -1,19 +1,25 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	range.tcl
+#   range.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) module: range types
+#   Range types
 #
 #	A range type is a range of numeric values, min to max.
-#       A particular value belongs to the type if it is
-#       numeric and falls within the bounds.
+#   A particular value belongs to the type if it is
+#   numeric and falls within the bounds.
 #
-#       Note that a range type object does not store individual values;
-#       rather, it defines the set of valid values.
+#   Note that a range type object does not store individual values;
+#   rather, it defines the set of valid values.
 #
 #-----------------------------------------------------------------------
 

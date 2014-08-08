@@ -1,15 +1,21 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    cmdinfo.tcl
+#   cmdinfo.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    marsutil(n) Tcl Command Introspector
+#   marsutil(n) Tcl Command Introspector
 #
-#    cmdinfo(n) is an ensemble command whose subcommands are used for
-#    introspection of Tcl commands and namespaces.
+#   cmdinfo(n) is an ensemble command whose subcommands are used for
+#   introspection of Tcl commands and namespaces.
 #
 #-----------------------------------------------------------------------
 

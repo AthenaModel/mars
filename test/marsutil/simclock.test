@@ -1,0 +1,1820 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    simclock.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) simclock(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
+
+#-----------------------------------------------------------------------
+# Setup
+
+# Variables
+variable logList    ""     ;# Accumulates log messages
+variable stopTicks  10     ;# Dynamic runs stop after so many ticks
+variable loopVar           ;# Ends event loop when set
+variable breakCount 5      ;# Number of times "breaker" breaks.
+variable logPuts    0      ;# If 1, logger logs to stdout as well
+
+# invariant units
+#
+# units    Minutes, Hours, Days
+#
+# Checks that [from<units> [to<units> $tick]] yields $tick
+# for $tick from 0 to 10000, given the current tick size
+# and base units.
+#
+# Returns the number of instances in which the transformation
+# was not invariant; it should always be 0.
+
+proc invariant {units} {
+    set count 0
+    for {set i 0} {$i < 10000} {incr i} {
+        set j [myclock from$units [myclock to$units $i]]
+
+        if {$j != $i} {
+            incr count
+        }
+    }
+    set count
+}
+
+# logger args
+#
+# Saves log messages to a list
+
+proc logger {args} {
+    variable logList
+    variable logPuts
+
+    lappend logList $args
+
+    if {$logPuts} {
+        puts $args
+    }
+}
+
+# bgerror msg
+#
+# Logs a bgerror
+
+proc ::bgerror {msg} {
+    ::logger app error "bgerror: $msg"
+}
+
+# getlog
+#
+# Returns the current log lines, neatly formatted.
+
+proc getlog {} {
+    variable logList
+
+    set result [join $logList "\n    "]
+
+    return "\n    $result\n"
+}
+
+# eventloop
+#
+# Enters the event loop.
+
+proc eventloop {} {
+    vwait ::loopVar
+}
+
+# advance
+#
+# Used as -advancecmd
+
+proc advance {} {
+    variable stopTicks
+
+    logger normal app "advance [myclock now]"
+
+    if {[myclock now] >= $stopTicks} {
+        myclock stop
+        set ::loopVar 1
+    }
+}
+
+# setup
+#
+# Sets up myclock for a dynamic run using start and stop.
+
+proc setup {} {
+    variable logList
+    variable stopTicks
+    variable logPuts
+
+    # FIRST, clear the logList
+    set logList [list]
+
+    # NEXT, create the simclock
+    simclockType myclock \
+        -logger     [namespace current]::logger \
+        -advancecmd [namespace current]::advance
+
+    # NEXT, set the stopTicks and the break count
+    set stopTicks  10
+    set breakCount 5
+    set logPuts    0
+}
+
+# breaker
+#
+# Used as a -requestcmd, returns "break" breakCount times;
+# then returns normally, granting the request.
+
+proc breaker {ticks} {
+    variable breakCount
+
+    logger normal app "Advance to $ticks requested"
+    
+    if {$breakCount > 0} {
+        logger normal app "Deferring request: $breakCount"
+        incr breakCount -1
+        return -code break
+    }
+
+    logger normal app "Advance granted"
+    myclock grant $ticks
+}
+
+# cleanup 
+#
+# Cleans up after a dynamic run
+
+proc cleanup {} {
+    # FIRST, clear the logList
+    set logList [list]
+
+    # NEXT, destroy the simclock
+    myclock destroy
+}
+
+#-------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {Default T0} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -t0
+} -cleanup {
+    myclock destroy
+} -result {010000ZJAN70}
+
+test creation-1.1 {Default -zuluvar0} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -zuluvar
+} -cleanup {
+    myclock destroy
+} -result {}
+
+test creation-1.3 {Time starts at zero} -setup {
+    simclockType myclock
+} -body {
+    myclock now
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test creation-1.4 {Zulu-time starts at -t0} -setup {
+    simclockType myclock
+} -body {
+    myclock asZulu
+} -cleanup {
+    myclock destroy
+} -result {010000ZJAN70}
+
+test creation-1.5 {Decimal days start at 0} -setup {
+    simclockType myclock
+} -body {
+    myclock asDays
+} -cleanup {
+    myclock destroy
+} -result {0.0}
+
+test creation-1.6 {Decimal hours start at 0} -setup {
+    simclockType myclock
+} -body {
+    myclock asHours
+} -cleanup {
+    myclock destroy
+} -result {0.0}
+
+test creation-1.7 {Tick is initially 1 minute} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -tick
+} -cleanup {
+    myclock destroy
+} -result {1 minute}
+
+test creation-1.8 {Advance command is initially empty} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -advancecmd
+} -cleanup {
+    myclock destroy
+} -result {}
+
+test creation-1.9 {Request command is initially empty} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -requestcmd
+} -cleanup {
+    myclock destroy
+} -result {}
+
+test creation-1.10 {-ratiovar is initially empty} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -ratiovar
+} -cleanup {
+    myclock destroy
+} -result {}
+
+test creation-1.11 {-actualratiovar is initially empty} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -actualratiovar
+} -cleanup {
+    myclock destroy
+} -result {}
+
+test creation-1.12 {-logger is initially empty} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -logger
+} -cleanup {
+    myclock destroy
+} -result {}
+
+test creation-1.13 {-logcomponent is initially "clock"} -setup {
+    simclockType myclock
+} -body {
+    myclock cget -logcomponent
+} -cleanup {
+    myclock destroy
+} -result {clock}
+
+test creation-1.14 {ratio is initially 0.0} -setup {
+    simclockType myclock
+} -body {
+    myclock ratio
+} -cleanup {
+    myclock destroy
+} -result {0.0}
+
+test creation-1.15 {actualratio is initially 0.0} -setup {
+    simclockType myclock
+} -body {
+    myclock actualratio
+} -cleanup {
+    myclock destroy
+} -result {0.0}
+
+test creation-1.16 {simclock is passive initially} -setup {
+    simclockType myclock
+} -body {
+    myclock isactive
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+#-------------------------------------------------------------------
+# advance
+
+test advance-1.1 {Time can advance by ticks.} -setup {
+    simclockType myclock
+} -body {
+    set t1 [myclock advance 60]
+    set t2 [myclock now]
+
+    list $t1 $t2
+} -cleanup {
+    myclock destroy
+} -result {60 60}
+
+test advance-1.2 {Time can advance to current time.} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 0
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test advance-2.1 {Can't manually advance while active} -setup {
+    simclockType myclock
+    myclock start
+} -body {
+    myclock advance 60
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {Cannot advance simclock manually; simclock is active.}
+
+test advance-3.1 {Error on non-integer} -setup {
+    simclockType myclock
+} -body {
+    myclock advance now
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {expected integer ticks: "now"}
+
+#-------------------------------------------------------------------
+# step
+
+test step-1.1 {Time can step.} -setup {
+    simclockType myclock
+} -body {
+    myclock step 60
+    set t1 [myclock step 60]
+    set t2 [myclock now]
+
+    list $t1 $t2
+} -cleanup {
+    myclock destroy
+} -result {120 120}
+
+test step-2.1 {Can't manually step while active} -setup {
+    simclockType myclock
+    myclock start
+} -body {
+    myclock step 60
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {Cannot step simclock manually; simclock is active.}
+
+test step-3.1 {Error on non-integer} -setup {
+    simclockType myclock
+} -body {
+    myclock step now
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {expected integer ticks: "now"}
+
+test step-3.2 {Error on ticks greater than zero} -setup {
+    simclockType myclock
+} -body {
+    myclock step 0
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {expected ticks > 0, got "0"}
+
+
+#-------------------------------------------------------------------
+# reset
+
+test reset-1.1 {Resetting sets time back to 0} -setup {
+    simclockType myclock
+} -body {
+    set t1 [myclock now]
+
+    myclock step 60
+    set t2 [myclock now]
+
+    myclock reset
+    set t3 [myclock now]
+
+    list $t1 $t2 $t3
+} -cleanup {
+    myclock destroy
+} -result {0 60 0}
+
+test reset-2.1 {Resetting while active stops the clock}  -setup {
+    simclockType myclock
+    myclock start 20
+} -body {
+    set list [list [myclock now] [myclock isactive]]
+    myclock reset
+    lappend list [myclock now] [myclock isactive]
+
+    set list
+} -cleanup {
+    myclock destroy
+} -result {20 1 0 0}
+
+#-------------------------------------------------------------------
+# tick
+
+test tick-1.1 {Advances time.} -setup {
+    simclockType myclock
+} -body {
+    myclock tick
+    myclock now
+} -cleanup {
+    myclock destroy
+} -result {1}
+
+test tick-1.2 {Calls the -advancecmd} -setup {
+    simclockType myclock \
+        -logger     [namespace current]::logger \
+        -advancecmd [list [namespace current]::logger advance]
+} -body {
+    myclock tick
+    getlog
+} -cleanup {
+    cleanup
+} -result {
+    normal clock {grant 010001ZJAN70 (1)}
+    advance
+}
+
+test tick-2.1 {Can't tick while active} -setup {
+    simclockType myclock
+    myclock start
+} -body {
+    myclock tick
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {Cannot tick simclock manually; simclock is active.}
+
+
+#-------------------------------------------------------------------
+# now
+
+test now-1.1 {now + offset} -setup {
+    simclockType myclock
+} -body {
+    myclock step 60
+    list [myclock now] [myclock now 30] [myclock now -30]
+} -cleanup {
+    myclock destroy
+} -result {60 90 30}
+
+#-------------------------------------------------------------------
+# -tick
+#
+# Setting -tick only; effects will be handled by time conversion
+# tests.
+
+test tickspec-1.1 {Valid -ticks} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -tick {1 minute}
+    myclock configure -tick {5 minutes}
+    myclock configure -tick {1 hour}
+    myclock configure -tick {4 hours}
+    myclock configure -tick {1 day}
+    myclock configure -tick {7 days}
+
+    myclock now
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test tickspec-2.1 {Negative tick size} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -tick {-5 minutes}
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {invalid -tick value: Invalid value: "-5 minutes"}
+
+test tickspec-2.2 {Non-integer tick size} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -tick {nonesuch minutes}
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {invalid -tick value: Invalid value: "nonesuch minutes"}
+
+test tickspec-2.3 {Unknown units} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -tick {1 week}
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {invalid -tick value: Invalid value: "1 week"}
+
+test tickspec-2.4 {value too long} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -tick {1 minute nonesuch}
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {invalid -tick value: Invalid value: "1 minute nonesuch"}
+
+test tickspec-2.5 {time not 0} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 5
+    myclock configure -tick {1 minute}
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {Sim time is not 0}
+
+#-------------------------------------------------------------------
+# Time Conversions
+#
+# The time conversion routines need to be checked for a number of
+# -ticks.  All three base units (minutes, hours, days) must
+# be checked, and at least two tick sizes, e.g., 1 and something
+# else.  This leads to the following six combinations:
+#
+# 1 minute  5 minutes
+# 1 hour    4 hours
+# 1 day     7 days
+#
+# The from* and to* routines need to be checked for each of these
+# combinations.  The checks should include both explicit conversions
+# with well-known answers, as well as invariant checking (i.e.,
+# [from<units> [to<units> $ticks]] == $ticks).
+#
+# The "as*" methods need only be checked for a single -tick,
+# once, as they simply convert the current sim time using the
+# "to*" methods.
+
+#-------------------------------------------------------------------
+# fromDays/toDays
+
+test days-1.1 {Days to ticks, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock fromDays 0.5
+} -cleanup {
+    myclock destroy
+} -result {720}
+
+test days-1.2 {Ticks to days. -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock toDays 720
+} -cleanup {
+    myclock destroy
+} -result {0.5}
+
+test days-1.3 {Invariance, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    invariant Days
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test days-2.1 {Days to ticks, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock fromDays 0.5
+} -cleanup {
+    myclock destroy
+} -result {144}
+
+test days-2.2 {Ticks to days. -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock toDays 144
+} -cleanup {
+    myclock destroy
+} -result {0.5}
+
+test days-2.3 {Invariance, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    invariant Days
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test days-3.1 {Days to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock fromDays 0.5
+} -cleanup {
+    myclock destroy
+} -result {12}
+
+test days-3.2 {Ticks to days. -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock toDays 12
+} -cleanup {
+    myclock destroy
+} -result {0.5}
+
+test days-3.3 {Invariance, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hours}
+} -body {
+    invariant Days
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test days-4.1 {Days to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock fromDays 0.5
+} -cleanup {
+    myclock destroy
+} -result {3}
+
+test days-4.2 {Ticks to days. -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock toDays 3
+} -cleanup {
+    myclock destroy
+} -result {0.5}
+
+test days-4.3 {Invariance, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    invariant Days
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test days-5.1 {Whole days to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock fromDays 7
+} -cleanup {
+    myclock destroy
+} -result {7}
+
+test days-5.2 {Fractional days to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    list [myclock fromDays 0.2] [myclock fromDays 0.7]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test days-5.3 {Ticks to days. -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock toDays 7
+} -cleanup {
+    myclock destroy
+} -result {7}
+
+test days-5.4 {Invariance, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    invariant Days
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test days-6.1 {Whole days to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock fromDays 14
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test days-6.2 {Fractional days to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    list [myclock fromDays 1] [myclock fromDays 6]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test days-6.3 {Ticks to days. -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock toDays 3
+} -cleanup {
+    myclock destroy
+} -result {21}
+
+test days-6.4 {Invariance, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    invariant Days
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+#-------------------------------------------------------------------
+# fromHours/toHours
+
+test hours-1.1 {Hours to ticks, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock fromHours 0.5
+} -cleanup {
+    myclock destroy
+} -result {30}
+
+test hours-1.2 {Ticks to hours. -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock toHours 30
+} -cleanup {
+    myclock destroy
+} -result {0.5}
+
+test hours-1.3 {Invariance, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    invariant Hours
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test hours-2.1 {Hours to ticks, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock fromHours 0.5
+} -cleanup {
+    myclock destroy
+} -result {6}
+
+test hours-2.2 {Ticks to hours. -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock toHours 6
+} -cleanup {
+    myclock destroy
+} -result {0.5}
+
+test hours-2.3 {Invariance, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    invariant Hours
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test hours-3.1 {Hours to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock fromHours 2
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test hours-3.2 {Fractional hours to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    list [myclock fromHours 0.2] [myclock fromHours 0.8]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test hours-3.3 {Ticks to hours. -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock toHours 12
+} -cleanup {
+    myclock destroy
+} -result {12}
+
+test hours-3.4 {Invariance, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hours}
+} -body {
+    invariant Hours
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test hours-4.1 {Hours to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock fromHours 24
+} -cleanup {
+    myclock destroy
+} -result {6}
+
+test hours-4.2 {Hours to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    list [myclock fromHours 1] [myclock fromHours 3]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test hours-4.3 {Ticks to hours. -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock toHours 3
+} -cleanup {
+    myclock destroy
+} -result {12}
+
+test hours-4.4 {Invariance, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    invariant Hours
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test hours-5.1 {hours to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock fromHours 48
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test hours-5.2 {hours to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    list [myclock fromHours 4] [myclock fromHours 20]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test hours-5.3 {Ticks to hours. -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock toHours 2
+} -cleanup {
+    myclock destroy
+} -result {48}
+
+test hours-5.4 {Invariance, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    invariant Hours
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test hours-6.1 {hours to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock fromHours 336
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test hours-6.2 {hours to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    list [myclock fromHours 8] [myclock fromHours 160]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test hours-6.3 {Ticks to hours. -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock toHours 2
+} -cleanup {
+    myclock destroy
+} -result {336}
+
+test hours-6.4 {Invariance, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    invariant Hours
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+#-------------------------------------------------------------------
+# fromMinutes/toMinutes
+
+test minutes-1.1 {Minutes to ticks, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock fromMinutes 30
+} -cleanup {
+    myclock destroy
+} -result {30}
+
+test minutes-1.2 {Ticks to minutes. -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock toMinutes 30
+} -cleanup {
+    myclock destroy
+} -result {30}
+
+test minutes-1.3 {Invariance, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    invariant Minutes
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test minutes-2.1 {Minutes to ticks, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock fromMinutes 30
+} -cleanup {
+    myclock destroy
+} -result {6}
+
+test minutes-2.2 {Ticks to minutes. -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock toMinutes 6
+} -cleanup {
+    myclock destroy
+} -result {30}
+
+test minutes-2.3 {Invariance, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    invariant Minutes
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test minutes-3.1 {Minutes to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock fromMinutes 120
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test minutes-3.2 {hours to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    list [myclock fromMinutes 5] [myclock fromMinutes 55]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test minutes-3.3 {Ticks to minutes. -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock toMinutes 2
+} -cleanup {
+    myclock destroy
+} -result {120}
+
+test minutes-3.4 {Invariance, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hours}
+} -body {
+    invariant Minutes
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test minutes-4.1 {Minutes to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock fromMinutes 720
+} -cleanup {
+    myclock destroy
+} -result {3}
+
+test minutes-4.2 {Minutes to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    list [myclock fromMinutes 40] [myclock fromMinutes 200]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test minutes-4.3 {Ticks to minutes. -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock toMinutes 2
+} -cleanup {
+    myclock destroy
+} -result {480}
+
+test minutes-4.4 {Invariance, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    invariant Minutes
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test minutes-5.1 {Minutes to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock fromMinutes 2880
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test minutes-5.2 {Minutes to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    list [myclock fromMinutes 40] [myclock fromMinutes 1400]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test minutes-5.3 {Ticks to minutes. -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock toMinutes 2
+} -cleanup {
+    myclock destroy
+} -result {2880}
+
+test minutes-5.4 {Invariance, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    invariant Minutes
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+test minutes-6.1 {hours to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock fromMinutes 20160
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test minutes-6.2 {hours to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    list [myclock fromMinutes 80] [myclock fromMinutes 10080]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test minutes-6.3 {Ticks to minutes, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock toMinutes 2
+} -cleanup {
+    myclock destroy
+} -result {20160}
+
+test minutes-6.4 {Invariance, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    invariant Minutes
+} -cleanup {
+    myclock destroy
+} -result {0}
+
+#-------------------------------------------------------------------
+# fromZulu/toZulu
+#
+# Note: We don't need to test zulu-time parsing or formatting;
+# that's done in zulu.test.
+
+test zulu-1.1 {zulu to ticks, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock fromZulu 010101ZJAN70
+} -cleanup {
+    myclock destroy
+} -result {61}
+
+test zulu-1.2 {ticks to zulu, -tick 1 minute} -setup {
+    simclockType myclock -tick {1 minute}
+} -body {
+    myclock toZulu 61
+} -cleanup {
+    myclock destroy
+} -result {010101ZJAN70}
+
+test zulu-2.1 {zulu to ticks, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock fromZulu 010105ZJAN70
+} -cleanup {
+    myclock destroy
+} -result {13}
+
+test zulu-2.2 {zulu to ticks, -tick 5 minutes} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    list [myclock fromZulu 010101ZJAN70] [myclock fromZulu 010104ZJAN70]
+} -cleanup {
+    myclock destroy
+} -result {12 13}
+
+test zulu-2.3 {ticks to zulu, -tick 5 minute} -setup {
+    simclockType myclock -tick {5 minutes}
+} -body {
+    myclock toZulu 12
+} -cleanup {
+    myclock destroy
+} -result {010100ZJAN70}
+
+test zulu-3.1 {zulu to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock fromZulu 010400ZJAN70
+} -cleanup {
+    myclock destroy
+} -result {4}
+
+test zulu-3.2 {zulu to ticks, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    list [myclock fromZulu 010010ZJAN70] [myclock fromZulu 010050ZJAN70]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test zulu-3.3 {ticks to zulu, -tick 1 hour} -setup {
+    simclockType myclock -tick {1 hour}
+} -body {
+    myclock toZulu 4
+} -cleanup {
+    myclock destroy
+} -result {010400ZJAN70}
+
+test zulu-4.1 {zulu to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock fromZulu 010800ZJAN70
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test zulu-4.2 {zulu to ticks, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    list [myclock fromZulu 010100ZJAN70] [myclock fromZulu 010300ZJAN70]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test zulu-4.3 {ticks to zulu, -tick 4 hours} -setup {
+    simclockType myclock -tick {4 hours}
+} -body {
+    myclock toZulu 2
+} -cleanup {
+    myclock destroy
+} -result {010800ZJAN70}
+
+test zulu-5.1 {zulu to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock fromZulu 030000ZJAN70
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test zulu-5.2 {zulu to ticks, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    list [myclock fromZulu 010100ZJAN70] [myclock fromZulu 012300ZJAN70]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test zulu-5.3 {ticks to zulu, -tick 1 day} -setup {
+    simclockType myclock -tick {1 day}
+} -body {
+    myclock toZulu 2
+} -cleanup {
+    myclock destroy
+} -result {030000ZJAN70}
+
+test zulu-6.1 {zulu to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock fromZulu 150000ZJAN70
+} -cleanup {
+    myclock destroy
+} -result {2}
+
+test zulu-5.2 {zulu to ticks, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    list [myclock fromZulu 020000ZJAN70] [myclock fromZulu 070000ZJAN70]
+} -cleanup {
+    myclock destroy
+} -result {0 1}
+
+test zulu-5.3 {ticks to zulu, -tick 7 days} -setup {
+    simclockType myclock -tick {7 days}
+} -body {
+    myclock toZulu 2
+} -cleanup {
+    myclock destroy
+} -result {150000ZJAN70}
+
+#-------------------------------------------------------------------
+# toString
+
+test toString-1.1 {toString equals toZulu} -setup {
+    simclockType myclock
+} -body {
+    set a [myclock toZulu 12]
+    set b [myclock toString 12]
+    expr {$a eq $b}
+} -cleanup {
+    myclock destroy
+} -result {1}
+
+#-------------------------------------------------------------------
+# fromTimeSpec
+
+test fromTimeSpec-1.1 {invalid spec 1} -setup {
+    simclockType myclock
+} -body {
+    myclock fromTimeSpec NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {invalid time spec "NONESUCH", base time should be "NOW", "T0", an integer tick, or a zulu-time string}
+
+test fromTimeSpec-1.2 {invalid spec 2} -setup {
+    simclockType myclock
+} -body {
+    myclock fromTimeSpec NOW++10
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {invalid time spec "NOW++10", should be <basetime><+/-><offset>}
+
+test fromTimeSpec-2.1 {valid specs} -setup {
+    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    myclock advance 31
+} -body {
+    set result [list]
+    foreach spec {
+        NOW
+        T0
+        10
+        +10
+        -10
+        NOW+10
+        NOW-10
+        T0+10
+        200000ZJAN09
+        200000ZJAN09-5
+        200000ZJAN09+5
+    } {
+        lappend result [myclock fromTimeSpec $spec]
+    }
+
+    set result
+} -cleanup {
+    myclock destroy
+} -result {31 0 10 41 21 41 21 10 10 5 15}
+
+#-------------------------------------------------------------------
+# timespec validate
+
+test timespec_validate-1.1 {invalid spec} -setup {
+    simclockType myclock
+} -body {
+    set code [catch {myclock timespec validate NONESUCH}]
+    list $code $::errorCode
+} -cleanup {
+    myclock destroy
+} -result {1 INVALID}
+
+test timespec_validate-2.1 {valid specs} -setup {
+    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    myclock advance 31
+} -body {
+    myclock timespec validate NOW
+} -cleanup {
+    myclock destroy
+} -result {31}
+
+
+#-------------------------------------------------------------------
+# past validate
+
+test past_validate-1.1 {invalid spec} -setup {
+    simclockType myclock
+} -body {
+    set code [catch {myclock past validate NONESUCH}]
+    list $code $::errorCode
+} -cleanup {
+    myclock destroy
+} -result {1 INVALID}
+
+test past_validate-1.2 {spec in future} -setup {
+    simclockType myclock
+} -body {
+    set code [catch {myclock past validate NOW+5} result]
+    list $code $::errorCode $result
+} -cleanup {
+    myclock destroy
+} -result {1 INVALID {invalid time spec "NOW+5", expected time between T0 and NOW}}
+
+test past_validate-2.1 {valid specs} -setup {
+    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    myclock advance 31
+} -body {
+    myclock past validate NOW
+} -cleanup {
+    myclock destroy
+} -result {31}
+
+
+#-------------------------------------------------------------------
+# future validate
+
+test future_validate-1.1 {invalid spec} -setup {
+    simclockType myclock
+} -body {
+    set code [catch {myclock future validate NONESUCH}]
+    list $code $::errorCode
+} -cleanup {
+    myclock destroy
+} -result {1 INVALID}
+
+test future_validate-1.2 {spec in future} -setup {
+    simclockType myclock
+} -body {
+    set code [catch {myclock future validate NOW-5} result]
+    list $code $::errorCode $result
+} -cleanup {
+    myclock destroy
+} -result {1 INVALID {invalid time spec "NOW-5", expected time no earlier than NOW}}
+
+test future_validate-2.1 {valid specs} -setup {
+    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    myclock advance 31
+} -body {
+    myclock future validate NOW
+} -cleanup {
+    myclock destroy
+} -result {31}
+
+#-------------------------------------------------------------------
+# as*
+
+test as-1.1 {asZulu for non-zero t.} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 60
+    list [myclock asZulu] [myclock asZulu 30]
+} -cleanup {
+    myclock destroy
+} -result {010100ZJAN70 010130ZJAN70}
+
+test as-1.2 {asDays for non-zero t.} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 1440
+    list [myclock asDays] [myclock asDays 1440]
+} -cleanup {
+    myclock destroy
+} -result {1.0 2.0}
+
+test as-1.3 {asHours for non-zero t.} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 1440
+    list [myclock asHours] [myclock asHours 1440]
+} -cleanup {
+    myclock destroy
+} -result {24.0 48.0}
+
+test as-1.3 {asMinutes for non-zero t.} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 1440
+    list [myclock asMinutes] [myclock asMinutes 1440]
+} -cleanup {
+    myclock destroy
+} -result {1440 2880}
+
+test as-1.4 {asString equals asZulu} -setup {
+    simclockType myclock
+} -body {
+    myclock advance 60
+    list [myclock asString] [myclock asString 30]
+} -cleanup {
+    myclock destroy
+} -result {010100ZJAN70 010130ZJAN70}
+
+#-------------------------------------------------------------------
+# -t0
+
+test t0-1.1 {-t0 sets start time} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -t0 100000ZJAN05
+    list [myclock now] [myclock asZulu]
+} -cleanup {
+    myclock destroy
+} -result {0 100000ZJAN05}
+
+test t0-1.2 {-t0 plus advance} -setup {
+    simclockType myclock
+} -body {
+    myclock configure -t0 100000ZJAN05
+    myclock advance [expr {1440 + 60 + 1}]
+    list [myclock now] [myclock asZulu]
+} -cleanup {
+    myclock destroy
+} -result {1501 110101ZJAN05}
+
+#-------------------------------------------------------------------
+# -zuluvar
+
+test zuluvar-1.1 {zulu variable is initialized} -setup {
+    simclockType myclock
+    set ::myvar ""
+} -body {
+    myclock configure -zuluvar ::myvar
+
+    set ::myvar
+} -cleanup {
+    myclock destroy
+    unset ::myvar
+} -result {010000ZJAN70}
+
+test zuluvar-2.1 {zulu variable is advanced} -setup {
+    simclockType myclock
+    set ::myvar ""
+} -body {
+    myclock configure -zuluvar ::myvar
+    myclock advance 60
+
+    set ::myvar
+} -cleanup {
+    myclock destroy
+    unset ::myvar
+} -result {010100ZJAN70}
+
+test zuluvar-3.1 {zulu variable follows -t0} -setup {
+    simclockType myclock
+    set ::myvar ""
+} -body {
+    myclock configure -zuluvar ::myvar
+    myclock advance 60
+    myclock configure -t0 100000ZJAN05
+
+    set ::myvar
+} -cleanup {
+    myclock destroy
+    unset ::myvar
+} -result {100100ZJAN05}
+
+#-------------------------------------------------------------------
+# ratio
+#
+# This section checks the "ratio" API, but not the dynamic effects
+# of setting the ratio.
+
+test ratio-1.1 {returns set ratio} -setup {
+    simclockType myclock
+} -body {
+    myclock ratio 5
+} -cleanup {
+    myclock destroy
+} -result {5.0}
+
+test ratio-1.2 {can retrieve set ratio} -setup {
+    simclockType myclock
+} -body {
+    myclock ratio 7
+    myclock ratio
+} -cleanup {
+    myclock destroy
+} -result {7.0}
+
+test ratio-1.3 {can set ratio to auto} -setup {
+    simclockType myclock
+} -body {
+    myclock ratio auto
+} -cleanup {
+    myclock destroy
+} -result {auto}
+
+test ratio-1.4 {non-numeric yields error} -setup {
+    simclockType myclock
+} -body {
+    myclock ratio dummy
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {Expected "auto" or number, got "dummy"}
+
+test ratio-1.5 {negative yields error} -setup {
+    simclockType myclock
+} -body {
+    myclock ratio -1
+} -returnCodes {
+    error
+} -cleanup {
+    myclock destroy
+} -result {Requested ratio is negative: "-1"}
+
+#-------------------------------------------------------------------
+# -ratiovar
+#
+# This section verifies that setting the ratio sets the -ratiovar
+
+test ratiovar-1.1 {ratio sets ratiovar} -setup {
+    simclockType myclock -ratiovar [namespace current]::ratiovar
+} -body {
+    myclock ratio 5
+    set ratiovar
+} -cleanup {
+    myclock destroy
+    unset ratiovar
+} -result {5.0}
+
+#-------------------------------------------------------------------
+# start/stop/isactive
+#
+# This section tests the simclock's active behavior.
+
+test start-1.1 {start clears actualratio} -setup {
+    simclockType myclock
+    myclock ratio 5
+} -body {
+    myclock start
+    list [myclock ratio] [myclock actualratio]
+} -cleanup {
+    myclock destroy
+} -result {5.0 ???}
+
+test start-1.2 {stop clears ratio, actualratio} -setup {
+    simclockType myclock
+    myclock start
+    myclock ratio 5
+} -body {
+    myclock stop
+    list [myclock ratio] [myclock actualratio]
+} -cleanup {
+    myclock destroy
+} -result {0.0 0.0}
+
+test start-1.3 {start can set time} -setup {
+    simclockType myclock
+} -body {
+    myclock start 20
+    myclock now
+} -cleanup {
+    myclock destroy
+} -result {20}
+
+test start-1.4 {isactive after start can set time} -setup {
+    simclockType myclock
+} -body {
+    set a [myclock isactive]
+    myclock start
+    set b [myclock isactive]
+    myclock stop
+    set c [myclock isactive]
+
+    list $a $b $c
+} -cleanup {
+    myclock destroy
+} -result {0 1 0}
+
+
+test start-2.1 {clock can run automatically} -setup {
+    setup
+} -body {
+    myclock start
+    myclock ratio auto
+    eventloop
+    getlog
+} -cleanup {
+    cleanup
+} -result {
+    normal clock {started 010000ZJAN70 (0)}
+    normal clock {ratio auto}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal clock {grant 010001ZJAN70 (1)}
+    normal app {advance 1}
+    normal clock {time advance request 010002ZJAN70 (2)}
+    normal clock {grant 010002ZJAN70 (2)}
+    normal app {advance 2}
+    normal clock {time advance request 010003ZJAN70 (3)}
+    normal clock {grant 010003ZJAN70 (3)}
+    normal app {advance 3}
+    normal clock {time advance request 010004ZJAN70 (4)}
+    normal clock {grant 010004ZJAN70 (4)}
+    normal app {advance 4}
+    normal clock {time advance request 010005ZJAN70 (5)}
+    normal clock {grant 010005ZJAN70 (5)}
+    normal app {advance 5}
+    normal clock {time advance request 010006ZJAN70 (6)}
+    normal clock {grant 010006ZJAN70 (6)}
+    normal app {advance 6}
+    normal clock {time advance request 010007ZJAN70 (7)}
+    normal clock {grant 010007ZJAN70 (7)}
+    normal app {advance 7}
+    normal clock {time advance request 010008ZJAN70 (8)}
+    normal clock {grant 010008ZJAN70 (8)}
+    normal app {advance 8}
+    normal clock {time advance request 010009ZJAN70 (9)}
+    normal clock {grant 010009ZJAN70 (9)}
+    normal app {advance 9}
+    normal clock {time advance request 010010ZJAN70 (10)}
+    normal clock {grant 010010ZJAN70 (10)}
+    normal app {advance 10}
+    normal clock stop
+}
+
+test start-2.2 {explicit advance request} -setup {
+    setup
+} -body {
+    myclock configure \
+        -requestcmd [list [namespace current]::myclock grant]
+
+    myclock start
+    myclock ratio auto
+    eventloop
+    getlog
+} -cleanup {
+    cleanup
+} -result {
+    normal clock {started 010000ZJAN70 (0)}
+    normal clock {ratio auto}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal clock {grant 010001ZJAN70 (1)}
+    normal app {advance 1}
+    normal clock {time advance request 010002ZJAN70 (2)}
+    normal clock {grant 010002ZJAN70 (2)}
+    normal app {advance 2}
+    normal clock {time advance request 010003ZJAN70 (3)}
+    normal clock {grant 010003ZJAN70 (3)}
+    normal app {advance 3}
+    normal clock {time advance request 010004ZJAN70 (4)}
+    normal clock {grant 010004ZJAN70 (4)}
+    normal app {advance 4}
+    normal clock {time advance request 010005ZJAN70 (5)}
+    normal clock {grant 010005ZJAN70 (5)}
+    normal app {advance 5}
+    normal clock {time advance request 010006ZJAN70 (6)}
+    normal clock {grant 010006ZJAN70 (6)}
+    normal app {advance 6}
+    normal clock {time advance request 010007ZJAN70 (7)}
+    normal clock {grant 010007ZJAN70 (7)}
+    normal app {advance 7}
+    normal clock {time advance request 010008ZJAN70 (8)}
+    normal clock {grant 010008ZJAN70 (8)}
+    normal app {advance 8}
+    normal clock {time advance request 010009ZJAN70 (9)}
+    normal clock {grant 010009ZJAN70 (9)}
+    normal app {advance 9}
+    normal clock {time advance request 010010ZJAN70 (10)}
+    normal clock {grant 010010ZJAN70 (10)}
+    normal app {advance 10}
+    normal clock stop
+}
+
+test start-2.3 {start/stop/start/stop} -setup {
+    setup
+} -body {
+    myclock start
+    set stopTicks 3
+    myclock ratio auto
+    eventloop
+
+    myclock start
+    set stopTicks 6
+    myclock ratio auto
+    eventloop
+
+    getlog
+} -cleanup {
+    cleanup
+} -result {
+    normal clock {started 010000ZJAN70 (0)}
+    normal clock {ratio auto}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal clock {grant 010001ZJAN70 (1)}
+    normal app {advance 1}
+    normal clock {time advance request 010002ZJAN70 (2)}
+    normal clock {grant 010002ZJAN70 (2)}
+    normal app {advance 2}
+    normal clock {time advance request 010003ZJAN70 (3)}
+    normal clock {grant 010003ZJAN70 (3)}
+    normal app {advance 3}
+    normal clock stop
+    normal clock {started 010003ZJAN70 (3)}
+    normal clock {ratio auto}
+    normal clock {time advance request 010004ZJAN70 (4)}
+    normal clock {grant 010004ZJAN70 (4)}
+    normal app {advance 4}
+    normal clock {time advance request 010005ZJAN70 (5)}
+    normal clock {grant 010005ZJAN70 (5)}
+    normal app {advance 5}
+    normal clock {time advance request 010006ZJAN70 (6)}
+    normal clock {grant 010006ZJAN70 (6)}
+    normal app {advance 6}
+    normal clock stop
+}
+
+test start-2.4 {start late} -setup {
+    setup
+} -body {
+    myclock start 5
+    myclock ratio auto
+    eventloop
+    getlog
+} -cleanup {
+    cleanup
+} -result {
+    normal clock {started 010005ZJAN70 (5)}
+    normal clock {ratio auto}
+    normal clock {time advance request 010006ZJAN70 (6)}
+    normal clock {grant 010006ZJAN70 (6)}
+    normal app {advance 6}
+    normal clock {time advance request 010007ZJAN70 (7)}
+    normal clock {grant 010007ZJAN70 (7)}
+    normal app {advance 7}
+    normal clock {time advance request 010008ZJAN70 (8)}
+    normal clock {grant 010008ZJAN70 (8)}
+    normal app {advance 8}
+    normal clock {time advance request 010009ZJAN70 (9)}
+    normal clock {grant 010009ZJAN70 (9)}
+    normal app {advance 9}
+    normal clock {time advance request 010010ZJAN70 (10)}
+    normal clock {grant 010010ZJAN70 (10)}
+    normal app {advance 10}
+    normal clock stop
+}
+
+test start-2.5 {defer advance request using break} -setup {
+    setup
+    myclock configure -requestcmd [namespace current]::breaker
+    set breakCount 3
+    set stopTicks  3
+} -body {
+    myclock start
+    myclock ratio auto
+    eventloop
+    getlog
+} -cleanup {
+    cleanup
+} -result {
+    normal clock {started 010000ZJAN70 (0)}
+    normal clock {ratio auto}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal app {Advance to 1 requested}
+    normal app {Deferring request: 3}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal app {Advance to 1 requested}
+    normal app {Deferring request: 2}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal app {Advance to 1 requested}
+    normal app {Deferring request: 1}
+    normal clock {time advance request 010001ZJAN70 (1)}
+    normal app {Advance to 1 requested}
+    normal app {Advance granted}
+    normal clock {grant 010001ZJAN70 (1)}
+    normal app {advance 1}
+    normal clock {time advance request 010002ZJAN70 (2)}
+    normal app {Advance to 2 requested}
+    normal app {Advance granted}
+    normal clock {grant 010002ZJAN70 (2)}
+    normal app {advance 2}
+    normal clock {time advance request 010003ZJAN70 (3)}
+    normal app {Advance to 3 requested}
+    normal app {Advance granted}
+    normal clock {grant 010003ZJAN70 (3)}
+    normal app {advance 3}
+    normal clock stop
+}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests

@@ -1,0 +1,1863 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    cellmodel.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for cellmodel(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
+
+
+#-------------------------------------------------------------------
+# Setup
+
+variable trace
+
+proc Setup {} {
+    variable trace
+    set trace [list]
+    cellmodel cm -tracecmd ::TraceCmd
+}
+
+proc CleanUp {} {
+    variable trace
+    cm destroy
+    set trace [list]
+}
+
+proc TraceCmd {args} {
+    variable trace
+    lappend trace $args
+}
+
+proc dumpTrace {} {
+    variable trace
+    pprint [join $trace \n]\n
+}
+
+# pprint block
+#
+# Pretty-prints a result block so that the test looks nice
+
+proc pprint {block} {
+    return "\n$block"
+}
+
+#-------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {Default option values} -setup {
+    Setup 
+} -body {
+    list \
+        [cm cget -epsilon]  \
+        [cm cget -maxiters] \
+        [cm cget -tracecmd]
+} -cleanup {
+    CleanUp 
+} -result {0.0001 200 ::TraceCmd}
+
+
+test creation-1.2 {Empty model} -setup {
+    Setup 
+} -body {
+    list \
+        [cm sane]      \
+        [cm pages]     \
+        [cm cells]
+} -cleanup {
+    CleanUp 
+} -result {0 null {}}
+
+#-------------------------------------------------------------------
+# load
+#
+# This section tests load errors only; successful loads are tested
+# in other sections.
+
+# load-1.* "page" errors
+
+test load-1.1 {invalid page name} -setup {
+    Setup
+} -body {
+    cm load {
+        page 123
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Invalid page name: "123"}
+
+test load-1.2 {page name is reserved} -setup {
+    Setup
+} -body {
+    cm load {
+        page all
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {page name is reserved word: "all"}
+
+test load-1.3 {duplicate page name} -setup {
+    Setup
+} -body {
+    cm load {
+        page null
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {duplicate page name: "null"}
+
+test load-1.4 {copy null page} -setup {
+    Setup
+} -body {
+    cm load {
+        page a
+        copypage null
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Can't copy the null page}
+
+test load-1.5 {copy unknown page} -setup {
+    Setup
+} -body {
+    cm load {
+        page a
+        copypage nonesuch
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {copy unknown page: "nonesuch"}
+
+test load-1.6 {copy self} -setup {
+    Setup
+} -body {
+    cm load {
+        page a
+        copypage a
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {page can't copy itself: "a"}
+
+# load-2.*: "let" errors
+
+test load-2.1 {Invalid cell name} -setup {
+    Setup
+} -body {
+    cm load {
+        let foo. = 5
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Invalid cell name: "foo."}
+
+test load-2.2 {Cell name is reserved} -setup {
+    Setup
+} -body {
+    cm load {
+        let all = 5
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {cell name is reserved word: "all"}
+
+test load-2.3 {Duplicate cell name} -setup {
+    Setup
+} -body {
+    cm load {
+        let A = 5
+        let A = 6
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Duplicate cell name: "A"}
+
+test load-2.4 {Cell name shadows null page cell name} -setup {
+    Setup
+} -body {
+    cm load {
+        let A = 5
+        page P
+        let A = 6
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Cell name shadows null page cell name: "P::A"}
+
+test load-2.5 {Invalid let option} -setup {
+    Setup
+} -body {
+    cm load {
+        let A = 5 -nonesuch
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Invalid option: "-nonesuch"}
+
+# 3.*: copypage errors
+
+test load-3.1 {copy page once} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        let A = 5
+        let B = 6
+
+        page Q 
+        copypage P
+        let A = 7
+    }
+
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+P::A =            5
+P::B =            6
+Q::A =            7
+Q::B =            6 <= [P::B]
+}
+
+test load-3.2 {copy page twice} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        let A = 5
+        let B = 6
+
+        page Q
+        copypage P
+        let A = 7
+
+        page R
+        copypage Q
+        let B = 8
+    }
+
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+P::A =            5
+P::B =            6
+Q::A =            7
+Q::B =            6 <= [P::B]
+R::A =            7 <= [Q::A]
+R::B =            8
+}
+
+test load-3.3 {copypage -except} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        let A = 5
+        let B = 6
+        let C = 7
+        let D = 8
+
+        page Q
+        copypage P -except {B C}
+        let A = 7
+    }
+
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+P::A =            5
+P::B =            6
+P::C =            7
+P::D =            8
+Q::A =            7
+Q::D =            8 <= [P::D]
+}
+
+test load-3.4 {copypage two pages} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        let A = 5
+        let B = 6
+
+        page Q
+        let C = 7
+        let D = 8
+
+        page R
+        copypage P
+        copypage Q
+        let A = 7
+    }
+
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+P::A =            5
+P::B =            6
+Q::C =            7
+Q::D =            8
+R::A =            7
+R::B =            6 <= [P::B]
+R::C =            7 <= [Q::C]
+R::D =            8 <= [Q::D]
+}
+
+# 4.* initfrom
+test initfrom-4.1 {initfrom null page} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        initfrom null
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Can't init from the null page}
+
+test initfrom-4.2 {initfrom own page} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        initfrom P
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Can't init from the page itself: "P"}
+
+test initfrom-4.3 {initfrom unknown page} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        initfrom Q
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Can't init from unknown page: "Q"}
+
+test initfrom-4.4 {initfrom known page} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        let A = 1
+        let B = 2
+
+        page Q
+        let A = 0
+        let B = 0
+
+        initfrom P
+    }
+
+    cm solve 
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+P::A =            1
+P::B =            2
+Q::A =            1
+Q::B =            2
+}
+
+test initfrom-4.5 {initfrom known pages} -setup {
+    Setup
+} -body {
+    cm load {
+        page P
+        let A = 1
+        let B = 2
+
+        page Q
+        let B = 3
+
+        page R
+        let A = 0
+        let B = 0
+
+        initfrom P Q
+    }
+
+    cm solve 
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+P::A =            1
+P::B =            2
+Q::B =            3
+R::A =            1
+R::B =            3
+}
+
+# 5.* letsym
+test load-5.1 {letsym cells} -setup {
+    Setup
+} -body {
+    cm load {
+        let    x = 5
+        letsym A = {"Foo"}
+        letsym B = {[x] == 5 ? "is" : "isn't"}
+    }
+    cm solve
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+x =            5
+A =        "Foo" <= "Foo"
+B =         "is" <= [x] == 5 ? "is" : "isn't"
+}
+
+#-------------------------------------------------------------------
+# get
+
+test get-1.1 {Invalid page name} -setup {
+    Setup
+} -body {
+    cm get nonesuch
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Invalid page name: "nonesuch"}
+
+test get-2.1 {No cells, initially} -setup {
+    Setup
+} -body {
+    cm get all
+} -cleanup {
+    CleanUp
+} -result {}
+
+test get-2.2 {Get all cells} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    cm get all
+} -cleanup {
+    CleanUp
+} -result {A 1 P::B 2}
+
+test get-2.3 {Defaults to all} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    expr {[cm get all] eq [cm get]}
+} -cleanup {
+    CleanUp
+} -result {1}
+
+test get-2.4 {Get cells for page} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    cm get P
+} -cleanup {
+    CleanUp
+} -result {P::B 2}
+
+test get-2.5 {Get cells for page using bare names} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    cm get P -bare
+} -cleanup {
+    CleanUp
+} -result {B 2}
+
+#-------------------------------------------------------------------
+# set
+
+# set-1.*: Error checking
+#
+# set doesn't yet implement error checking.
+
+test set-2.1 {Set with qualified names} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    cm set { A 3 P::B 4 }
+    cm get
+} -cleanup {
+    CleanUp
+} -result {A 3 P::B 4}
+
+test set-2.2 {Set with unqualified names} -setup {
+    Setup
+    cm load {
+        page P
+        let A = 1
+        let B = 2
+        page Q
+        let A = 3
+        let B = 4
+    }
+} -body {
+    cm set { A 5 B 6 } Q
+    cm get
+} -cleanup {
+    CleanUp
+} -result {P::A 1 P::B 2 Q::A 5 Q::B 6}
+
+#-------------------------------------------------------------------
+# sane
+
+test sane-1.1 {Not sane: formula has error} -setup {
+    Setup
+    cm load {
+        let A = {1 1 -}
+    }
+} -body {
+    cm sane
+} -cleanup {
+    CleanUp
+} -result {0}
+
+test sane-1.2 {Not sane: formula references unknown cell} -setup {
+    Setup
+    cm load {
+        let A = {1 + [nonesuch]}
+    }
+} -body {
+    cm sane
+} -cleanup {
+    CleanUp
+} -result {0}
+
+test sane-1.3 {Not sane: forward cell reference} -setup {
+    Setup
+    cm load {
+        let A = {1 + [P::B]}
+        page P
+        let B = 5
+    }
+} -body {
+    cm sane
+} -cleanup {
+    CleanUp
+} -result {0}
+
+test sane-2.1 {Sane} -setup {
+    Setup
+    cm load {
+        let A = 5
+        page P
+        let B = {1 + [A]} -value 6
+        page Q
+        copypage P
+        let B = {2 + [A]} -value 7
+        page R
+        let diff = {[Q::B] - [P::B]}
+    }
+} -body {
+    cm sane
+} -cleanup {
+    CleanUp
+} -result {1}
+
+#-------------------------------------------------------------------
+# 
+
+test eval-1.1 {Can evaluate expressions} -setup {
+    Setup
+    cm load {
+        let A = 5
+    }
+} -body {
+   cm eval {[A] + 6}
+} -cleanup {
+    CleanUp
+} -result {11.0}
+
+
+
+#-------------------------------------------------------------------
+# pages
+
+test pages-1.1 {Empty model} -setup {
+    Setup
+} -body {
+    cm pages
+} -cleanup {
+    CleanUp
+} -result {null}
+
+test pages-1.2 {Model with pages} -setup {
+    Setup
+    cm load {
+        page P
+        page Q
+    }
+} -body {
+    cm pages
+} -cleanup {
+    CleanUp
+} -result {null P Q}
+
+#-------------------------------------------------------------------
+# cells
+
+test cells-1.1 {Empty model} -setup {
+    Setup
+} -body {
+    cm cells
+} -cleanup {
+    CleanUp
+} -result {}
+
+test cells-1.2 {Model with cells} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    cm cells
+} -cleanup {
+    CleanUp
+} -result {A P::B}
+
+test cells-1.3 {Defaults to all cells} -setup {
+    Setup
+    cm load {
+        let A = 1
+        page P
+        let B = 2
+    }
+} -body {
+    expr {[cm cells] eq [cm cells all]}
+} -cleanup {
+    CleanUp
+} -result {1}
+
+test cells-1.4 {Unknown cells} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[C] + [D]}
+    }
+} -body {
+    cm cells unknown
+} -cleanup {
+    CleanUp
+} -result {C D}
+
+test cells-1.5 {Unused} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+        let C = 2
+    }
+} -body {
+    cm cells unused
+} -cleanup {
+    CleanUp
+} -result {B C}
+
+test cells-1.6 {Error} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] 1 }
+        let C = {[D]}
+    }
+} -body {
+    cm cells error
+} -cleanup {
+    CleanUp
+} -result {B}
+
+test cells-1.7 {Invalid} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] 1 }
+        let C = {[D]}
+    }
+} -body {
+    cm cells invalid
+} -cleanup {
+    CleanUp
+} -result {B C}
+
+#-------------------------------------------------------------------
+# pageinfo
+
+# pageinfo-1.*: Input validation
+#
+# These routines do not yet do input validation.
+
+test pageinfo-2.1 {pageinfo cyclic} -setup {
+    Setup
+    cm load {
+        let A = {[C] + 1}
+        let B = 2
+        let C = 3
+    }
+} -body {
+    cm pageinfo cyclic null
+} -cleanup {
+    CleanUp
+} -result {0}
+
+test pageinfo-2.2 {pageinfo cells} -setup {
+    Setup
+    cm load {
+        page P
+        let A = {[C] + 1}
+        let B = 2
+        let C = 3
+    }
+} -body {
+    cm pageinfo cells P
+} -cleanup {
+    CleanUp
+} -result {P::A P::B P::C}
+
+test pageinfo-2.3 {pageinfo barecells} -setup {
+    Setup
+    cm load {
+        page P
+        let A = {[C] + 1}
+        let B = 2
+        let C = 3
+    }
+} -body {
+    cm pageinfo barecells P
+} -cleanup {
+    CleanUp
+} -result {A B C}
+
+test pageinfo-2.4 {pageinfo order} -setup {
+    Setup
+    cm load {
+        let A = {[C] + 1}
+        let B = 2
+        let C = 3
+    }
+} -body {
+    cm pageinfo order null
+} -cleanup {
+    CleanUp
+} -result {B C A}
+
+test pageinfo-2.5 {pageinfo pline for page null} -setup {
+    Setup
+    cm load {
+        let A = {[C] + 1}
+        let B = 2
+        let C = 3
+    }
+} -body {
+    cm pageinfo pline null
+} -cleanup {
+    CleanUp
+} -result {1}
+
+test pageinfo-2.6 {pageinfo pline for other page} -setup {
+    Setup
+    cm load {
+        let A = {[C] + 1}
+        let B = 2
+        let C = 3
+        page P
+        let D = 4
+    }
+} -body {
+    cm pageinfo pline P
+} -cleanup {
+    CleanUp
+} -result {5}
+
+#-------------------------------------------------------------------
+# cellinfo
+
+# cellinfo-1.*: Input validation
+#
+# These routines do not yet do input validation.
+
+test cellinfo-2.1 {cellinfo page} -setup {
+    Setup
+    cm load {
+        let A = 1
+    }
+} -body {
+    cm cellinfo page A
+} -cleanup {
+    CleanUp
+} -result {null}
+
+test cellinfo-2.2 {cellinfo bare} -setup {
+    Setup
+    cm load {
+        page P
+        let A = 1
+    }
+} -body {
+    cm cellinfo bare P::A
+} -cleanup {
+    CleanUp
+} -result {A}
+
+test cellinfo-2.3 {cellinfo ctype} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+} -body {
+    list [cm cellinfo ctype A] [cm cellinfo ctype B]
+} -cleanup {
+    CleanUp
+} -result {constant formula}
+
+test cellinfo-2.4 {cellinfo ivalue} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+        let C = {[B] + 2} -value 7
+    }
+} -body {
+    # Note: B's value is 0 because it hasn't yet been evaluated,
+    # and no initial -value is given.
+    list \
+        [cm cellinfo ivalue A] \
+        [cm cellinfo ivalue B] \
+        [cm cellinfo ivalue C]
+} -cleanup {
+    CleanUp
+} -result {1 0.0 7}
+
+test cellinfo-2.5 {cellinfo formula} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+} -body {
+    list \
+        [cm cellinfo formula A] \
+        [cm cellinfo formula B]
+} -cleanup {
+    CleanUp
+} -result {{} {[A] + 1}}
+
+test cellinfo-2.6 {cellinfo uses} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+} -body {
+    list \
+        [cm cellinfo uses A] \
+        [cm cellinfo uses B]
+} -cleanup {
+    CleanUp
+} -result {{} A}
+
+test cellinfo-2.7 {cellinfo usedby} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+} -body {
+    list \
+        [cm cellinfo usedby A] \
+        [cm cellinfo usedby B]
+} -cleanup {
+    CleanUp
+} -result {B {}}
+
+test cellinfo-2.8 {cellinfo unknown} -setup {
+    Setup
+    cm load {
+        let A = {[X] + [Y] + [Z]}
+    }
+} -body {
+    cm cellinfo unknown A
+} -cleanup {
+    CleanUp
+} -result {X Y Z}
+
+test cellinfo-2.9 {cellinfo badpage} -setup {
+    Setup
+    cm load {
+        let A = {[P::X] + [P::Y] + [Z]}
+        page P
+        let X = 1
+        let Y = 2
+    }
+} -body {
+    cm cellinfo badpage A
+} -cleanup {
+    CleanUp
+} -result {P::X P::Y}
+
+test cellinfo-2.10 {cellinfo error} -setup {
+    Setup
+    cm load {
+        let A = 0.0
+        let B = {1/[A]}
+    }
+    cm iterate null
+} -body {
+    cm cellinfo error B
+} -cleanup {
+    CleanUp
+} -result {cell B is Inf}
+
+test cellinfo-2.11 {cellinfo vtype} -setup {
+    Setup
+    cm load {
+        let    A = 1
+        letsym B = {"Foo"}
+    }
+} -body {
+    list [cm cellinfo vtype A] [cm cellinfo vtype B]
+} -cleanup {
+    CleanUp
+} -result {number symbol}
+
+test cellinfo-2.12 {cellinfo line} -setup {
+    Setup
+    cm load {
+        let    A = 1
+        letsym B = {"Foo"}
+    }
+} -body {
+    list [cm cellinfo line A] [cm cellinfo line B]
+} -cleanup {
+    CleanUp
+} -result {2 3}
+
+#-------------------------------------------------------------------
+# formula
+
+test formula-1.1 {formula} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+} -body {
+    list \
+        [cm formula A] \
+        [cm formula B]
+} -cleanup {
+    CleanUp
+} -result {{} {[A] + 1}}
+
+#-------------------------------------------------------------------
+# value
+
+test value-1.1 {value} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+    cm solve
+} -body {
+    list \
+        [cm value A] \
+        [cm value B]
+} -cleanup {
+    CleanUp
+} -result {1 2.0}
+
+#-------------------------------------------------------------------
+# iterate
+
+# iterate-1.*: Input validation
+#
+# This routine does not yet do input validation.
+
+test iterate-2.1 {max delta} -setup {
+    Setup
+    cm load {
+        let A = 1
+        let B = {[A] + 1}
+    }
+} -body {
+    # B will go from 0 to 2, so the max delta will be 2, and B will
+    # be the cell with the max delta.
+    cm iterate null
+} -cleanup {
+    CleanUp
+} -result {2.0 B}
+
+
+test iterate-2.2 {cell with domain error} -setup {
+    Setup
+    cm load {
+        let A = 0
+        let B = {1/[A]}
+    }
+} -body {
+    cm iterate null
+    list [cm cells error] [cm cellinfo error B]
+} -cleanup {
+    CleanUp
+} -result {B {cell B is Inf}}
+
+#-------------------------------------------------------------------
+# solve
+
+test solve-1.1 {model must be sane} -setup {
+    Setup
+    cm load {
+        let B = {1/[A]}
+    }
+} -body {
+    cm solve
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Model is not sane.}
+
+
+test solve-1.2 {model has errors} -setup {
+    Setup
+    cm load {
+        let A = 0.0
+        let B = {1/[A]}
+    }
+} -body {
+    cm solve
+} -cleanup {
+    CleanUp
+} -result {errors null}
+
+
+test solve-1.3 {model diverges} -setup {
+    Setup
+    cm load {
+        let A = {[B]+1}
+        let B = {[A]+1}
+    }
+} -body {
+    cm solve
+} -cleanup {
+    CleanUp
+} -result {diverge null}
+
+test solve-2.1 {model is solved} -setup {
+    Setup
+    cm load {
+        let A = {[B]+1}
+        let B = 2
+    }
+} -body {
+    cm solve
+} -cleanup {
+    CleanUp
+} -result {ok}
+
+test solve-2.2 {acyclic page is computed} -setup {
+    Setup
+    cm load {
+        let A = {[B]+1}
+        let B = {[C]+1}
+        let C = 2
+    }
+} -body {
+    cm solve
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result "
+A =            4 <= \[B\]+1
+B =            3 <= \[C\]+1
+C =            2
+"
+
+test solve-2.3 {cyclic page is computed} -setup {
+    Setup
+    # This is a very unsatisfactory model, as it converges
+    # only because I plugged in the right answer.
+    cm load {
+        let y = {1 - [x]/2} -value -1
+        let x = {2*[y] + 6} -value 4
+    }
+} -body {
+    cm solve
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result "
+y =           -1 <= 1 - \[x\]/2
+x =            4 <= 2*\[y\] + 6
+"
+
+test solve-2.4 {Can trace computation} -setup {
+    Setup
+    # This is a very unsatisfactory model, as it converges
+    # only because I plugged in the right answer.
+    cm load {
+        let y = {1 - [x]/2} -value -1
+        let x = {2*[y] + 6} -value 4
+    }
+} -body {
+    cm solve
+    dumpTrace
+} -cleanup {
+    CleanUp
+} -result "
+iterate null 0 0.0 n/a
+iterate null 1 0.0 \{\}
+converge null 1
+"
+
+test solve-2.5 {Can solve a single page}  -setup {
+    Setup
+    cm load {
+        let a = -1
+        let b = 4
+
+        page P
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+
+        page Q
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+    }
+} -body {
+    cm solve P
+    dumpTrace
+} -cleanup {
+    CleanUp
+} -result "
+iterate P 0 0.0 n/a
+iterate P 1 4.0 P::y
+converge P 1
+"
+
+test solve-2.6 {Can solve starting at a particular page}  -setup {
+    Setup
+    cm load {
+        let a = -1
+        let b = 4
+
+        page P
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+
+        page Q
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+    }
+} -body {
+    cm solve P end
+    dumpTrace
+} -cleanup {
+    CleanUp
+} -result "
+iterate P 0 0.0 n/a
+iterate P 1 4.0 P::y
+converge P 1
+iterate Q 0 0.0 n/a
+iterate Q 1 4.0 Q::y
+converge Q 1
+"
+
+test solve-2.7 {Can solve a range of pages}  -setup {
+    Setup
+    cm load {
+        let a = -1
+        let b = 4
+
+        page P
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+
+        page Q
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+
+        page R
+        let x = {[a] + [b]} 
+        let y = {[a] * [b]}
+    }
+} -body {
+    cm solve P Q
+    dumpTrace
+} -cleanup {
+    CleanUp
+} -result "
+iterate P 0 0.0 n/a
+iterate P 1 4.0 P::y
+converge P 1
+iterate Q 0 0.0 n/a
+iterate Q 1 4.0 Q::y
+converge Q 1
+"
+
+#===================================================================
+# Model Building Tools
+#
+# This section tests various features of the modelling language.
+# Note that the "let" command is presumed to be tested in use
+# during the remainder of the test suite.
+
+#-------------------------------------------------------------------
+# define
+
+test define-1.1 {Defines can be used at file scope.} -setup {
+    Setup
+
+    cm load {
+        define ssq {x y} {[$x]*[$x] + [$y]*[$y]}
+
+        let c = [ssq a b]
+    }
+} -body {
+    cm formula c
+} -cleanup {
+    CleanUp
+} -result {[a]*[a] + [b]*[b]}
+
+test define-1.2 {Defines can be used within formulas.} -setup {
+    Setup
+
+    cm load {
+        define ssq {x y} {[$x]*[$x] + [$y]*[$y]}
+
+        let c = {[f]*(<:ssq a b:>)}
+    }
+} -body {
+    cm formula c
+} -cleanup {
+    CleanUp
+} -result {[f]*([a]*[a] + [b]*[b])}
+
+#-------------------------------------------------------------------
+# index
+
+test index-1.1 {Invalid index name} -setup {
+    Setup
+} -body {
+    cm load {
+        index a.b {1 2 3}
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Invalid index name: "a.b"}
+
+test index-1.2 {Duplicate index name} -setup {
+    Setup
+} -body {
+    cm load {
+        index i {1 2 3}
+        index i {4 5 6}
+    }
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Duplicate index name: "i"}
+
+test index-2.1 {Valid index name} -setup {
+    Setup
+} -body {
+    # NOTE: the sum-* and prod-* tests will verify that the
+    # index is usable.
+    cm load {
+        index i {1 2 3}
+    }
+} -cleanup {
+    CleanUp
+} -result {1}
+
+test index-3.1 {Introspection: invalid index name} -setup {
+    Setup
+} -body {
+    cm load {
+        index i {1 2 3}
+    }
+
+    cm index NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Unknown index name: "NONESUCH"}
+
+test index-3.2 {Introspection: no indices defined} -setup {
+    Setup
+} -body {
+    cm index
+} -cleanup {
+    CleanUp
+} -result {}
+
+test index-3.3 {Introspection: indices defined} -setup {
+    Setup
+} -body {
+    cm load {
+        index i {1 2 3}
+        index j {4 5 6}
+    }
+
+    list [cm index] [cm index i] [cm index j]
+} -cleanup {
+    CleanUp
+} -result {{i j} {1 2 3} {4 5 6}}
+
+#-------------------------------------------------------------------
+# forall
+
+test forall-1.1 {forall iterates over indices.} -setup {
+    Setup
+} -body {
+    cm load {
+        index i {a b c}
+        index j {a b c}
+        
+        forall i {
+            forall j {
+                let X.$i.$j = 1.0
+            }
+        }
+    }
+
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+X.a.a =            1
+X.a.b =            1
+X.a.c =            1
+X.b.a =            1
+X.b.b =            1
+X.b.c =            1
+X.c.a =            1
+X.c.b =            1
+X.c.c =            1
+}
+
+test forall-1.2 {index names and vars can differ} -setup {
+    Setup
+} -body {
+    cm load {
+        index iset {a b c}
+        index jset {a b c}
+        
+        forall {i iset} {
+            forall {j jset} {
+                let X.$i.$j = 1.0
+            }
+        }
+    }
+
+    pprint [cm dump]
+} -cleanup {
+    CleanUp
+} -result {
+X.a.a =            1
+X.a.b =            1
+X.a.c =            1
+X.b.a =            1
+X.b.b =            1
+X.b.c =            1
+X.c.a =            1
+X.c.b =            1
+X.c.c =            1
+}
+
+#-------------------------------------------------------------------
+# sum
+
+test sum-1.1 {sum defines sums of formulas.} -setup {
+    Setup
+} -body {
+    cm load {
+        index i {1 2 3}
+
+        let s = {[f]*<:sum i {[A.$i]}:>}
+    }
+
+    cm formula s
+} -cleanup {
+    CleanUp
+} -result {[f]*([A.1] + [A.2] + [A.3])}
+
+
+test sum-1.2 {variable and index name can differ} -setup {
+    Setup
+} -body {
+    cm load {
+        index i    {1 2 3}
+        index iset {4 5 6}
+
+        let s = {[f]*<:sum {i iset} {[A.$i]}:>}
+    }
+
+    cm formula s
+} -cleanup {
+    CleanUp
+} -result {[f]*([A.4] + [A.5] + [A.6])}
+
+
+#-------------------------------------------------------------------
+# prod
+
+test prod-1.1 {prod defines products of formulas.} -setup {
+    Setup
+
+    cm load {
+        index i {1 2 3}
+
+        let p = {[f]*<:prod i {[A.$i]}:>}
+    }
+} -body {
+    cm formula p
+} -cleanup {
+    CleanUp
+} -result {[f]*([A.1])*([A.2])*([A.3])}
+
+test prod-1.2 {prod index var and name can differ.} -setup {
+    Setup
+
+    cm load {
+        index i    {1 2 3}
+        index iset {4 5 6}
+
+        let p = {[f]*<:prod {i iset} {[A.$i]}:>}
+    }
+} -body {
+    cm formula p
+} -cleanup {
+    CleanUp
+} -result {[f]*([A.4])*([A.5])*([A.6])}
+
+#===================================================================
+# Functions
+#
+# This section tests functions that can be used in formulas.
+
+#-------------------------------------------------------------------
+# case
+
+test case-1.1 {returns first value.} -setup {
+    Setup
+
+    cm load {
+        let A = 5
+        let B = {case([A] > 0, 1, [A] <= 0, -1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {1.0}
+
+test case-1.2 {returns second value.} -setup {
+    Setup
+
+    cm load {
+        let A = -5
+        let B = {case([A] > 0, 1, [A] <= 0, -1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {-1.0}
+
+test case-1.3 {returns no value.} -setup {
+    Setup
+
+    cm load {
+        let A = 5
+        let B = {case([A] < 0, 1, [A] < 3, -1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {0.0}
+
+test case-1.4 {Can use "true" as an else condition.} -setup {
+    Setup
+
+    cm load {
+        let A = 5
+        let B = {case([A] < 0, 1, true, -1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {-1.0}
+
+#-------------------------------------------------------------------
+# fif
+
+test fif-1.1 {returns first value.} -setup {
+    Setup
+
+    cm load {
+        let A = 5
+        let B = {fif([A] > 0, 1, -1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {1.0}
+
+test fif-1.2 {returns second value.} -setup {
+    Setup
+
+    cm load {
+        let A = -5
+        let B = {fif([A] > 0, 1, -1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {-1.0}
+
+
+test fif-1.3 {second value omitted; returns 0} -setup {
+    Setup
+
+    cm load {
+        let A = -5
+        let B = {fif([A] > 0, 1)}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {0.0}
+
+#-------------------------------------------------------------------
+# epsilon
+
+test epsilon-1.1 {returns default epsilon.} -setup {
+    Setup
+
+    cm load {
+        let A = epsilon()
+    }
+} -body {
+    cm solve
+    cm value A
+} -cleanup {
+    CleanUp
+} -result {0.0001}
+
+
+test epsilon-1.2 {returns modified epsilon.} -setup {
+    Setup
+
+    cm configure -epsilon .01
+
+    cm load {
+        let A = epsilon()
+    }
+} -body {
+    cm solve
+    cm value A
+} -cleanup {
+    CleanUp
+} -result {0.01}
+
+
+#-------------------------------------------------------------------
+# ediff
+
+test ediff-1.1 {returns actual value.} -setup {
+    Setup
+
+    cm configure -epsilon .1
+
+    cm load {
+        let A = 1.2
+        let B = 1.0
+        let C = {ediff([A],[B])}
+    }
+} -body {
+    cm solve
+    format %.3f [cm value C]
+} -cleanup {
+    CleanUp
+} -result {0.200}
+
+test ediff-1.2 {returns 0.0.} -setup {
+    Setup
+
+    cm configure -epsilon .1
+
+    cm load {
+        let A = 1.02
+        let B = 1.0
+        let C = {ediff([A],[B])}
+    }
+} -body {
+    cm solve
+    cm value C
+} -cleanup {
+    CleanUp
+} -result {0.0}
+
+#-------------------------------------------------------------------
+# format
+
+test format-1.1 {can call format function} -setup {
+    Setup
+
+    cm load {
+        let A = 1.23456
+        let B = {format("%.2f",[A])}
+    }
+} -body {
+    cm solve
+    cm value B
+} -cleanup {
+    CleanUp
+} -result {1.23}
+
+
+#-------------------------------------------------------------------
+# User-defined Functions
+#
+# This section tests user-defined functions.
+
+test function-1.1 {No arguments} -setup {
+    Setup
+} -body {
+    cm load {
+        function pi {} { return 3.14159 }
+        let Result = {pi()}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {3.14159}
+
+test function-1.2 {Uses expr} -setup {
+    Setup
+} -body {
+    cm load {
+        function six {} { expr {2 * 3} }
+        let Result = {six()}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {6}
+
+test function-1.3 {1 argument} -setup {
+    Setup
+} -body {
+    cm load {
+        function triple {x} {
+            expr {3*$x}
+        }
+
+        let Result = {triple(6)}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {18}
+
+test function-1.4 {2 arguments} -setup {
+    Setup
+} -body {
+    cm load {
+        function mult {a b} { expr {$a * $b} }
+        let Result = {mult(2,5)}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {10}
+
+test function-1.5 {Uses if} -setup {
+    Setup
+} -body {
+    cm load {
+        function sign {x} {
+            if {$x > 0.0} {
+                return 1.0
+            } elseif {$x < 0.0} {
+                return -1.0
+            } else {
+                return 0.0
+            }
+        }
+
+        let Result = {sign(-5)}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {-1.0}
+
+test function-1.6 {Uses set} -setup {
+    Setup
+} -body {
+    cm load {
+        function copy {x} {
+            set y $x
+            return $y
+        }
+
+        let Result = {copy(7.0)}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {7.0}
+
+test function-1.7 {References cell} -setup {
+    Setup
+} -body {
+    cm load {
+        function BaseTimes {x} { expr {[Base] * $x} }
+        let Base = 7
+        let Result = {BaseTimes(5.0)}
+    }
+
+    cm solve
+    cm value Result
+} -cleanup {
+    CleanUp
+} -result {35.0}
+
+#-------------------------------------------------------------------
+# Bug Fixes
+# 
+# These tests are written to verify that specific bugs have been
+# fixed.
+
+test bug3670-1.1 {Short-circuited cells are detected} -setup {
+    Setup
+} -body {
+    cm load {
+        let A = 1
+        let B = 1
+        let C = {[A] ? 2.0 : [B]}
+    }
+
+    # With the bug, only A will be returned.
+    cm cellinfo uses C 
+} -cleanup {
+    CleanUp
+} -result {A B}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+

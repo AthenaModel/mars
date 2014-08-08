@@ -1,46 +1,52 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    marsmisc.tcl
+#   marsmisc.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
-#    Dave Jaffe
-#    Jon Stinzel
+#   Will Duquette
+#   Dave Jaffe
+#   Jon Stinzel
 #
 # DESCRIPTION:
-#    Mars: marsutil(n) Tcl Utilities
+#   Mars: marsutil(n) Tcl Utilities
 #
-#    Miscellaneous commands
+#   Miscellaneous commands
 #
 # TODO:
 #
-#    * code
-#      * getcode
-#    * marsmisc
-#      * echo (define if undefined)
-#      * gettimeofday
-#      * hexquote
-#      * let
-#      * optval
-#    * money
-#      * commafmt
-#      * moneyfmt
-#      * moneyscan
-#      * moneysort
-#    * prob
-#      * discrete
-#      * pickfrom
-#      * poisson
-#    * regex
-#      * stringToRegexp
-#      * wildToRegexp
-#    * valtype
-#       * count => (used in shared/bsys.tcl)
-#       * hexcolor
-#       * identifier
-#       * ipaddress
-#       * restrict
-#       * roundrange
+#   * code
+#     * getcode
+#   * marsmisc
+#     * echo (define if undefined)
+#     * gettimeofday
+#     * hexquote
+#     * let
+#     * optval
+#   * money
+#     * commafmt
+#     * moneyfmt
+#     * moneyscan
+#     * moneysort
+#   * prob
+#     * discrete
+#     * pickfrom
+#     * poisson
+#   * regex
+#     * stringToRegexp
+#     * wildToRegexp
+#   * valtype
+#      * count => (used in shared/bsys.tcl)
+#      * hexcolor
+#      * identifier
+#      * ipaddress
+#      * restrict
+#      * roundrange
 #
 #-----------------------------------------------------------------------
 

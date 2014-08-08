@@ -1,43 +1,49 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    sqldocument.tcl
+#   sqldocument.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    Extensible SQL Database Object
+#   Extensible SQL Database Object
 #
-#    This module defines the sqldocument(n) type.  Each instance 
-#    of the type can wrap a single SQLite3 database handle, providing
-#    access to all of the database handle's subcommands as well as
-#    addition subcommands of its own.
+#   This module defines the sqldocument(n) type.  Each instance 
+#   of the type can wrap a single SQLite3 database handle, providing
+#   access to all of the database handle's subcommands as well as
+#   addition subcommands of its own.
 #
-#    Access to the database is document-centric: open/create the 
-#    database, read and write until an appropriate save point is 
-#    reached, then commit all changes.  In other words, it's expected
-#    that any given database file has but one writer at a time, and
-#    arbitrarily many writes are batched into a single transaction.
-#    (Otherwise, each write would be a single transaction, and the necessary
-#    locking and unlocking would cause a performance hit.)
+#   Access to the database is document-centric: open/create the 
+#   database, read and write until an appropriate save point is 
+#   reached, then commit all changes.  In other words, it's expected
+#   that any given database file has but one writer at a time, and
+#   arbitrarily many writes are batched into a single transaction.
+#   (Otherwise, each write would be a single transaction, and the necessary
+#   locking and unlocking would cause a performance hit.)
 #
-#    sqldocument(n) can be used to open and query any kind of SQL 
-#    database file.  It addition, it can also create databases with
-#    the necessary schema definitions to support other modules,
-#    called sqlsections.  Each such module must adhere to the 
-#    sqlsection(i) interface.  All definitions for all loaded sqlsection(i)
-#    modules will be included in the created databases.
+#   sqldocument(n) can be used to open and query any kind of SQL 
+#   database file.  It addition, it can also create databases with
+#   the necessary schema definitions to support other modules,
+#   called sqlsections.  Each such module must adhere to the 
+#   sqlsection(i) interface.  All definitions for all loaded sqlsection(i)
+#   modules will be included in the created databases.
 #
-#    An sqlsection(i) module can define the following things:
+#   An sqlsection(i) module can define the following things:
 #
-#    * Persistent schema definitions
-#    * Temporary schema definitions
-#    * Temporary data definitions
-#    * SQL functions
+#   * Persistent schema definitions
+#   * Temporary schema definitions
+#   * Temporary data definitions
+#   * SQL functions
 #
-#    sqlsection(i) modules register themselves with sqldocument(n) on
-#    load; sqldocument(n) queries the sqlsection(i) modules for their
-#    definitions on database open and clear.
+#   sqlsection(i) modules register themselves with sqldocument(n) on
+#   load; sqldocument(n) queries the sqlsection(i) modules for their
+#   definitions on database open and clear.
 #
 #-----------------------------------------------------------------------
 

@@ -1,0 +1,320 @@
+<<manpage {marsutil(n) cellmodel(n)} "Cell Model">>
+
+<<section SYNOPSIS>>
+
+<pre>
+package require marsutil 1.0
+namespace import ::marsutil::cellmodel
+</pre>
+
+<<itemlist>>
+
+<<section DESCRIPTION>>
+
+Instances of the cellmodel(n) type implement "cell models".  A cell
+model is essentially a spreadsheet model without the two-dimensional
+layout or presentation features.  A cell model consists of one or more
+cells; each cell has a name (as opposed to row and column
+coordinates), a value, and (optionally) a formula.  Formulas can
+contain references to the values of other cells.<p>
+
+The cellmodel(n) instance provides the infrastructure; actual models
+(i.e., the cells with their values and formulas) are read from cell
+model files, which by convention have a ".cm" file type.  See the
+<<xref cellmodel(5)>> man page for documentation on the contents of a
+cell model file.<p>
+
+Just as a spreadsheet can contain multiple linked worksheets, a
+cell model can contain multiple "pages".  A formula on a given 
+page can refer to cells on its own page by name, and cells on
+previous pages by page name and cell name.
+(See <<xref cellmodel(5)>>.)<p>
+
+Once a cell model is loaded, the program can modify cell values and
+and ask the cellmodel(n) instance to recompute the model.<p>
+
+<<section COMMANDS>>
+
+<<deflist commands>>
+
+<<defitem cellmodel {cellmodel <i>name</i> ?<i>option value...</i>?}>>
+
+Creates a new cellmodel(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<<iref cellmodel>> returns the fully-qualified form of the
+<i>name</i>.  The cellmodel(n) object can be created with the
+following options:<p>
+
+<<deflist options>>
+
+<<defopt {-epsilon <i>epsilon</i>}>>
+
+Specifies the epsilon for the convergence test when iterating the
+model to a solution.  The default value is 0.0001.  The epsilon can be
+thought of as defining the number of signficant digits in the output,
+one for each decimal place.<p>
+
+<<defopt {-failcmd <i>cmd</i>}>>
+
+Specifies a command to call when a cell model solution fails. The command
+is appended with three arguments, the instance of the cell model object, 
+the type of failure - either <b>diverge</b>
+or <b>errors</b> and the page name in which the failure happened.<p>
+
+<<defopt {-maxiters <i>maxiters</i>}>>
+
+Specifies the maximum number of iterations when iterating the model to
+a solution.  The default value is 100.  If the model does not converge
+without <code>-maxiters</code> iterations, it is said to diverge.<p>
+
+<<defopt {-tracecmd <i>cmd</i>}>>
+
+Specifies a command to call to trace the recomputation of the model.
+The command is called with a number of additional arguments; the
+precise number depends on the first argument.<p>
+
+The argument patterns are as follows:<p>
+
+<<deflist patterns>>
+
+<<defitem trace_iterate {iterate <i>page iteration maxdelta</i>}>>
+
+The <code>-tracecmd</code> is called with these arguments before the
+first iteration of each cyclic page, and after each individual
+iteration of the page.  The arguments are the <i>page</i> name, the
+iteration number (0 before the first iteration, and incrementing for
+each iteration thereafter) and the iteration's <i>maxdelta</i>.  The
+max delta is a measure of convergence.<p>
+
+<<defitem trace_converge {converge <i>page iterations</i>}>>
+
+If the page converges, the <code>-tracecmd</code> is called with these
+arguments, where <i>page</i> is the page name and <i>iterations</i> is
+the number of iterations required to reach convergence.<p>
+
+<</deflist patterns>>
+
+<</deflist options>>
+
+<</deflist commands>>
+
+<<section "INSTANCE COMMAND">>
+
+Each instance of the <<iref cellmodel>> object has the following
+subcommands:<p>
+
+<<deflist instance>>
+
+<<defitem cget {<i>object</i> cget <i>option</i>}>>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<<defitem cells {<i>object</i> cells ?<i>page</i>?}>>
+
+Returns a list of fully-qualified cell names in order of definition.
+The <i>page</i> argument, if given, should be a valid page name, or
+one of the following symbolic constants:<p>
+
+<ul>
+  <li> <b>all</b> -- All cells (this is the default)
+  <li> <b>unused</b> -- Cells defined in the model that aren't
+       referred to any formula.
+  <li> <b>unknown</b> -- Cells referred to in formulas but not defined
+       in the model.
+  <li> <b>error</b> -- Cells whose formulas contain an error.
+  <li> <b>invalid</b> -- The union of the <b>unknown</b> and
+       <b>error</b> cells.
+</ul><p>
+
+Sane models don't contain <b>unknown</b> cells.  Some <b>error</b>
+cells can be caught during the initial sanity check; others will be
+caught when the model is solved.<p>
+
+<<defitem cellinfo {<i>object</i> cellinfo <i>field cell</i>}>>
+
+Returns information about the specified <i>cell</i>.  The available
+<i>field</i> names are as follows:<p>
+
+<ul>
+  <li> <b>page</b> -- The name of the page on which the <i>cell</i>
+       appears.
+  <li> <b>line</b> -- The line number at which the cell is defined in
+       the model script.
+  <li> <b>bare</b> -- The cell's bare (unqualified) name.
+  <li> <b>ctype</b> -- Cell Type: whether the cell is a <b>constant</b> or a
+       <b>formula</b> cell.
+  <li> <b>vtype</b> -- Value Type: whether the cell is a <b>number</b> or a
+       <b>symbol</b> cell.
+  <li> <b>ivalue</b> -- The cell's initial value.
+  <li> <b>formula</b> -- The cell's formula, or "" if none.
+  <li> <b>uses</b> -- A list of the fully-qualified names of the cells
+       used by this cell's formula.
+  <li> <b>usedby</b> -- A list of the fully-qualified names of the
+       cells whose formulas reference this cell.
+  <li> <b>unknown</b> -- A list of the names of cells referenced by
+       this cell's formula that aren't actually defined in the
+       model.
+  <li> <b>badpage</b> -- A list of the cells referenced by this
+       cell's formula that are defined on pages that are
+       defined <b>after</b> this cell's page.  (Formulas can only
+       reference cells defined on the same and previous pages.)
+  <li> <b>error</b> -- Any error message associated with this cell, or "".
+</ul><p>
+
+<<defitem clear {<i>object</i> clear}>>
+
+Deletes any loaded model from the <i>object</i>.<p>
+
+
+<<defitem configure {<i>object</i> configure <i>option value...</i>}>>
+
+Sets the value of one or more of the object's options.<p>
+
+<<defitem dump {<i>object</i> dump ?<i>page</i>?}>>
+
+Returns a pretty-printed string containing the name, value, and
+formula for every cell in the model.  If a <i>page</i> name is given,
+only cells on that page are included.<p>
+
+<<defitem eval {<i>object</i> eval <i>formula</i>}>>
+
+Evaluates a <<xref cellmodel(5)>> formula in the context of the cell
+model, given the current cell values, and returns the result.  Note
+that invalid cell names are treated as zeroes.<p>
+
+<<defitem formula {<i>object</i> formula <i>cell</i>}>>
+
+Returns the formula associated with the named <i>cell</i>, or "" if none.<p>
+
+<<defitem get {<i>object</i> get ?<i>page</i>? ?-bare?}>>
+
+Returns a dictionary of cell names with their current values for the
+specified <i>page</i>, or for <b>all</b> pages; <i>page</i> defaults
+to <b>all</b>.  
+
+In either of the above cases, the cell names are qualified by their page
+names, e.g., the <b>MyNumber</b> cell on the <b>Data</b> page is
+called <b>Data::MyNumber</b>.  When retrieving a single page, however,
+the dictionary can be retrieved with unqualified cell names by
+specifying the <b>-bare</b> option.<p>
+
+<<defitem index {<i>object</i> index ?<i>name</i>?}>>
+
+Called with no arguments, this method returns a list of the names of
+the indices defined in the current model using the
+<<xref cellmodel(5) index>> command.  If <i>name</i> is given, returns
+the list of values associated with the named index.<p>
+
+<<defitem initial {<i>object</i> initial}>>
+
+Returns a dictionary of fully qualified cell names and values just prior to
+the start of the most recent attempt to solve. This is useful for debugging
+when a cell model fails to solve.<p>
+
+<<defitem iterate {<i>object</i> iterate <i>page</i>}>>
+
+Computes all values for the named <i>page</i> in order of definition,
+and return a list containing the max delta and the name of the cell
+that yielded the max delta.  It will seldom be necessary for the
+client to use the method directly.<p>
+
+<<defitem load {<i>object</i> load <i>model</i>}>>
+
+Loads a <i>model</i> into the object, replacing any previous model.
+The input is a <<xref cellmodel(5)>> model definition.<p>
+
+If the model cannot be loaded due to syntax errors, <<iref load>>
+throws an error with error code "<b>SYNTAX <i>line_number</i></b>",
+where <i>linenumber</i> is the line number of the input in the
+<i>model</i>.<p>
+
+Otherwise, <<iref load>> returns 1 if the model appears to be "sane", and 
+0 if there are obvious errors.<p>
+
+<<defitem pages {<i>object</i> pages}>>
+
+Returns a list of the names of the model's pages in the order of
+definition.<p>
+
+<<defitem pageinfo {<i>object</i> pageinfo <i>field page</i>}>>
+
+Returns information about the specified <i>page</i>.  The available
+<i>field</i> names are as follows:<p>
+
+<ul>
+  <li> <b>pline</b> -- The line number at which the page definition
+       begins in the model script.
+  <li> <b>cyclic</b> -- 1 if the page is cyclic, and 0 if the page is
+       acyclic (or if the model is not sane).
+  <li> <b>order</b> -- Returns the order in which cells on acyclic
+       pages are computed, which might be different from the order of
+       definition.  (Because the page is acyclic, each formula can be
+       computed only once--provided it's done in the right order.)
+       Returns the empty list for cyclic pages (or if the model is
+       not sane).
+</ul><p>
+
+<<defitem reset {<i>object</i> reset}>>
+
+Resets all cell values to their initial values.<p>
+
+<<defitem sane {<i>object</i> sane}>>
+
+Returns 1 if the currently loaded model is "sane", i.e., contains no
+obvious errors, and 0 otherwise.<p>
+
+<<defitem set {<i>object</i> set <i>dict</i> ?<i>page</i>?}>>
+
+Sets the values of one or more cells given a Tcl dictionary of the
+cell names and values.  By default the cell names must be
+fully-qualified.  If the <i>dict</i> contains unqualified cell names
+for a particular page, specify the <i>page</i> name as well.<p>
+
+<<defitem solve {<i>object</i> solve ?<i>from</i> ?<i>to</i>??}>>
+
+Attempts to solve the model, computing each page in order.
+Acyclic pages are computed once, and cyclic pages are iterated to
+convergence (if possible).  Returns "<b>ok</b>" if the computation was
+successful; "<b>diverge <i>page</i></b>" if the named page diverged,
+and "<b>errors <i>page</i></b>" if there were outright errors (e.g.,
+division by zero) on the named page.<p>
+
+Note that it's an error to call <<iref solve>> if the model is not
+<<iref sane>>.<p>
+
+By default, all pages are solved.  If <i>from</i> is given, the named
+page is solved.  If <i>from</i> and <i>to</i> are given, the specified
+range of pages are solved.  If <i>to</i> is <b>end</b>, then all pages
+are solved from the <i>from</i> page to the end of the set of pages.<p>
+
+<<defitem value {<i>object</i> value <i>cell</i>}>>
+
+Returns the current value of the named <i>cell</i>.  The cell
+must exist.<p>
+
+<</deflist instance>>
+
+<<section "SEE ALSO">>
+
+<<xref cellmodel(5)>>
+
+<<section ENVIRONMENT>>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<<section AUTHOR>>
+
+Will Duquette<p>
+
+<<section HISTORY>>
+
+Original package.
+
+<</manpage>>
+
+
+
+

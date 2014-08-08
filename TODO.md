@@ -1,5 +1,11 @@
 # athena-mars TODO List
 
+* Grabbing modules
+  * Updated headers
+  * Make tests pass
+  * Look for test_*.tcl scripts for modules that have them
+  * Look for ancillary data
+  * Update all man pages.
 * Restructure marsmisc
 * Don't wrap test modules in namespaces.
 * Organize modules so that related content is grouped together, across

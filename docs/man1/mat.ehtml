@@ -1,0 +1,197 @@
+<<manpage {marsutil(n) mat(n)} "Matrix Operations">>
+
+<<section SYNOPSIS>>
+
+<pre>
+package require util 0.1
+namespace import ::marsutil::*
+</pre>
+
+<<itemlist>>
+
+<<section DESCRIPTION>>
+
+mat(n) defines a number of operations on Tcl matrices.  A Tcl
+matrix is a list of lists in row-major order,
+indexed <i>i</i> = 0,..., <i>m-1</i> and
+<i>j</i> = 0,..., <i>n-1</i>.  Thus, the following code defines an
+initialized matrix of 2 rows and 3 columns:
+
+<pre>
+set matrix {
+    {1 2 3}
+    {4 5 6}
+}
+</pre>
+
+Matrices can be entered explicitly, as shown; alternatively, the
+<<iref mat new>> command can create a matrix of arbitrary size.
+In general, the elements of a matrix can be of any type, although some of the
+operations defined by this module assume them to be numeric.<p>
+
+The elements of a matrix are accessed using the standard Tcl commands
+<code>lindex</code> and <code>lset</code>:<p>
+
+<pre>
+# Print element i,j
+puts [lindex $matrix $i $j]
+
+# Set element i,j to 7
+lset matrix $i $j 7
+</pre>
+
+Note that Tcl lists are represented internally as extensible arrays;
+consequently, access to matrix elements is reasonably quick.<p>
+
+<<section COMMANDS>>
+
+<<deflist>>
+
+<<defitem "mat new" {mat new <i>m n ?initval?</i>}>>
+
+Returns a new matrix of <i>m</i> rows and <i>n</i> columns.  If
+<i>initval</i> is given, all elements will be set to it; otherwise all
+elements will contain the empty string.  For example, the following
+code creates a 2*3 matrix of zeroes:<p>
+
+<pre>
+set matrix [mat new 2 3 0]
+</pre>
+
+<<defitem "mat rows" {mat rows <i>matrix</i>}>>
+
+Returns the number of rows in the matrix.<p>
+
+<<defitem "mat cols" {mat cols <i>matrix</i>}>>
+
+Returns the number of columns in the matrix.<p>
+
+<<defitem "mat rowvec" {mat rowvec <i>matrix i</i>}>>
+
+Returns the <i>i</i><sup>th</sup> row of <i>matrix</i> as a
+<<xref vec(n)>>.<p>
+
+<<defitem "mat colvec" {mat colvec <i>matrix j</i>}>>
+
+Returns the <i>j</i><sup>th</sup> column of <i>matrix</i> as a
+<<xref vec(n)>>.<p>
+
+<<defitem "mat equal" {mat equal <i>mat1 mat2</i>}>>
+
+Returns 1 if the two matrices have the same dimensions and
+corresponding elements are numerically equal, and 0 otherwise.<p>
+
+<<defitem "mat add" {mat add <i>mat1 mat2</i>}>>
+
+Returns the sum of the two matrices <i>mat1</i> and <i>mat2</i>.<p>
+
+<<defitem "mat sub" {mat sub <i>mat1 mat2</i>}>>
+
+Returns the difference of the two matrices <i>mat1</i> and
+<i>mat2</i>.<p>
+
+<<defitem "mat scalarmul" {mat scalarmul <i>matrix constant</i>}>>
+
+Returns the product of the <i>matrix</i> with a scalar <i>constant</i>.<p>
+
+<<defitem "mat format" {mat format <i>matrix</i> <i>fmtstring</i>}>>
+
+Returns a copy of the <i>matrix</i> which each element formatted using
+the standard Tcl <tt>format</tt> command and the given format string.<p>
+
+<<defitem "mat pprint" {mat pprint <i>matrix ?rlabels? ?clabels?</i>}>>
+
+Returns a pretty-printed text string of the elements in the
+<i>matrix</i>.  If specified, <i>rlabels</i> is a list of <<iref mat rows>>
+row labels, and <i>clabels</i> is a list of <<iref mat cols>>
+column labels; otherwise, the row and column labels are defaulted to
+the row and column numbers. The matrix elements are included "as is",
+with no additional formatting.<p>
+
+For example, the command<p>
+
+<pre>
+mat pprint {
+   {1 2 3}
+   {4 5 6}
+}
+</pre>
+
+returns the following string:<p>
+
+<pre>
+       Col 0  Col 1  Col 2
+Row 0      1      2      3
+Row 1      4      5      6
+</pre>
+
+<<defitem "mat pprintf" {mat pprintf <i>matrix format ?rlabels? ?clabels?</i>}>>
+
+This is a variant of <<iref mat pprint>>; before the <i>matrix</i> is
+pretty-printed, the elements are formatted using the standard Tcl
+command <code>format</code> and the specified <i>format</i> string.
+For example, the following code pretty-prints a numeric matrix
+containing decimal numbers between 0.000 and 100.000:<p>
+
+<pre>
+puts [mat pprintf $matrix "%7.3f"]
+</pre>
+
+Note that empty elements are passed through to the output.<p>
+
+<<defitem "mat pprintq" {mat pprintq <i>matrix quality ?rlabels? ?clabels?</i>}>>
+
+This is a variant of <<iref mat pprint>>; the <i>matrix</i> is
+assumed to contain numeric values of a <<xref quality(n)>> type.  The
+<i>quality</i> object is used to format each element as follows:<p>
+
+<pre>
+&lt;shortname&gt;=&lt;value&gt;
+</pre>
+
+The <i>value</i> is formatted using the <i>quality</i> object's
+<<xref quality(n) format>> subcommand; the <i>shortname</i> is the
+short symbolic name corresponding to the <i>value</i>.<p>
+
+<<defitem "mat numerize" {mat numerize <i>matrix quality</i>}>>
+
+Given a <i>matrix</i> whose elements are symbols of the specified
+<i>quality</i> object, returns a matrix in which all symbols have been
+converted to their numeric equivalents.  Any pre-existing numeric
+elements in the <i>matrix</i> are retained.
+
+<<defitem "mat filter" {mat filter <i>matrix command</i>}>>
+
+Given a <i>matrix</i>, pass each element to <i>command</i> and return
+the matrix of results.  The <i>command</i> is an arbitrary Tcl
+command expecting one additional argument.<p>
+
+<</deflist>>
+
+<<section "SEE ALSO">>
+
+<<xref vec(n)>>, <<xref mat3d(n)>>.
+
+
+<<section ENVIRONMENT>>
+
+mat(n) requires Tcl 8.5 or later.
+
+To use mat(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+<<section AUTHOR>>
+
+Will Duquette<p>
+
+<<section HISTORY>>
+
+Original package.
+
+<</manpage>>
+
+
+
+
+

@@ -18,311 +18,291 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2.2 
     eval ::tcltest::configure $argv
 }
+
+# Import tcltest(n)
+namespace import ::tcltest::test
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil 1.0
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
 
-#-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
 
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
+#-------------------------------------------------------------------
+# Setup
 
-    # Import tcltest(n)
-    namespace import ::tcltest::*
+# A z-curve that slopes up from left to right (doubles)
+set z1 {0.0 -50.0 50.0 100.0}
 
-    # Import the code to be tested
-    namespace import ::marsutil::*
+# A Z-curve that slopes down from left to right (doubles)
+set z2 {100.0 -50.0 50.0 0.0}
 
-    #-------------------------------------------------------------------
-    # Setup
+# A Z-curve where a and b are close (doubles)
+set z3 {0.0 -0.01 0.01 100.0}
 
-    # A z-curve that slopes up from left to right (doubles)
-    set z1 {0.0 -50.0 50.0 100.0}
+# A z-curve that slopes up from left to right (integers)
+set z4 {0 -50 50 100}
 
-    # A Z-curve that slopes down from left to right (doubles)
-    set z2 {100.0 -50.0 50.0 0.0}
+# A Z-curve that slopes down from left to right (integers)
+set z5 {100 -50 50 0}
 
-    # A Z-curve where a and b are close (doubles)
-    set z3 {0.0 -0.01 0.01 100.0}
+# A Z-curve where a and b are close (hi, lo integers)
+set z6 {0 -0.01 0.01 100}
 
-    # A z-curve that slopes up from left to right (integers)
-    set z4 {0 -50 50 100}
-
-    # A Z-curve that slopes down from left to right (integers)
-    set z5 {100 -50 50 0}
-
-    # A Z-curve where a and b are close (hi, lo integers)
-    set z6 {0 -0.01 0.01 100}
-
-    proc setup {args} {
-        zcurve ztype {*}$args
-    }
-
-    proc cleanup {} {
-        ztype destroy
-    }
-
-    #-------------------------------------------------------------------
-    # zcurve eval
-
-    test eval-1.1 {z1, x < a} -body {
-        zcurve eval $z1 -75.0
-    } -result {0.0}
-
-    test eval-1.2 {z1, x == a} -body {
-        zcurve eval $z1 -50.0
-    } -result {0.0}
-
-    test eval-1.3 {z1, x > b} -body {
-        zcurve eval $z1 75.0
-    } -result {100.0}
-
-    test eval-1.4 {z1, x == b} -body {
-        zcurve eval $z1 50.0
-    } -result {100.0}
-
-    test eval-1.5 {z1, a < x < b} -body {
-        format "%.1f" [zcurve eval $z1 0.0]
-    } -result {50.0}
-
-    test eval-2.1 {z2, x < a} -body {
-        zcurve eval $z2 -75.0
-    } -result {100.0}
-
-    test eval-2.2 {z2, x == a} -body {
-        zcurve eval $z2 -50.0
-    } -result {100.0}
-
-    test eval-2.3 {z2, x > b} -body {
-        zcurve eval $z2 75.0
-    } -result {0.0}
-
-    test eval-2.4 {z2, x == b} -body {
-        zcurve eval $z2 50.0
-    } -result {0.0}
-
-    test eval-2.5 {z2, a < x < b} -body {
-        format "%.1f" [zcurve eval $z2 0.0]
-    } -result {50.0}
-
-    test eval-3.1 {z3, x < a} -body {
-        zcurve eval $z3 -75.0
-    } -result {0.0}
-
-    test eval-3.2 {z3, x == a} -body {
-        zcurve eval $z3 -0.01
-    } -result {50.0}
-
-    test eval-3.3 {z3, x > b} -body {
-        zcurve eval $z3 75.0
-    } -result {100.0}
-
-    test eval-3.4 {z3, x == b} -body {
-        zcurve eval $z3 0.01
-    } -result {50.0}
-
-    test eval-3.5 {z3, a < x < b} -body {
-        format "%.1f" [zcurve eval $z3 0.0]
-    } -result {50.0}
-
-    # Repeat the same tests using integers
-    test eval-4.1 {z4, x < a} -body {
-        zcurve eval $z4 -75.0
-    } -result {0.0}
-
-    test eval-4.2 {z4, x == a} -body {
-        zcurve eval $z4 -50.0
-    } -result {0.0}
-
-    test eval-4.3 {z4, x > b} -body {
-        zcurve eval $z4 75.0
-    } -result {100.0}
-
-    test eval-4.4 {z4, x == b} -body {
-        zcurve eval $z4 50.0
-    } -result {100.0}
-
-    test eval-4.5 {z4, a < x < b} -body {
-        format "%.1f" [zcurve eval $z4 0.0]
-    } -result {50.0}
-
-    test eval-5.1 {z5, x < a} -body {
-        zcurve eval $z5 -75.0
-    } -result {100.0}
-
-    test eval-5.2 {z5, x == a} -body {
-        zcurve eval $z5 -50.0
-    } -result {100.0}
-
-    test eval-5.3 {z5, x > b} -body {
-        zcurve eval $z5 75.0
-    } -result {0.0}
-
-    test eval-5.4 {z5, x == b} -body {
-        zcurve eval $z5 50.0
-    } -result {0.0}
-
-    test eval-5.5 {z5, a < x < b} -body {
-        format "%.1f" [zcurve eval $z5 0.0]
-    } -result {50.0}
-
-    test eval-6.1 {z6, x < a} -body {
-        zcurve eval $z6 -75.0
-    } -result {0.0}
-
-    test eval-6.2 {z6, x == a} -body {
-        zcurve eval $z6 -0.01
-    } -result {50.0}
-
-    test eval-6.3 {z6, x > b} -body {
-        zcurve eval $z6 75.0
-    } -result {100.0}
-
-    test eval-6.4 {z6, x == b} -body {
-        zcurve eval $z6 0.01
-    } -result {50.0}
-
-    test eval-6.5 {z6, a < x < b} -body {
-        format "%.1f" [zcurve eval $z6 0.0]
-    } -result {50.0}
-
-    #-------------------------------------------------------------------
-    # zcurve validate
-
-    test validate-1.1 {empty zcurve} -body {
-        zcurve validate {}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, should be {lo a b hi}: ""}
-
-    test validate-1.3 {three element zcurve} -body {
-        zcurve validate {a b c}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, should be {lo a b hi}: "a b c"}
-
-    test validate-1.3 {five element zcurve} -body {
-        zcurve validate {a b c d e}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, should be {lo a b hi}: "a b c d e"}
-
-    test validate-1.4 {lo is not a number} -body {
-        zcurve validate {a b c d}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, lo is not a number: "a"}
-
-    test validate-1.5 {a is not a number} -body {
-        zcurve validate {1.0 b c d}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, a is not a number: "b"}
-
-    test validate-1.6 {b is not a number} -body {
-        zcurve validate {1.0 -50.0 c d}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, b is not a number: "c"}
-
-    test validate-1.7 {hi is not a number} -body {
-        zcurve validate {1.0 -50.0 50.0 d}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, hi is not a number: "d"}
-
-    test validate-1.8 {a > b} -body {
-        zcurve validate {1.0 50.0 -50.0 100.0}
-    } -returnCodes {
-        error
-    } -result {invalid zcurve, (a=50.0) > (b=-50.0)}
-
-    #-------------------------------------------------------------------
-    # creation
-
-    test creation-1.1 {default option values} -setup {
-        setup
-    } -body {
-        list \
-            [ztype cget -xmin] \
-            [ztype cget -xmax] \
-            [ztype cget -ymin] \
-            [ztype cget -ymax]
-    } -cleanup {
-        cleanup
-    } -result {-100.0 100.0 0.0 100.0}
-
-    #-------------------------------------------------------------------
-    # Instance validation
-
-    test ivalidate-1.1 {Standard validation is still done} -setup {
-        setup
-    } -body {
-        ztype validate {1.0 -50.0 50.0 nonesuch}
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {invalid zcurve, hi is not a number: "nonesuch"}
-
-    test ivalidate-1.2 {lo out of range} -setup {
-        setup
-    } -body {
-        ztype validate {-0.1 -100.0 100.0 100.0}
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {invalid lo "-0.1", expected value in range 0.0, 100.0}
-
-    test ivalidate-1.3 {a out of range} -setup {
-        setup
-    } -body {
-        ztype validate {0.0 -100.1 100.0 100.0}
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {invalid a "-100.1", expected value in range -100.0, 100.0}
-
-    test ivalidate-1.4 {b out of range} -setup {
-        setup
-    } -body {
-        ztype validate {0.0 -100.0 100.1 100.0}
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {invalid b "100.1", expected value in range -100.0, 100.0}
-
-    test ivalidate-1.5 {hi out of range} -setup {
-        setup
-    } -body {
-        ztype validate {0.0 -100.0 100.0 100.1}
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {invalid hi "100.1", expected value in range 0.0, 100.0}
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
+proc setup {args} {
+    zcurve ztype {*}$args
 }
 
-namespace delete ::marsutil::test
+proc cleanup {} {
+    ztype destroy
+}
 
+#-------------------------------------------------------------------
+# zcurve eval
 
+test eval-1.1 {z1, x < a} -body {
+    zcurve eval $z1 -75.0
+} -result {0.0}
 
+test eval-1.2 {z1, x == a} -body {
+    zcurve eval $z1 -50.0
+} -result {0.0}
 
+test eval-1.3 {z1, x > b} -body {
+    zcurve eval $z1 75.0
+} -result {100.0}
 
+test eval-1.4 {z1, x == b} -body {
+    zcurve eval $z1 50.0
+} -result {100.0}
 
+test eval-1.5 {z1, a < x < b} -body {
+    format "%.1f" [zcurve eval $z1 0.0]
+} -result {50.0}
+
+test eval-2.1 {z2, x < a} -body {
+    zcurve eval $z2 -75.0
+} -result {100.0}
+
+test eval-2.2 {z2, x == a} -body {
+    zcurve eval $z2 -50.0
+} -result {100.0}
+
+test eval-2.3 {z2, x > b} -body {
+    zcurve eval $z2 75.0
+} -result {0.0}
+
+test eval-2.4 {z2, x == b} -body {
+    zcurve eval $z2 50.0
+} -result {0.0}
+
+test eval-2.5 {z2, a < x < b} -body {
+    format "%.1f" [zcurve eval $z2 0.0]
+} -result {50.0}
+
+test eval-3.1 {z3, x < a} -body {
+    zcurve eval $z3 -75.0
+} -result {0.0}
+
+test eval-3.2 {z3, x == a} -body {
+    zcurve eval $z3 -0.01
+} -result {50.0}
+
+test eval-3.3 {z3, x > b} -body {
+    zcurve eval $z3 75.0
+} -result {100.0}
+
+test eval-3.4 {z3, x == b} -body {
+    zcurve eval $z3 0.01
+} -result {50.0}
+
+test eval-3.5 {z3, a < x < b} -body {
+    format "%.1f" [zcurve eval $z3 0.0]
+} -result {50.0}
+
+# Repeat the same tests using integers
+test eval-4.1 {z4, x < a} -body {
+    zcurve eval $z4 -75.0
+} -result {0.0}
+
+test eval-4.2 {z4, x == a} -body {
+    zcurve eval $z4 -50.0
+} -result {0.0}
+
+test eval-4.3 {z4, x > b} -body {
+    zcurve eval $z4 75.0
+} -result {100.0}
+
+test eval-4.4 {z4, x == b} -body {
+    zcurve eval $z4 50.0
+} -result {100.0}
+
+test eval-4.5 {z4, a < x < b} -body {
+    format "%.1f" [zcurve eval $z4 0.0]
+} -result {50.0}
+
+test eval-5.1 {z5, x < a} -body {
+    zcurve eval $z5 -75.0
+} -result {100.0}
+
+test eval-5.2 {z5, x == a} -body {
+    zcurve eval $z5 -50.0
+} -result {100.0}
+
+test eval-5.3 {z5, x > b} -body {
+    zcurve eval $z5 75.0
+} -result {0.0}
+
+test eval-5.4 {z5, x == b} -body {
+    zcurve eval $z5 50.0
+} -result {0.0}
+
+test eval-5.5 {z5, a < x < b} -body {
+    format "%.1f" [zcurve eval $z5 0.0]
+} -result {50.0}
+
+test eval-6.1 {z6, x < a} -body {
+    zcurve eval $z6 -75.0
+} -result {0.0}
+
+test eval-6.2 {z6, x == a} -body {
+    zcurve eval $z6 -0.01
+} -result {50.0}
+
+test eval-6.3 {z6, x > b} -body {
+    zcurve eval $z6 75.0
+} -result {100.0}
+
+test eval-6.4 {z6, x == b} -body {
+    zcurve eval $z6 0.01
+} -result {50.0}
+
+test eval-6.5 {z6, a < x < b} -body {
+    format "%.1f" [zcurve eval $z6 0.0]
+} -result {50.0}
+
+#-------------------------------------------------------------------
+# zcurve validate
+
+test validate-1.1 {empty zcurve} -body {
+    zcurve validate {}
+} -returnCodes {
+    error
+} -result {invalid zcurve, should be {lo a b hi}: ""}
+
+test validate-1.3 {three element zcurve} -body {
+    zcurve validate {a b c}
+} -returnCodes {
+    error
+} -result {invalid zcurve, should be {lo a b hi}: "a b c"}
+
+test validate-1.3 {five element zcurve} -body {
+    zcurve validate {a b c d e}
+} -returnCodes {
+    error
+} -result {invalid zcurve, should be {lo a b hi}: "a b c d e"}
+
+test validate-1.4 {lo is not a number} -body {
+    zcurve validate {a b c d}
+} -returnCodes {
+    error
+} -result {invalid zcurve, lo is not a number: "a"}
+
+test validate-1.5 {a is not a number} -body {
+    zcurve validate {1.0 b c d}
+} -returnCodes {
+    error
+} -result {invalid zcurve, a is not a number: "b"}
+
+test validate-1.6 {b is not a number} -body {
+    zcurve validate {1.0 -50.0 c d}
+} -returnCodes {
+    error
+} -result {invalid zcurve, b is not a number: "c"}
+
+test validate-1.7 {hi is not a number} -body {
+    zcurve validate {1.0 -50.0 50.0 d}
+} -returnCodes {
+    error
+} -result {invalid zcurve, hi is not a number: "d"}
+
+test validate-1.8 {a > b} -body {
+    zcurve validate {1.0 50.0 -50.0 100.0}
+} -returnCodes {
+    error
+} -result {invalid zcurve, (a=50.0) > (b=-50.0)}
+
+#-------------------------------------------------------------------
+# creation
+
+test creation-1.1 {default option values} -setup {
+    setup
+} -body {
+    list \
+        [ztype cget -xmin] \
+        [ztype cget -xmax] \
+        [ztype cget -ymin] \
+        [ztype cget -ymax]
+} -cleanup {
+    cleanup
+} -result {-100.0 100.0 0.0 100.0}
+
+#-------------------------------------------------------------------
+# Instance validation
+
+test ivalidate-1.1 {Standard validation is still done} -setup {
+    setup
+} -body {
+    ztype validate {1.0 -50.0 50.0 nonesuch}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid zcurve, hi is not a number: "nonesuch"}
+
+test ivalidate-1.2 {lo out of range} -setup {
+    setup
+} -body {
+    ztype validate {-0.1 -100.0 100.0 100.0}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid lo "-0.1", expected value in range 0.0, 100.0}
+
+test ivalidate-1.3 {a out of range} -setup {
+    setup
+} -body {
+    ztype validate {0.0 -100.1 100.0 100.0}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid a "-100.1", expected value in range -100.0, 100.0}
+
+test ivalidate-1.4 {b out of range} -setup {
+    setup
+} -body {
+    ztype validate {0.0 -100.0 100.1 100.0}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid b "100.1", expected value in range -100.0, 100.0}
+
+test ivalidate-1.5 {hi out of range} -setup {
+    setup
+} -body {
+    ztype validate {0.0 -100.0 100.0 100.1}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid hi "100.1", expected value in range 0.0, 100.0}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
 

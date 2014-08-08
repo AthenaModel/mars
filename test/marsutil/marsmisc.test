@@ -20,12 +20,12 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 }
 
 # Import tcltest(n)
-namespace import ::tcltest::*
+namespace import ::tcltest::test
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil
+source ../../lib/marsutil/pkgModules.tcl
 namespace import ::marsutil::*
 
 #-------------------------------------------------------------------

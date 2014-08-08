@@ -1,22 +1,24 @@
 #-----------------------------------------------------------------------
-# FILE: dynaform.tcl
-#
-#   dynaform(n) -- Dynamic Form Specification 
+# TITLE:
+#   dynaform.tcl
 #
 # PACKAGE:
-#   marsutil(n): Mars Utility Library
+#   marsutil(n) -- Tcl Utilities
 #
 # PROJECT:
 #   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
+#
+# DESCRIPTION:
+#   Dynamic data entry form specification
 #
 # UNCHECKED CONSTRAINTS:
-#    These constraints are assumed to be true, but are not checked.
+#   These constraints are assumed to be true, but are not checked.
 #
-#    * Field names should be unique for each line of descent
-#    * Field names must be identifiers not ending in "_".
+#   * Field names should be unique for each line of descent
+#   * Field names must be identifiers not ending in "_".
 #
 #-----------------------------------------------------------------------
 

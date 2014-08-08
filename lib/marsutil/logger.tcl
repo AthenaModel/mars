@@ -1,69 +1,75 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	logger.tcl
+#   logger.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) Tcl Utilities
+#   Mars: marsutil(n) Tcl Utilities
 #
 #	Logger type.
 #
-#       The Logger type is used to define debugging log objects.  It's
-#       expected that most applications will reference a single well-known
-#       logger object, typically with a name like "log".
+#   The Logger type is used to define debugging log objects.  It's
+#   expected that most applications will reference a single well-known
+#   logger object, typically with a name like "log".
 #
-#       Each log entry has an associated verbosity level, in order 
-#       of increasing verbosity:
+#   Each log entry has an associated verbosity level, in order 
+#   of increasing verbosity:
 #
-#       silent:   -verbosity setting; means no entries are made
-#       fatal:    Used when the program is about to halt.
-#       error:    Used only for bgerrors.
-#       warning:  Used when a potential problem is noticed.
-#       normal:   Normal informational message.
-#       detail:   Detailed informational message.
-#       debug:    Debugging message, low-level details.
+#   silent:   -verbosity setting; means no entries are made
+#   fatal:    Used when the program is about to halt.
+#   error:    Used only for bgerrors.
+#   warning:  Used when a potential problem is noticed.
+#   normal:   Normal informational message.
+#   detail:   Detailed informational message.
+#   debug:    Debugging message, low-level details.
 #
-#       The log object will have its own verbosity level; entries logged
-#       at that level and lower will be output, but entries at higher
-#       verbosity levels will not.
+#   The log object will have its own verbosity level; entries logged
+#   at that level and lower will be output, but entries at higher
+#   verbosity levels will not.
 #
-#       Each log entry will include the name of the component that logged
-#       it.  Verbosity can be set to maximum for specific components, 
-#       enabling targetted debugging.
+#   Each log entry will include the name of the component that logged
+#   it.  Verbosity can be set to maximum for specific components, 
+#   enabling targetted debugging.
 #
-#       Logs are usually written to log files.  By default, though, if
-#       no log file is open (or if the requested log file *can't* be
-#       opened) entries are written to stdout.
+#   Logs are usually written to log files.  By default, though, if
+#   no log file is open (or if the requested log file *can't* be
+#   opened) entries are written to stdout.
 #
-#       Log entries are written in the form of a proper Tcl list
-#       with these elements
+#   Log entries are written in the form of a proper Tcl list
+#   with these elements
 #
-#       <systemTime> <level> <component> <message>
+#   <systemTime> <level> <component> <message>
 #
-#       <systemTime>   The wall-clock time as yyyy-mm-ddThh:mm:ss.
-#                      This is sortable, and readable by [clock scan].
-#       <level>        The verbosity level
-#       <component>    The component logging the message
-#       <message>      The text of the message, with "\n" substituted for
-#                      all newlines and "\\" substituted for all
-#                      pre-existing backslashes.  This guarantees that
-#                      each message is on a single line.
+#   <systemTime>   The wall-clock time as yyyy-mm-ddThh:mm:ss.
+#                  This is sortable, and readable by [clock scan].
+#   <level>        The verbosity level
+#   <component>    The component logging the message
+#   <message>      The text of the message, with "\n" substituted for
+#                  all newlines and "\\" substituted for all
+#                  pre-existing backslashes.  This guarantees that
+#                  each message is on a single line.
 #
-#       Support for Simulation Time Strings
+#    Support for Simulation Time Strings
 #
-#       In actual use, the simulation time of an entry is liable to be of
-#       more interest than the wall-clock time.  The simulation time
-#       string will be included automatically if the logger is given a 
-#       -simclock.
+#    In actual use, the simulation time of an entry is liable to be of
+#    more interest than the wall-clock time.  The simulation time
+#    string will be included automatically if the logger is given a 
+#    -simclock.
 #
-#       Merging Log Files
+#    Merging Log Files
 #
-#       If the Mars simulation is split into multiple executables,
-#       and hence multiple log files, it would be desirable for log 
-#       files to be strictly sortable for easier merging.  In Uplink, we 
-#       did this by logging time to the ten-thousandth of a second.
+#    If the Mars simulation is split into multiple executables,
+#    and hence multiple log files, it would be desirable for log 
+#    files to be strictly sortable for easier merging.  In Uplink, we 
+#    did this by logging time to the ten-thousandth of a second.
 #
 #-----------------------------------------------------------------------
 

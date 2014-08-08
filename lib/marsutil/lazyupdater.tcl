@@ -1,25 +1,31 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    lazyupdater.tcl
+#   lazyupdater.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    marsutil(n) lazy update manager
+#   marsutil(n) lazy update manager
 #
-#    It's often useful to update an object in a lazy fashion.  Suppose
-#    that any 10 option settings might trigger an object to update itself,
-#    but that you only want to update it once, no matter how many of 
-#    the option settings are set.  Define a lazyupdater with a -command;
-#    each option update should call the lazyupdater's "update" method.
-#    Later, once things have stabilized, the -command will be called.
+#   It's often useful to update an object in a lazy fashion.  Suppose
+#   that any 10 option settings might trigger an object to update itself,
+#   but that you only want to update it once, no matter how many of 
+#   the option settings are set.  Define a lazyupdater with a -command;
+#   each option update should call the lazyupdater's "update" method.
+#   Later, once things have stabilized, the -command will be called.
 #
-#    If the object in question is a Tk widget, the lazyupdater will
-#    call -command only when the window is mapped, and will automatically
-#    schedule an update when the <Map> event is received.
+#   If the object in question is a Tk widget, the lazyupdater will
+#   call -command only when the window is mapped, and will automatically
+#   schedule an update when the <Map> event is received.
 #
-#    lazyupdater(n) is a wrapper around timeout(n).
+#   lazyupdater(n) is a wrapper around timeout(n).
 #
 #-----------------------------------------------------------------------
 

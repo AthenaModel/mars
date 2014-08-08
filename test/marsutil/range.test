@@ -18,254 +18,235 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2.2 
     eval ::tcltest::configure $argv
 }
+
+# Import tcltest(n)
+namespace import ::tcltest::test
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil 1.0
-
-#-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
-
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
-
-    # Import tcltest(n)
-    namespace import ::tcltest::*
-
-    # Import the code to be tested
-    namespace import ::marsutil::*
-
-    #-------------------------------------------------------------------
-    # Setup
-
-    proc setup {} {
-        range rng
-    }
-
-    proc cleanup {} {
-        rng destroy
-    }
-
-    #-------------------------------------------------------------------
-    # validate
-
-    test range_validate-1.1 {with validate} -setup {
-        setup
-    } -body {
-        rng validate 0.55
-    } -cleanup {
-        cleanup
-    } -result {0.55}
-
-    test range_validate-1.2 {input error} -setup {
-        setup
-    } -body {
-        rng validate NA
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "NA", should be a real number}
-
-    test range_validate-1.3 {out of range error: -min, -max} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0 -max 1.0
-        rng validate 2.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "2.0", should be a real number in range 0.0, 1.0}
-
-    test range_validate-1.4 {out of range error: -min} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0
-        rng validate -1.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "-1.0", should be a real number no less than 0.0}
-
-    test range_validate-1.3 {out of range error: -max} -setup {
-        setup
-    } -body {
-        rng configure -max 1.0
-        rng validate 2.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "2.0", should be a real number no greater than 1.0}
-
-    test range_validate-1.6 {-errorcode INVALID} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0 -max 1.0
-        catch {rng validate 2.0}
-        set ::errorCode
-    } -cleanup {
-        cleanup
-    } -result {INVALID}
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
 
 
-    #-------------------------------------------------------------------
-    # value
+#-------------------------------------------------------------------
+# Setup
 
-    test range_value-1.1 {with value} -setup {
-        setup
-    } -body {
-        rng value 0.55
-    } -cleanup {
-        cleanup
-    } -result {0.55}
-
-    test range_value-1.2 {input error} -setup {
-        setup
-    } -body {
-        rng value NA
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "NA", should be a real number}
-
-    test range_value-1.3 {out of range error} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0 -max 1.0
-        rng value 2.0
-    } -cleanup {
-        cleanup
-    } -returnCodes {
-        error
-    } -result {invalid value "2.0", should be a real number in range 0.0, 1.0}
-
-
-    #-------------------------------------------------------------------
-    # format
-
-    test range_format-1.1 {with arbitrary value} -setup {
-        setup
-    } -body {
-        rng format 0.8359
-    } -cleanup {
-        cleanup
-    } -result {0.84}
-
-    test range_format-1.2 {with new -format} -setup {
-        setup
-    } -body {
-        rng configure -format %6.3f
-        rng format 0.8359
-    } -cleanup {
-        cleanup
-    } -result { 0.836}
-
-    test range_format-1.3 {input error} -setup {
-        setup
-    } -body {
-        rng format NA
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Assertion failed: [string is double -strict $value]}
-
-    #-------------------------------------------------------------------
-    # clamp
-
-    test range_clamp-1.1 {no min or max} -setup {
-        setup
-    } -body {
-        rng clamp 100
-    } -cleanup {
-        cleanup
-    } -result {100}
-
-    test range_clamp-1.2 {below min} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0
-        rng clamp -0.1
-    } -cleanup {
-        cleanup
-    } -result {0.0}
-
-    test range_clamp-1.3 {above max} -setup {
-        setup
-    } -body {
-        rng configure -max 1.0
-        rng clamp 1.1
-    } -cleanup {
-        cleanup
-    } -result {1.0}
-
-    test range_clamp-1.4 {within min and max} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0 -max 1.0
-        rng clamp 0.5
-    } -cleanup {
-        cleanup
-    } -result {0.5}
-
-    #-------------------------------------------------------------------
-    # inrange
-
-    test range_inrange-1.1 {no min or max} -setup {
-        setup
-    } -body {
-        rng inrange 100
-    } -cleanup {
-        cleanup
-    } -result {1}
-
-    test range_inrange-1.2 {below min} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0
-        rng inrange -0.1
-    } -cleanup {
-        cleanup
-    } -result {0}
-
-    test range_inrange-1.3 {above max} -setup {
-        setup
-    } -body {
-        rng configure -max 1.0
-        rng inrange 1.1
-    } -cleanup {
-        cleanup
-    } -result {0}
-
-    test range_inrange-1.4 {within min and max} -setup {
-        setup
-    } -body {
-        rng configure -min 0.0 -max 1.0
-        rng inrange 0.5
-    } -cleanup {
-        cleanup
-    } -result {1}
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
+proc setup {} {
+    range rng
 }
 
-namespace delete ::marsutil::test
+proc cleanup {} {
+    rng destroy
+}
+
+#-------------------------------------------------------------------
+# validate
+
+test range_validate-1.1 {with validate} -setup {
+    setup
+} -body {
+    rng validate 0.55
+} -cleanup {
+    cleanup
+} -result {0.55}
+
+test range_validate-1.2 {input error} -setup {
+    setup
+} -body {
+    rng validate NA
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "NA", should be a real number}
+
+test range_validate-1.3 {out of range error: -min, -max} -setup {
+    setup
+} -body {
+    rng configure -min 0.0 -max 1.0
+    rng validate 2.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "2.0", should be a real number in range 0.0, 1.0}
+
+test range_validate-1.4 {out of range error: -min} -setup {
+    setup
+} -body {
+    rng configure -min 0.0
+    rng validate -1.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "-1.0", should be a real number no less than 0.0}
+
+test range_validate-1.3 {out of range error: -max} -setup {
+    setup
+} -body {
+    rng configure -max 1.0
+    rng validate 2.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "2.0", should be a real number no greater than 1.0}
+
+test range_validate-1.6 {-errorcode INVALID} -setup {
+    setup
+} -body {
+    rng configure -min 0.0 -max 1.0
+    catch {rng validate 2.0}
+    set ::errorCode
+} -cleanup {
+    cleanup
+} -result {INVALID}
 
 
+#-------------------------------------------------------------------
+# value
+
+test range_value-1.1 {with value} -setup {
+    setup
+} -body {
+    rng value 0.55
+} -cleanup {
+    cleanup
+} -result {0.55}
+
+test range_value-1.2 {input error} -setup {
+    setup
+} -body {
+    rng value NA
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "NA", should be a real number}
+
+test range_value-1.3 {out of range error} -setup {
+    setup
+} -body {
+    rng configure -min 0.0 -max 1.0
+    rng value 2.0
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {invalid value "2.0", should be a real number in range 0.0, 1.0}
 
 
+#-------------------------------------------------------------------
+# format
 
+test range_format-1.1 {with arbitrary value} -setup {
+    setup
+} -body {
+    rng format 0.8359
+} -cleanup {
+    cleanup
+} -result {0.84}
+
+test range_format-1.2 {with new -format} -setup {
+    setup
+} -body {
+    rng configure -format %6.3f
+    rng format 0.8359
+} -cleanup {
+    cleanup
+} -result { 0.836}
+
+test range_format-1.3 {input error} -setup {
+    setup
+} -body {
+    rng format NA
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Assertion failed: [string is double -strict $value]}
+
+#-------------------------------------------------------------------
+# clamp
+
+test range_clamp-1.1 {no min or max} -setup {
+    setup
+} -body {
+    rng clamp 100
+} -cleanup {
+    cleanup
+} -result {100}
+
+test range_clamp-1.2 {below min} -setup {
+    setup
+} -body {
+    rng configure -min 0.0
+    rng clamp -0.1
+} -cleanup {
+    cleanup
+} -result {0.0}
+
+test range_clamp-1.3 {above max} -setup {
+    setup
+} -body {
+    rng configure -max 1.0
+    rng clamp 1.1
+} -cleanup {
+    cleanup
+} -result {1.0}
+
+test range_clamp-1.4 {within min and max} -setup {
+    setup
+} -body {
+    rng configure -min 0.0 -max 1.0
+    rng clamp 0.5
+} -cleanup {
+    cleanup
+} -result {0.5}
+
+#-------------------------------------------------------------------
+# inrange
+
+test range_inrange-1.1 {no min or max} -setup {
+    setup
+} -body {
+    rng inrange 100
+} -cleanup {
+    cleanup
+} -result {1}
+
+test range_inrange-1.2 {below min} -setup {
+    setup
+} -body {
+    rng configure -min 0.0
+    rng inrange -0.1
+} -cleanup {
+    cleanup
+} -result {0}
+
+test range_inrange-1.3 {above max} -setup {
+    setup
+} -body {
+    rng configure -max 1.0
+    rng inrange 1.1
+} -cleanup {
+    cleanup
+} -result {0}
+
+test range_inrange-1.4 {within min and max} -setup {
+    setup
+} -body {
+    rng configure -min 0.0 -max 1.0
+    rng inrange 0.5
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
 
 

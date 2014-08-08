@@ -1,35 +1,41 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    statecontroller.tcl
+#   statecontroller.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    marsutil(n) module: State Controller
+#   marsutil(n) module: State Controller
 #
-#    A statecontroller is an object that controls the -state of one
-#    or more other objects.  It has a -condition, a boolean expression
-#    which indicates whether the controlled objects are enabled 
-#    (-state normal) or disabled (-state disabled).  The controller
-#    binds to one or more notifier(n) events, and re-evaluates the
-#    state of each controlled object when any of the events is 
-#    received. 
+#   A statecontroller is an object that controls the -state of one
+#   or more other objects.  It has a -condition, a boolean expression
+#   which indicates whether the controlled objects are enabled 
+#   (-state normal) or disabled (-state disabled).  The controller
+#   binds to one or more notifier(n) events, and re-evaluates the
+#   state of each controlled object when any of the events is 
+#   received. 
 #
-#    The expression may refer to the controlled object as $obj.  In
-#    addition, each object may specify an object dictionary, or objdict,
-#    of values to which the expression may also refer.
+#   The expression may refer to the controlled object as $obj.  In
+#   addition, each object may specify an object dictionary, or objdict,
+#   of values to which the expression may also refer.
 #
-#    Menu items are a special case: the object is specified as a pair,
-#    a menu instance, and the item's label.  In this case, $obj is
-#    set to the menu instance command.  The "menuitem" command is
-#    provided to make it easier to create and control widgets as
-#    one operation.
+#   Menu items are a special case: the object is specified as a pair,
+#   a menu instance, and the item's label.  In this case, $obj is
+#   set to the menu instance command.  The "menuitem" command is
+#   provided to make it easier to create and control widgets as
+#   one operation.
 #
-#    There is no "forget" or "uncontrol" method; if there's an error
-#    when setting an object's state, and it turns out that the object
-#    no longer exists, the object is quietly forget.  Otherwise, bgerror
-#    is called.
+#   There is no "forget" or "uncontrol" method; if there's an error
+#   when setting an object's state, and it turns out that the object
+#   no longer exists, the object is quietly forget.  Otherwise, bgerror
+#   is called.
 #
 #-----------------------------------------------------------------------
 

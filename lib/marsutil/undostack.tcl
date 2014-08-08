@@ -1,16 +1,24 @@
 #-----------------------------------------------------------------------
-# FILE: undostack.tcl
-#
-#   Undo Stack Manager
+# TITLE:
+#   undostack.tcl
 #
 # PACKAGE:
-#   marsutil(n) -- Utility Library
+#   marsutil(n) -- Tcl Utilities
 #
 # PROJECT:
 #   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
+#
+# DESCRIPTION:
+#   Undo stack manager
+#
+#   Instances of the undostack object type do the following.
+#
+#   * Manage an undo stack similar to that provided by the 
+#     Tk text widget.
+#   * Allow multiple undo stacks in one program and RDB.
 #
 #-----------------------------------------------------------------------
 
@@ -20,14 +28,6 @@ namespace eval ::marsutil:: {
 
 #-----------------------------------------------------------------------
 # undostack
-#
-# Undo stack manager
-#
-# Instances of the undostack object type do the following.
-#
-#  * Manage an undo stack similar to that provided by the 
-#    Tk text widget.
-#  * Allow multiple undo stacks in one program and RDB.
 
 snit::type ::marsutil::undostack {
 

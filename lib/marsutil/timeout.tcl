@@ -1,16 +1,22 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    timeout.tcl
+#   timeout.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    marsutil(n) timeout manager
+#   Timeout manager
 #
-#    This object encapsulates most of the logic associated with
-#    implementing a cancellable timeout with Tcl's "after" command.
-#    Timeouts can be singular or auto-repeating.
+#   This object encapsulates most of the logic associated with
+#   implementing a cancellable timeout with Tcl's "after" command.
+#   Timeouts can be singular or auto-repeating.
 #
 #-----------------------------------------------------------------------
 

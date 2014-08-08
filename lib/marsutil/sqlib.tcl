@@ -1,18 +1,22 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#	sqlib.tcl
+#   sqlib.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#	Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#       Mars: marsutil(n) Tcl Utilities
-#
 #	SQLite utilities
 #
-#       SQLite is a small SQL database manager for Tcl and other
-#       languages.  This module defines a number of tools for use
-#       with SQLite database objects.
+#   SQLite is a small SQL database manager for Tcl and other
+#   languages.  This module defines a number of tools for use
+#   with SQLite database objects.
 #
 #-----------------------------------------------------------------------
 

@@ -18,101 +18,86 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2.2 
     eval ::tcltest::configure $argv
 }
+
+# Import tcltest(n)
+namespace import ::tcltest::test
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
-package require marsutil 1.0
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
 
-#-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
 
-namespace eval ::marsutil::test {
-    #-------------------------------------------------------------------
-    # Set up the test environment
+#-------------------------------------------------------------------
+# fromsec
 
-    # Import tcltest(n)
-    namespace import ::tcltest::*
+test zulu_fromsec-1.1 {normal case} -body {
+    set date "07/28/2005 08:54"
+    set seconds [clock scan $date -gmt 1]
+    zulu fromsec $seconds
+} -result {280854ZJUL05}
 
-    # Import the code to be tested
-    namespace import ::marsutil::*
+#-------------------------------------------------------------------
+# tosec
 
-    #-------------------------------------------------------------------
-    # fromsec
+test zulu_tosec-1.1 {normal case} -body {
+    set seconds [zulu tosec "280854ZJUL05"]
+    clock format $seconds -format "%m/%d/%Y %H:%M" -gmt 1
+} -result {07/28/2005 08:54}
 
-    test zulu_fromsec-1.1 {normal case} -body {
-        set date "07/28/2005 08:54"
-        set seconds [clock scan $date -gmt 1]
-        zulu fromsec $seconds
-    } -result {280854ZJUL05}
+test zulu_tosec-1.2 {error, regexp fails} -body {
+    zulu tosec "280854ZJUL05X"
+} -returnCodes {
+    error
+} -result {invalid Zulu-time string: "280854ZJUL05X"}
 
-    #-------------------------------------------------------------------
-    # tosec
+test zulu_tosec-1.3 {error, clock scan fails} -body {
+    zulu tosec "280854ZXYZ05"
+} -returnCodes {
+    error
+} -result {invalid Zulu-time string: "280854ZXYZ05"}
 
-    test zulu_tosec-1.1 {normal case} -body {
-        set seconds [zulu tosec "280854ZJUL05"]
-        clock format $seconds -format "%m/%d/%Y %H:%M" -gmt 1
-    } -result {07/28/2005 08:54}
+test zulu_tosec-2.1 {time with hour = "00"} -body {
+    # This test covers a bug fix; originally, tosec choked
+    # if the hour digits were "00".
+    zulu tosec "110053ZJAN05"
+} -result {1105404780}
 
-    test zulu_tosec-1.2 {error, regexp fails} -body {
-        zulu tosec "280854ZJUL05X"
-    } -returnCodes {
-        error
-    } -result {invalid Zulu-time string: "280854ZJUL05X"}
+test zulu_tosec-3.1 {lowercase time} -body {
+    zulu tosec "110053zjan05"
+} -result {1105404780}
 
-    test zulu_tosec-1.3 {error, clock scan fails} -body {
-        zulu tosec "280854ZXYZ05"
-    } -returnCodes {
-        error
-    } -result {invalid Zulu-time string: "280854ZXYZ05"}
+#-------------------------------------------------------------------
+# validate
 
-    test zulu_tosec-2.1 {time with hour = "00"} -body {
-        # This test covers a bug fix; originally, tosec choked
-        # if the hour digits were "00".
-        zulu tosec "110053ZJAN05"
-    } -result {1105404780}
+test zulu_validate-1.1 {normal case} -body {
+    zulu validate "280854ZJUL05"
+} -result {280854ZJUL05}
 
-    test zulu_tosec-3.1 {lowercase time} -body {
-        zulu tosec "110053zjan05"
-    } -result {1105404780}
+test zulu_validate-1.2 {error, regexp fails} -body {
+    zulu validate "280854ZJUL05X"
+} -returnCodes {
+    error
+} -result {invalid Zulu-time string: "280854ZJUL05X"}
 
-    #-------------------------------------------------------------------
-    # validate
+test zulu_validate-1.3 {error, clock scan fails} -body {
+    zulu validate "280854ZXYZ05"
+} -returnCodes {
+    error
+} -result {invalid Zulu-time string: "280854ZXYZ05"}
 
-    test zulu_validate-1.1 {normal case} -body {
-        zulu validate "280854ZJUL05"
-    } -result {280854ZJUL05}
+test zulu_validate-2.1 {time with hour = "00"} -body {
+    # This test covers a bug fix; originally, validate choked
+    # if the hour digits were "00".
+    zulu validate "110053ZJAN05"
+} -result {110053ZJAN05}
 
-    test zulu_validate-1.2 {error, regexp fails} -body {
-        zulu validate "280854ZJUL05X"
-    } -returnCodes {
-        error
-    } -result {invalid Zulu-time string: "280854ZJUL05X"}
+test zulu_validate-3.1 {lowercase time} -body {
+    zulu validate "110053zjan05"
+} -result {110053ZJAN05}
 
-    test zulu_validate-1.3 {error, clock scan fails} -body {
-        zulu validate "280854ZXYZ05"
-    } -returnCodes {
-        error
-    } -result {invalid Zulu-time string: "280854ZXYZ05"}
+#-------------------------------------------------------------------
+# Cleanup
 
-    test zulu_validate-2.1 {time with hour = "00"} -body {
-        # This test covers a bug fix; originally, validate choked
-        # if the hour digits were "00".
-        zulu validate "110053ZJAN05"
-    } -result {110053ZJAN05}
-
-    test zulu_validate-3.1 {lowercase time} -body {
-        zulu validate "110053zjan05"
-    } -result {110053ZJAN05}
-
-    #-------------------------------------------------------------------
-    # Cleanup
-
-    cleanupTests
-}
-
-namespace delete ::marsutil::test
-
+tcltest::cleanupTests

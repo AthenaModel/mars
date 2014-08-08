@@ -1,46 +1,52 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    parmset.tcl
+#   parmset.tcl
+#
+# PACKAGE:
+#   marsutil(n) -- Tcl Utilities
+#
+# PROJECT:
+#   Mars Simulation Infrastructure Library
 #
 # AUTHOR:
-#    Will Duquette
+#   Will Duquette
 #
 # DESCRIPTION:
-#    Mars marsutil(n) Module: Parameter Set Framework
+#   Mars marsutil(n) Module: Parameter Set Framework
 #
-#    A parameter set is a vector of typed parameters which may be
-#    loaded from a file, edited, and saved back to the file.  Parameter
-#    values are validated on load and edit, and jnem_man(1)-style
-#    documentation can be generated automatically for inclusion in a
-#    jnem_man(1) man page.
+#   A parameter set is a vector of typed parameters which may be
+#   loaded from a file, edited, and saved back to the file.  Parameter
+#   values are validated on load and edit, and jnem_man(1)-style
+#   documentation can be generated automatically for inclusion in a
+#   jnem_man(1) man page.
 #
-#    Parameter names must begin with a letter, and may include
-#    letters, numbers, underscores, hyphens, and periods.  Embedded periods
-#    are used to indicate subset-membership, i.e., parameter "a.b.c"
-#    belongs to subset "a.b", and subset "a.b" belongs in turn to
-#    subset "a".  A subset must be defined before any members of
-#    the subset.
+#   Parameter names must begin with a letter, and may include
+#   letters, numbers, underscores, hyphens, and periods.  Embedded periods
+#   are used to indicate subset-membership, i.e., parameter "a.b.c"
+#   belongs to subset "a.b", and subset "a.b" belongs in turn to
+#   subset "a".  A subset must be defined before any members of
+#   the subset.
 #
-#    The file format is simple:
+#   The file format is simple:
 #
-#      parm <parm> <value>
+#     parm <parm> <value>
 #
-#    It has Tcl syntax, so that complicated values containing newlines
-#    can be entered using braces, as usual.  The file can contain Tcl 
-#    comments, but there's not much point, as the file is often produced
-#    by software.
+#   It has Tcl syntax, so that complicated values containing newlines
+#   can be entered using braces, as usual.  The file can contain Tcl 
+#   comments, but there's not much point, as the file is often produced
+#   by software.
 #
-#    This module defines the parmset type; to define a parameter set,
-#    create an instance of parmset; then define the parameters using
-#    the define method.
+#   This module defines the parmset type; to define a parameter set,
+#   create an instance of parmset; then define the parameters using
+#   the define method.
 #
 # MASTERS AND SLAVES
-#    Parmsets can be linked in a master/slave relationship.  The slave's 
-#    parameters are grafted into the master, unchanged; note that they
-#    must not already exist there, and the slave must not already be
-#    a slave.  Then, changes to either parmset are communicated to the
-#    other transparently.  Neither clients of the slave nor clients
-#    of the master need be aware of the relationship.
+#   Parmsets can be linked in a master/slave relationship.  The slave's 
+#   parameters are grafted into the master, unchanged; note that they
+#   must not already exist there, and the slave must not already be
+#   a slave.  Then, changes to either parmset are communicated to the
+#   other transparently.  Neither clients of the slave nor clients
+#   of the master need be aware of the relationship.
 #
 #-----------------------------------------------------------------------
 
