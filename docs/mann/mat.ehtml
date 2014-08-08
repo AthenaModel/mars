@@ -158,7 +158,7 @@ short symbolic name corresponding to the <i>value</i>.<p>
 Given a <i>matrix</i> whose elements are symbols of the specified
 <i>quality</i> object, returns a matrix in which all symbols have been
 converted to their numeric equivalents.  Any pre-existing numeric
-elements in the <i>matrix</i> are retained.
+elements in the <i>matrix</i> are retained.<p>
 
 <defitem "mat filter" {mat filter <i>matrix command</i>}>
 
