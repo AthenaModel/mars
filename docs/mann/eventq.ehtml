@@ -3,7 +3,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require util 1.0
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
@@ -69,7 +69,7 @@ The schema looks as follows; as an example, an event type <b>dummy</b>
 with arguments <i>a</i> and <i>b</i> has been defined.
 
 <pre>
-<eventq sqlsection schema>
+<marsutil::eventq sqlsection schema>
 </pre>
 
 
