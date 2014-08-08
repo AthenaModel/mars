@@ -2,8 +2,8 @@
 
 <section SYNOPSIS>
 
-<pare>
-package require marsutil 0.1
+<pre>
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre><p>
 

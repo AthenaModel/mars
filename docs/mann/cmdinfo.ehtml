@@ -3,7 +3,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require util 1.0
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
