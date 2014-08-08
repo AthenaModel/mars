@@ -1,31 +1,31 @@
-<<manpage {marsutil(n) gtserver(n)} "Game Truth Server">>
+<manpage {marsutil(n) gtserver(n)} "Game Truth Server">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
 package require util 1.0
 namespace import ::marsutil::gtserver
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 gtserver(n) defines an API for publishing game truth variables to
-any number of <<xref commclient(n)>> objects via a
-<<xref commserver(n)>> object.<p>  See the <<xref EXAMPLE>>, below,
-for how to hook up the gtserver(n) to the <<xref commserver(n)>>.<p>
+any number of <xref commclient(n)> objects via a
+<xref commserver(n)> object.<p>  See the <xref EXAMPLE>, below,
+for how to hook up the gtserver(n) to the <xref commserver(n)>.<p>
 
 Once a gtserver(n) object is created, game truth variables can be
-published using the <<iref set>> method, and clients can be refreshed
-using the <<iref refresh>> method.  Points in time at which the full
+published using the <iref set> method, and clients can be refreshed
+using the <iref refresh> method.  Points in time at which the full
 set of game truth is guaranteed to be complete and consistent can be
-indicated by calling the <<iref complete>> method.<p>
+indicated by calling the <iref complete> method.<p>
 
-<<section PROTOCOL>>
+<section PROTOCOL>
 
 gtserver(n) sends the following messages to clients; note that they
-will typically be handled by a <<xref gtclient(n)>> object:<p>
+will typically be handled by a <xref gtclient(n)> object:<p>
 
 <dl>
   <dt> <b>gt <i>subcommand</i> ?<i>args...</i>?</b>
@@ -71,7 +71,7 @@ will typically be handled by a <<xref gtclient(n)>> object:<p>
 </dl>
 
 Most of the messages are map one-to-one with the gtserver(n) object's
-methods; the exception is the <<iref refresh>> method, which generates
+methods; the exception is the <iref refresh> method, which generates
 the following set of messages:<p>
 
 <pre>
@@ -82,91 +82,91 @@ gt create ...
 gt endrefresh
 </pre>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem gtserver {gtserver <i>name ?options?</i>}>>
+<defitem gtserver {gtserver <i>name ?options?</i>}>
 
 Creates a new gtserver(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
-<<iref gtserver>> returns the fully-qualified form of the
+<iref gtserver> returns the fully-qualified form of the
 <i>name</i>.<p>
 
-The <<iref gtserver>> may be created with the following options:<p>
+The <iref gtserver> may be created with the following options:<p>
 
-<<deflist gtserver options>>
+<deflist gtserver options>
 
-<<defopt {-commserver <i>object</i>}>>
+<defopt {-commserver <i>object</i>}>
 
-The fully-qualified name of the <<xref commserver(n)>> object which
+The fully-qualified name of the <xref commserver(n)> object which
 the gtserver(n) object will use to send game truth messages to clients.<p>
 
 This option must be set at creation time, and is read-only
 thereafter.<p>
 
-<<defopt {-logger <i>name</i>}>>
+<defopt {-logger <i>name</i>}>
 
-The name of the <<xref logger(n)>> object to use to log gtserver(n)
+The name of the <xref logger(n)> object to use to log gtserver(n)
 activity.<p>
 
-<<defopt {-logcomponent <i>name</i>}>>
+<defopt {-logcomponent <i>name</i>}>
 
 The component name to pass to the <code>-logger</code> object when
 logging messages; defaults to "gt".<p>
 
-<<defopt {-db <i>name</i>}>>
+<defopt {-db <i>name</i>}>
 
 The sqlite database that contains simulation objects whose data is sent to
 attached clients.<p>
 
-<</deflist gtserver options>>
+</deflist gtserver options>
 
-<</deflist commands>>
+</deflist commands>
 
-<<section "INSTANCE COMMAND">>
+<section "INSTANCE COMMAND">
 
-Each instance of the <<iref gtserver>> object has the following
+Each instance of the <iref gtserver> object has the following
 subcommands:<p>
 
-<<deflist instance>>
+<deflist instance>
 
-<<defitem cget {$gtserver cget <i>option</i>}>>
+<defitem cget {$gtserver cget <i>option</i>}>
 
 Returns the value of the specified <i>option</i>.<p>
 
-<<defitem configure {$gtserver configure <i>option value...</i>}>>
+<defitem configure {$gtserver configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's options.<p>
 
-<<defitem set {$gtserver set <i>name value</i> ?<i>name value...</i>?}>>
+<defitem set {$gtserver set <i>name value</i> ?<i>name value...</i>?}>
 
 Publishes the named game truth variables with the specified values.
 The value will be sent to any current clients, and saved for future
 refreshes.<p>
 
-<<defitem unset {$gtserver unset <i>name</i> ?<i>name</i>...?}>>
+<defitem unset {$gtserver unset <i>name</i> ?<i>name</i>...?}>
 
 Unpublishes the named game truth variables.  The variables are erased from
 the gtserver(n)'s memory, and an unset message is sent to all clients.<p>
 
-<<defitem clear {$gtserver clear}>>
+<defitem clear {$gtserver clear}>
 
 Unpublishes all game truth variables.<p>
 
-<<defitem refresh {$gtserver refresh ?<i>id</i>?}>>
+<defitem refresh {$gtserver refresh ?<i>id</i>?}>
 
 Sends a game truth refresh to the client with the specified <i>id</i>;
 if <i>id</i> is not specified, refreshes all clients.<p>
 
-<<defitem complete {$gtserver complete}>>
+<defitem complete {$gtserver complete}>
 
 Notifies the clients that the current set of game truth variables is
 consistent and complete.  For example, the simulation can call this
 method at the end of each timestep to indicate that all published
 game truth is consistent with the published simulation time.<p>
 
-<<defitem class {$gtserver class <i>class table idcolumn ?-norefresh?</i>}>>
+<defitem class {$gtserver class <i>class table idcolumn ?-norefresh?</i>}>
 
 Defines a class of simulation object that will be created, updated and perhaps 
 deleted. Each class has a corresponding <i>table</i> in the runtime database.
@@ -177,7 +177,7 @@ refreshed on a refresh request. This is useful for objects that are refreshed
 through other means.
 <p>
 
-<<defitem update {$gtserver update <i>class id</i> ?<i>dict</i>?}>>
+<defitem update {$gtserver update <i>class id</i> ?<i>dict</i>?}>
 
 Sends a simulation object with the supplied <i>class</i> to attached clients
 with an update message. The object will have the supplied <i>id</i>. 
@@ -186,14 +186,14 @@ made to look up the object with the supplied <i>id</i> in the runtime database
 and its dict is sent to clients with an update message. The <i>dict</i> can be
 a partial dict.<p>
 
-<<defitem delete {$gtserver delete <i>class id</i>}>>
+<defitem delete {$gtserver delete <i>class id</i>}>
 
 Sends a delete message to clients with the supplied <i>class</i> and <i>id</i>.
 <p>
 
-<</deflist instance>>
+</deflist instance>
 
-<<section EXAMPLE>>
+<section EXAMPLE>
 
 The gtserver(n) is initialized as follows; if the application has a single
 gtserver(n), it is conventionally called <code>::gt</code>, as shown.<p>
@@ -229,26 +229,28 @@ gt delete foo 99
 gt complete
 </pre>
 
-<<section "SEE ALSO">>
+<section "SEE ALSO">
 
-<<xref commserver(n)>>, <<xref commclient(n)>>, <<xref gtclient(n)>>.
+<xref commserver(n)>, <xref commclient(n)>, <xref gtclient(n)>.
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 Requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package.
 
-<</manpage>>
+</manpage>
+
+
 
 
 

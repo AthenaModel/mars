@@ -1,15 +1,15 @@
-<<manpage {marsutil(n) tabletext(n)} "Text to SQL table processor">>
+<manpage {marsutil(n) tabletext(n)} "Text to SQL table processor">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
-package require marsutil 1.0
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 tabletext(n) is a tool for translating between SQL tables and matching
 text files.  At present it can read a text file, validate its content,
@@ -21,21 +21,21 @@ tabletext(n) is used as follows:<p>
 <ul>
   <li> First, an instance of tabletext(n) is created.<p>
 
-  <li> Next, the <<iref table>> and <<iref field>> methods are used to
+  <li> Next, the <iref table> and <iref field> methods are used to
        define the table schemas, and to associate validators with the
        tables and fields.  The chosen table and field names must match
        SQLite table definitions exactly.<p>
 
-  <li> The <<iref clear>> method can be used to clear old data
+  <li> The <iref clear> method can be used to clear old data
        from the SQLite database for the tables known to the
        tabletext(n) instance.<p>
 
-  <li> The <<iref loadfile>> and <<iref load>> methods can be used to
+  <li> The <iref loadfile> and <iref load> methods can be used to
        parse input text and populate the SQLite tables.
        
 </ul>
 
-<<section "BASIC SYNTAX">>
+<section "BASIC SYNTAX">
 
 A tabletext(n) input file is a text file which defines the contents of
 a number of SQL tables.  This section describes the file's syntax,
@@ -48,7 +48,7 @@ is a line of text beginning with the "#" character:<p>
 # This is a comment.
 </pre>
 
-<<subsection "Table Syntax">>
+<subsection "Table Syntax">
 
 A <b>table</b> statement defines the content of a single
 database table; each table consists of zero or more records.  The
@@ -76,7 +76,7 @@ table employees {
 }
 </pre>
 
-<<subsection "Records and Keys">>
+<subsection "Records and Keys">
 
 The records of each table are identified by the table's key fields.
 Each record in the <b>employees</b> table, for example, might be
@@ -118,7 +118,7 @@ table employees {
 }
 </pre>
 
-<<subsection "Data Fields">>
+<subsection "Data Fields">
 
 In addition to its key field or fields, most tables also have one or
 more data fields.  Data field values are defined using the <b>field</b>
@@ -162,14 +162,14 @@ table employees {
 }
 </pre>
 
-<<section "SCHEMA DEFINITION">>
+<section "SCHEMA DEFINITION">
 
 The tabletext(n) schema defines the tables that can appear in the
 input, the fields which can appear in those tables, constraints on the
 tables and fields, and validation functions to perform additional
 validation and consistency checks.
 
-<<subsection "Matching the SQL Schema">>
+<subsection "Matching the SQL Schema">
 
 In general, the tabletext(n) schema is derived from the SQL schema for
 the tables of interest.<p>
@@ -201,11 +201,11 @@ $tt field employees mail_stop
 </pre>
 
 The "$tt" object can now be used to parse employee data from a file
-with the syntax shown in <<xref "BASIC SYNTAX">>.  However, little
+with the syntax shown in <xref "BASIC SYNTAX">.  However, little
 validation is done, beyond ensuring that the badge number is unique
 for each employee.<p>
 
-<<subsection "Required Fields">>
+<subsection "Required Fields">
 
 There are several options which can be used to constrain field values.
 For example, the employee's name is a required field, and we'd like it
@@ -215,7 +215,7 @@ to be unique.  We can specify that as follows:<p>
 $tt field employees name -required -unique
 </pre>
 
-<<subsection "Default Values">>
+<subsection "Default Values">
 
 Some fields may have default values.  These are usually entered in
 the SQL schema; then, a record which does not explicitly specify a
@@ -236,7 +236,7 @@ CREATE TABLE employees (
 );
 </pre>
 
-<<subsection "Field Validators">>
+<subsection "Field Validators">
 
 You can also specify a field validator, a function which will ensure
 that the field's value is valid.  For example, badge numbers must not
@@ -270,43 +270,43 @@ $tt field employees badge_number -key \
     -validator BadgeValidator
 </pre>
 
-<<subsection "Table and Record Validation">>
+<subsection "Table and Record Validation">
 
 Similarly, you can define table and record validators as options on
-the <<iref table>> method, and you can specify that one table depends
+the <iref table> method, and you can specify that one table depends
 on one or more other tables.  A record validator is a proc that is
 called after each record is defined; it can check cross-field
 constraints.  A table validator is a proc that is called after the
 table is defined; it can check cross-record constraints and even
 insert additional records into the database.<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem tabletext {tabletext <i>name ?options?</i>}>>
+<defitem tabletext {tabletext <i>name ?options?</i>}>
 
 Creates a new tabletext(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
-<<iref tabletext>> returns the fully-qualified form of the
+<iref tabletext> returns the fully-qualified form of the
 <i>name</i>.<p>
 
-<</deflist commands>>
+</deflist commands>
 
-<<section "INSTANCE COMMAND">>
+<section "INSTANCE COMMAND">
 
-Each instance of the <<iref tabletext>> object has the following subcommands:<p>
+Each instance of the <iref tabletext> object has the following subcommands:<p>
 
-<<deflist instance>>
+<deflist instance>
 
-<<defitem table {$tt table <i>name</i> ?<i>options...</i>?}>>
+<defitem table {$tt table <i>name</i> ?<i>options...</i>?}>
 
 Adds a table called <i>name</i> to the schema.  The call may include
 the following validation options:<p>
 
-<<deflist table options>>
+<deflist table options>
 
-<<defopt {-tablevalidator cmd}>>
+<defopt {-tablevalidator cmd}>
 
 Defines a command to be called after all of the table's records have
 been defined.  If the table does not appear in the input, the
@@ -318,7 +318,7 @@ forth.  If it detects a problem, it should throw an error.<p>
 the name of the SQLite database object, and the name of the table.
 Any return value is ignored.<p>
 
-<<defopt {-recordvalidator <i>cmd</i>}>>
+<defopt {-recordvalidator <i>cmd</i>}>
 
 Defines a command to be called after each record is read from the
 input and added to the SQL table, to check cross-field constraints.
@@ -341,44 +341,44 @@ proc MyRecordValidator {db table rowid} {
 }
 </pre>
 
-<<defopt {-dependson <i>list</i>}>>
+<defopt {-dependson <i>list</i>}>
 
 This option is used to specify that the table depends on one or more
 other tables; <i>list</i> is a list of their names.  If this table
 appears in the input before any of the listed tables, an error is
 thrown.<p>
 
-<</deflist table options>>
+</deflist table options>
 
-<<defitem field {$tt field <i>table field</i> ?<i>options...</i>?}>>
+<defitem field {$tt field <i>table field</i> ?<i>options...</i>?}>
 
 This method defines a new field for a previously defined table.
 <i>table</i> is the table name, and <i>field</i> is the field name;
 these must match the names in the SQLite database schema.  The options
 are used to define additional validation constraints.<p>
 
-<<deflist field options>>
+<deflist field options>
 
-<<defopt {-key}>>
+<defopt {-key}>
 
 This field is (a component of) the primary key.  Taken together, the
 values of the fields marked as <code>-key</code>'s must be unique for
 each record.<p>
 
-<<defopt {-unique}>>
+<defopt {-unique}>
 
 Each record must have a unique value for this field.  This option is
 used only for data fields; keys are unique by definition.<p>
 
-<<defopt {-required}>>
+<defopt {-required}>
 
 Each record in the input must explicitly specify a value for this
 field; there is no default value.<p>
 
-<<defopt {-validator <i>cmd</i>}>>
+<defopt {-validator <i>cmd</i>}>
 
 Defines a field validator.  The validator is called for each
-"field" statement in the input; see <<xref "Field Validators">> for an
+"field" statement in the input; see <xref "Field Validators"> for an
 example.<p>
 
 <i>cmd</i> is a command prefix to which three arguments will be added:
@@ -389,58 +389,58 @@ to validate.  The command must:<p>
   <li> Throw an error if the value is invalid.<p>
 
   <li> Return the value in canonical form (however the application
-       defines that).  For example, <<xref enum(n)>> values can be
+       defines that).  For example, <xref enum(n)> values can be
        expressed case-insensitively using short names, long names, or
        index numbers; the database usually contains the short
        name with the precise case used in the enum definition.<p>
 </ul>
 
-<<defopt {-default}>>
+<defopt {-default}>
 
 This is the default value for the field.  If the text does not specify
 a field value, this value will be used instead.<p>
 
-<</deflist field options>>
+</deflist field options>
 
-<<defitem clear {$tt clear <i>db</i>}>>
+<defitem clear {$tt clear <i>db</i>}>
 
 Deletes all records from known tables in SQLite database <i>db</i>.
 The table schema, at least, must already be defined in <i>db</i>, as
 tabletext(n) doesn't know the SQL schema.  SQLite tables not included
 in the tabletext(n) schema will not be touched.<p>
 
-<<defitem {get default} {$tt get default <i>table field</i>}>>
+<defitem {get default} {$tt get default <i>table field</i>}>
 
 Returns the -default value for the specified field.
 The empty string will be returned if -default was not specified with
-<<iref field>>.<p>
+<iref field>.<p>
 
-<<defitem loadfile {$tt loadfile <i>db dbfile</i> ?<i>preamble</i>?}>>
+<defitem loadfile {$tt loadfile <i>db dbfile</i> ?<i>preamble</i>?}>
 
 Reads input text from a file named <i>dbfile</i>, parses it, and loads
 the data into tables in SQLite database <i>db</i>.  The SQLite tables
-are <<iref clear>>ed first.<p>
+are <iref clear>ed first.<p>
 
 If the <i>preamble</i> is specified, it contains text that is parsed
 before the text in the <i>dbfile</i>.<p>
 
-<<defitem load {$tt load <i>db dbtext</i> ?<i>preamble</i>?}>>
+<defitem load {$tt load <i>db dbtext</i> ?<i>preamble</i>?}>
 
-This method is identical to <<iref loadfile>>, except that the input
+This method is identical to <iref loadfile>, except that the input
 text is read from the string <i>dbtext</i>, rather than from a
 file.<p>
 
-<<defitem validate {$tt validate <i>subcommand</i> ?<i>args</i>? db table value</i>}>>
+<defitem validate {$tt validate <i>subcommand</i> ?<i>args</i>? db table value</i>}>
 
 These methods are for use as field <b>-validator</b> commands. Each one may
 have arguments which proceed the standard <i>db</i>, <i>table</i>, and
 <i>value</i> arguments; these are specified by the schema as part of the
 <b>-validator</b>.<p>
 
-<<deflist validate>>
+<deflist validate>
 
 
-<<defitem "validate vtype" {$tt validate vtype <i>vtype db table value</i>}>>
+<defitem "validate vtype" {$tt validate vtype <i>vtype db table value</i>}>
 
 Validates a field given a validation type object.  The <i>vtype</i>
 must have a <b>validate</b> subcommand that takes one argument, the value
@@ -448,31 +448,34 @@ to validate, and returns the value if valid and throws an error otherwise.
 Ideally, the <b>validate</b> subcommand should throw error code
 <b>INVALID</b>.<p>
 
-<<defitem "validate foreign" {$tt validate foreign <i>otherTable field db table value</i>}>>
+<defitem "validate foreign" {$tt validate foreign <i>otherTable field db table value</i>}>
 
 Verifies that the value being validated appears in the <i>field</i> column
 in some record in the <i>otherTable</i>.<p>
 
-<</deflist validate>>
+</deflist validate>
 
-<<defitem writefile {$tt writefile <i>db outfile infile</i>}>>
+<defitem writefile {$tt writefile <i>db outfile infile</i>}>
 
 Writes the contents of tables, records and fields back out to a file specified
 as <i>outfile</i>. The supplied database object <i>db</i> is used as the source
 of the data. <i>infile</i> is the name of the file used to initially populate
 <i>db</i> and is written to <i>outfile</i>'s header.<p>
 
-<</deflist instance>>
+</deflist instance>
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package, moved to Mars from JNEM.<p>
 
-<</manpage>>
+</manpage>
+
+
+
 
 
 

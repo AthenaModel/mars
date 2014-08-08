@@ -3,7 +3,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require marsutil 1.0
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
@@ -117,6 +117,7 @@ Will Duquette<p>
 06/05/2006 WHD Minor clean-up.
 
 </manpage>
+
 
 
 

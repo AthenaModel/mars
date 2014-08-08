@@ -3,7 +3,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require marsutil 1.0
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
@@ -806,6 +806,7 @@ Will Duquette<p>
 Original package.
 
 </manpage>
+
 
 
 

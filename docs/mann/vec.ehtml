@@ -1,20 +1,20 @@
-<<manpage {marsutil(n) vec(n)} "Vector Operations">>
+<manpage {marsutil(n) vec(n)} "Vector Operations">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
 package require util 0.1
 namespace import ::marsutil::*
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 vec(n) defines a number of operations on Tcl vector.  A Tcl
 vector is just a Tcl list, indexed <i>i</i> = 0,..., <i>n-1</i>; this
 module doesn't distinguish between row and column vectors, which
-should more properly be represented using <<xref mat(n)>>.<p>
+should more properly be represented using <xref mat(n)>.<p>
 
 For example, the following code creates a 3-tuple:<p>
 
@@ -23,7 +23,7 @@ set vector {1 2 3}
 </pre>
 
 Vectors can be entered explicitly, as shown; alternatively, the
-<<iref vec new>> command can create a vector of arbitrary size.
+<iref vec new> command can create a vector of arbitrary size.
 In general, the elements of a vector can be of any type.<p>
 
 The elements of a vector are accessed using the standard Tcl commands
@@ -40,11 +40,11 @@ lset vector $i 7
 Note that Tcl lists are represented internally as extensible arrays;
 consequently, access to vector elements is reasonably quick.<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist>>
+<deflist>
 
-<<defitem "vec new" {vec new <i>n ?initval?</i>}>>
+<defitem "vec new" {vec new <i>n ?initval?</i>}>
 
 Returns a new vector with <i>n</i> elements.  If
 <i>initval</i> is given, all elements will be set to it; otherwise all
@@ -55,28 +55,28 @@ code creates a vector of six zeroes:<p>
 set vector [vec new 6 0]
 </pre>
 
-<<defitem "vec size" {vec size <i>vector</i>}>>
+<defitem "vec size" {vec size <i>vector</i>}>
 
 Returns the number of elements in the vector.<p>
 
-<<defitem "vec equal" {vec equal <i>vec1 vec2</i>}>>
+<defitem "vec equal" {vec equal <i>vec1 vec2</i>}>
 
 Returns 1 if the two vectors have the same size and
 corresponding elements are numerically equal, and 0 otherwise.<p>
 
-<<defitem "vec add" {vec add <i>vec1 vec2</i>}>>
+<defitem "vec add" {vec add <i>vec1 vec2</i>}>
 
 Returns the sum of the two vectors.<p>
 
-<<defitem "vec sub" {vec sub <i>vec1 vec2</i>}>>
+<defitem "vec sub" {vec sub <i>vec1 vec2</i>}>
 
 Returns the difference of the two vectors.<p>
 
-<<defitem "vec scalarmul" {vec scalarmul <i>vec constant</i>}>>
+<defitem "vec scalarmul" {vec scalarmul <i>vec constant</i>}>
 
 Returns the product of the vector and the scalar constant.<p>
 
-<<defitem "vec normalize" {vec normalize <i>vec</i>}>>
+<defitem "vec normalize" {vec normalize <i>vec</i>}>
 
 Given a vector of non-negative numbers not all zero, returns a
 vector of numbers between 0 and 1 which sum to 1.0.  The values are
@@ -85,23 +85,23 @@ normalized by dividing by sum of the numbers in the vector.<p>
 An error is thrown if the sum of the values is less than or
 equal to zero.<p>
 
-<<defitem "vec format" {vec format <i>vector</i> <i>fmtstring</i>}>>
+<defitem "vec format" {vec format <i>vector</i> <i>fmtstring</i>}>
 
 Returns a copy of the <i>vector</i> which each element formatted using
 the standard Tcl <tt>format</tt> command and the given format
 string.<p>
 
-<<defitem "vec numerize" {vec numerize <i>vector quality</i>}>>
+<defitem "vec numerize" {vec numerize <i>vector quality</i>}>
 
 Given a <i>vector</i> whose elements are symbols of the specified
 <i>quality</i> object, returns a vector in which all symbols have been
 converted to their numeric equivalents.  Any pre-existing numeric
 elements in the <i>vector</i> are retained.
 
-<<defitem "vec pprint" {vec pprint <i>vector labels</i>}>>
+<defitem "vec pprint" {vec pprint <i>vector labels</i>}>
 
 Returns a pretty-printed text string of the elements in the
-<i>vector</i>.  <i>labels</i> is a list of <<iref vec size>>
+<i>vector</i>.  <i>labels</i> is a list of <iref vec size>
 labels.  The vector elements are included "as is", with no
 additional formatting.<p>
 
@@ -119,9 +119,9 @@ B 2
 C 3
 </pre>
 
-<<defitem "vec pprintf" {vec pprintf <i>vector labels format</i>}>>
+<defitem "vec pprintf" {vec pprintf <i>vector labels format</i>}>
 
-This is a variant of <<iref vec pprint>>; before the <i>vector</i> is
+This is a variant of <iref vec pprint>; before the <i>vector</i> is
 pretty-printed, the elements are formatted using the standard Tcl
 command <code>format</code> and the specified <i>format</i> string.
 For example, the following code pretty-prints a numeric vector
@@ -131,10 +131,10 @@ containing decimal numbers between 0.000 and 100.000:<p>
 puts [vec pprintf $vector $labels "%7.3f"]
 </pre>
 
-<<defitem "vec pprintq" {vec pprintq <i>vector labels quality</i>}>>
+<defitem "vec pprintq" {vec pprintq <i>vector labels quality</i>}>
 
-This is a variant of <<iref vec pprint>>; the <i>vector</i> is
-assumed to contain numeric values of a <<xref quality(n)>> type.  The
+This is a variant of <iref vec pprint>; the <i>vector</i> is
+assumed to contain numeric values of a <xref quality(n)> type.  The
 <i>quality</i> object is used to format each element as follows:<p>
 
 <pre>
@@ -142,16 +142,16 @@ assumed to contain numeric values of a <<xref quality(n)>> type.  The
 </pre>
 
 The <i>value</i> is formatted using the <i>quality</i> object's
-<<xref quality(n) format>> subcommand; the <i>shortname</i> is the
+<xref quality(n) format> subcommand; the <i>shortname</i> is the
 short symbolic name corresponding to the <i>value</i>.<p>
 
-<</deflist>>
+</deflist>
 
-<<section "SEE ALSO">>
+<section "SEE ALSO">
 
-<<xref mat(n)>>.
+<xref mat(n)>.
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 vec(n) requires Tcl 8.5 or later.
 
@@ -159,15 +159,17 @@ To use vec(n) in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the marsutil(n)
 library directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package.
 
-<</manpage>>
+</manpage>
+
+
 
 
 

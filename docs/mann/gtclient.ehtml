@@ -1,141 +1,141 @@
-<<manpage {marsutil(n) gtclient(n)} "Game Truth Client">>
+<manpage {marsutil(n) gtclient(n)} "Game Truth Client">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
 package require util 1.0
 namespace import ::marsutil::gtclient
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 gtclient(n) defines an API which allows a 
-<<xref commclient(n)>> to handle game truth published via
-<<xref gtserver(n)>>/<<xref commserver(n)>>.  See the
-<<xref EXAMPLE>>, below, for how to hook up the gtclient(n)
-to the <<xref commclient(n)>> object.<p>
+<xref commclient(n)> to handle game truth published via
+<xref gtserver(n)>/<xref commserver(n)>.  See the
+<xref EXAMPLE>, below, for how to hook up the gtclient(n)
+to the <xref commclient(n)> object.<p>
 
 Once a gtclient(n) object is created and connected to
-the <<xref commclient(n)>>, it will receive all game truth published by
-the <<xref gtserver(n)>>.  Other modules in the application can
-retrieve game truth values at any time using the <<iref get>>
+the <xref commclient(n)>, it will receive all game truth published by
+the <xref gtserver(n)>.  Other modules in the application can
+retrieve game truth values at any time using the <iref get>
 method, and can also register a variety of callbacks for handling
 updates as they occur.<p>
 
 Note that the gtclient(n) API is designed to match the message protocol
-used by <<xref gtserver(n)>>; see the <<xref gtserver(n)>> man page
+used by <xref gtserver(n)>; see the <xref gtserver(n)> man page
 for details of the protocol.<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem gtclient {gtclient <i>name ?options?</i>}>>
+<defitem gtclient {gtclient <i>name ?options?</i>}>
 
 Creates a new gtclient(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
-<<iref gtclient>> returns the fully-qualified form of the
+<iref gtclient> returns the fully-qualified form of the
 <i>name</i>.<p>
 
-The <<iref gtclient>> may be created with the following options:<p>
+The <iref gtclient> may be created with the following options:<p>
 
-<<deflist gtclient options>>
+<deflist gtclient options>
 
-<<defopt {-logger <i>name</i>}>>
+<defopt {-logger <i>name</i>}>
 
-The name of the <<xref logger(n)>> object to use to log gtclient(n)
+The name of the <xref logger(n)> object to use to log gtclient(n)
 activity.<p>
 
-<<defopt {-logcomponent <i>name</i>}>>
+<defopt {-logcomponent <i>name</i>}>
 
 The component name to pass to the <code>-logger</code> object when
 logging messages; defaults to "gt".<p>
 
-<<defopt {-refreshstartcmd <i>command</i>}>>
+<defopt {-refreshstartcmd <i>command</i>}>
 
 If defined, the <code>-refreshstartcmd</code> is called in the global scope
-on <<iref startrefresh>>, before the refresh begins.<p>
+on <iref startrefresh>, before the refresh begins.<p>
 
-<<defopt {-refreshendcmd <i>command</i>}>>
+<defopt {-refreshendcmd <i>command</i>}>
 
 If defined, the <code>-refreshendcmd</code> is called in the global scope
-on <<iref endrefresh>>, before any watchers are called.<p>
+on <iref endrefresh>, before any watchers are called.<p>
 
-<<defopt {-completecmd <i>command</i>}>>
+<defopt {-completecmd <i>command</i>}>
 
 If defined, the <code>-completecmd</code> is called in the global
-scope whenever <<iref complete>> method is received.<p>
+scope whenever <iref complete> method is received.<p>
 
-<<defopt {-db <i>name</i>}>>
+<defopt {-db <i>name</i>}>
 
 Defines the workstation database that stores game truth objects that are 
-received from the <<xref gtserver(n)>>.<p>
+received from the <xref gtserver(n)>.<p>
 
-<</deflist gtclient options>>
+</deflist gtclient options>
 
-<</deflist commands>>
+</deflist commands>
 
-<<section "INSTANCE COMMAND">>
+<section "INSTANCE COMMAND">
 
-Each instance of the <<iref gtclient>> object has the following
+Each instance of the <iref gtclient> object has the following
 subcommands:<p>
 
-<<deflist instance>>
+<deflist instance>
 
-<<defitem cget {$gtclient cget <i>option</i>}>>
+<defitem cget {$gtclient cget <i>option</i>}>
 
 Returns the value of the specified <i>option</i>.<p>
 
-<<defitem configure {$gtclient configure <i>option value...</i>}>>
+<defitem configure {$gtclient configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's options.<p>
 
-<<defitem startrefresh {$gtclient startrefresh}>>
+<defitem startrefresh {$gtclient startrefresh}>
 
 Indicates the beginning of a game truth refresh.  Watchers will not be
 called until the refresh is complete.<p>
 
-<<defitem endrefresh {$gtclient endrefresh}>>
+<defitem endrefresh {$gtclient endrefresh}>
 
 Indicates the end of a game truth refresh.  The
 <code>-refreshendcmd</code> will be called, if defined, followed by
 all defined watcher callbacks.<p>
 
-<<defitem set {$gtclient set <i>name value</i> ?<i>name value...</i>?}>>
+<defitem set {$gtclient set <i>name value</i> ?<i>name value...</i>?}>
 
 Saves the named game truth variables with the specified values,
-and calls any watcher callbacks (see <<iref watch>>, below).<p>
+and calls any watcher callbacks (see <iref watch>, below).<p>
 
 Note that if this method is called during a refresh, the watchers will
 not be called until the refresh is over.<p>
 
-<<defitem unset {$gtclient unset <i>name</i> ?<i>name</i>...?}>>
+<defitem unset {$gtclient unset <i>name</i> ?<i>name</i>...?}>
 
 Unsets the named game truth variables.  The variables are erased from
 the gtclient(n)'s memory.<p>
 
-<<defitem clear {$gtclient clear}>>
+<defitem clear {$gtclient clear}>
 
 Unsets all game truth variables.<p>
 
-<<defitem complete {$gtclient complete}>>
+<defitem complete {$gtclient complete}>
 
 Notifies the client that the current set of game truth variables is
 consistent and complete; if defined, the <code>-completecmd</code>
 is called.<p>
 
-<<defitem get {$gtclient get <i>name</i>}>>
+<defitem get {$gtclient get <i>name</i>}>
 
 Returns the value of the named game truth variable.<p>
 
-<<defitem var {$gtclient var <i>name</i>}>>
+<defitem var {$gtclient var <i>name</i>}>
 
 Returns the fully-qualified variable name associated with the
 named game truth variable, for use as a <code>-textvariable</code>.<p>
 
-<<defitem watch {$gtclient watch <i>name command</i>}>>
+<defitem watch {$gtclient watch <i>name command</i>}>
 
 Defines a watcher callback on the named game truth variable; whenever
 the variable's value is updated, the new value will be append to
@@ -145,49 +145,49 @@ after the <code>-refreshendcmd</code>.<p>
 
 To delete a watcher, set it to the empty string.<p>
 
-<<defitem class {$gtclient class <i>class table idcolumn</i>}>>
+<defitem class {$gtclient class <i>class table idcolumn</i>}>
 
 Defines a class of simulation object that will be created, updated and perhaps 
 deleted. Each class has a corresponding <i>table</i> in the workstation database.
 This table is the one that has rows created, updated or deleted. The
 <i>idcolumn</i> specifies which column in the table is the key column.<p>
 
-<<defitem update {$gtclient update <i>class id</i> ?<i>dict</i>?}>>
+<defitem update {$gtclient update <i>class id</i> ?<i>dict</i>?}>
 
 Receives a simulation object with the supplied <i>class</i> from a  
-<<xref gtserver(n)>>.  If an object with the supplied <i>id</i> already exists, 
+<xref gtserver(n)>.  If an object with the supplied <i>id</i> already exists, 
 the workstation database is updated with the information in the dict. Otherwise
 the workstation database has a new record created that has the supplied id
 and data in the supplied dict.
-A call is made to the callback supplied in the <<iref onupdate>> 
+A call is made to the callback supplied in the <iref onupdate> 
 command, if there is one. The callback has appended to it "update $id $dict".<p>
 
-<<defitem delete {$gtclient delete <i>class id</i>}>>
+<defitem delete {$gtclient delete <i>class id</i>}>
 
-Receives a delete message from the <<xref gtserver(n)>> with the supplied
+Receives a delete message from the <xref gtserver(n)> with the supplied
 <i>class</i> and <i>id</i>. A call is made to the callback supplie in the 
-<<iref onupdate>> command, if there is one. The callback has appended to it
+<iref onupdate> command, if there is one. The callback has appended to it
 "delete $id $dict", where <i>dict</i> is queried from the workstation database.
 <p>. The item is then removed from the workstation database.
 
-<<defitem onupdate {$gtclient onupdate <i>class prefix</i>}>>
+<defitem onupdate {$gtclient onupdate <i>class prefix</i>}>
 
 Defines a callback that should be made whenever the client receives a create, 
-update or delete message from the <<xref gtserver(n)>>. 
+update or delete message from the <xref gtserver(n)>. 
 The callback has appended
 to it the string "create", "update" or "delete" along with the id and dict for
 the object.<p>
 
 To delete an onpudate command set it to the empty string.<p>
 
-<</deflist instance>>
+</deflist instance>
 
-<<section EXAMPLE>>
+<section EXAMPLE>
 
 The gtclient(n) is initialized as follows.  Note that if the
 application has a single gtclient(n), it is conventionally called
 <code>::gt</code>, as shown; however, any name will do, provided that
-the <<xref commclient(n)>>'s alias is "gt".<p> 
+the <xref commclient(n)>'s alias is "gt".<p> 
 
 <pre>
 # FIRST, create the gtclient(n) object
@@ -228,26 +228,28 @@ commclient ::cc \
 cc alias gt ::gt
 </pre>
 
-<<section "SEE ALSO">>
+<section "SEE ALSO">
 
-<<xref commserver(n)>>, <<xref commclient(n)>>, <<xref gtserver(n)>>.
+<xref commserver(n)>, <xref commclient(n)>, <xref gtserver(n)>.
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 Requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package.
 
-<</manpage>>
+</manpage>
+
+
 
 
 

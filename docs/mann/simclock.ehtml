@@ -1,18 +1,18 @@
-<<manpage {marsutil(n) simclock(n)} "Simulation Clock">>
+<manpage {marsutil(n) simclock(n)} "Simulation Clock">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
-package require marsutil 1.0
+package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
-simclock(n) defines a simulation clock type, <<iref simclockType>>, as
-well as a globally available instance of it called <<iref simclock>>.<p>
+simclock(n) defines a simulation clock type, <iref simclockType>, as
+well as a globally available instance of it called <iref simclock>.<p>
 
 A simclock(n) can run in two modes, active and passive.  In passive
 mode, the simclock(n) simply tracks the current simulation time and
@@ -21,10 +21,10 @@ days).  In active mode, the simclock(n) will advance simulation time
 in steps at a rate determined by a "game ratio", e.g., 10 simulated
 minutes per real-time minute.<p>
 
-It is expected that most applications will use <<iref simclock>>, but
+It is expected that most applications will use <iref simclock>, but
 multiple instances can be created if need be.<p>
 
-<<subsection "Representation of Simulated Time">>
+<subsection "Representation of Simulated Time">
 
 Simumulated time, or "sim time", is represented as an integer number
 of ticks since time 0.  The tick size is specified using the <b>-tick</b>
@@ -40,28 +40,28 @@ zulu-time string for the specific time and date corresponding to
 time 0.  Consequently, the simclock(n) can convert between
 sim times in ticks and zulu-time strings.<p>
 
-<<subsection "Advancing Time">>
+<subsection "Advancing Time">
 
 In passive mode, time must be advanced manually, by calling the
-simclock(n)'s <<iref advance>>, <<iref step>>, or <<iref tick>>
-methods.  Note that <<iref tick>> calls the <code>-advancecmd</code>,
-where <<iref advance>> and <<iref step>> do <b>not</b>.<p>
+simclock(n)'s <iref advance>, <iref step>, or <iref tick>
+methods.  Note that <iref tick> calls the <code>-advancecmd</code>,
+where <iref advance> and <iref step> do <b>not</b>.<p>
 
 In active mode, time advances automatically.  To enter active mode,
-call the simclock(n)'s <<iref start>> method; then, set the desired
-game <<iref ratio>>.  Time will begin to advance at that ratio.  At
+call the simclock(n)'s <iref start> method; then, set the desired
+game <iref ratio>.  Time will begin to advance at that ratio.  At
 each time tick, the simclock(n)'s <code>-advancecmd</code> will be
 called.  The simclock(n)'s <code>-requestcmd</code> and
-<<iref grant>> method can be used to request and receive permission to
+<iref grant> method can be used to request and receive permission to
 advance time from some other object.  To stop advancing time, set the
-<<iref ratio>> back to zero, or call the simclock(n)'s
-<<iref stop>> method.<p>
+<iref ratio> back to zero, or call the simclock(n)'s
+<iref stop> method.<p>
 
 Note that active mode requires use of the Tcl event loop; time can
 only advance automatically while the application is in the event
 loop.<p>
 
-<<subsection "Time Specification Strings">>
+<subsection "Time Specification Strings">
 
 To ease user input, simclock(n) supports time specification strings,
 or "time specs".  A time spec consists of a base time, specified in
@@ -95,25 +95,25 @@ simulation time; thus <b>+30</b> means 30 ticks from now and
 <b>30</b> are two different times; the former is 30 ticks from now,
 and the latter is sim time 30.<p>
 
-See also the <<iref fromTimeSpec>>, <<iref timespec validate>>,
-<<iref past validate>> and <<iref future validate>> commands.<p>
+See also the <iref fromTimeSpec>, <iref timespec validate>,
+<iref past validate> and <iref future validate> commands.<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem simclockType {simclockType <i>name ?options?</i>}>>
+<defitem simclockType {simclockType <i>name ?options?</i>}>
 
-Creates a new <<iref simclockType>> object called <i>name</i>. The object is
+Creates a new <iref simclockType> object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
-<<iref simclockType>> returns the fully-qualified form of the
+<iref simclockType> returns the fully-qualified form of the
 <i>name</i>.<p>
 
-The <<iref simclockType>> object may be created with the following options:<p>
+The <iref simclockType> object may be created with the following options:<p>
 
-<<deflist options>>
+<deflist options>
 
-<<defopt {-tick <i>tickSpec</i>}>>
+<defopt {-tick <i>tickSpec</i>}>
 
 Sets the simclock(n)'s  tick interval.  The tick specification,
 <i>tickSpec</i>, is a list of two elements, a positive integer and the
@@ -135,28 +135,28 @@ The <b>tick</b> option's value can only be set when the current sim
 time is 0; once time has been advanced, the tick size can no longer be
 changed.<p>
 
-<<defopt {-t0 <i>zulutime</i>}>>
+<defopt {-t0 <i>zulutime</i>}>
 
 Sets the simulation start date to <i>zulutime</i>.  The default start
 date ("T-zero") is "010000ZJAN70".<p>
 
-<<defopt {-zuluvar <i>name</i>}>>
+<defopt {-zuluvar <i>name</i>}>
 
 Specifies the name of a variable which will be updated with the
-current simulation time as a <<xref zulu(n)>> time string whenever
+current simulation time as a <xref zulu(n)> time string whenever
 the simulation time changes.  Note that setting the variable's
-value explicitly has no effect on the <<iref simclockType>> object.<p>
+value explicitly has no effect on the <iref simclockType> object.<p>
 
-<<defopt {-advancecmd <i>cmd</i>}>>
+<defopt {-advancecmd <i>cmd</i>}>
 
 The <i>cmd</i> will be called with no arguments on each time advance
-while the simclock(n) is in active mode, and when <<iref tick>> is
+while the simclock(n) is in active mode, and when <iref tick> is
 called in passive mode.  The simulation time will have
 already been updated and (in active mode) the actual game ratio
 measured.  When a <code>-requestcmd</code> is defined, the
-<code>-advancecmd</code> will be called by <<iref grant>>.<p>
+<code>-advancecmd</code> will be called by <iref grant>.<p>
 
-<<defopt {-requestcmd <i>cmd</i>}>>
+<defopt {-requestcmd <i>cmd</i>}>
 
 If this option is defined, then when the simclock(n) is in active mode
 it will request permission to advance time prior to each advance by
@@ -166,7 +166,7 @@ to which it wishes to advance.  In <i>cmd</i>, the application may:<p>
 <ul>
   <li> <b>Return normally</b>, indicating that the request will be granted.
        In this case it is the application's responsibility to call the
-       simclock(n)'s <<iref grant>> method either immediately, prior
+       simclock(n)'s <iref grant> method either immediately, prior
        to returning from <i>cmd</i>, or at some future time.<p>
 
   <li> <b>Defer the request</b>, by returning the <b>break</b> return
@@ -178,159 +178,159 @@ to which it wishes to advance.  In <i>cmd</i>, the application may:<p>
        occurred.  simclock(n) will log the error and keep trying.<p>
 </ul>
 
-<<defopt {-ratiovar <i>name</i>}>>
+<defopt {-ratiovar <i>name</i>}>
 
 Whenever the desired game ratio is set or changed, the variable called
 <i>name</i> receives the new value.<p>
 
-<<defopt {-actualratiovar <i>name</i>}>>
+<defopt {-actualratiovar <i>name</i>}>
 
 Whenever the actual game ratio is measured or reset, the variable
 called <i>name</i> receives the new value.  If the actual game ratio
 has not yet been measured, then <i>name</i> will be set to "???".<p>
 
-<<defopt {-logger <i>cmd</i>}>>
+<defopt {-logger <i>cmd</i>}>
 
-Specifies the name of a <<xref logger(n)>> or equivalent object, to be
+Specifies the name of a <xref logger(n)> or equivalent object, to be
 used to log status while in active mode.<p>
 
-<<defopt {-logcomponent <i>component</i>}>>
+<defopt {-logcomponent <i>component</i>}>
 
 Specifies the object's <i>component</i> name, to use when logging to
 its <code>-logger</code>.  Defaults to <b>clock</b>.<p>
 
-<</deflist options>>
+</deflist options>
 
-<<defitem simclock {simclock <i>subcommand</i> ?<i>args...</i>?}>>
+<defitem simclock {simclock <i>subcommand</i> ?<i>args...</i>?}>
 
-<<iref simclock>> is an instance of <<iref simclockType>> created with
+<iref simclock> is an instance of <iref simclockType> created with
 default settings.  Most applications will use the
-<<iref configure>> subcommand to adjust <<iref simclock>>'s settings
-rather than creating a new instance of <<iref simclockType>>.<p>
+<iref configure> subcommand to adjust <iref simclock>'s settings
+rather than creating a new instance of <iref simclockType>.<p>
 
-See <<xref "INSTANCE COMMAND">>, below, for <<iref simclock>>'s
+See <xref "INSTANCE COMMAND">, below, for <iref simclock>'s
 subcommands.<p>
 
-<<defitem ticktype {ticktype validate <i>value</i>}>>
+<defitem ticktype {ticktype validate <i>value</i>}>
 
 Throws an error if <i>value</i> is not a valid <b>-tick</b> value.<p>
 
-<</deflist commands>>
+</deflist commands>
 
-<<section "INSTANCE COMMAND">>
+<section "INSTANCE COMMAND">
 
-<<deflist instance command>>
+<deflist instance command>
 
-<<defitem actualratio {$simclock actualratio}>>
+<defitem actualratio {$simclock actualratio}>
 
 <b>Active Mode.</b>  Returns the measured game ratio value, or "???"
 if no measurement is available.<p>
 
-<<defitem advance {$simclock advance <i>t</i>}>>
+<defitem advance {$simclock advance <i>t</i>}>
 
 <b>Passive Mode.</b>  Manually advances simulation time to <i>t</i>
 ticks in response to some external time update.  Returns the new
 simulation time in ticks.  Does <b>not</b> call the
 <code>-advancecmd</code>.<p>
 
-<<defitem asDays {$simclock asDays ?<i>offset</i>?}>>
+<defitem asDays {$simclock asDays ?<i>offset</i>?}>
 
 Returns the current simulation time in decimal days.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
 the returned time.<p>
 
-<<defitem asHours {$simclock asHours ?<i>offset</i>?}>>
+<defitem asHours {$simclock asHours ?<i>offset</i>?}>
 
 Returns the current simulation time in decimal hours.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
 the returned time.<p>
 
-<<defitem asMinutes {$simclock asMinutes ?<i>offset</i>?}>>
+<defitem asMinutes {$simclock asMinutes ?<i>offset</i>?}>
 
 Returns the current simulation time in minutes.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
 the returned time.<p>
 
-<<defitem asString {$simclock asString ?<i>offset</i>?}>>
-<<defitem asZulu {$simclock asZulu ?<i>offset</i>?}>>
+<defitem asString {$simclock asString ?<i>offset</i>?}>
+<defitem asZulu {$simclock asZulu ?<i>offset</i>?}>
 
-Returns the current simulation time as a <<xref zulu(n)>> time
+Returns the current simulation time as a <xref zulu(n)> time
 string.  If given, <i>offset</i> should be an offset in ticks; it is
 added to the returned time.<p>
 
-<<defitem cget {$simclock cget <i>option</i>}>>
+<defitem cget {$simclock cget <i>option</i>}>
 
 Retrieve the value of any of the object's options.<p>
 
-<<defitem configure {$simclock configure ?<i>option value...</i>?}>>
+<defitem configure {$simclock configure ?<i>option value...</i>?}>
 
 Set any of the object's options.<p>
 
-<<defitem fromDays {$simclock fromDays <i>days</i>}>>
+<defitem fromDays {$simclock fromDays <i>days</i>}>
 
 Converts a simulation time in decimal <i>days</i> to a simulation time
 in ticks; fractional ticks are rounded to the nearest integer.<p>
 
-<<defitem fromHours {$simclock fromHours <i>hours</i>}>>
+<defitem fromHours {$simclock fromHours <i>hours</i>}>
 
 Converts a simulation time in decimal <i>hours</i> to a simulation time
 in ticks; fractional ticks are rounded to the nearest integer.<p>
 
-<<defitem fromMinutes {$simclock fromMinutes <i>minutes</i>}>>
+<defitem fromMinutes {$simclock fromMinutes <i>minutes</i>}>
 
 Converts a simulation time in decimal <i>minutes</i> to a simulation time
 in ticks; fractional ticks are rounded to the nearest integer.<p>
 
-<<defitem fromZulu {$simclock fromZulu <i>zulutime</i>}>>
+<defitem fromZulu {$simclock fromZulu <i>zulutime</i>}>
 
-Converts a <<xref zulu(n)>> time string into a simulation time
+Converts a <xref zulu(n)> time string into a simulation time
 in ticks; fractional ticks are rounded to the nearest integer.<p>
 
-<<defitem fromTimeSpec {$simclock fromTimeSpec <i>spec</i>}>>
+<defitem fromTimeSpec {$simclock fromTimeSpec <i>spec</i>}>
 
 Converts a time specification string, <i>spec</i>, into a sim time in
 ticks.<p>
 
-<<defitem {timespec validate} {$simclock timespec validate <i>spec</i>}>>
+<defitem {timespec validate} {$simclock timespec validate <i>spec</i>}>
 
 Validates the <i>spec</i> and returns the corresponding sim time in
 ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
 
-<<defitem {past validate} {$simclock past validate <i>spec</i>}>>
+<defitem {past validate} {$simclock past validate <i>spec</i>}>
 
 Validates the <i>spec</i> as a time between <b>T0</b> and <b>NOW</b>
 (inclusive) and returns the corresponding sim time in
 ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
 
-<<defitem {future validate} {$simclock future validate <i>spec</i>}>>
+<defitem {future validate} {$simclock future validate <i>spec</i>}>
 
 Validates the <i>spec</i> as a time no earlier than <b>NOW</b>
 and returns the corresponding sim time in
 ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
 
-<<defitem grant {$simclock grant <i>ticks</i>}>>
+<defitem grant {$simclock grant <i>ticks</i>}>
 
 <b>Active Mode.</b> This method, when used in conjunction with
 <code>-requestcmd</code>, allows the simclock(n) to request permission
 to advance time.  For example, the <code>-requestcmd</code> might ask
 the federation for permission to advance time; when permission is
-received, then or later, the application can call <<iref grant>> to
+received, then or later, the application can call <iref grant> to
 allow the request to proceed.  The <i>ticks</i> argument is the time
 for which permission was requested.<p>
 
-Note that <<iref grant>> calls the <code>-advancecmd</code> directly.<p>
+Note that <iref grant> calls the <code>-advancecmd</code> directly.<p>
 
-<<defitem isactive {$simclock isactive}>>
+<defitem isactive {$simclock isactive}>
 
 Returns 1 if the simclock(n) is in active mode, and 0 otherwise.<p>
 
-<<defitem now {$simclock now ?<i>offset</i>?}>>
+<defitem now {$simclock now ?<i>offset</i>?}>
 
 Returns the current simulation time in ticks.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
 the returned time.<p>
 
-<<defitem ratio {$simclock ratio ?<i>rat</i>?}>>
+<defitem ratio {$simclock ratio ?<i>rat</i>?}>
 
 <b>Active Mode.</b> Queries/sets the current game ratio, which is a
 floating point number greater than or equal to zero or the literal
@@ -341,12 +341,12 @@ rate of at most 1 minute per wallclock minute.  If the game ratio is
 immediately after each time advance is granted; that is, it will not
 artificially limit the speed of the simulation.<p>
 
-<<defitem reset {$simclock reset}>>
+<defitem reset {$simclock reset}>
 
 Resets simulation time to 0 ticks.  In addition, the simclock(n) is
 returned to passive mode and the game ratio is set to 0.<p>
 
-<<defitem start {$simclock start ?<i>ticks</i>?}>>
+<defitem start {$simclock start ?<i>ticks</i>?}>
 
 <b>Active Mode.</b>  Enters active mode, allowing the simclock(n) to
 run on its own.  Optionally, sets the current simulation time to
@@ -355,58 +355,58 @@ application enters the Tcl event loop.<p>
 
 Note: if the game ratio was previously set to something other than
 0.0, the simclock will request a time advance during the
-<<iref start>> call. <p>
+<iref start> call. <p>
 
-<<defitem step {$simclock step <i>ticks</i>}>>
+<defitem step {$simclock step <i>ticks</i>}>
 
 <b>Passive Mode.</b> Manually advances simulation time by the
 specified number of <i>ticks</i> in response to some external time
 update.  Returns the new simulation time in ticks.  Does <b>not</b> call the
 <code>-advancecmd</code>.<p>
 
-<<defitem stop {$simclock stop}>>
+<defitem stop {$simclock stop}>
 
 <b>Active Mode.</b>  Returns the simclock(n) to passive mode; time
 will no longer advance.  The game ratio is reset to 0.<p>
 
-<<defitem tick {$simclock tick}>>
+<defitem tick {$simclock tick}>
 
 <b>Passive Mode.</b> Manually advances simulation time by one tick,
 calling the <code>-advancecmd</code> (if any).<p>
 
-<<defitem toDays {$simclock toDays <i>ticks</i> ?<i>offset</i>?}>>
+<defitem toDays {$simclock toDays <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in ticks into decimal days.  If given,
 <i>offset</i> should be an offset in ticks; it is added to the
 specified time.<p>
 
-<<defitem toHours {$simclock toHours <i>ticks</i> ?<i>offset</i>?}>>
+<defitem toHours {$simclock toHours <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in <i>ticks</i> into decimal
 hours.  If given, <i>offset</i> should be an offset in ticks; it is added to
 the specified time.<p>
 
-<<defitem toMinutes {$simclock toMinutes <i>ticks</i> ?<i>offset</i>?}>>
+<defitem toMinutes {$simclock toMinutes <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in <i>ticks</i> into decimal
 minutes.  If given, <i>offset</i> should be an offset in ticks; it is added to
 the specified time.<p>
 
-<<defitem toString {$simclock toString <i>ticks</i> ?<i>offset</i>?}>>
-<<defitem toZulu {$simclock toZulu <i>ticks</i> ?<i>offset</i>?}>>
+<defitem toString {$simclock toString <i>ticks</i> ?<i>offset</i>?}>
+<defitem toZulu {$simclock toZulu <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in integer <i>ticks</i> into a
-<<xref zulu(n)>> time string.  If given,
+<xref zulu(n)> time string.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
 the specified time.<p>
 
-<</deflist instance command>>
+</deflist instance command>
 
-<<section "SEE ALSO">>
+<section "SEE ALSO">
 
-<<xref zulu(n)>>
+<xref zulu(n)>
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 zulu(n) requires Tcl 8.5 or later.
 
@@ -414,13 +414,16 @@ To use zulu(n) in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the marsutil(n)
 library directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package.
 
-<</manpage>>
+</manpage>
+
+
+
 

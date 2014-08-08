@@ -3,7 +3,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require marsutil 1.0
+package require marsutil <version>
 namespace import ::marsutil::statecontroller
 </pre>
 
@@ -185,6 +185,7 @@ Will Duquette<p>
 This package was inherited from Athena.
 
 </manpage>
+
 
 
 

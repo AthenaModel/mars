@@ -1,15 +1,15 @@
-<<manpage {marsutil(n) eventq(n)} "Discrete Event Queue Manager">>
+<manpage {marsutil(n) eventq(n)} "Discrete Event Queue Manager">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
 package require util 1.0
 namespace import ::marsutil::*
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
 eventq(n) defines an event queue mechanism for discrete event
 simulation.  The event queue manager allows the application define
@@ -17,25 +17,25 @@ an arbitrary number of simulation event types, instances of each
 type may be scheduled, and executed at the appropriate time.<p>
 
 The event queue itself is stored in an instance of
-<<xref sqldocument(n)>>, which must be provided at initialization
+<xref sqldocument(n)>, which must be provided at initialization
 time.<p>
 
-<<subsection "Simulation Time">>
+<subsection "Simulation Time">
 
 eventq(n) expresses simulated time in integer ticks, starting at -1.
 The simulated time is updated as events execute, and is reset to -1
-on <<iref restart>>.  This allows events to be scheduled as of time 0.<p>
+on <iref restart>.  This allows events to be scheduled as of time 0.<p>
 
 eventq(n) is designed to add discrete event simulation capability
-within an existing time-step simulation.  The <<iref advance>> method
+within an existing time-step simulation.  The <iref advance> method
 executes scheduled events up to and including a specified end time;
 this can be called by the parent simulation at each time step.<p>
 
 <b>Note</b>: eventq(n) doesn't use or advance any
-<<xref simclock(n)>>; it presumes that the application will do so at
+<xref simclock(n)>; it presumes that the application will do so at
 each time step.<p>
 
-<<subsection "Event Types">>
+<subsection "Event Types">
 
 Each event type has a name, an argument list, and a body.  The
 arguments are specified when an event is scheduled; the body is
@@ -43,15 +43,15 @@ executed when the event's execution time is reached.  The arguments
 are available in the body, rather like the arguments of standard Tcl
 procs.<p>
 
-<<section "DATABASE SCHEMA">>
+<section "DATABASE SCHEMA">
 
-<<swallow {
+<swallow {
     # Define a dummy event
     ::marsutil::eventq define dummy {a b} { ... }
-}>>
+}>
 
-eventq(n) stores the queued events in an <<xref sqldocument(n)>>;
-eventq(n) is thus an <<xref sqlsection(i)>> object.  The event IDs,
+eventq(n) stores the queued events in an <xref sqldocument(n)>;
+eventq(n) is thus an <xref sqlsection(i)> object.  The event IDs,
 execution times, and event types are stored in a single table,
 <b>eventq_queue</b>.  An additional table,
 <b>eventq_etype_<i>etype</i></b>, is defined for each event type;
@@ -68,27 +68,27 @@ The schema looks as follows; as an example, an event type <b>dummy</b>
 with arguments <i>a</i> and <i>b</i> has been defined.
 
 <pre>
-<<eventq sqlsection schema>>
+<eventq sqlsection schema>
 </pre>
 
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem eventq {eventq <i>subcommand</i> ?<i>args...</i>?}>>
+<defitem eventq {eventq <i>subcommand</i> ?<i>args...</i>?}>
 
 The event queue is manipulated via the subcommands of the
-<<iref eventq>> command, which are as follows:<p>
+<iref eventq> command, which are as follows:<p>
 
-<<deflist eventq>>
+<deflist eventq>
 
-<<defitem advance {eventq advance <i>max_t</i>}>>
+<defitem advance {eventq advance <i>max_t</i>}>
 
 Advances simulation time, executing all events with execution times
 less than or equal to <i>max_t</i>.  Once all such events have been
 executed, the command returns; the simulation time returned by
-<<iref now>> is <i>max_t</i>.<p>
+<iref now> is <i>max_t</i>.<p>
 
 If there are multiple events scheduled for a particular time <i>t</i>,
 they are executed in the order scheduled.  <b>TBD:</b>  Eventually,
@@ -96,31 +96,31 @@ we'll want to associate priorities with the various event types, and
 possibly with specific events.<p>
 
 Executed events are deleted from the event queue, unless they
-<<iref reschedule>> themselves for a later time.<p>
+<iref reschedule> themselves for a later time.<p>
 
-<<defitem cancel {eventq cancel <i>id</i>}>>
+<defitem cancel {eventq cancel <i>id</i>}>
 
 Cancels the event with the specified <i>id</i>.  The event is deleted
 from the event queue, and forgotten.<p>
 
 Returns an "undo token", which may be used to undo the cancellation.
-See <<iref undo cancel>> for details.
+See <iref undo cancel> for details.
 
-<<defitem changed {eventq changed}>>
+<defitem changed {eventq changed}>
 
-Indicates whether the queue <<xref saveable(i)>> data has changed
+Indicates whether the queue <xref saveable(i)> data has changed
 or not.<p>
 
-<<defitem checkpoint {eventq checkpoint ?-saved?}>>
+<defitem checkpoint {eventq checkpoint ?-saved?}>
 
 Returns the current state of the event queue in-memory data; the queue
-can later be restored to this state using <<iref restore>>.  See
-<<xref saveable(i)>> for details.<p>
+can later be restored to this state using <iref restore>.  See
+<xref saveable(i)> for details.<p>
 
 Note that the RDB must also be checkpointed as well.<p>
 
 
-<<defitem define {eventq define <i>etype eargs body</i>}>>
+<defitem define {eventq define <i>etype eargs body</i>}>
 
 Defines a new event type called <i>etype</i>.  In general, the syntax
 of this command is similar to that of the standard Tcl
@@ -141,8 +141,8 @@ contain letters, numbers, and underscores.<p>
 
 <ul>
   <li> Event types may be defined before or after the
-       <<iref init>> method is called.
-  <li> Event bodies may be redefined simply by calling <<iref define>>
+       <iref init> method is called.
+  <li> Event bodies may be redefined simply by calling <iref define>
        a second time with a new body; but the argument list must be
        identical.
 </ul><p>
@@ -157,36 +157,36 @@ eventq define arrival {name} {
 eventq schedule arrival 5 joe
 </pre>
 
-<<defitem destroy {eventq destroy <i>pattern</i>}>>
+<defitem destroy {eventq destroy <i>pattern</i>}>
 
 Destroys all event types whose names match a <code>glob</code>-style
 <i>pattern</i>.  When an event type is destroyed, all scheduled events
 of that type are deleted from the queue, and the event type's schema
 entries are deleted from the run-time database.<p>
 
-<<defitem eventcount {eventq eventcount}>>
+<defitem eventcount {eventq eventcount}>
 
 Returns the number of events scheduled to date, including events which
 have been cancelled before execution.<p>
 
-<<defitem etypes {eventq etypes}>>
+<defitem etypes {eventq etypes}>
 
 Returns a list of the names of the currently defined event types.<p>
 
-<<defitem init {eventq init <i>db</i>}>>
+<defitem init {eventq init <i>db</i>}>
 
 Initializes the event queue, allowing events to be scheduled.  The
-<i>db</i> must be an instance of <<xref sqldocument(n)>> (or the
+<i>db</i> must be an instance of <xref sqldocument(n)> (or the
 equivalent) which defines the eventq(n) schema.<p>
 
 Note that event types may be defined both before and after the call to
-<<iref init>>.<p>
+<iref init>.<p>
 
-<<defitem now {eventq now}>>
+<defitem now {eventq now}>
 
 Returns the event queue's current simulation time.<p>
 
-<<defitem reschedule {eventq reschedule <i>id t</i>}>>
+<defitem reschedule {eventq reschedule <i>id t</i>}>
 
 Reschedules the event with the specified event <i>id</i> to occur at
 time <i>t</i>, which must be in the future.<p>
@@ -195,63 +195,63 @@ Note that an event can reschedule itself.  An event <i>body</i> might
 contain a state machine, for example; each time the event occurs, it
 can determine the new state and reschedule itself until a later time.<p>
 
-<<defitem reset {eventq reset}>>
+<defitem reset {eventq reset}>
 
 Resets the event queue as of the current simulation time, i.e.,
 deletes all scheduled events while leaving the simulation time, the
 event counter, and so forth unchanged.<p>
 
-<<defitem restart {eventq restart}>>
+<defitem restart {eventq restart}>
 
 Resets the event queue to time -1, deleting all scheduled events and
 resetting the event counter to 0.  Note that old event IDs will be
 reused in this case.<p>
 
-<<defitem restore {eventq restore <i>state</i> ?-saved?}>>
+<defitem restore {eventq restore <i>state</i> ?-saved?}>
 
 Restores the queue to a <i>checkpoint</i> produced by a previous call to
-<<iref checkpoint>>.  See <<xref saveable(i)>> for details.<p>
+<iref checkpoint>.  See <xref saveable(i)> for details.<p>
 
 Note that the RDB must be restored as well.<p>
 
-<<defitem schedule {eventq schedule <i>etype t</i> ?<i>args...</i>?}>>
+<defitem schedule {eventq schedule <i>etype t</i> ?<i>args...</i>?}>
 
 Schedules an event of type <i>etype</i> to be executed at time
 <i>t</i>, which must be a time in the future, i.e., strictly greater
-than <<iref now>>.  Note that it is possible to schedule events to
+than <iref now>.  Note that it is possible to schedule events to
 execute at time 0.  The <i>args</i> depend on the event type; all
 arguments specified for the type must be included.  See
-<<iref define>> for an example.<p>
+<iref define> for an example.<p>
 
 Returns the event ID of the newly scheduled event.<p>
 
-<<defitem size {eventq size}>>
+<defitem size {eventq size}>
 
 Returns the number of events in the queue.<p>
 
-<<defitem "undo cancel" {eventq undo cancel <i>undoToken</i>}>>
+<defitem "undo cancel" {eventq undo cancel <i>undoToken</i>}>
 
 Undoes a previous cancellation of an event given the
-<i>undoToken</i> returned by <<iref cancel>>.  The restored event will
+<i>undoToken</i> returned by <iref cancel>.  The restored event will
 have the same data and event ID as it had before it was cancelled.<p>
 
 It is an error to undo a cancellation after the event would have
 executed.  Beyond that, it is up to the application to make sure
 that undoing the cancellation makes sense.<p>
 
-<<defitem "undo schedule" {eventq undo schedule}>>
+<defitem "undo schedule" {eventq undo schedule}>
 
-Undoes the most recent call to <<iref schedule>>, decrementing
+Undoes the most recent call to <iref schedule>, decrementing
 the event counter.  It is an error if the most recently scheduled
 event has already been executed or cancelled.<p>
 
-<</deflist eventq>>
+</deflist eventq>
 
-<<section "SEE ALSO">>
+<section "SEE ALSO">
 
-<<xref sqldocument(n)>>
+<xref sqldocument(n)>
 
-<<section "FUTURE WORK">>
+<section "FUTURE WORK">
 
 The following enhancements have been considered:<p>
 
@@ -265,16 +265,16 @@ The following enhancements have been considered:<p>
        overall event queue easier.  Either that, or we need to define
        a view that effectively does so.<p>
 
-  <li> The <<iref define>> command should support default arguments
+  <li> The <iref define> command should support default arguments
        and variable-length argument lists, as <code>proc</code> does.<p>
 
   <li> It might be desirable to define events with large numbers of
        arguments such that each argument is a separate column in the
        <b>eventq_etype_<i>etype</i></b> table but the arguments are
-       passed as a dictionary to <<iref schedule>>.<p>
+       passed as a dictionary to <iref schedule>.<p>
 </ul>
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 eventq(n) requires Tcl 8.5 or later.
 
@@ -282,15 +282,17 @@ To use eventq(n) in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the marsutil(n)
 library directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package.
 
-<</manpage>>
+</manpage>
+
+
 
 
 

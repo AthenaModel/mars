@@ -1,20 +1,20 @@
-<<manpage {marsutil(n) commserver(n)} "comm(n) Command Server">>
+<manpage {marsutil(n) commserver(n)} "comm(n) Command Server">
 
-<<section SYNOPSIS>>
+<section SYNOPSIS>
 
 <pre>
-package require util 0.1
+package require marsutil <version>
 namespace import ::marsutil::commserver
 </pre>
 
-<<itemlist>>
+<itemlist>
 
-<<section DESCRIPTION>>
+<section DESCRIPTION>
 
-<<xrefset comm(n) comm(n) http://tcllib.sourceforge.net/doc/comm.html>>
+<xrefset comm(n) comm(n) http://tcllib.sourceforge.net/doc/comm.html>
 
-commserver(n) defines a <<xref comm(n)>>-based command server;
-<<xref comm(n)>> is a socket-based communications package defined in
+commserver(n) defines a <xref comm(n)>-based command server;
+<xref comm(n)> is a socket-based communications package defined in
 Tcllib.<p> 
 
 
@@ -27,7 +27,7 @@ which contains the commserver can send messages to specific clients or
 broadcast them to all clients.<p>
 
 Note that the commserver(n) object doesn't begin to accept
-connections immediately on creation; call <<iref listen>> when
+connections immediately on creation; call <iref listen> when
 the application is ready to accept connections.<p>
 
 The client connects by sending the command "<tt>connect
@@ -42,14 +42,14 @@ Commands received from connected clients are passed to the
 <b>-evalcmd</b> for processing.  Return values and thrown errors are
 passed back to the client.<p>
 
-Any Tcl application may be a client by using <<xref comm(n)>> directly;
-however, the <<xref commclient(n)>> type encapsulates the <<xref comm(n)>>
+Any Tcl application may be a client by using <xref comm(n)> directly;
+however, the <xref commclient(n)> type encapsulates the <xref comm(n)>
 code, and provides a safe interpreter for processing messages coming
 in from the server.<p>
 
-<<section "MESSAGE PROTOCOL">>
+<section "MESSAGE PROTOCOL">
 
-By default, <<xref comm(n)>> sends a command as a list of tokens, e.g.,<p>
+By default, <xref comm(n)> sends a command as a list of tokens, e.g.,<p>
 
 <pre>
     comm::comm send $port set a 5     ;# Sends "set a 5"
@@ -81,44 +81,44 @@ command.<p>
 If the executive threw an error, then the first token will be "error"
 and the second will be an error message.<p>
 
-Note that <<xref commclient(n)>> handles this protocol automatically.<p>
+Note that <xref commclient(n)> handles this protocol automatically.<p>
 
-<<section COMMANDS>>
+<section COMMANDS>
 
-<<deflist commands>>
+<deflist commands>
 
-<<defitem commserver {commserver <i>name ?options?</i>}>>
+<defitem commserver {commserver <i>name ?options?</i>}>
 
 Creates a new commserver(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
-<<iref commserver>> returns the fully-qualified form of the
+<iref commserver> returns the fully-qualified form of the
 <i>name</i>.<p>
 
-The <<iref commserver>> may be created with the following options:<p>
+The <iref commserver> may be created with the following options:<p>
 
-<<deflist commserver options>>
+<deflist commserver options>
 
-<<defopt {-port <i>portId</i>}>>
+<defopt {-port <i>portId</i>}>
 
-The <<xref comm(n)>> port ID at which to receive incoming commands.<p>
+The <xref comm(n)> port ID at which to receive incoming commands.<p>
 
 This option must be set at creation time, and is read-only
 thereafter.<p>
 
-<<defopt {-logger <i>name</i>}>>
+<defopt {-logger <i>name</i>}>
 
-The name of the <<xref logger(n)>> object to use to log server
+The name of the <xref logger(n)> object to use to log server
 activity.<p>
 
 This option must be set at creation time, and is read-only
 thereafter.<p>
 
-<<defopt {-logcomponent <i>name</i>}>>
+<defopt {-logcomponent <i>name</i>}>
 
 The component name to pass to the <code>-logger</code> object when
 logging messages; defaults to "commserver".<p>
 
-<<defopt {-allowremote <i>flag</i>}>>
+<defopt {-allowremote <i>flag</i>}>
 
 If 0, the default, clients may only connect from the local host.
 If 1, connections are accepted from remote hosts as well.<p>
@@ -127,7 +127,7 @@ If 1, connections are accepted from remote hosts as well.<p>
 that they are properly validated, and that the executive given
 to them is suitably constrained!<p>
 
-<<defopt {-validatecmd <i>prefix</i>}>>
+<defopt {-validatecmd <i>prefix</i>}>
 
 The <i>prefix</i> is a command prefix.  When a new client connects,
 its logical name and IP address (or "localhost") will be appended to
@@ -140,7 +140,7 @@ connection is presumed to be valid.<p>
 If no <b>-validatecmd</b> is supplied, then all connections are
 valid.  Note that this is unsafe if <b>-allowremote</b> is enabled.<p>
 
-<<defopt {-evalcmd <i>prefix</i>}>>
+<defopt {-evalcmd <i>prefix</i>}>
 
 The <i>prefix</i> is a command prefix.  When a connected client
 sends a command, the <i>prefix</i> is called as a command with two
@@ -148,45 +148,45 @@ additional arguments, the client name and the client's command.
 The <b>-evalcmd</b> should evaluate the client's command; any return
 value or thrown error are passed back to the client.<p>
 
-<<defopt {-connectcmd <i>prefix</i>}>>
+<defopt {-connectcmd <i>prefix</i>}>
 
 The <i>prefix</i> is a command prefix.  When a new client connects
 and is validated successfully, its logical name and IP address (or
 "localhost") will be appended to <i>prefix</i>, which will then be
 executed.  Any return value is ignored.<p>
 
-<</deflist commserver options>>
+</deflist commserver options>
 
-<</deflist commands>>
+</deflist commands>
 
-<<section "INSTANCE COMMAND">>
+<section "INSTANCE COMMAND">
 
-Each instance of the <<iref commserver>> object has the following
+Each instance of the <iref commserver> object has the following
 subcommands:<p>
 
-<<deflist instance>>
+<deflist instance>
 
-<<defitem cget {commserver cget <i>option</i>}>>
+<defitem cget {commserver cget <i>option</i>}>
 
 Returns the value of the specified <i>option</i>.<p>
 
-<<defitem configure {$commserver configure <i>option value...</i>}>>
+<defitem configure {$commserver configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's options.<p>
 
-<<defitem listen {$commserver listen}>>
+<defitem listen {$commserver listen}>
 
 Call this command when ready for the commserver(n) to accept
 connections.<p>
 
-<<defitem broadcast {$commserver broadcast <i>script</i>}>>
+<defitem broadcast {$commserver broadcast <i>script</i>}>
 
 Sends the script to all clients asynchronously, ignoring any reply.
 The script will usually be a Tcl command for the client to process
 (probably in a safe interpreter), but is in fact an arbitrary text;
 the client and server must agree on meaning of such messages.<p>
 
-<<defitem send {$commserver send <i>name script</i>}>>
+<defitem send {$commserver send <i>name script</i>}>
 
 Sends the script to the specific client asynchronously, ignoring any
 reply.  The <i>name</i> is the client's logical name.
@@ -194,54 +194,56 @@ The script will usually be a Tcl command for the client to process
 (probably in a safe interpreter), but is in fact an arbitrary text;
 the client and server must agree on meaning of such messages.<p>
 
-<<defitem clientid {$commserver clientid}>>
+<defitem clientid {$commserver clientid}>
 
 When the server is processing a client's command, this method returns
-the client's <<xref comm(n)>> ID.<p>
+the client's <xref comm(n)> ID.<p>
 
-<<defitem clientname {$commserver clientname}>>
+<defitem clientname {$commserver clientname}>
 
 When the server is processing a client's command, this method returns
 the client's logical name.<p>
 
-<<defitem clients {$commserver clients}>>
+<defitem clients {$commserver clients}>
 
 Returns a list of the logical names of all current clients.<p>
 
-<<defitem clientStatus {$commserver clientStatus <i>name</i>}>>
+<defitem clientStatus {$commserver clientStatus <i>name</i>}>
 
 Returns the connection status for the client identified by
 <i>name</i>.  The return value is "connected" or "disconnected".<p>
 
-<<defitem clientTime {$commserver clientTime <i>name</i>}>>
+<defitem clientTime {$commserver clientTime <i>name</i>}>
 
 Returns the time of last connection/disconnection for the client
 identified by <i>name</i>.  The return value is the number of seconds
 since the last epoch.  A return value of 0 indicates the client has
 never connected.<p>
 
-<</deflist instance>>
+</deflist instance>
 
-<<section "SEE ALSO">>
+<section "SEE ALSO">
 
-<<xref commclient(n)>>
+<xref commclient(n)>
 
-<<section ENVIRONMENT>>
+<section ENVIRONMENT>
 
 Requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package directory.
 
-<<section AUTHOR>>
+<section AUTHOR>
 
 Will Duquette<p>
 
-<<section HISTORY>>
+<section HISTORY>
 
 Original package.
 
-<</manpage>>
+</manpage>
+
+
 
 
 
