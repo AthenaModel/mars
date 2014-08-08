@@ -1,0 +1,11 @@
+gui(n) Package
+---------------------------------------------------------------------
+This package contains reasonably generic GUI settings and components
+for use in JNEM.  In principle, these components could be re-used
+on another project with minimal conversion effort.
+
+See the gui(n) man page for specifics.
+
+Files with names like "<module>_test.tcl" are test programs for
+"<module>.tcl".  They don't use tcltest(n) since the testing
+needs to be done interactively.
