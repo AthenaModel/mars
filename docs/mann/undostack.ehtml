@@ -1,15 +1,9 @@
 <manpage {marsutil(n) undostack(n)} "Undo stack manager">
 
-<swallow {
-# So we can get enum docs.
-package require simlib
-namespace import ::simlib::*
-}>
-
 <section SYNOPSIS>
 
 <pre>
-package require util 1.0
+package require marsutil <version>
 namespace import ::marsutil::undostack
 </pre>
 
@@ -52,8 +46,9 @@ by undostack(n) begin with the string "undostack_".<p>
 undostack(n) registers the following schema definitions with
 <xref sqldocument(n)>:<p>
 
+<swallow {package require marsutil [version]}>
 <pre>
-<::simlib::undostack sqlsection schema>
+<::marsutil::undostack sqlsection schema>
 </pre>
 
 <section COMMANDS>
@@ -90,7 +85,7 @@ thereafter.<p>
 
 <defopt {-tag <i>name</i>}>
 
-Specifies the <u>name</u> of a tag used to identify this stack
+Specifies the <i>name</i> of a tag used to identify this stack
 in the RDB.  The tag must be unique for this RDB.<p>
 
 This option must be set at creation time, and cannot be changed
