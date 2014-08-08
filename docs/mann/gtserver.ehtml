@@ -27,60 +27,58 @@ indicated by calling the <iref complete> method.<p>
 gtserver(n) sends the following messages to clients; note that they
 will typically be handled by a <xref gtclient(n)> object:<p>
 
-<dl>
-  <dt> <b>gt <i>subcommand</i> ?<i>args...</i>?</b>
-  <dd> All messages sent by gtserver(n) have this form.<p>
+<deflist protocol>
+<def "gt <i>subcommand</i> ?<i>args...</i>?">
+All messages sent by gtserver(n) have this form.<p>
 
-  <dl>
-    <dt> <b>gt startrefresh</b>
-    <dd> The simulation is about to refresh all game truth.<p>
+<def "gt startrefresh">
+The simulation is about to refresh all game truth.<p>
 
-    <dt> <b>gt endrefresh</b>
-    <dd> The simulation has finished refreshing all game truth.<p>
+<def "gt endrefresh">
+The simulation has finished refreshing all game truth.<p>
 
-    <dt> <b>gt set <i>name value</i> ?<i>name value...</i>?</b>
-    <dd> This is a game truth update for one or more game truth
-         variables..<p>
+<def "gt set <i>name value</i> ?<i>name value...</i>?">
+This is a game truth update for one or more game truth
+variables..<p>
 
-    <dt> <b>gt unset ?<i>name...</i>?</b>
-    <dd> Unsets the named game truth variables.<p>
+<def "gt unset ?<i>name...</i>?">
+Unsets the named game truth variables.<p>
 
-    <dt> <b>gt clear</b>
-    <dd> Unsets all game truth variables.<p>
+<def "gt clear">
+Unsets all game truth variables.<p>
 
-    <dt> <b>gt complete</b>
-    <dd> A game truth update is complete; this indicates that the set
-         of game truth is now in a consistent state.<p>
+<def "gt complete">
+A game truth update is complete; this indicates that the set
+of game truth is now in a consistent state.<p>
 
-    <dt> <b>gt class</b>
-    <dd> Declares that a particular class of simulation object will 
-         be created, updated and deleted during the simulation.<p>
+<def "gt class">
+Declares that a particular class of simulation object will 
+be created, updated and deleted during the simulation.<p>
 
-    <dt> <b>gt create</b>
-    <dd> Creates a simulation object to be stored in a clients database. 
-         The object can then be retrieved by interested applications.<p>
+<def "gt create">
+Creates a simulation object to be stored in a clients database. 
+The object can then be retrieved by interested applications.<p>
 
-    <dt> <b>gt update</b>
-    <dd> Updates a simulation object that is stored in a clients database. 
-         The object can then be retrieved by interested applications.<p>
+<def "gt update">
+Updates a simulation object that is stored in a clients database. 
+The object can then be retrieved by interested applications.<p>
 
-    <dt> <b>gt delete</b>
-    <dd> Deletes a simulation object that is stored in a clients
-         database.<p>
-  </dl><p>
-</dl>
+<def "gt delete">
+Deletes a simulation object that is stored in a clients
+database.<p>
+</deflist>
 
 Most of the messages are map one-to-one with the gtserver(n) object's
 methods; the exception is the <iref refresh> method, which generates
 the following set of messages:<p>
 
-<pre>
+<example>
 gt startrefresh
 gt clear
 gt set ...
 gt create ...
 gt endrefresh
-</pre>
+</example>
 
 <section COMMANDS>
 
@@ -198,7 +196,7 @@ Sends a delete message to clients with the supplied <i>class</i> and <i>id</i>.
 The gtserver(n) is initialized as follows; if the application has a single
 gtserver(n), it is conventionally called <code>::gt</code>, as shown.<p>
 
-<pre>
+<example>
 # FIRST, create the commserver(n) object
 commserver ::cs \
    -logger ::log \
@@ -227,7 +225,7 @@ gt delete foo 99
 
 # NEXT, indicate that monitor data is complete:
 gt complete
-</pre>
+</example>
 
 <section "SEE ALSO">
 

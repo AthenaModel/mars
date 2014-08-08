@@ -76,10 +76,10 @@ callbacks reference the renamed object.  Consequently, the
 command bound to an event may include the following
 %-substitutions:<p>
 
-<table border=0 cellpadding=2>
-<tr><td><code>%s</code></td> <td>The subject's name</td></tr>
-<tr><td><code>%o</code></td> <td>The object's name</td></tr>
-</table><p>
+<ul>
+<li> <tt %s> - The subject's name.
+<li> <tt %o> - The object's name.
+</ul><p>
 
 When the callback is called, these substitutions will be replaced with
 the current subject and object names.<p>

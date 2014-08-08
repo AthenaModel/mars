@@ -39,62 +39,57 @@ verbosity level; the entry is logged if and only if its verbosity is
 less than or equal to the desired verbosity level.  The verbosity
 levels are as follows:<p>
 
-<b Used As Entry Verbosity>
-
-
-<table border="1" cellpadding="2">
-<tr valign="top" align="left">
+<table>
+<tr>
 <th>Level</th>
 <th>Used As Desired Verbosity</th>
-<th width="50%">Used As Entry Verbosity</th>
+<th>Used As Entry Verbosity</th>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>silent</b></td>
 <td>No entries are logged.</td>
 <td>N/A</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>fatal</b></td>
 <td>Log <b>fatal</b> entries only.</td>
 <td>Entry should say that the application is about to terminate, and
 state why.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>error</b></td>
 <td>Log entries of level <b>error</b> and below.</td>
 <td>Entry should record an erroneous but non-fatal condition.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>warning</b></td>
 <td>Log entries of level <b>warning</b> and below.</td>
 <td>Entry should record an anomalous condition.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>normal</b></td>
 <td>Log entries of level <b>normal</b> and below.</td>
 <td>Normal execution logging.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>detail</b></td>
 <td>Log entries of level <b>detail</b> and below.</td>
 <td>Additional debugging trace; low verbosity.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>debug</b></td>
 <td>Log entries of level <b>debug</b> and below.</td>
 <td>Additional debugging trace; high verbosity.  Reserved for
 high-volume messages which are enabled only while validating a
 particular feature.</td>
 </tr>
-
-
 </table><p>
 
 
@@ -117,24 +112,24 @@ The primary importance of the component name (other than as an aide to a
 person reading the logged entries) is that verbosity can be adjusted
 component by component by setting the component's "verbosity mode":<p>
 
-<table border="1" cellpadding="2">
-<tr valign="top" align="left">
+<table>
+<tr>
 <th>Mode</th>
 <th>Effect On Component's Logging</th>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>silent</b></td>
 <td>None of the component's entries will be logged.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>level</b></td>
 <td>The component's entries will be logged in accordance with the
 logger's <code>-verbosity</code> setting.</td>
 </tr>
 
-<tr valign="top">
+<tr>
 <td><b>all</b></td>
 <td>All of the component's entries will be logged, indepedent of the
 logger's <code>-verbosity</code> setting.</td>
@@ -152,28 +147,28 @@ string:<p>
 
 <pre><lb>timestamp<rb> <lb>level<rb> <lb>component<rb> <lb>message<rb> ?<lb>simtime<rb>?</pre>
 
-<dl>
-  <dt> <code><lb>timestamp<rb></code>
-  <dd> The wall-clock time when the entry was logged.  The timestamp
-       has the format "yyyy-mm-ddThh:mm:ss".  TBD: the
-       timestamp might be extended to subsecond resolution so that log
-       entries sort unambiguously in time order.<p>
+<deflist vars>
+<def {<code><lb>timestamp<rb></code>}>
+The wall-clock time when the entry was logged.  The timestamp
+has the format "yyyy-mm-ddThh:mm:ss".  TBD: the
+timestamp might be extended to subsecond resolution so that log
+entries sort unambiguously in time order.<p>
 
-  <dt> <code><lb>level<rb></code>
-  <dd> The verbosity level of the entry.<p>
+<def {<code><lb>level<rb></code>}>
+The verbosity level of the entry.<p>
 
-  <dt> <code><lb>component<rb></code>
-  <dd> The name of the component which logged the entry.<p>
+<def {<code><lb>component<rb></code>}>
+The name of the component which logged the entry.<p>
 
-  <dt> <code><lb>message<rb></code>
-  <dd> The message text, flattened to remove newlines.  See
-       <xref "Message Flattening"> for more details.<p>
+<def {<code><lb>message<rb></code>}>
+The message text, flattened to remove newlines.  See
+<xref "Message Flattening"> for more details.<p>
 
-  <dt> <code><lb>simtime<rb></code>
-  <dd> The simulation time as a human-readable string.  This is
-       included only if the <code>-simclock</code> option is set.<p>
+<def {<code><lb>simtime<rb></code>}>
+The simulation time as a human-readable string.  This is
+included only if the <code>-simclock</code> option is set.<p>
 
-</dl>
+</deflist vars>
 
 <subsection "Message Flattening">
 

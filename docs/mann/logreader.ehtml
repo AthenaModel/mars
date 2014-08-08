@@ -108,12 +108,12 @@ directory.
 
 <section AUTHOR>
 
-Dave Jaffe<br>
-Will Duquette<p>
+Dave Jaffe, Will Duquette<p>
 
 <section HISTORY>
 
-07/05/2005 DJ Original package.
+07/05/2005 DJ Original package.<p>
+
 06/05/2006 WHD Minor clean-up.
 
 </manpage>

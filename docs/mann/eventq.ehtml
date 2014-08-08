@@ -46,6 +46,7 @@ procs.<p>
 <section "DATABASE SCHEMA">
 
 <swallow {
+    package require marsutil [version]
     # Define a dummy event
     ::marsutil::eventq define dummy {a b} { ... }
 }>
