@@ -67,11 +67,31 @@ and providing high-quality error messages for any invalid parameters.
 The actual work is usually handed off to one or more "mutator" commands
 implemented by the relevant application modules.<p>
 
-order(n) supports the application's multi-level undo/redo stack.
+<subsection "Undo/Redo">
+
+Undo/redo is the province of the application.  <xref order(n)> 
+supports undo/redo by allowing each order handler to set an undo script
+and a redo helper script, and by calling the <b>-ordercmd</b> callback
+for each successful order (as controlled by the interface's 
+<b>-trace</b> option).<p>
+
 Those orders which are undoable will submit an undo script to order(n)
 using <iref setundo> as their last action.  Typically, each mutator
 called by the body returns a script that undoes the mutator's effect;
 the order body aggregates these into a single undo script.<p>
+
+The <b>-ordercmd</b> callback is passed the order name and parameters, and
+this is usually enough information to allow the order to be "redone".  In
+rare cases it may be necessary to save some context information to allow
+the order to be redone identically.  For example, an order to create an
+entity might assign an arbitrary numeric ID.  On redo, it's necessary 
+that the order produce the same numeric ID as it did the first time.  This
+can be managed by using <iref setredo> to save a redo helper script that
+will save the numeric ID in such a way that it will be reused when the
+order is sent on redo.<p>
+
+The interaction between the <iref setredo> script, the application, and
+the order is up to the application.<p>
 
 <subsection "Error Handling">
 
@@ -812,6 +832,14 @@ script can be a comment, e.g.,<p>
 </pre>
 
 This will allow the order to be (trivially) undone.<p>
+
+<defitem setredo {setredo <i>script</i>}>
+
+Saves a redo helper script for the order. 
+Redo helper scripts are rarely required; most orders can be redone without
+help.  See <xref "Undo/Redo"> for
+details. <p>
+
 
 <defitem valid {valid <i>parm</i>}>
 
