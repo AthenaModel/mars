@@ -1,0 +1,7 @@
+libGeostars: Geographic coordinate conversion library
+libGeotrans: Geographic coordinate conversion code from GEOTRANS 2.2.6.
+libMarsutil: marsutil(n) routines, coded in C for speed.
+
+Header files are in include/, as needed.
+
+

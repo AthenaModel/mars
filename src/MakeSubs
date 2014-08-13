@@ -1,0 +1,58 @@
+# -*-Makefile-*-
+#---------------------------------------------------------------------
+# TITLE:
+#    MakeSubs -- Rules for building subdirectories
+#
+# AUTHOR:
+#    Will Duquette, based on an earlier anonymous version.
+#
+# DESCRIPTION:
+#    A make template that calls make in a set of defined subdirectories.
+#    The form of the template is simply:
+#
+#        SUBS = <list of subdirectories>
+#
+#        include MakeSubs
+#
+#    Subdirectories do not have to be single component names.
+#
+#    Defined Targets:
+#
+#    subs:      Does "make all" in each subdirectory.
+#    clean:     Run "make clean" in each subdirectory.
+#
+#    New targets can be added here:
+#
+#    1.  Define a per-directory target:
+#
+#        target-BYDIR = $(SUBDIRS:%=target-%)
+#
+#    2.  Append "target $(target-BYDIR)" to the .PHONY line.
+#        This tells make that these targets are not files.
+#
+#    3.  Add the master target dependency line:
+#
+#        target: $(target-BYDIR)
+#
+#    4.  Add the per-directory target and rule:
+#
+#        $(target-BYDIR):
+#        cd $(@:target-%=%); $(MAKE) target
+#
+#---------------------------------------------------------------------
+
+SUBDIRS     = $(SUBS)
+subs-BYDIR  = $(SUBDIRS:%=subs-%)
+clean-BYDIR = $(SUBDIRS:%=clean-%)
+
+.PHONY: subs $(subs-BYDIR) clean $(clean-BYDIR)
+
+subs: $(subs-BYDIR)
+
+$(subs-BYDIR): check_env
+	cd $(@:subs-%=%); $(MAKE) all
+
+clean: $(clean-BYDIR) $(OTHERCLEANS)
+
+$(clean-BYDIR): check_env
+	cd $(@:clean-%=%); $(MAKE) clean

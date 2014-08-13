@@ -5,6 +5,10 @@
 # Build Artifacts
 *.log
 *.kit
+*.o
+*.a
+*.dll
+*.so
 /docs/*.html
 /docs/*/*.html
 teapot.txt

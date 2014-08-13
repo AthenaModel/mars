@@ -1,0 +1,19 @@
+GEOTRANS 2.2.6 Coordinate Conversion Code
+
+The code in this directory is the geographic coordinate conversion
+code from GEOTRANS 2.2.6, which can be downloaded from
+
+    http://earth-info.nga.mil/GandG/geotrans/
+
+Local modifications include:
+
+* Putting the .h files together in jnem/include/geotrans, with a new
+  toplevel header, geotrans.h, for use by clients.
+
+* Putting the .c files together in jnem/src/libGeotrans.
+
+* Addition of a Makefile to build jnem/lib/libGeotrans.a.
+
+* Addition of casts and braces to remove compiler warnings.
+
+Documentation for each module can be found in the docs directory.

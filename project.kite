@@ -3,6 +3,8 @@ poc William.H.Duquette@jpl.nasa.gov
 provide marsutil
 provide marsgui
 
+make src/libGeotrans
+
 require snit 2.3
 require sqlite3 3.8
 require comm 4.6
