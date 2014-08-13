@@ -1,0 +1,113 @@
+<manpage {marsgui(n) multifield(n)} "Multi-Select Label Field">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The multifield(n) widget is a pseudo-field which adheres to the
+<xref field(i)> interface.  It has a value, and <iref set> and
+<iref get> methods, but the user cannot directly edit this value.<p>
+
+It is used for dialogs which will update a collection of two or more
+selected entities; its value is a list of the IDs of the entities.  It
+displays a label that says "<b><i>num</i> Selected</b>", where
+<i>num</i> is the number of entries in the list.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem multifield {multifield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref multifield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following options:<p>
+
+<defopt {-changecmd <i>command</i>}>
+
+From <xref field(i)>.  Specifies a <i>command</i> to be called
+whenever the field's value changes due to explicit calls to
+<iref set>.The new value is appended to the <i>command</i> as an argument.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  <xref field(i)> widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.<p>
+
+<defopt {-table <i>table</i>}>
+
+The name of the RDB table with which the multifield is associated.
+Note that the widget itself doesn't use this value, but it can be
+queried by clients.<p>
+
+<defopt {-key <i>name</i>}>
+
+The name of the key column in the <code>-table</code> from which the
+IDs are drawn.  Note that the widget itself doesn't use this value,
+but it can be queried by clients.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+multifield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+From <xref field(i)>.  Sets the value of one or more of the object's
+options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+From <xref field(i)>.  Returns the field's current value.<p>
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+From <xref field(i)>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <iref set> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

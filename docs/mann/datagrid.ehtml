@@ -1,0 +1,112 @@
+<manpage {marsgui(n) datagrid(n)} "Grid-Based Data Frame">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref marsgui(n)> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.<p>
+
+This module defines the ::marsgui::datagrid widget, which makes it
+easier to create an array of labeled values.<p>
+
+datagrid(n) is a drop-in replacement for the standard Tk frame, with
+a few additional subcommands for adding labels and values in
+specific grid cells.  Cells are indexed by row and column, as for
+Tk's "grid" geometry manager.  Items placed in the datagrid are
+displayed as follows:<p>
+
+<ul>
+  <li> Labels are displayed using the standard label font.<p>
+
+  <li> Values are displayed using the marsgui(n) "codefont" (a monospace
+       font).<p>
+
+  <li> Labels and values are aligned left.<p>
+
+  <li> Any extra space is allocated to the last row and column.<p>
+</ul>
+
+Note that a cell may contain only one item.<p>
+
+<section COMMANDS>
+
+This module defines the following command:
+
+<deflist commands>
+
+<defitem datagrid {datagrid <i>pathName</i> ?<i>options...</i>?}>
+
+Created a new datagrid(n) widget; the options are as for
+Tk's frame(n) widget.<p>
+
+</deflist>
+
+<section "INSTANCE COMMAND">
+
+This module defines the following command:
+
+<deflist instance>
+
+<defitem configure {$datagrid configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.<p>
+
+<defitem cget {$datagrid cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem label {$datagrid label <i>r c</i> ?<i>options...</i>?}>
+
+Places a Tk label widget in the cell at row <i>r</i>, column <i>c</i>.
+The <i>options</i> determine what is displayed, e.g.,<p>
+
+<pre>
+$datagrid label 0 0 -text "My Label:"
+</pre><p>
+
+<defitem value {$datagrid value <i>r c</i> ?<i>options...</i>?}>
+
+Places a Tk label widget in the cell at row <i>r</i>, column <i>c</i>,
+and configures it to display a data value.  The <i>options</i>
+determine what is displayed, e.g.,<p>
+
+<pre>
+$datagrid value 0 1 -width 12 -textvariable ::valueBuffer
+</pre><p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

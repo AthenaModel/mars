@@ -1,0 +1,225 @@
+<manpage {marsgui(n) stripchart(n)} "Strip Chart">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The stripchart(n) widget plots from one to ten series of data
+as line plots against a single X axis (usually time stamps).
+Individual series of data can be updated individually.<p>
+
+<section OPTIONS>
+
+The widget has the following options.<p>
+
+<deflist options>
+
+<defopt {-closeenough <i>pixels</i>}>
+
+Specifies a floating-point value indicating how close the mouse cursor
+must be to an item before it is considered to be "inside" the
+item. Defaults to 1.0.<p>
+
+<defopt {-height <i>pixels</i>}>
+
+Specifies the height of the chart window.<p>
+
+<defopt {-smooth <i>flag</i>}>
+
+If <i>flag</i> is <b>true</b>, the line plotted for each data series
+will be smoothed.  This yields a more attractive appearance, but is
+slower.  The default is <b>false</b>.<p>
+
+<defopt {-title <i>text</i>}>
+
+Specifies an overall title for the chart.  If <i>text</i> is the empty
+string (the default), no title is drawn.<p>
+
+<defopt {-titlepos <i>anchor</i>}>
+
+Specifies where to put the title; <i>anchor</i> may be <b>n</b> or
+<b>s</b> to center the title at the top or bottom.  Defaults to
+<b>n</b>.<p>
+
+<defopt {-width <i>pixels</i>}>
+
+Specifies the widget of the chart window.<p>
+
+<defopt {-xformatcmd <i>cmd</i>}>
+
+Specifies a command for formatting X-axis values; the command should
+take one additional argument, the value to format.  Defaults
+to:
+
+<pre>
+    format %g
+</pre>
+
+<defopt {-xmax <i>value</i>}>
+
+Specifies the maximum bound for the X-axis, if it's bigger than the
+maximum X value in the plotted data.  Specify "" to use the maximum
+data value in any event.<p>
+
+<defopt {-xmin <i>value</i>}>
+
+Specifies the minimum bound for the X-axis, if it's smaller than the
+minimum X value in the plotted data.  Specify "" to use the minimum
+data value in any event.<p>
+
+<defopt {-xtext <i>text</i>}>
+
+Specifies a label for the X-axis.    If <i>text</i> is the empty
+string (the default), no label is drawn.<p>
+
+<defopt {-ytext <i>text</i>}>
+
+Specifies a label for the Y-axis.    If <i>text</i> is the empty
+string (the default), no label is drawn.
+
+<defopt {-yformatcmd <i>cmd</i>}>
+
+Specifies a command for formatting y-axis values; the command should
+take one additional argument, the value to format.  Defaults
+to:
+
+<pre>
+    format %g
+</pre>
+
+
+
+</deflist>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem stripchart {stripchart <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new stripchart widget named <i>pathName</i>.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem cget {<i>win</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {<i>win</i> clear}>
+
+Deletes all plotted data series.<p>
+
+<defitem configure {<i>win</i> configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.  The widget will
+redraw the chart accordingly.<p>
+
+<defitem plot {<i>win</i> plot <i>name</i> ?<i>options...</i>?}>
+
+Plots a series of data values.  The <i>name</i> is used to identify
+the series for future updates.<p>
+
+The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-data <i>coords</i>}>
+
+Specifies a flat list of X/Y pairs.<p>
+
+<defopt {-label <i>text</i>}>
+
+Specifies a label for this series of data.  The label is used in the
+legend.  If no <b>-label</b> is given, the series <i>name</i> is used
+instead.<p>
+
+<defopt {-rmin <i>min</i>}>
+<defopt {-rmax <i>max</i>}>
+
+These options specify the Y-axis range bounds for the series--that is, not
+the min and max values in the data, but the logical min and max value
+for the data type.  Strict percentages, for example, have a range
+from 0.0 to 100.0.  If one of these options is omitted or explicitly
+set to the empty string, the relevant bound is computed from the data.<p>
+
+</deflist options>
+
+</deflist>
+
+<section "VIRTUAL EVENTS">
+
+The stripchart(n) widget generates the following virtual events.<p>
+
+<deflist events>
+
+<defitem Context {&lt;&lt;Context&gt;&gt;}>
+
+This event is generated when the user right-clicks or control-clicks
+on the chart.  It supports the following substitutions: <b>%x</b>,
+<b>%y</b>, <b>%X</b>, <b>%Y</b>, and <b>%d</b>.<p>
+
+The value of the <b>%d</b> substitution is a list whose first element
+indicates what was clicked on; the remaining items in the list vary
+depending on the first element.  The current possibilities are as
+follows:<p>
+
+<deflist Context>
+
+<defitem Context_none {none}>
+
+The user right-clicked on nothing in particular.<p>
+
+<defitem Context_plot {plot <i>x y</i>}>
+
+The user right-clicked in the plot area, though not on any particular
+data series; <i>x</i> and <i>y</i> are the data coordinates
+corresponding to the location of the mouse-click.<p>
+
+<defitem Context_line {line <i>x y series</i>}>
+
+The user right-clicked on the plot line for a particular data
+<i>series</i>;  <i>x</i> and <i>y</i> are the data coordinates
+corresponding to the location of the mouse-click.<p>
+
+</deflist Context>
+
+</deflist events>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

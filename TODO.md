@@ -18,7 +18,7 @@
     * latlong
     * mapref
     * geotiff
-* margui
+* marsgui
   * Used
     * checkfield
     * cli

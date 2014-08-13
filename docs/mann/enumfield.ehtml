@@ -1,0 +1,180 @@
+<manpage {marsgui(n) enumfield(n)} "Enumerated Data Entry Field">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The enumfield(n) widget is a <xref tk:ttk_combobox(n)> configured as a
+<xref field(i)> data entry field.  It is used for choosing items
+from a (possibly dynamic) list of arbitrary
+text strings.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem enumfield {enumfield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref enumfield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following options:<p>
+
+<deflist options>
+
+<defopt {-autowidth <i>flag</i>}>
+
+If true, the widget will compute its own width based on the 
+<code>-values</code>, however specified.  If false (the default) the
+width will not be based on the width of the content.<p>
+
+<defopt {-background <i>color</i>}>
+
+Sets the color of the underlying hull frame, which is invisible unless
+the <code>-borderwidth</code> is non-zero.<p>
+
+<defopt {-borderwidth <i>width</i>}>
+
+Sets the width of the widget border in pixels (or other screen
+dimensions).  Defaults to 0.<p>
+
+<defopt {-changecmd <i>command</i>}>
+
+From <xref field(i)>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The new value is appended
+to the <i>command</i> as an argument.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  enumfield(i) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.<p>
+
+<defopt {-displaylong <i>flag</i>}>
+
+If <code>-displaylong</code> is set, then the widget manages two sets
+of values: the application values, used by <iref get> and
+<iref set>, and the displayed values, that appear in the field and
+the pulldown.  Where the values come from depends on the
+<code>-enumtype</code>, <code>-valuecmd</code>, and
+<code>-values</code> options.<p>
+
+<defopt {-enumtype <i>enumType</i>}>
+
+Specifies the name of an <xref enum(n)> type, or some other
+object that presents a similar interface.  The widget will dynamically
+retrieve its list of valid values by
+calling<p>
+
+<pre>
+    {*}$enumType names
+</pre>
+
+If <code>-displaylong</code> is true, then the widget will retrieve
+the displayed values by calling<p>
+
+<pre>
+    {*}$enumType longnames
+</pre>
+
+If <code>-enumtype</code> is specified, then <code>-valuecmd</code>
+and <code>-values</code> are ignored.<p>
+
+<defopt {-valuecmd <i>command</i>}>
+
+Specifies the name of a command to call to dynamically retrieve the
+list of valid values.  The <code>-enumtype</code> option takes
+precedence.<p>
+
+<code>-displaylong</code> is (currently) ignored if this option is
+used. <b>TBD:</b> this should be fixed, if <code>-valuecmd</code> is
+ever actually used in the application.<p>
+
+<defopt {-values <i>values</i>}>
+
+Statically defines the list of valid values.  If either
+<code>-enumtype</code> or <code>-valuecmd</code> are specified, this
+option is ignored.<p>
+
+If <code>-displaylong</code> is true, then <i>values</i> is a flat
+list of application value/displayed value pairs.<p>
+
+<defopt {-width <i>width</i>}>
+
+Specifies the approximate width of the widget in characters of the
+current font.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+enumfield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+From <xref field(i)>.  Sets the value of one or more of the object's
+options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+From <xref field(i)>.  Returns the field's current value.<p>
+
+<defitem set {<i>pathName</i> set <i>value</i> ?-silent?}>
+
+From <xref field(i)>.  Explicitly sets the field's <i>value</i>.<p>
+
+By default, this command calls the client's <code>-changecmd</code>
+if the value has really changed, i.e., successive calls to
+<iref set> with the same <i>value</i> will result in at most one call to
+the <code>-changecmd</code>.<p>
+
+If the <code>-silent</code> option is given, however, the
+<code>-changecmd</code> is never called.  (Note that
+<code>-silent</code> is not included in the <xref field(i)> interface.)<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

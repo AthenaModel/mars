@@ -1,0 +1,155 @@
+<manpage {marsgui(n) htmlviewer(n)} "HTML Viewer Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines a simple wrapper around the Tkhtml 3.0 HTML
+rendering widget.  The wrapper adds standard bindings and
+additional commands.  All features of the underlying Tkhtml 3.0 widget are
+available to the programmer.<p>
+
+The Tkhtml 3.0 widget, as shipped, is fairly bare-bones; a number of
+things need to be added.  In particular, this wrapper:<p>
+
+<ul>
+  <li> Adds standard bindings supporting clicking on a link, scrolling
+       the widget using the keyboard, selecting text, and so forth.<p>
+
+  <li> Handles in-line <code>&lt;style&gt;...&lt;/style&gt;</code>
+       tags.<p>
+
+  <li> Sets "link" and "visited" flags on links, so that they get
+       colored the way the CSS says they should.<p>
+
+  <li> Defines some additional CSS settings, so that the displayed
+       HTML looks nice.<p>
+
+  <li> Adds two useful methods, <iref set> and <iref setanchor>.<p>
+</ul>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem htmlviewer {htmlviewer <i>pathName ?options...?</i>}>
+
+Creates a new <iref htmlviewer> widget named <i>pathName</i>.  The
+options are as described in the Tkhtml 3.0 man page, with the addition
+of the following:<p>
+
+<deflist options>
+
+<defopt {-hovercmd <i>command</i>}>
+
+The <i>command</i> is called with two additional arguments when the
+mouse is over something of interest in the displayed page: the type of
+the thing the mouse is over, either <b>href</b> or <b>image</b>, and
+a URL.  Relative URLs are <b>not</b> resolved; use
+<xref myagent(n)>'s <xref myagent(n) resolve> method or similar to
+produce an absolute URL.
+<p>
+
+<defopt {-hyperlinkcmd <i>command</i>}>
+
+The <i>command</i> is called with one additional argument, the URL,
+when the user clicks on a link.  Relative URLs are <b>not</b> resolved; use
+<xref myagent(n)>'s <xref myagent(n) resolve> method or similar to
+produce an absolute URL.<p>
+
+<defopt {-isvisitedcmd <i>command</i>}>
+
+When an HTML page is parsed, this <i>command</i> is called once for
+each link in the page.  It is called with one additional argument,
+the link's URL.  The command should return 1 if the URL has been
+visited, and 0 otherwise.<p>
+
+Relative URLs are <b>not</b> resolved; use
+<xref myagent(n)>'s <xref myagent(n) resolve> method or similar to
+produce an absolute URL.<p>
+
+<defopt {-styles <i>css</i>}>
+
+Specifies a CSS style sheet to add to the widget's default styles.
+This style sheet overrides the built-in defaults, and can be
+overridden by <code>&lt;style&gt;...&lt;/style&gt;</code> sheets and
+<code>style</code> attributes in the input.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Instances of <xref htmlviewer(n)> widget support all instance
+subcommands defined in the Tkhtml 3.0 man page.  In addition,
+the following commands are defined.<p>
+
+<deflist instance>
+
+<defitem set {<i>pathName</i> set <i>html</i>}>
+
+Displays the <i>html</i> text in the viewer, replacing any
+previous content.<p>
+
+<defitem setanchor {<i>pathName</i> setanchor <i>anchor</i>}>
+
+Scrolls the displayed page to the named anchor, or to the top if there
+is no such anchor.<p>
+
+
+</deflist>
+
+<section "BUGS">
+
+The Tkhtml 3.0 widget is incomplete, and is no longer maintained.  It
+is also, alas, currently the best alternative for displaying HTML text
+in Tk programs.  This section documents the known issues.<p>
+
+<b>Improperly nested tables cause a hard crash.</b>
+If a <code>&lt;table&gt;</code> element contains another
+<code>&lt;table&gt;</code> element at its top level, i.e, not
+in a table cell, Tkhtml 3.0 will crash:<p>
+
+<pre>
+&lt;table&gt;&lt;table&gt;
+<i>table rows</i>
+&lt;/table&gt;&lt;/table&gt;
+<pre>
+<p>
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package.<p>
+
+</manpage>
+
+
+
+
+
+
+
+
+

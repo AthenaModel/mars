@@ -1,0 +1,176 @@
+<manpage {marsgui(n) subwin(n)} "Subordinate Window Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref marsgui(n)> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::subwin widget, a base for subordinate
+application windows.  Subordinate windows have the following
+features:<p>
+
+<ul>
+  <li> The existence of a subwindow doesn't keep the application from
+       terminating when the main window is closed--contrast this with
+       the behavior of an application with multiple main windows.<p>
+
+  <li> Clicking the WM's close button pops the window down, but doesn't
+       destroy it.<p>
+
+  <li> Subwindows can be popped up or down using their <iref show>
+       and <iref hide> methods.<p>
+
+  <li> If popped down and then popped up again, subwindows remember
+       their location--even if the window manager likes to put htem
+       somewhere else.<p>
+
+  <li> Subwindows can be popped up or down <i>en masse</i>, using
+       <iref subwin show> and <iref subwin hide>.<p>
+
+  <li> The structure of a subwindow often depends on data that can't
+       be known when the window is created, and which might change
+       over time (e.g., after a checkpoint restore).  The
+       <iref subwin reconfigure> command calls the
+       <iref reconfigure> method for each existing subwindow.
+       This is defined as a no-op by subwin(n) but can be redefined
+       by the client.<p>
+</ul>
+
+See <xref EXAMPLE> for an example of how to base an application
+window on subwin(n).<p>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem subwin {subwin <i>pathName ?options...?</i>}>
+
+Creates a new <iref subwin> widget named <i>pathName</i>.<p>
+
+The <iref subwin> widget inherits its options from toplevel(n);
+it defines no new options of its own.<p>
+
+<defitem "subwin hide" {subwin hide}>
+
+Hides all existing subwindows.<p>
+
+<defitem "subwin reconfigure" {subwin reconfigure}>
+
+Calls <iref reconfigure> on all existing subwindows.<p>
+
+<defitem "subwin show" {subwin show}>
+
+Pops up all existing subwindows; subwindows which are already
+popped up but which are obscured by other windows will be
+raised.<p>
+
+<defitem "subwin windows" {subwin windows}>
+
+Returns a list of the names of the existing subwindows.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem configure {$subwin configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.<p>
+
+<defitem cget {$subwin cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem hide {$subwin hide}>
+
+Pops down the subwindow.<p>
+
+<defitem reconfigure {$subwin reconfigure}>
+
+By default, this is a no-op; the client may redefine it as desired.
+See <xref EXAMPLE>.<p>
+
+<defitem show {$subwin show}>
+
+Pops up the subwindow if it's hidden; it's already up but is
+obscured by other windows, raises it to the top.<p>
+
+</deflist>
+
+<section EXAMPLE>
+
+The following snippet is a skeleton to use when defining
+subordinate application windows using subwin(n).<p>
+
+<pre>
+snit::widgetadaptor myWindow {
+    #-------------------------------------------------------------------
+    # Options
+
+    # Inherit options and methods from the hull subwin(n).
+    delegate option * to hull
+    delegate method * to hull
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {args} {
+        # FIRST, install the hull
+        installhull [::marsgui::subwin $win]
+
+        # NEXT, save the options
+        $self configurelist $args
+
+        # NEXT, add my content
+
+            .
+            .
+            .
+    }
+
+    #-------------------------------------------------------------------
+    # Public Methods
+
+    method reconfigure {} {
+        # Define this to do whatever's needed when the app
+        # reconfigures.
+    }
+}
+</pre>
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

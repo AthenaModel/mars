@@ -1,0 +1,117 @@
+<manpage {marsgui(n) mkicon(n)} "Tk Icon Maker">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref mkicon(n)> provides a commands for creating families of
+icon images from text input.  The images can be created as Tk image
+commands, or as image files.<p>
+
+<section COMMANDS>
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "mkicon" {mkicon <i>cmd charmap colors</i> ?<i>suffix mod...</i>?}>
+
+This command creates a Tk image given the <i>charmap</i>, a text
+representation of the pixels, and <i>colors</i>, which relates
+characters in the <i>charmap</i> to specific colors.  The <i>cmd</i>
+is the name to be given to the new image command; if it is the empty
+string, a name is automatically generated.  If it is not a
+fully-qualified name, it is presumed to be in the caller's
+namespace.<p>
+
+The <i>charmap</i> is a list of strings, each string denoting one row
+of pixels.  The strings are usually formatted in successive lines.
+Each character represents a color. The <i>colors</i> argument is
+simply a dictionary of characters and Tk color specifications, with
+one addition: the pseudo-color name <b>trans</b>.  Pixels mapped to
+<b>trans</b> will be transparent.<p>
+
+The caller can specify a sequence of <i>suffix</i> and <i>mod</i> arguments
+to create a family of icons based on the same <i>charmap</i>,
+where <i>mod</i> is a dictionary of characters and Tk color specifications
+that modifies the definitions in <i>colors</i>.
+The first icon will be created as described above, and the subsequent ones
+will be created by appending <i>suffix</i> to the <i>cmd</i> and merging
+<i>mod</i> with <i>colors</i>.<p>
+
+The command returns a list of the names of the newly created
+image commands.<p>
+
+For example, the follow command defines an image similar to a mouse
+pointer arrow with a black foreground and a transparent background,
+along with a gray icon to be used when the icon is disabled.<p>
+
+<pre>
+mkicon arrow {
+    X..........
+    XX.........
+    XXX........
+    XXXX.......
+    XXXXX......
+    XXXXXX.....
+    XXXXXXX....
+    XXXXXXXX...
+    XXXXXXXXX..
+    XXXXXXXXXX.
+    XXXXXXXXXXX
+    XXXXXXX....
+    XXX.XXXX...
+    XX..XXXX...
+    X....XXXX..
+    .....XXXX..
+    ......XXXX.
+    ......XXXX.
+} { . trans X black } d { X gray }
+</pre>
+
+<defitem mkiconfile {mkiconfile <i>name fmt charmap colors</i> ?<i>suffix mod</i>?}>
+
+This command takes the same input as <iref mkicon>, but saves the
+new images to a series of disk files using <i>name</i> and
+<i>suffix</i> instead of creating a Tk image.
+The files will have the specified format, typically <b>gif</b> or
+<b>png</b>.  Returns a list of the absolute file names of the new files.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
+
+

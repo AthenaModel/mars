@@ -1,0 +1,154 @@
+<manpage {marsgui(n) keyfield(n)} "Database Key Field">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The keyfield(n) widget is a <xref field(i)> widget for selecting a
+a specific record from a database table by selecting the values in
+one or more key columns using <xref enumfield(n)>-style
+pulldowns.<p>
+
+The value edited is a Tcl list with as many elements as there are
+key columns; see the <code>-keys</code> options.<p>
+
+The user must select the value for each key column in a particular
+order: the value selected for the first column determines the valid
+values for the second key column, and so on.  Columns for which no
+valid value has yet been selected are assumed to be the empty string.<p> 
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem keyfield {keyfield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref keyfield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following options:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>command</i>}>
+
+From <xref field(i)>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The new value is appended
+to the <i>command</i> as an argument.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  keyfield(i) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.<p>
+
+<defopt {-db <i>db</i>}>
+
+Specifies the name of the SQLite3 database object containing the
+<code>-table</code> from which records are to be selected.<p>
+
+<defopt {-table <i>table</i>}>
+
+Specifies the name of the table or view in the <code>-db</code> from
+which records are to be selected.<p>
+
+<defopt {-keys <i>keylist</i>}>
+
+Specifies the names of the key columns in the <code>-table</code>.<p>
+
+<defopt {-dispcols <i>list</i>}>
+
+Specifies the names of columns whose values are to be displayed in
+place of the <code>-keys</code> columns in the pulldowns.  The values
+in the <code>-dispcols</code> columns need to be paired one-to-one
+with the matching values in the <code>-keys</code> columns.<p>
+
+This is usually used when the <code>-table</code>'s key is a bare
+integer.  The <code>-table</code> can be a view that provides
+a human-readable version of the key as a parallel column.  The
+GUI then uses the human-readable text, while the underlying order
+uses the integer key.<p>
+
+<defopt {-widths <i>widths</i>}>
+
+Specifies a list of <i>widths</i>, in characters of the current font,
+for each key column.  The <i>widths</i> will determine the approximate
+width of each pulldown.<p>
+
+<defopt {-labels <i>strings</i>}>
+
+Specifies a list of label strings, one for each key column.  If a
+column's label string is not the empty string, then it will appear to
+the left of the key's pulldown.<p>
+
+</deflist options>
+
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+keyfield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+From <xref field(i)>.  Sets the value of one or more of the object's
+options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+From <xref field(i)>.  Returns the field's current value, a list of
+key column values, one for each key column.  Key columns for which no value
+has been selected will be represented as empty strings.<p>
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+From <xref field(i)>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <iref set> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

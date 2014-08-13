@@ -1,0 +1,408 @@
+<manpage {marsgui(n) cmsheet(n)} "cellmodel(n) Sheet Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The cmsheet(n) widget is a Tktable mapped to a
+<xref cellmodel(n)> model.  The client maps particular
+<xref cellmodel(n)> cells to rows, columns, 
+and regions in the Tktable; thereafter, edits in editable
+cells will cause the cell model to recompute and display
+the updated information.<p>
+
+For the most part this man page stands alone; however, it will be
+useful to review the Tktable documentation, with particular reference
+to cell indices, tags, and embedded windows.<p>
+
+<subsection "Mapping Cells">
+
+To use cmsheet(n), first define a <xref cellmodel(5)> model, and
+load it into an instance of <xref cellmodel(n)>.  Next, create an
+instance of cmsheet(n), and link it to the cell model using the
+<b>-cellmodel</b> option.  Finally, use <iref mapcell> and its peers
+to map particular cell model cells into the sheet's table layout.
+Constant cells will be editable by default; formula cells will not.<p>
+
+Note that cells can be re-mapped dynamically.  For example, consider a
+parameter that can be computed by the application or entered
+by the user.  The cell model can have two cells, one a formula and one
+a constant, and the application can map one or the other as desired.<p>
+
+<section OPTIONS>
+
+The widget has the following options.<p>
+
+<deflist options>
+<defopt {-browsecommand <i>cmd</i>}>
+
+Specifies a command to be called when the user browses to a different 
+cell in the cmsheet(n).  See the TkTable documentation for more details, 
+this option is delegated to it.<p>
+
+<defopt {-cellmodel <i>cmd</i>}>
+
+The name of an instance of <xref cellmodel(n)>.  Note that multiple
+cmsheet(n) widgets can be mapped to a single instance of
+<xref cellmodel(n)>.<p>
+
+<defopt {-changecmd <i>cmd</i>}>
+
+Specifies a command to be called whenever a cell is successfully edited.
+The <i>cmd</i> must be a command prefix taking two additional arguments,
+the name of the cell in the <xref cellmodel(n)> and the new value of 
+the cell.<p>
+
+This command can be overridden for particular cells using
+the <b>-changecmd</b> option on <iref mapcell> and its peers.<p>
+
+<defopt {-colorigin <i>num</i>}>
+
+The numeric index of the first column in the sheet.  The option
+defaults to 0, but it is common to redefine it so that the
+<b>-titlecols</b> have negative indices and the first data column has
+index 0.  For example, if <b>-titlecols</b> is 1, then this would be
+set to -1.<p>
+
+<defopt {-cols <i>columns</i>}>
+
+The total number of columns of data in the table, including title
+columns.<p>
+
+<defopt {-font <i>font</i>}>
+
+The default font; cell options can override this for specific
+cells.<p>
+
+<defopt {-formatcmd <i>cmd</i>}>
+
+Specifies a command to format cell model values for display.  The
+<i>cmd</i> must be a command prefix taking one additional argument, the
+value to format, and returning the formatted output.<p>
+
+This command can be overridden for particular cells using
+the <b>-formatcmd</b> option on <iref mapcell> and its peers.<p>
+
+<defopt {-height <i>rows</i>}>
+
+The number of visible rows in the table.  If the value is 0, then the
+widget will attempt to display all <b>-rows</b> rows.<p>
+
+<defopt {-maxheight <i>pixels</i>}>
+
+The maximum height of the widget in pixels; the user must scroll to
+see any content that doesn't fit in this space.  Defaults to the
+height of the screen.<p>
+
+<defopt {-maxwidth <i>pixels</i>}>
+
+The maximum width of the widget in pixels; the user must scroll to
+see any content that doesn't fit in this space.  Defaults to the
+width of the screen.<p>
+
+<defopt {-refreshcmd <i>cmd</i>}>
+
+A Tcl script that is called whenever the widget has just refreshed its
+contents.  The command is usually used to update Tktable tag
+configurations so as to change the appearance of particular cells.
+For example, it can change the color problem cells to red.<p>
+
+<defopt {-roworigin <i>num</i>}>
+
+The numeric index of the first row in the sheet.  The option
+defaults to 0, but it is common to redefine it so that the
+<b>-titlerows</b> have negative indices and the first data column has
+index 0.  For example, if <b>-titlerows</b> is 1, then this would be
+set to -1.<p>
+
+<defopt {-rows <i>rows</i>}>
+
+The total number of rows of data in the table, including title
+rows.<p>
+
+<defopt {-solvecmd <i>cmd</i>}>
+
+The cmsheet(n) calls command to recompute the <b>-cellmodel</b>
+whenever the user enters a valid input in a cell.  By default, the
+cmsheet(n) will simply recompute the entire cell model; this command
+can be used to limit the computation to particular pages of the cell
+model.<p>
+
+<defopt {-state <i>state</i>}>
+
+If set to <b>normal</b> (the default) editable cells are editable; if
+set to <b>disabled</b>, they are not.  Note that this has no effect on
+programmatic updates to the widget.  Defaults to <b>normal</b>.<p>
+
+<defopt {-titlecols <i>num</i>}>
+
+The number of title columns.  Title columns do not scroll, and are
+tagged with the <b>title</b> tag.  Defaults to 0.<p>
+
+<defopt {-titlerows <i>num</i>}>
+
+The number of title rows.  Title rows do not scroll, and are
+tagged with the <b>title</b> tag.  Defaults to 0.<p>
+
+<defopt {-validatecmd <i>cmd</i>}>
+
+Specifies a command to call to validate user input.  The command
+should be a prefix to which will be added two arguments, the Tktable
+"r,c" index of the edited cell, and the edited value.  The command
+must either return the (possibly modified) value, or throw an error
+with error code <b>INVALID</b>.  Note that if the table cell is mapped
+to a <xref cellmodel(n)> cell, you can retrieve the cell name using
+the <iref cell> method.<p>
+
+By default, cmsheet(n) requires all entered values to be valid real
+numbers.<p>
+
+This command can be overridden for particular cells using
+the <b>-validatecmd</b> option on <iref mapcell> and its peers.<p>
+
+<defopt {-width <i>columns</i>}>
+
+The number of visible columns in the table.  If the value is 0, then the
+widget will attempt to display all <b>-cols</b> columns.<p>
+
+<defopt {-xscrollcommand <i>cmd</i>}>
+
+The usual Tk X-scrollbar command.<p>
+
+<defopt {-yscrollcommand <i>cmd</i>}>
+
+The usual Tk Y-scrollbar command.<p>
+
+</deflist options>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem cmsheet {cmsheet <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new cmsheet(n) widget named <i>pathName</i>.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem cget {<i>win</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>win</i> configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.  Most changes will be
+displayed automatically; however, for some it might be necessary
+to <iref refresh> the widget.<p>
+
+<defitem cell {<i>win</i> cell <i>index</i>}>
+
+Given a Tktable cell index, returns the name of the
+<xref cellmodel(n)> cell that is mapped to it, or "" if none.<p>
+
+<defitem empty {<i>win</i> empty <i>rc0 rc1</i>}>
+
+Tells the cmsheet(n) that the rectangle of cells with upper-left
+corner specified by Tktable index <i>rc0</i> and lower-right corner
+specified by Tktable index <i>rc1</i> contain no data and should be
+tagged with the <b>empty</b> tag.  By default, empty cells are flat
+and have the default GUI background color; however, this can be
+changed using the <iref tag> command.<p>
+
+<defitem index {<i>win</i> index <i>index</i>}>
+
+Given a Tktable cell index or a <xref cellmodel(n)> cell name,
+returns the Tktable "r,c" index of the cell.<p>
+
+<defitem mapcell {<i>win</i> mapcell <i>rc cellname tag</i> ?<i>options...</i>?}>
+
+Maps the <xref cellmodel(n)> cell named <i>cellname</i> to the
+Tktable cell with index <i>rc</i>.  The Tktable cell will display the
+value of the cell model cell.  If the cell model cell is a constant,
+then by default the Tktable cell will be editable; otherwise not.  The
+Tktable cell will be tagged with the named <i>tag</i>; if <i>tag</i>
+is <b>%cell</b>, then it will tagged with the <i>cellname</i>.  In
+either case, the tag can then be configured with a variety of
+<i>options</i>.  In addition to the Tktable tag options (see the
+Tktable documentation), cmsheet(n) provides the following:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>cmd</i>}>
+Specifies a command to be called whenever the cell is successfully edited.
+The <i>cmd</i> must be a command prefix taking two additional arguments,
+the name of the cell in the <xref cellmodel(n)> and the new value of 
+the cell.<p>
+
+<defopt {-formatcmd <i>cmd</i>}>
+
+The <i>cmd</i> is a command prefix taking one argument, the cell value
+to be formatted. Whenever the mapped cell's value is to be displayed,
+this command will be used to format it for display.<p>
+
+<defopt {-validatecmd <i>cmd</i>}>
+
+Specifies a command to call to validate user input.  The command
+should be a prefix to which will be added two arguments, the Tktable
+"r,c" index of the edited cell, and the edited value.  The command
+must either return the (possibly modified) value, or throw an error
+with error code <b>INVALID</b>.  Note that if the table cell is mapped
+to a <xref cellmodel(n)> cell, you can retrieve the cell name using
+the <iref cell> method.<p>
+
+By default, cmsheet(n) requires all entered values to be valid real
+numbers.<p>
+
+</deflist options>
+
+<defitem map {<i>win</i> map <i>rc indx jndx pattern tag</i> ?<i>options...</i>?}>
+
+Maps a set of cell model cells to a rectangular region of the sheet.
+The set of cell model cells is defined by two <xref cellmodel(5)>
+indices, <i>indx</i> and <i>jndx</i>, and a <i>pattern</i>.  The cells
+will be mapped to the table starting at index <i>rc</i>.  The
+<i>tag</i> and <i>options</i> are defined as for <iref mapcell>.<p>
+
+Consider the following cell model:<p>
+
+<pre>
+    index i {a b c}
+    index j {a b c}
+
+    forall i {
+        forall j {
+           let X.$i.$j = 0.0
+        }
+    }
+</pre>
+
+This model defines a set of cells, <b>X.a.a</b>, <b>X.a.b</b>, and so
+on.  The following command maps these nine cells to a 3x3 region of
+the sheet, with upper-left-corner at 1,1.  The values will be editable
+(since the cells are constant cells, rather than formulas) and
+formatted with two decimal places:
+
+<pre>
+    $win map 1,1 i j X.%i.%j %cell \
+        -formatcmd {format %.2f}
+</pre>
+
+The <b>i</b> values will be mapped to the rows, and the <b>j</b>
+values to the columns.<p>
+
+Note that <xref cellmodel(5)> index names, <b>i</b> and <b>j</b>,
+appear as placeholders in the <i>pattern</i>, prefixed with "%".
+<iref map> determines the cell names by replacing the placeholders
+with each of the given index's values.<p>
+
+<defitem mapcol {<i>win</i> mapcol <i>rc indx pattern tag</i> ?<i>options...</i>?}>
+
+The <iref mapcol> method is similar to <iref map>, but maps cells
+down a single column.  Thus, it has only one index, <i>indx</i>.<p>
+
+<defitem maprow {<i>win</i> maprow <i>rc jndx pattern tag</i> ?<i>options...</i>?}>
+
+The <iref maprow> method is similar to <iref map>, but maps cells
+along a single row.  Thus, it has only one index, <i>jndx</i>.<p>
+
+<defitem see {<i>win</i> see <i>index</i>}>
+
+Scrolls the table so that the specified <i>index</i> is visible.  The
+<i>index</i> map be a Tktable index or the name of a mapped cell model
+cell.<p>
+
+<defitem refresh {<i>win</i> refresh}>
+
+Reloads, formats, and displays all mapped values from the underlying
+cell model.<p>
+
+<defitem tag {<i>win</i> tag <i>subcommand args...</i>}>
+
+This command is used to define, configure, and query Tktable tags;
+The <iref mapcell> and <iref textcell> methods, and their peers,
+use this command internally when mapping text and cells.  It is
+sometimes useful to use it explicitly, e.g., to change cell colors in
+the <b>-refreshcmd</b>.<p>
+
+The command is delegated to the underlying Tktable widget; see the
+Tktable documentation for details.<p>
+
+
+<defitem textcell {<i>win</i> textcell <i>rc text</i> ?<i>tag</i> ?<i>options...</i>??}>
+
+Places the <i>text</i> in the cell with Tktable index <i>rc</i>.  (Note
+that it is not allowed to write text to a Tktable cell mapped to a
+cellmodel cell).  If desired, the <i>text</i> can be styled with a
+<i>tag</i>, and that tag can be configured with any desired Tktable
+tag <i>options</i>.  See the Tktable documentation for the available
+options.<p>
+
+<defitem textcol {<i>win</i> textcol <i>rc textlist</i> ?<i>tag</i> ?<i>options...</i>??}>
+
+Like <iref textcell>, but writes successive elements from list
+<i>textlist</i> down the cells in a column starting at index <i>rc</i>.<p>
+
+<defitem textrow {<i>win</i> textrow <i>rc textlist</i> ?<i>tag</i> ?<i>options...</i>??}>
+
+Like <iref textcell>, but writes successive elements from list
+<i>textlist</i> along the cells in a row starting at index <i>rc</i>.<p>
+
+<defitem width {<i>win</i> width <i>args...</i>}>
+
+Use this command to set or query column widths.  See the Tktable
+documentation for more information.<p>
+
+<defitem window {<i>win</i> window <i>args...</i>}>
+
+Use this command to embed widgets in table cells.  See the Tktable
+documentation for more information.<p>
+
+<defitem xview {<i>win</i> xview <i>args</i>}>
+<defitem yview {<i>win</i> yview <i>args</i>}>
+
+These are the usual Tk scrolling commands.  See the Tktable
+documentation if need be, but they work just like the equivalent
+commands on the standard Tk widgets.<p>
+
+</deflist>
+
+<section BINDINGS>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

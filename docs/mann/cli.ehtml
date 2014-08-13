@@ -1,0 +1,210 @@
+<manpage {marsgui(n) cli(n)} "Command-Line Interface Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref marsgui(n)> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the cli(n) command-line interface
+widget, a terminal-like scrolling window in which commands can
+be typed.  Commands are assumed to have Tcl syntax.<p>
+
+By default, cli(n) acts as a Tcl console, evaluating its input in
+the main interpreter's global scope; however, a different command
+evaluator can be substituted.<p>
+
+cli(n) has the follow features:<p>
+
+<ul>
+  <li> Settable command prompt
+  <li> Settable command evaluator
+  <li> Resizeable scrollback buffer
+  <li> History stack with arrow key access, as in bash and tcsh
+  <li> Tab-completion of command names
+  <li> Programmatic interface for injecting commands as though they
+       were typed by hand.
+</ul><p>
+
+<subsection "Keyboard Interface">
+
+The cli(n) widget is intended to be used to enter commands and
+view their results via the keyboard.  It responds to the following
+special keystrokes:<p>
+
+<deflist keystrokes>
+<def "Return">
+Evaluates the current input as a command, if it is complete
+(i.e., no unbalanced parentheses); otherwise, it just inserts a
+newline.<p>
+
+<def "Escape">
+Deletes the current user input.<p>
+
+<def "Up-arrow">
+Deletes the current user input, replacing it with the
+previously executed command in the history stack.  The user can
+step through up to previous <code>-maxhistory</code> commands,
+after which it wraps again.<p>
+
+<def "Down-arrow">
+The inverse of Up-arrow, steps downward through the history
+stack, clearing the user input when the beginning of the stack
+is reached.<p>
+
+<def "Tab">
+Attempts to auto-complete the command being typed, based on
+the <code>-commandlist</code>.<p>
+
+<def "Control-C">
+<def "Control-X">
+<def "Control-V">
+Cut, copy, and paste, as expected.  Only the current input can
+be edited, but any text can be copied.<p>
+</deflist keystrokes>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem cli {cli <i>pathName ?options...?</i>}>
+
+Creates a new <iref cli> widget named <i>pathName</i>.<p>
+
+The <iref cli> widget may be created with the following options:<p>
+
+<deflist cli options>
+
+<defopt {-font <i>font</i>}>
+<defopt {-height <i>height</i>}>
+<defopt {-width <i>width</i>}>
+<defopt {-foreground <i>color</i>}>
+<defopt {-background <i>color</i>}>
+<defopt {-insertbackground <i>color</i>}>
+
+These options are all identical to the Tk text widget options of the
+same names.<p>
+
+<defopt {-errorforeground <i>color</i>}>
+<defopt {-errorbackground <i>color</i>}>
+
+These colors are used for error messages in place of
+<tt>-foreground</tt> and <tt>-background</tt>.<p>
+
+<defopt {-promptcmd <i>cmd</i>}>
+
+By default, cli(n)'s command prompt is "<rb>".  If a different prompt
+is desired, set this option to a command which returns the desired
+prompt.  cli(n) will not add any arguments to the command.<p>
+
+<defopt {-evalcmd <i>cmd</i>}>
+
+Specifies a command to use to evaluate user input.  <i>cmd</i> must be
+a command prefix for a command which expects one additional argument,
+the input to be evaluated.<p>
+
+The result of calling <i>cmd</i> will be written to the cli(n)
+widget whether it's a normal return or an error return; in the latter
+case, the text will be written using the <tt>-errorforeground</tt> and
+<tt>-errorbackground</tt> colors.<p>
+
+<defopt {-maxlines <i>num</i>}>
+
+Specifies the maximum number of lines of text to keep in the
+scrollback buffer.  Defaults to 500.<p>
+
+<defopt {-maxhistory <i>num</i>}>
+
+Specifies the number of commands to keep in the history stack.
+Defaults to 100.<p>
+
+<defopt {-commandlist <i>names</i>}>
+
+Specifies a list of the names of the valid commands; this is used to
+support Tab-completion.<p>
+
+</deflist cli options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem configure {$cli configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.<p>
+
+<defitem cget {$cli cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {$cli clear}>
+
+Deletes all text from the widget and prompts for the next command.<p>
+
+<defitem get {$cli get ?-displaychars? -- <i>index1</i> ?<i>index2...</i>?}>
+
+Gets the text from the CLI.  The command is delegated to the
+underlying Tk <xref tk:text(n)> widget.<p>
+
+<defitem append {$cli append <i>text</i> ?<i>style</i>?}>
+
+Appends text to the bottom of the widget in the specified style.
+The only style currently defined is "error".<p>
+
+This subcommand may be used by the processed user commands to
+write output to the widget; however, it's usually better just to
+return the desired text and allow the widget to output it.<p>
+
+<defitem inject {$cli inject <i>command</i>}>
+
+Injects a command into the widget following the prompt as though the
+user had typed it, replacing any previous user input, and executes the
+command as though the user had pressed Return.  This subcommand is
+intended to be used by menu items and other GUI elements; it should
+not be called while cli(n) is executing a user's command.<p>
+
+<defitem saveable {$cli saveable <i>subcommand</i> ?<i>args...</i>?}>
+
+cli(n) implements the <xref saveable(i)> interface as subcommands of
+this method.  When checkpointed, it saves its complete command history.
+When restored, it <iref clear>s itself, and restore the command
+history.  The cli(n) never indicates that it needs to be saved, as
+saving the command history is a convenience rather than a requirement.<p>
+
+</deflist>
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+

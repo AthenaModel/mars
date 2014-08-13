@@ -1,0 +1,102 @@
+<manpage {marsgui(n) winbrowser(n)} "Window Browser Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref marsgui(n)> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::winbrowser widget, a development
+tool for browsing the Tk window hierarchy.  The widget is used
+by the <xref debugger(n)> component.<p>
+
+The winbrowser(n) component has two resizeable panes, a tree of Tk
+windows, starting with ".", and a data pane which displays information
+about the currently selected window.  The data pane contains a tabbed
+notebook with three tabs:  <b>winfo</b>, <b>options</b>, and
+<b>bindings</b>.  The <b>winfo</b> tab contains general information
+about the window and its geometry, mostly derived from the Tk
+<b>winfo</b> command.  The <b>options</b> tab contains all of the
+window's (known) options and values.  The <b>bindings</b> tab lists
+the window's bind tags, and then the bindings and their scripts for
+each bind tags.<p>
+
+<section OPTIONS>
+
+The widget has the same options as the
+standard ttk::frame; in addition, it provides the
+following:<p>
+
+<deflist options>
+
+<defopt {-logcmd <i>command</i>}>
+
+Allows the widget to display <xref isearch(n)> status messages to the
+user.  The <i>command</i> is a Tcl command expecting one additional
+argument, a text string.  The client will usually arrange for this
+string to be written to a <xref messageline(n)>.<p>
+
+</deflist options>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem winbrowser {winbrowser <i>pathName ?options...?</i>}>
+
+Creates a new <iref winbrowser> widget named <i>pathName</i>.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem configure {$winbrowser configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.<p>
+
+<defitem cget {$winbrowser cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem refresh {$winbrowser refresh}>
+
+Refreshes the data displayed by the winbrowser(n) widget.<p>
+
+</deflist>
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

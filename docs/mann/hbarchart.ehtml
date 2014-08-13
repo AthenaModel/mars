@@ -1,0 +1,199 @@
+<manpage {marsgui(n) hbarchart(n)} "Horizontal Bar Chart">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The hbarchart(n) widget plots from one to ten series of data values as
+horizontal bars against a set of entities on the Y-axis.  Individual
+series of data can be updated individually.<p>
+
+<section OPTIONS>
+
+The widget has the following options.<p>
+
+<deflist options>
+
+<defopt {-height <i>pixels</i>}>
+
+Specifies the height of the chart window.<p>
+
+<defopt {-title <i>text</i>}>
+
+Specifies an overall title for the chart.  If <i>text</i> is the empty
+string (the default), no title is drawn.<p>
+
+<defopt {-titlepos <i>anchor</i>}>
+
+Specifies where to put the title; <i>anchor</i> may be <b>n</b> or
+<b>s</b> to center the title at the top or bottom.  Defaults to
+<b>n</b>.<p>
+
+<defopt {-width <i>pixels</i>}>
+
+Specifies the widget of the chart window.<p>
+
+<defopt {-xformat <i>format</i>}>
+
+Specifies an <xref tcl:format(n)> conversion for formatting data
+values.  Defaults to "%.1f".<p>
+
+<defopt {-xtext <i>text</i>}>
+
+Specifies a label for the X-axis.    If <i>text</i> is the empty
+string (the default), no label is drawn.<p>
+
+<defopt {-ylabels <i>labels</i>}>
+
+The widget plots one or more data values for each of a list of
+entities, each one of which is shown on the Y-axis.  The value of this
+option determines both the labels shown on the Y-axis and the
+number of entities.<p>
+
+If the value of this option is changed, the plotted data series are
+deleted, and will need to be re-plotted using the <iref plot>
+method.<p>
+
+<defopt {-yscrollcommand <i>command</i>}>
+
+If the widget displays too many data bars to be seen at once, its data
+area can be scrolled vertically in the usual way.  Thus, the
+<i>command</i> would usually be to a vertical scrollbar's <b>set</b>
+method.<p>
+
+<defopt {-ytext <i>text</i>}>
+
+Specifies a label for the Y-axis.    If <i>text</i> is the empty
+string (the default), no label is drawn.
+
+</deflist>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem hbarchart {hbarchart <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new hbarchart widget named <i>pathName</i>.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem cget {<i>win</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>win</i> configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.  The widget will
+redraw the chart accordingly.<p>
+
+<defitem plot {<i>win</i> plot <i>name</i> ?<i>options...</i>?}>
+
+Plots a series of data values against each of the entities in
+<b>-ylabels</b>.  The <i>name</i> is used to identify the series for
+future updates.<p>
+
+The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-data <i>values</i>}>
+
+Specifies a list of numeric data values, one for each label in
+<b>-ylabels</b>.<p>
+
+<defopt {-label <i>text</i>}>
+
+Specifies a label for this series of data.  The label is used in the
+legend.  If no <b>-label</b> is given, the series <i>name</i> is used
+instead.<p>
+
+<defopt {-rmin <i>min</i>}>
+<defopt {-rmax <i>max</i>}>
+
+These options specify the range bounds for the series--that is, not
+the min and max values in the data, but the logical min and max value
+for the data type.  Strict percentages, for example, have a range
+from 0.0 to 100.0.  If one of these options is omitted or explicitly
+set to the empty string, the relevant bound is computed from the data.<p>
+
+</deflist options>
+
+<defitem yview {<i>win</i> yview <i>args...</i>}>
+
+The widget supports the standard <xref tk:canvas(n)> <b>yview</b>
+method, to allow vertical scrolling.<p>
+
+</deflist>
+
+<section "VIRTUAL EVENTS">
+
+The hbarchart(n) widget generates the following virtual events.<p>
+
+<deflist events>
+
+<defitem Context {&lt;&lt;Context&gt;&gt;}>
+
+This event is generated when the user right-clicks or control-clicks
+on the chart.  It supports the following substitutions: <b>%x</b>,
+<b>%y</b>, <b>%X</b>, <b>%Y</b>, and <b>%d</b>.<p>
+
+The value of the <b>%d</b> substitution is a list whose first element
+indicates what was clicked on; the remaining items in the list vary
+depending on the first element.  The current possibilities are as
+follows:<p>
+
+<deflist Context>
+
+<defitem Context_none {none}>
+
+The user right-clicked on nothing in particular.<p>
+
+<defitem Context_bar {bar <i>ylabel series value</i>}>
+
+The user right-clicked on a data bar.  The data identifies the bar by
+its <i>ylabel</i> and <i>series</i> name, and also gives the data
+<i>value</i>.<p>
+
+</deflist Context>
+
+</deflist events>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

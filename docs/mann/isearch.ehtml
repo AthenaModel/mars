@@ -1,0 +1,120 @@
+<manpage {marsgui(n) isearch(n)} "Incremental Search">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+isearch(n) is a module that enables incremental searching in Tk text
+widgets, and in components derived from them.  Incremental searching is a
+mode where the text widget shows the user the found text as the user types.
+See <xref BINDINGS> to see how it is used.<p>
+
+<section COMMANDS>
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "isearch enable" {isearch enable <i>w</i>}>
+
+Enables incremental searching for the Tk text widget named <i>w</i>.  If
+<i>w</i> is <b>all</b>, then incremental searching is enabled on the
+Text binding, and thus effects all text widgets in the application (this
+might not be a good idea).<p>
+
+Typically, <iref isearch enable> is called for the widget just after it
+is created.<p>
+
+<defitem "isearch disable" {isearch enable <i>w</i>}>
+
+Disables incremental searching for the Tk text widget named <i>w</i>.  If
+<i>w</i> is <b>all</b>, then incremental searching is disabled on the
+Text binding.<p>
+
+There's generally no reason to disable incremental searching once it is
+enabled.<p>
+
+<defitem "isearch logger" {isearch logger <i>w</i> ?<i>cmd</i>?}>
+
+Sets/queries a logger command for the Tk text widget named <i>w</i>, or for
+all isearch-enabled text widgets if <i>w</i> is <b>all</b>.  The <i>cmd</i>
+is a Tcl command prefix that takes one additional argument, the message.<p>
+
+The logger command will usually write the message to a status line below
+the text widget; it keeps the user apprised of the progress of the search.
+This, however, is optional; incremental searching will work perfectly well
+even if no logger is defined.<p>
+
+</deflist commands>
+
+<section BINDINGS>
+
+Incremental searching is activated by the following keystrokes:<p>
+
+<ul>
+<li> <b>Ctrl+F</b> -- Search forwards from the insertion point
+<li> <b>Ctrl+R</b> -- Search backwards from the insertion point
+</ul><p>
+
+Once in incremental search mode, the widget's normal bindings are suspended,
+and the following bindings are enabled.<p>
+
+First, the user may begin typing the search target, and the widget will
+search for it as the user types.<p>
+
+Next, the Backspace key will back up in the search, deleting characters
+from the search target.
+
+Next, pressing Ctrl+F will find the next occurrence of the currently found
+search target, and pressing Ctrl+R will find the previous occurrence.<p>
+
+Note that if Ctrl+R or Ctrl+F is pressed <i>immediately</i> after entering
+incremental search mode, the widget will search for the search target from
+the previous search.  In other words, to search for the same thing again,
+press Ctrl+F twice in a row.<p>
+
+Next, incremental search mode will terminate if:<p>
+
+<ul>
+<li> The user clicks with the mouse in the text widget.
+<li> The text widget loses the keyboard focus.
+<li> The user presses <b>Escape</b>, <b>Return</b>, <b>Tab</b>, or any of
+     cursor movement keys.<p>
+     
+Other keys, including control, meta, and alt-key combinations, will
+have no effect.<p>
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+24 Aug 2012: Changed the search forward key from Ctrl+S to Ctrl+F,
+because Ctrl+S conflicts with the usual keystroke for saving the
+current document.<p>
+
+
+</manpage>
+
+
+
+
+
+
+

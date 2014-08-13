@@ -1,0 +1,192 @@
+<manpage {marsgui(n) rangefield(n)} "Range Type Entry Field">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The rangefield(n) widget is a <xref tk:scale(n)> configured as a
+<xref field(i)> data entry field.  It is used for entering numeric
+values from a limited range.  If the range is specified as
+a <xref quality(n)> type, the field can include a
+<xref menubox(n)> containing the symbolic quality values.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem rangefield {rangefield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref rangefield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following options:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>command</i>}>
+
+From <xref field(i)>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The new value is appended
+to the <i>command</i> as an argument.<p>
+
+<defopt {-changemode <i>mode</i>}>
+
+The <i>mode</i> determines how often the rangefield(n) widget calls
+the <code>-changecmd</code> as the slider is being dragged.  If the
+mode is <b>continuous</b> (the default), then it is called with
+great frequency.  If the mode is <b>onrelease</b>, then it is called
+only when the user releases the mouse button at the end of the
+drag.<p>
+
+The <b>onrelease</b> mode is for use when continuous updates are
+a problem for the application.  Note that holding down an arrow key
+can create the same kind of stream of continual changes.
+Unfortunately, it also creates a stream of &lt;KeyRelease&gt; events,
+which makes it impossible to call the <code>-changecmd</code> only
+when the key is released.  Consequently, the slider cannot be adjusted
+using the keyboard when the mode is <b>onrelease</b>.<p>
+
+<defopt {-font <i>font</i>}>
+
+Sets the font for the data label and the <xref menubox(n)> of
+symbolic quality values (if any).<p>
+
+<defopt {-labelpos <i>position</i>}>
+
+Determines whether the label is positioned to the <b>left</b> or the
+<b>right</b> of the slider.  The default is <b>right</b>.<p>
+
+<defopt {-min <i>value</i>}>
+<defopt {-max <i>value</i>}>
+
+<b>Creation only.</b>  Normally the minimum and maximum bounds for
+the range come from the <code>-type</code> option; however, sometimes
+the valid range should be narrower than the type's.  Use these options to
+set a narrower range.<p>
+
+<defopt {-scalelength <i>pixels</i>}>
+
+Sets the length of the slider in pixels; the default is 150.  Note
+that if the length is too short, it might not be possible to drag the
+slider to every legal value.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  rangefield(n) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.<p>
+
+<defopt {-type <i>object</i>}>
+
+The rangefield(n) must be given a type object with <code>-min</code>
+and <code>-max</code> options.  Mars <xref range(n)> and
+<xref quality(n)> objects work, as do <b>snit::integer</b> and
+<b>snit::double</b> objects (provided that both <code>-min</code> and
+<code>-max</code> are set).<p>
+
+Note that the user will not be layed out until <code>-type</code> is
+set; and once <code>-type</code> is set, it cannot be changed.<p>
+
+<defopt {-resetvalue <i>value</i>}>
+
+Any <xref field(i)> can be set to "" to clear its value.  A
+<xref tk:scale(n)> widget has to display some concrete value at all
+times; this option sets the <b>value</b> to use.  If <i>value</i> is
+"", then the reset value will be 0 if it is in range, and the minimum
+bound otherwise.<p>
+
+<defopt {-resolution <i>value</i>}>
+
+This option specifies the scale's granularity, e.g., if it is set to 1
+then the scale's value will be an integer ranging from the minimum
+value to the maximum value by 1.<p>
+
+If the <b>value</b> is "", then the rangefield(n) will pick a
+resolution automatically.<p>
+
+<defopt {-showreset <i>flag</i>}>
+
+If true, the field will include a "Reset" button at the right end.
+Pressing the button will reset the field to its <code>-resetvalue</code>.<p>
+
+<defopt {-showsymbols <i>flag</i>}>
+
+If true, the <code>-type</code> is assumed to be a
+<xref quality(n)> object.  The object's long symbolic names will
+appear in a pulldown at the right end of the field.  The user can
+select a particular symbol and get the matching value.  If the user
+sets the value using the slider, the pulldown will show the symbol
+that most closely matches the selected value.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+rangefield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+From <xref field(i)>.  Sets the value of one or more of the object's
+options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+From <xref field(i)>.  Returns the field's current value.<p>
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+From <xref field(i)>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <iref set> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.<p>
+
+If the <i>value</i> is the empty string, the field will display no
+value, the scale will be reset to the <code>-resetvalue</code>, and
+the <code>-showsymbols</code> pulldown, if any, will be blank.<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

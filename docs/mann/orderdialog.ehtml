@@ -1,0 +1,223 @@
+<manpage {marsgui(n) orderdialog(n)} "Mars Order Dialog Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+orderdialog(n) is responsible for creating and managing dialog boxes
+for orders defined using <xref order(n)>.<p>
+
+<b>NOTE:</b> orderdialog(n) is essentially a GUI submodule of
+<xref order(n)>.  It sends <xref notifier(n)> events as
+<xref order(n)> and calls required at runtime
+(notably <iref orderdialog enter> and <iref orderdialog puck>
+are provided by <xref order(n)> and delegated to
+<xref orderdialog(n)>.<p>
+
+orderdialog(n)'s dialogs are built around the <xref dynaview(n)> 
+widget, which is based on turn on the <xref dynaform(n)> form
+specification included in the order's metadata.  See the 
+<xref dynaform(n)> man page for information on the standard field
+types and on how to define custom field types.<p>
+
+<section "COMMANDS">
+
+orderdialog(n) provides the following commands:<p>
+
+<deflist commands>
+
+<defitem "orderdialog init" {orderdialog init <i>option value...</i>}>
+
+Initialize the module.  Call this once, at application
+initialization.  The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-appname <i>string</i>}>
+
+Specifies the name of the application, to be used in the title bar of
+the generated order dialogs.<p>
+
+<defopt {-helpcmd <i>cmd</i>}>
+
+If given, each dialog will have a context-sensitive help button.  The
+<i>cmd</i> should be a command prefix taking one additional argument,
+the name of an order.  The command should then make help available for
+that order.<p>
+
+<defopt {-parent <i>parent</i>}>
+
+Specifies the parent window for generated dialogs.  If
+<i>parent</i> begins with a "." character, it is assumed to be the
+name of the parent window.  Otherwise, it is assumed to be a Tcl
+script that will return the name of the parent window on demand.<p>
+
+<defopt {-refreshon <i>events</i>}>
+
+The value of this option is a list of <xref notifier(n)>
+subjects and events that should cause orderdialog(n) to refresh its
+order dialogs.<p>
+
+The state of an order dialog often depends on the state of the
+application.  As the application state changes, for example, the
+content of pulldowns might change, thus necessitating a refresh.<p>
+
+Note that automatically orderdialog(n) refreshes on order(n)'s 
+<lb>State<rb> event.<p>
+
+</deflist options>
+
+<defitem "orderdialog cget" {orderdialog cget ?<i>option</i>?}>
+
+Queries orderdialog(n)'s configuration options.  If called with an
+<i>option</i> name, it returns the value of that option.  Otherwise,
+it returns a dictionary of all of the module's configuration options
+and their values.  See <iref orderdialog init> for a list of the
+configuration options.<p>
+
+<defitem "orderdialog configure" {orderdialog configure <i>option</i> ?<i>value</i>? ?<i>option value...</i>?}>
+
+Sets one or more of orderdialog(n)'s configuration options.  See
+<iref orderdialog init> for the complete list.<p>
+
+Note that option changes will not affect dialogs that are already
+visible when the change is made.<p>
+
+<defitem "orderdialog enter" {orderdialog enter <i>order</i> ?<i>parmdict</i>?}>
+<defitem "orderdialog enter" {orderdialog enter <i>order</i> ?<i>parm value...</i>?}>
+
+Pops up the order dialog for the named <i>order</i>, which must be
+defined by <xref order(n)>, and initializes it from the specified
+parameter dictionary (if any).  Any number of order dialogs may be
+active at a time, but only one dialog per <i>order</i>.<p>
+
+The application will usually call <xref order(n)>
+<xref order(n) enter>, which is delegated to this routine.<p>
+
+It is an error to call this command for an order that doesn't
+define a form (i.e., that has no parameters).<p>
+
+<defitem "orderdialog keyload" {orderdialog keyload <i>key fields idict value</i>}>
+
+This command is intended to be used as a <xref dynaform(n)> 
+<xref dynaform(n) key> field <code>-loadcmd</code>.  The form
+specification provides the name of the <i>key</i> column and the names
+of the fields to load (or "*" for all fields).  The 
+<xref dynaform(n)> will provide the field item's item definition
+dictionary, <i>idict</i>, and the current field value.<p>
+
+In short, use this callback to populate an order dialog when a key
+field changes.<p>
+
+<defitem "orderdialog isactive" {orderdialog isactive <i>order</i>}>
+
+Returns 1 if <i>order</i>'s dialog is visible and in use, and 0
+otherwise.<p>
+
+<defitem "orderdialog multiload" {orderdialog multiload <i>multi fields idict keyvals</i>}>
+
+This command is intended to be used as a <xref dynaform(n)> 
+<xref dynaform(n) multi> field <code>-loadcmd</code>.  The form
+specification provides the name of the <i>multi</i> column and the names
+of the fields to load (or "*" for all fields).  The 
+<xref dynaform(n)> will provide the field item's item definition
+dictionary, <i>idict</i>, and the current field value.<p>
+
+In short, use this callback to populate an order dialog when a multi 
+field changes.<p>
+
+<defitem "orderdialog puck" {orderdialog puck <i>tagdict</i>}>
+
+This command allows the user to fill in fields in the current
+order dialog by clicking on elements of the GUI.  The <i>tagdict</i>
+is a dictionary of tag names and values that reflects the entity on
+which the user clicked.  If the current field in the order dialog is
+tagged with one of the tags in the <i>tagdict</i>, the field will be
+set to the tag's value.<p>
+
+Field tags are set using the <xref order(n)>
+<xref order(n) parm> command's <code>-tags</code> option.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of orderdialog(n) provides the following public
+methods; however, there should rarely be any need for other modules to
+use them.<p>
+
+<deflist instance>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+Sets the value of the specified options.<p>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+Returns a dictionary of the values of the dialog's fields, by
+parameter name.<p>
+
+<defitem set {<i>pathName</i> set <i>parmdict</i>}>
+<defitem set {<i>pathName</i> set <i>parm value...</i>}>
+
+Sets the values of one or more of the dialog's fields given a
+dictionary of the parameter names and values.  Downstream fields are
+refreshed as appropriate.<p>
+
+</deflist instance>
+
+<section "NOTIFIER EVENTS">
+
+orderdialog(n) sends the following events as <xref order(n)>'s
+<code>-subject</code>:<p>
+
+<deflist events>
+
+<defitem OrderEntry {&lt;OrderEntry&gt; <i>tags</i>}>
+
+An order dialog contains a field for each order parameter.  When a
+given field receives the focus, this event is sent with
+<i>tags</i> set to the parameter <code>-tags</code> specified in the
+order's metadata, or "" if none.  When no field has the focus, or the
+dialog is closed, this event is sent with <i>tags</i> set to the
+empty string.<p>
+
+This allows GUI components to configure themselves so that the
+appropriate kind of object can be selected by clicking on the
+component, e.g., a neighborhood can be selected by clicking on the
+map.<p>
+
+</deflist events>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

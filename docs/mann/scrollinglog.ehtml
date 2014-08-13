@@ -1,0 +1,172 @@
+<manpage {marsgui(n) scrollinglog(n)} "File Logging Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines the <code>::marsgui::scrollinglog</code>
+widget, which is used to browse periodically updated text files in the
+manner of <code>tail -f</code>.  By default, the widget is configured
+to browse <xref logger(n)> debugging logs; however, the columns,
+file parsing, and highlight colors can be configured to support many
+different formats of text file.<p>
+
+scrollinglog(n) combines the display capabilities of the
+<xref logdisplay(n)> widget with the search and filtering
+capabilities of the <xref finder(n)> and <xref filter(n)> widgets
+in one convenient package.  A <xref loglist(n)> widget can be
+optionally included. <p>
+
+A combobox is provided to filter based on log level.  The select log
+level and higher levels will be displayed.  The levels provided are in
+accordance with those supported by <xref logger(n)>.<p>
+
+An auto-scroll/scroll-lock selection button is provided in
+the upper right-hand corner.  In the scroll-lock position, the
+contents will remain fixed and under the user's control.  In addition,
+an enabled scroll-lock will prohibit <iref load> from loading
+the file contents.<p>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem scrollinglog {scrollinglog <i>pathName ?options...?</i>}>
+
+Creates a new <iref scrollinglog> widget named <i>pathName</i>.<p>
+
+The <iref scrollinglog> widget may be created with the following options:<p>
+
+<deflist scrollinglog options>
+
+<defopt {-showloglist <i>boolean</i>}>
+
+When true, enables the inclusion of a <xref loglist(n)> widget to the left
+of the <xref logdisplau(n)> widget.  When enabled the
+<xref loglist(n)> will be configured according to these options:
+<code>-defaultappdir</code>, <code>-formattext</code>,
+<code>-logpattern</code>, <code>-rootdir</code>, 
+<code>-parsecmd</code> and <code>-updateinterval</code>. <p>
+
+<defopt {-logcmd <i>command</i>}>
+
+Defines a command the <iref scrollinglog> can call if it needs to
+output a message.  One argument will be appended to the command, the
+message to be output.<p>
+
+<defopt {-loglevel <i>level</i>}>
+
+Defines the maximum log verbosity level to display.  The value of
+<i>level</i> must be one of fatal, warning, normal, detail or debug.
+See <xref logger(n)> of marsutil for more information on log
+levels.<p>
+
+<defopt {-title <i>title</i>}>
+
+<b>Obsolete.</b>  This option no longer has any effect.<p>
+
+<defopt {-updateinterval <i>milliseconds</i>}>
+
+Determines how often the <iref scrollinglog> will perform automatic
+updates when auto-scroll is enabled. 
+Defaults to 1000 (i.e., one second).<p>
+
+<defopt {-format <i>formatlist</i>}>
+<defopt {-parsecmd <i>cmd</i>}>
+<defopt {-tags <i>tagslist</i>}>
+<defopt {-showtitle <i>boolean</i>}>
+
+These options are all identical to the matching <xref logdisplay(n)>
+options; they are configured by default to support <xref logger(n)>
+log files.  See the <xref logdisplay(n)> man page and the
+scrollinglog(n) code to see how to customize them for other formats.
+If <code>-showloglist</code> is true, the <code>-parsecmd</code> and
+<code>-showtitle</code> options will also be used to configure the
+loglist according to <xref loglist(n)>.<p>
+
+<defopt {-font <i>font</i>}>
+<defopt {-height <i>height</i>}>
+<defopt {-width <i>width</i>}>
+<defopt {-foreground <i>color</i>}>
+<defopt {-background <i>color</i>}>
+<defopt {-insertbackground <i>color</i>}>
+<defopt {-insertwidth <i>color</i>}>
+
+These options are all identical to the Tk text widget options of the
+same names.<p>
+
+<defopt {-borderwidth <i>width</i>}>
+<defopt {-relief <i>relief</i>}>
+
+<defopt {-defaultappdir <i>appdir</i>}>
+<defopt {-formattext <i>val</i>}>
+<defopt {-logpattern <i>glob_pattern</i>}>
+<defopt {-rootdir <i>directory</i>}>
+<defopt {-showapplist <i>boolean</i>}>
+
+These options are all identical to the matching <xref loglist(n)>
+options; they are configured by default to support <xref logger(n)>
+log files.  See the <xref loglist(n)> man page and the
+scrollinglog(n) code to see how to customize them for other formats.
+
+</deflist scrollinglog options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem configure {$scrollinglog configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.<p>
+
+<defitem cget {$scrollinglog cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem load {$scrollinglog load <i>filename</i>}>
+
+Tells <iref scrollinglog> to display the named file unless
+scroll-lock is currently enabled.  In this case, the file name is
+cached for later use.<p>
+
+</deflist>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

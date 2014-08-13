@@ -1,0 +1,145 @@
+<manpage {marsgui(n) listfield(n)} "Multi-selection List Entry Field">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The listfield(n) widget is <xref field(i)> data entry field for
+selecting multiple entries from a list of choices.  The available
+choices are shown in two columns; arrow buttons are used to move
+items from the "omitted" list to the "included" list.<p>
+
+The choices are specified by setting the <b>-itemdict</b> option.
+The value of the widget is a list of the dictionary keys of the
+items in the "included" list.  The dictionary values are displayed
+in the two item columns, optionally prefixed by the keys.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem listfield {listfield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref listfield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>command</i>}>
+
+From <xref field(i)>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The new value is appended
+to the <i>command</i> as an argument.<p>
+
+<defopt {-height <i>rows</i>}>
+
+The height of the "include" and "omit" lists, in rows.<p>
+
+<defopt {-itemdict <i>dict</i>}>
+
+The items from which the user can choose, specified as a dictionary of
+keys and values.  The dictionary values are displayed in the "include"
+and "omit" lists, optionally prefixed by the keys (see
+<b>-showkeys</b>); the <iref get> and <iref set> methods
+return and accept a list of keys.<p>
+
+<defopt {-showkeys <i>flag</i>}>
+
+If true (the default), the text shown for each item in the item lists is
+"<i>key</i>: <i>value</i>".  Otherwise only the <b>-itemdict</b> values are
+displayed.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  listfield(i) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.<p>
+
+<defopt {-stripe <i>flag</i>}>
+
+If true (the default) the even items in each list are striped with a
+distinctive background color.  This is useful if item values might
+wrap to multiple lines.<p>
+
+<defopt {-width <i>chars</i>}>
+
+The width in text characters of each of the item lists.<p>
+
+
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+listfield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+From <xref field(i)>.  Sets the value of one or more of the object's
+options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+From <xref field(i)>.  Returns the field's current value.<p>
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+From <xref field(i)>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <iref set> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.<p>
+
+If the <i>value</i> contains an element that isn't a valid
+<code>-itemdict</code> key, that element is ignored.  This allows the
+field to be used with data values that have become invalid due to
+changes elsewhere in the system.<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

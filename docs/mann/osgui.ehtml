@@ -1,0 +1,76 @@
+<manpage {marsgui(n) osgui(n)} "Platform-Dependent GUI Utilities">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref osgui(n)> provides platform-independent GUI routines for
+features that must be implemented differently on different windowing
+systems.  Ideally, all windowing system code should reside here or
+in global.tcl, the global appearance module.<p>
+
+<section COMMANDS>
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "osgui mktoolwindow" {osgui mktoolwindow <i>w parent</i>}>
+
+Makes window <i>w</i> a toolwindow over its <i>parent</i> window.
+That is:<p>
+
+<ul>
+  <li> Window <i>w</i> is declared transient over <i>parent</i>.  In
+       most cases, this is sufficient.<p>
+  <li> On MS Windows, special handling is required:
+       <ul>
+         <li> Window <i>w</i> is given the <code>-toolwindow</code>
+              <xref tk:wm(n) "wm attribute">.
+         <li> Window <i>w</i> is positioned near the upper left of the
+              parent window.
+       </ul><p>
+</ul>
+
+Windows <i>w</i> and <i>parent</i> will usually be toplevels, but
+<iref osgui mktoolwindow> accepts children of the respective
+toplevels as well.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
+
+

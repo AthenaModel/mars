@@ -1,0 +1,53 @@
+<manpage {marsgui(n) texteditor(n)} "Text Editor Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref marsgui(n)> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::texteditor, a tailored
+<xref tk:text(n)> widget.  texteditor(n) is a drop in replacement for
+the Tk text widget, with these behaviors added:<p>
+
+<ul>
+    <li> The widget responds to the &lt;&lt;Undo&gt;&gt; and
+         &lt;&lt;SelectAll&gt;&gt; virtual events.  <xref marsgui(n)>
+         binds these to Ctrl+Z and Ctrl+Shift+A, respectively.<p>
+         
+    <li> The Tab key inserts spaces rather than tab characters, and
+         tab stops are every four spaces.<p>
+</ul>
+
+The options and subcommands are simply those of the
+<xref tk:text(n)> widget, and so won't be documented here.<p>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

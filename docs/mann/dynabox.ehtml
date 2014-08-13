@@ -1,0 +1,110 @@
+<manpage {marsgui(n) dynabox(n)} "dynaform(n) Dialog Box">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines a tool for popping up modal dialogs containing
+<xref dynaform(n)> forms.  The dialogs have these
+characteristics:<p>
+
+<ul>
+  <li> <b>OK</b> and <b>Cancel</b> buttons.<p>
+
+  <li> If desired, a <b>Help</b> button.<p>
+
+  <li> A user-defined title.<p>
+
+  <li> <xref dynaform(n)>-based content.<p>
+
+  <li> Optional validation support.<p>
+</ul><p>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem popup {dynabox popup <i>?options...?</i>}>
+
+Pops up a message box containing a text entry widget, given the
+following options.  On "Cancel", returns the empty string; on
+"OK", validates and returns the form's field/value dictionary.
+Pressing the window manager's close button
+is the same as pressing "Cancel".<p> 
+
+<deflist options>
+<defopt {-formtype <i>ftype</i>}>
+
+Names the <xref dynaform(n)> form type to display in the dialog.<p>
+
+<defopt {-helpcmd <i>cmd</i>}>
+
+If given, the dialog will have a <b>Help</b> button; pressing the
+<b>Help</b> button will call the <i>cmd</i>, which presumably
+displays related help in some fashion.<p>
+
+<defopt {-initvalue <i>dict</i>}>
+
+Specifies an initial value for the form, specified as a dictionary of
+field names and values.  The <i>dict</i> need not contain an entry
+for every one of the the form's fields.<p>
+
+<defopt {-oktext <i>text</i>}>
+
+Specifies the text for the <b>OK</b> button.  Defaults to "OK".<p>
+
+<defopt {-parent <i>window</i>}>
+
+The message box will appear over the specfied window.<p>
+
+<defopt {-title <i>string</i>}>
+
+The dialog window will have the specified title <i>string</i>.<p>
+
+<defopt {-validatecmd <i>command</i>}>
+
+Specifies a validation command.  The command should take one
+additional argument, the name/value dictionary to validate.<p>
+
+If the dictionary is valid, the command should return normally; if it returns 
+a text string, the string will be displayed at the bottom of the dialog in
+black text.<p>
+
+If the dictionary is invalid, the command should do one of two things:
+First, the command can throw an error with error code <b>INVALID</b>.
+The error message will be displayed at the bottom of the dialog in red text.<p>
+
+Second, the command can throw an error with error code
+<b>REJECTED</b>.  The error result must then be a dictionary of field
+names and error messages.  The dialog will mark fields with invalid
+values by coloring their labels red, and when an invalid field is
+selected its error message will appear at the bottom of the dialog in
+red text.<p>
+
+</deflist options>
+
+</deflist commands>
+
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+</manpage>
+
+
+
+
+
+
+
+

@@ -1,0 +1,139 @@
+<manpage {marsgui(n) texteditorwin(n)} "Simple Text Editor Window">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref marsgui(n)> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::texteditorwin, a simple text editor
+window which can be popped up to edit files in any Tk application.<p>
+
+The text editor has the following features:<p>
+
+<ul>
+  <li> Multiple edit windows
+  <li> Cut, Copy, Paste, and Undo.
+  <li> New Window, Open File, Save File, Save File As.
+</ul>
+
+texteditorwin(n) is based on the <xref texteditor(n)> editing widget.<p>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem texteditorwin {texteditorwin <i>pathName ?options...?</i>}>
+
+Creates a new toplevel texteditorwin window named <i>pathName</i>.<p>
+
+The <iref texteditorwin> widget has all the options of the
+standard Tk "toplevel" widget; in addition, it has the following:<p>
+
+<deflist options>
+
+<defopt {-height <i>height</i>}>
+
+Sets the height of the editor in lines of text.<p>
+
+<defopt {-width <i>width</i>}>
+
+Sets the width of the editor in columns of text.</p>
+
+<defopt {-background <i>color</i>}>
+
+Sets the background color of the editor pane.<p>
+
+<defopt {-foreground <i>color</i>}>
+
+Sets the foreground color of the editor pane.<p>
+
+<defopt {-font <i>color</i>}>
+
+Sets the text font.<p>
+
+<defopt {-title <i>title</i>}>
+
+Sets the window title; the name of the current file is added
+automatically.  The title defaults to "Text Editor" appended to
+the title of the application's main window, ".".<p>
+
+<defopt {-initialdir <i>dir</i>}>
+
+Sets the <code>-initialdir</code> passed to <code>tk_getOpenFile</code>
+and <code>tk_getSaveFile</code>.<p>
+
+<defopt {-filetypes <i>typelist</i>}>
+
+Sets the list of file types (<code>-filetypes</code>) passed to
+<code>tk_getOpenFile</code> and <code>tk_getSaveFile</code>.  See
+the Tk manpages for the format.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem configure {<i>win</i> configure <i>option value...</i>}>
+
+Sets the values of the specified <i>options</i>.<p>
+
+<defitem cget {<i>win</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem load {<i>win</i> load <i>filename</i>}>
+
+Loads the named file into the editor.  The file will not be
+loaded if the current file needs to be saved.<p>
+
+The named file need not exist; if it does not, a blank document
+will be created, but the file name will be saved for when the
+file is saved.<p>
+
+<defitem open {<i>win</i> open ?<i>filename</i>?}>
+
+Called with a file name, this subcommand is equivalent to
+<iref load>.  Called without a file name, prompts the user
+to select a file to open.  Note that no file can be opened
+if the current file needs to be saved.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+This package requires Tcl/Tk 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

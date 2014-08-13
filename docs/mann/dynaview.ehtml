@@ -1,0 +1,162 @@
+<manpage {marsgui(n) dynaview(n)} "Dynamic Form Data Entry Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The dynaview(n) widget is an <xref htmlframe(n)> configured to display
+<xref dynaform(n)> data entry forms.<p>
+
+The first step in using the dynaview(n) widget is to 
+define the desired <xref dynaform(n)> form types, along with any
+required custom field types.  An instance of <xref dynaview(n)> can
+then be created to display any given form type.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem dynaview {dynaview <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref dynaview> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options:<p>
+
+<deflist options>
+<defopt {-formtype <i>name</i>}>
+
+Specifies the name of a <xref dynaform(n)> form type.  The named
+form will be displayed in the widget.<p>
+
+<defopt {-changecmd <i>command</i>}>
+
+Specifies a <i>command</i> to be called whenever a field's value
+changes, for any reason whatsoever (including explicit calls
+to <iref set>).  A list of the names of the fields whose values
+actually changed is appended to the <i>command</i> as an argument.<p>
+
+<defopt {-currentcmd <i>command</i>}>
+
+Specifies a <i>command</i> to be called whenever a new field receives the
+focus.  The name of the field receiving the focus is appended to the
+<i>command</i> as an argument.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  dynaview(n) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.  If the state is
+<b>disabled</b> then all fields in the dynaview(n) are disabled; if the
+state <b>normal</b> then all non-readonly fields are enabled.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+dynaview(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {<i>pathName</i> clear}>
+
+Clears all values from the form, and sets default values.  Note that
+fields for which <code>-context</code> is true are not cleared.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.<p>
+
+<defitem current {<i>pathName</i> current}>
+
+Returns the name of the field that has the input focus, or the name
+of the first visible field if no field has the focus.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+Returns the dynaview's current value, a dictionary of symbolic field
+names and field values. Fields that are not currently layed out will
+have empty values.<p>
+
+<defitem getlabel {<i>pathName</i> getlabel <i>field</i>}>
+
+Returns the text of the first displayed label associated with the 
+named field, or "" if none.<p>
+
+<b>Note:</b> This was added for the benefit of 
+<xref orderdialog(n)>'s display of field errors at the bottom of
+the error dialog.  However, the mechanism is rather klunky and
+fragile; probably a better way of showing errors should be found, in
+which case this command can be removed.<p>
+
+<defitem invalid {<i>pathName</i> invalid <i>fields...</i>}>
+
+Tells the dynaview(n) that the named <i>fields</i> contain invalid
+values; the remainder contain valid values.  The effect of making
+a field invalid depends on the layout algorithm in use; the usual
+effect is to make the label associated with the field to turn
+red.  The list of fields can be specified as a single argument, or as
+individual field names on the command line.<p>
+
+<defitem refresh {<i>pathName</i> refresh}>
+
+Refreshes the contents of the form: saves the current field values,
+clears the form, and then restores the field values.  This causes a
+complete reconfiguration of all fields, updating them to be
+consistent with the current state of the application.<p>
+
+<defitem set {<i>pathName</i> set <i>dict</i>}>
+<defitem set {<i>pathName</i> set <i>key value...</i>}>
+
+Explicitly sets the dynaview's field values given a dictionary of
+symbolic field names and field values, and calls
+the <code>-changecmd</code> if at least one field's value has actually
+changed, i.e., successive calls to <iref set> with the same
+<i>dict</i> will result in at most one call to the
+<code>-changecmd</code>.  It isn't necessary for the <i>dict</i> to
+contain an entry for every field.<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
