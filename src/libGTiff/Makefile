@@ -12,15 +12,14 @@
 #---------------------------------------------------------------------
 # Settings
 
-TOP_DIR = ../..
+LIB = $(KITE_PROJECT_ROOT)/src/lib
+INCLPATH = -I$(KITE_PROJECT_ROOT)/src/libGTiff \
+           -I$(KITE_PROJECT_ROOT)/src/libTiff
 
-include $(TOP_DIR)/MakeDefs
-
-LIB = $(TOP_DIR)/src/lib
 
 # Compilation Flags
 
-ifeq ($(MARS_OS),win)
+ifeq ($(KITE_OS),windows)
     OS_FLAGS =
 else 
     OS_FLAGS = -fPIC
@@ -31,9 +30,6 @@ CFLAGS = $(OS_FLAGS) -g -O -Wall
 # Include Directory
 
 CC  = gcc
-
-INCLPATH = -I$(TOP_DIR)/src/libGTiff \
-           -I$(TOP_DIR)/src/libTiff
 
 TARGETS = $(LIB)/libGTiff.a
 
