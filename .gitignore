@@ -12,10 +12,12 @@
 /docs/*.html
 /docs/*/*.html
 teapot.txt
-/src/marsbin/pkgIndex.tcl
+/src/Marsbin/pkgIndex.tcl
+/src/Marsbin/config.status
 autom4te.cache
-/lib/marsbin*
+/lib/Marsbin*
 *.bak
+
 
 # SublimeText artifacts
 *.sublime-*
