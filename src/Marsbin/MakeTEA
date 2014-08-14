@@ -1,0 +1,42 @@
+#---------------------------------------------------------------------
+# TITLE:
+#    MakeTEA -- Makefile for Marsbin TEA package
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    This Makefile defines the following targets:
+#
+#    all       Configure and build the TEA package.
+#    clean     Delete build products.
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Settings
+
+KITE_OS         = $(strip $(shell kite info -os))
+KITE_TCL_HOME   = $(strip $(shell kite info -tclhome))
+KITE_ROOT       = $(strip $(shell kite info -root))
+KITE_VERSION    = $(strip $(shell kite info -version))
+
+PREFIX = $(realpath $(KITE_ROOT))
+
+.PHONY: all clean
+
+all:
+	cp configure.in configure.bak
+	sed 's/AC_INIT\(.*\)/AC_INIT([Marsbin],[$(KITE_VERSION)])/' configure.bak >configure.in
+	autoconf
+	chmod +x configure
+	./configure --with-tcl=$(KITE_TCL_HOME)/lib --prefix $(PREFIX) --exec-prefix $(PREFIX)
+	make clean ; make ; make install
+
+clean:
+	if test -f Makefile ; then make clean ; fi
+	rm -f configure.bak
+
+
+
+

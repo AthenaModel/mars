@@ -15,6 +15,7 @@ teapot.txt
 /src/marsbin/pkgIndex.tcl
 autom4te.cache
 /lib/marsbin*
+*.bak
 
 # SublimeText artifacts
 *.sublime-*
