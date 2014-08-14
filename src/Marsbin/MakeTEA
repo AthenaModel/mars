@@ -22,6 +22,7 @@ KITE_ROOT       = $(strip $(shell kite info -root))
 KITE_VERSION    = $(strip $(shell kite info -version))
 
 PREFIX = $(realpath $(KITE_ROOT))
+CLEANDIR = $(PREFIX)/lib/Marsbin$(KITE_VERSION)
 
 .PHONY: all clean
 
@@ -35,6 +36,7 @@ all:
 
 clean:
 	if test -f Makefile ; then make clean ; fi
+	if test -d $(CLEANDIR) ; then rm -rf $(CLEANDIR) ; fi
 	rm -f configure.bak
 
 
