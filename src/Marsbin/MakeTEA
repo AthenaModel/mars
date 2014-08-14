@@ -22,7 +22,8 @@ KITE_ROOT       = $(strip $(shell kite info -root))
 KITE_VERSION    = $(strip $(shell kite info -version))
 
 PREFIX = $(realpath $(KITE_ROOT))
-CLEANDIR = $(PREFIX)/lib/Marsbin$(KITE_VERSION)
+VERSIONDIR = $(PREFIX)/lib/Marsbin$(KITE_VERSION)
+NORMALDIR  = $(PREFIX)/lib/Marsbin
 
 .PHONY: all clean
 
@@ -33,10 +34,12 @@ all:
 	chmod +x configure
 	./configure --with-tcl=$(KITE_TCL_HOME)/lib --prefix $(PREFIX) --exec-prefix $(PREFIX)
 	make clean ; make ; make install
+	mv $(VERSIONDIR) $(NORMALDIR)
+
 
 clean:
 	if test -f Makefile ; then make clean ; fi
-	if test -d $(CLEANDIR) ; then rm -rf $(CLEANDIR) ; fi
+	if test -d $(NORMALDIR) ; then rm -rf $(NORMALDIR) ; fi
 	rm -f configure.bak
 
 
