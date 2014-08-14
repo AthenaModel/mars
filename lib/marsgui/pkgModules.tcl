@@ -31,7 +31,7 @@ package require treectrl 2.4
 package require tablelist 5.11
 package require Tktable 2.11
 package require Tkhtml 3.0
-package require kiteutils 0.0
+package require kiteutils 0.1
 # -kite-require-end
 
 #-----------------------------------------------------------------------

@@ -7,6 +7,7 @@ src libGeotrans
 src libGeostars
 src libTiff
 src libGTiff
+src Marsbin -build {make -f MakeTEA clean all} -clean {make -f MakeTEA clean}
 
 require snit 2.3
 require sqlite3 3.8
@@ -17,7 +18,7 @@ require treectrl 2.4
 require tablelist 5.11
 require Tktable 2.11
 require Tkhtml 3.0
-require kiteutils 0.0 -local
+require kiteutils 0.1 -local
 
 shell {
     package require marsutil 3.0

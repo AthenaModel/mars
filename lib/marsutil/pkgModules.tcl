@@ -25,7 +25,7 @@ package provide marsutil 3.0a3
 package require snit 2.3
 package require sqlite3 3.8
 package require comm 4.6
-package require kiteutils 0.0
+package require kiteutils 0.1
 # -kite-require-end
 
 #-----------------------------------------------------------------------
