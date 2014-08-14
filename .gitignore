@@ -12,7 +12,8 @@
 /docs/*.html
 /docs/*/*.html
 teapot.txt
-autom4te.cache
+/src/marsbin/config.status
+/src/marsbin/pkgIndex.tcl
 
 # SublimeText artifacts
 *.sublime-*

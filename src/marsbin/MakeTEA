@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    This Makefile defines the following targets:
 #
-#    all       Build all binary code in all subdirectories.
-#    clean     Deletes all build products in all subdirectories.
+#    all       Configure and build the TEA package.
+#    clean     Delete build products.
 #
 #---------------------------------------------------------------------
 
