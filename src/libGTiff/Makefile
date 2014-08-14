@@ -12,6 +12,9 @@
 #---------------------------------------------------------------------
 # Settings
 
+KITE_OS           = $(strip $(shell kite info -os))
+KITE_PROJECT_ROOT = $(strip $(shell kite info -root))
+
 LIB = $(KITE_PROJECT_ROOT)/src/lib
 INCLPATH = -I$(KITE_PROJECT_ROOT)/src/libGTiff \
            -I$(KITE_PROJECT_ROOT)/src/libTiff

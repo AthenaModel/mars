@@ -12,7 +12,7 @@
 /docs/*.html
 /docs/*/*.html
 teapot.txt
-
+autom4te.cache
 
 # SublimeText artifacts
 *.sublime-*

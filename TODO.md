@@ -1,5 +1,21 @@
 # athena-mars TODO List
 
+* Building marsbin via Kite
+  * The big problem is the PACKAGE_VERSION
+    * This is set in configure.in; you need to run autoconf to get a new
+      version to be used.
+    * It also goes automatically into the name of the DLL and the 
+      "lib" directory for the package.
+    * And it's the actual package version.
+    * We want it to be 'project version'.
+  * Possibilities:
+    * A: Update configure.in on compile and run autoconf every time.
+    * B: Set the version to "" (or something innocuous) in configure.in
+      and manage pkgIndex.tcl so that it's updated by Kite automatically.
+      Also need to set revise marsbin.c to use "KITE_PROJECT_VERSION" instead
+      of "PACKAGE_VERSION", and arrange to pass it to "configure".
+  * Option A looks the simplest.
+  * The library should be "marsbin", with the same version as the project.
 * Grabbing modules
   * Look for test_*.tcl scripts for modules that have them
   * Look for ancillary data
