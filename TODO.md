@@ -1,21 +1,25 @@
 # athena-mars TODO List
 
-* Building marsbin via Kite
-  * The big problem is the PACKAGE_VERSION
-    * This is set in configure.in; you need to run autoconf to get a new
-      version to be used.
-    * It also goes automatically into the name of the DLL and the 
-      "lib" directory for the package.
-    * And it's the actual package version.
-    * We want it to be 'project version'.
-  * Possibilities:
-    * A: Update configure.in on compile and run autoconf every time.
-    * B: Set the version to "" (or something innocuous) in configure.in
-      and manage pkgIndex.tcl so that it's updated by Kite automatically.
-      Also need to set revise marsbin.c to use "KITE_PROJECT_VERSION" instead
-      of "PACKAGE_VERSION", and arrange to pass it to "configure".
-  * Option A looks the simplest.
-  * The library should be "marsbin", with the same version as the project.
+Current Goals:
+
+* Get Mars 3.0 to where it can support Athena 6.2.
+
+Next:
+
+* Pull in the geometry and geographic Tcl code from Mars 2.0, now that we've
+  got Marsbin built.
+* Once Kite supports "provide -binary" update project.kite to use it for
+  Marsbin.
+* Should marsutil and marsgui be Marsutil and Marsgui?
+* Pull in simlib
+  * As appropriate
+* Pull in mars apps as appropriate.
+  * Built mars(1) as a kit.
+  * Some apps might go to Kite.
+
+
+# Conversion Notes
+
 * Grabbing modules
   * Look for test_*.tcl scripts for modules that have them
   * Look for ancillary data
