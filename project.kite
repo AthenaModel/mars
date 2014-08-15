@@ -1,7 +1,8 @@
-project athena-mars "3.0a3" "Mars Simulation Support Library"
+project athena-mars "3.0a4" "Mars Simulation Support Library"
 poc William.H.Duquette@jpl.nasa.gov
 provide marsutil
 provide marsgui
+provide Marsbin -binary
 
 src libGeotrans
 src libGeostars
