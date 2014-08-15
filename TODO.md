@@ -5,8 +5,22 @@ Current Goals:
 * Get Mars 3.0 to where it can support Athena 6.2.
 
 Next:
-
-* Should marsutil and marsgui be Marsutil and Marsgui?
+* Convert mars to mars.tcl/mars.kit
+  * main in marsapp
+  * Omit obsolete packages
+      * commit (subversion dependent)
+      * doc (replaced by 'kite docs')
+      * link (subversion dependent)
+      * man (replaced by 'kite docs')
+      * replace (replaced by 'kite replace')
+      * sequence (simply obsolete)
+  * Retain useful packages
+      * cmtool
+      * gram? (when simlib has been included, if gram is retained)
+      * icons
+      * log?
+      * sql
+      * uram (when simlib has been included)
 * Pull in simlib
   * As appropriate
 * Pull in mars apps as appropriate.
