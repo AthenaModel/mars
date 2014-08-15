@@ -1,0 +1,128 @@
+<manpage {parm(i)} "Parameter Set Interface">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref parm(i)> documents the interface exported by
+modules which define a <xref parmset(n)> of configuration
+parameters.  It is not required that such modules use precisely this
+interface, but if they do it makes it easy to include their parameters
+in a larger project-wide or application-wide <xref parmset(n)> file.<p>
+
+
+<subsection "Parameter Names">
+
+The purpose of the <xref parm(i)> interface is to allow parameters
+from many modules to be pulled into a single <xref parmset(n)>.
+Therefore, in order to avoid naming collisions, the first element of
+every parameter name must be derived from the module's name.
+If the module's name is <code>fred(n)</code>, for example, then
+its parameter names must all match the pattern "<code>fred.*</code>".<p>
+
+<subsection "Subcommands">
+
+Every <xref parm(i)> module must be an ensemble command with
+at least the following subcommand:<p>
+
+<deflist subcommands>
+
+<defitem parm {<i>module</i> parm <i>subcommand</i> ?<i>args</i>?}>
+
+This subcommand provides access to the module's <xref parmset(n)>;
+the subcommands of <iref parm> must be exactly those of the
+module's <xref parmset(n)>.  See the <xref EXAMPLES> for a typical
+implementation.<p>
+
+</deflist subcommands>
+
+<section EXAMPLES>
+
+Here's an example of a minimal <xref parm(i)> module.<p>
+
+<pre>
+snit::type sample {
+    #-------------------------------------------------------------------
+    # Type Components
+
+    # Define the parm component and make it public; this creates the
+    # "parm" subcommand.
+    typecomponent parm -public parm
+
+    #-------------------------------------------------------------------
+    # Type Constructor
+
+    typeconstructor {
+        namespace import ::util::*
+
+        # FIRST, create the parmset and save it as the parm component.
+        set parm ${type}::parm
+        parmset $parm \
+            -notifycmd [mytypemethod NotifyCB]
+
+        # NEXT, define parameters
+        $parm subset sample {
+            sample(n) configuration parameters.
+        }
+
+        $parm define sample.number snit::integer 0 {
+            Sample parameter definition.
+        } 
+
+        ...
+    }
+
+    typemethod NotifyCB {name} {
+        # This callback is not required; but if the module needs
+        # to take action when a parameter's value changes it can
+        # do it here.  See parmset(n) for details.
+    }
+
+    ...
+}
+</pre>
+
+The parameters can then be readily accessed by clients:<p>
+
+<pre>
+    % sample parm set sample.number 5
+    5
+    % sample parm list
+    sample.number 5
+    %
+</pre>
+
+Further, the parameters can be linked into a larger <xref parmset(n)>
+quite easily:<p>
+
+<pre>
+    % parmset collection
+    ::collection
+    % collection slave add [list ::sample parm]
+    % collection set sample.number 10
+    10
+    % sample parm get sample.number
+    10
+    %
+</pre>
+
+See <xref parmset(n)> for a discussion of master and slave
+parameter sets.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original interface.
+
+</manpage>
+
+
+
+
+
+

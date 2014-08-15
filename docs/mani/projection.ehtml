@@ -1,0 +1,125 @@
+<manpage {projection(i)} "Map Projection Interface">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A map <xref projection(i)> is an object that converts between
+<xref mapcanvas(n)> canvas coordinates and map coordinates given the
+map's projection.  A <xref projection(i)> object will support the
+following kinds of coordinate system:<p>
+
+<deflist units>
+  <def "Canvas Units">
+   The <xref mapcanvas(n)> refers to points on a map image
+       using (cx,cy) pixel coordinates with the origin at the upper
+       left; coordinates increase to the right and down.<p>
+
+  <def "Map Units">
+   A location in map units is an (mx,my) coordinate pair.  The
+       units, and indeed the nature of the coordinate system, are
+       entirely up to the <xref projection(i)> object.  The
+       <xref mapref(n)> projection, for example, uses a simple
+       non-geographic scheme that's essentially just a rescaling of
+       canvas units; when georeferencing is required, lat/lon is an
+       obvious choice.<p>
+
+  <def "Map Reference Strings">
+   A map reference string is a short string that identifies a
+       point on the map; it's a human-readable equivalent to the
+       (mx,my) map coordinates.  The <xref mapref(n)> projection defines a
+       simple alphanumeric string; when georeferencing is required,
+       MGRS is an obvious choice.<p>
+</deflist units>
+
+Note that the <xref mapcanvas(n)> can display a given map
+at a variety of zoom factors.  The zoom factor is an integer number
+between 1 and 300, interpeted as a percentage.  At a zoom factor of
+200, for example, there are twice as many pixels in each direction.
+The conversion between canvas coordinates and map coordinates must
+take the zoom factor into account.<p>
+
+The projection to be used depends on the projection of the map image,
+and on the desired map coordinate system.  The <xref mapref(n)>
+projection has the advantage that it works with any map image, whether
+georeferenced or not.<p>
+
+<subsection "Subcommands">
+
+Every <xref projection(i)> module must be an ensemble command with
+at least the following subcommands:<p>
+
+<deflist subcommands>
+
+<defitem box {<i>object</i> box}>
+
+Returns the bounding box of the map in map units.<p>
+
+<defitem c2m {<i>object</i> c2m <i>zoom cx cy</i>}>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map coordinate pair as a list of two coordinates
+<i>mx</i> and <i>my</i>.<p>
+
+<defitem c2ref {<i>object</i> c2ref <i>zoom cx cy</i>}>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map reference string.<p>
+
+<defitem c2loc {<i>object</i> c2ref <i>zoom cx cy</i>}>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map location for purposes of display. How a location
+is displayed to a user is projection dependant.<p>
+
+<defitem dim {<i>object</i> dim}>
+
+Returns the dimensions of the map in map units.<p>
+
+<defitem m2c {<i>object</i> m2c <i>zoom mx my....</i>}>
+
+Given a <i>zoom</i> factor and one or more map coordinate pairs
+<i>mx</i> and <i>my</i>, returns a list of canvas 
+coordinate pairs as a flat list of coordinates <i>cx cy...</i>.<p>
+
+<defitem m2ref {<i>object</i> m2ref <i>mx my</i>}>
+
+Given a map coordinate pair <i>mx</i> and <i>my</i>, returns a
+map reference string.<p>
+
+<defitem ref2c {<i>object</i> ref2c <i>zoom ref...</i>}>
+
+Given a <i>zoom</i> factor and one or more map reference strings,
+returns a list of canvas coordinate pair as a flat list of coordinates
+<i>cx cy...</i>.<p> 
+
+<defitem ref2m {<i>object</i> ref2m <i>ref...</i>}>
+
+Given one or more map reference strings as arguments, returns a
+corresponding list of <i>mx</i> and <i>my</i> map coordinates.<p>
+
+<defitem "ref validate" {<i>object</i> ref validate <i>ref...</i>}>
+
+Given one or more map reference strings as arguments, validates
+each. Throws an error with <code>-errorcode</code> <b>INVALID</b> if
+any reference string is invalid.<p>
+
+</deflist subcommands>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original interface.
+
+</manpage>
+
+
+
+
+
+

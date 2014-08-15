@@ -1,0 +1,290 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    latlong.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) latlong.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
+
+ 
+#-------------------------------------------------------------------
+# latlong dist
+
+test dist-1.1 {1 degree at the equator} -body {
+    set a [latlong dist {0.0 0.0} {0.0 1.0}]
+    set b [latlong dist {0.0 0.0} {1.0 0.0}]
+    expr {$a == $b}
+} -result {1}
+
+test dist-1.2 {relation to diameter} -body {
+    # Per CBS, earth's diameter in kilometers
+    set diameter 12742.0
+
+    # Circumference is pi*diameter
+    set circ [expr {acos(-1.0)*$diameter}]
+
+    # Length of one degree of arc at the equator, rounded
+    # to eight decimals
+    set a [format %.8f [expr {$circ/360.0}]]
+
+    # Length of one degree of arc at the equator, per latlong dist,
+    # rounded to eight decimals
+    set b [format %.8f [latlong dist {0.0 0.0} {0.0 1.0}]]
+
+    # They should be the same.
+    expr {$a == $b}
+} -result {1}
+
+#-------------------------------------------------------------------
+# latlong dist4
+
+test dist4-1.1 {1 degree at the equator} -body {
+    set a [latlong dist4 0.0 0.0 0.0 1.0]
+    set b [latlong dist4 0.0 0.0 1.0 0.0]
+    expr {$a == $b}
+} -result {1}
+
+test dist4-1.2 {relation to diameter} -body {
+    # Per CBS, earth's diameter in kilometers
+    set diameter 12742.0
+
+    # Circumference is pi*diameter
+    set circ [expr {acos(-1.0)*$diameter}]
+
+    # Length of one degree of arc at the equator, rounded
+    # to eight decimals
+    set a [format %.8f [expr {$circ/360.0}]]
+
+    # Length of one degree of arc at the equator, per latlong dist,
+    # rounded to eight decimals
+    set b [format %.8f [latlong dist4 0.0 0.0 0.0 1.0]]
+
+    # They should be the same.
+    expr {$a == $b}
+} -result {1}
+
+#-------------------------------------------------------------------
+# pole
+
+test pole-1.1 {Set/get pole} -body {
+    set a [latlong pole {1.0 1.0}]
+    set b [latlong pole]
+
+    list $a $b
+} -result {{1.0 1.0} {1.0 1.0}}
+
+#-------------------------------------------------------------------
+# radius
+
+test radius-1.1 {1 degree at the equator} -body {
+    set pole {0.0 0.0}
+    latlong pole $pole
+    set a [latlong dist $pole {0.0 1.0}]
+    set b [latlong radius 0.0 1.0]
+    expr {$a == $b}
+} -result {1}
+
+#-------------------------------------------------------------------
+# spheroid
+
+test spheroid-1.1 {Default spheroid} -body {
+    latlong spheroid
+} -result {WE}
+
+test spheroid-1.2 {Set/get spheroid} -body {
+    set a [latlong spheroid]
+    set b [latlong spheroid A1]
+    set c [latlong spheroid]
+    latlong spheroid $a
+
+    list $b $c
+} -result {A1 A1}
+
+#-------------------------------------------------------------------
+# tomgrs
+
+test tomgrs-1.1 {Default spheroid} -body {
+    list \
+        [latlong tomgrs {0.0 0.0}]   \
+        [latlong tomgrs {0.0 0.0} 0] \
+        [latlong tomgrs {0.0 0.0} 1] \
+        [latlong tomgrs {0.0 0.0} 2] \
+        [latlong tomgrs {0.0 0.0} 3] \
+        [latlong tomgrs {0.0 0.0} 4] \
+        [latlong tomgrs {0.0 0.0} 5]
+} -result {31NAA6602100000 31NBA 31NAA70 31NAA6600 31NAA660000 31NAA66020000 31NAA6602100000}
+
+#-------------------------------------------------------------------
+# frommgrs
+
+test frommgrs-1.1 {Default spheroid} -body {
+    set loc1 {30.0 40.0}
+    set utm [latlong tomgrs $loc1 5]
+    set loc2 [latlong frommgrs $utm]
+    set dist [format "%.2f" [latlong dist $loc1 $loc2]]
+
+    # The distance should be accurate to the meter, so the distance
+    # between the two should be zero at that precision.
+    expr {$dist == 0.0}
+} -result {1}
+
+#-------------------------------------------------------------------
+# validate
+
+test validate-1.1 {valid lat/long} -body {
+    latlong validate {0.0 0.0}
+    latlong validate {-90.0 -180.0}
+    latlong validate {90.0 360.0}
+} -result {90.0 360.0}
+
+test validate-2.1 {missing long} -body {
+    latlong validate 0.0
+} -returnCodes {
+    error
+} -result {expected lat/long pair, got: "0.0"}
+
+test validate-2.2 {extra coordinate} -body {
+    latlong validate {1.0 2.0 3.0}
+} -returnCodes {
+    error
+} -result {expected lat/long pair, got: "1.0 2.0 3.0"}
+
+test validate-2.3 {non-numeric latitude} -body {
+    latlong validate {DUMMY 0.0}
+} -returnCodes {
+    error
+} -result {expected floating-point number but got "DUMMY"}
+
+test validate-2.4 {latitude too negative} -body {
+    latlong validate {-91.0 0.0}
+} -returnCodes {
+    error
+} -result {invalid latitude, should be -90.0 to 90.0 degrees: "-91.0"}
+
+test validate-2.5 {latitude too positive} -body {
+    latlong validate {91.0 0.0}
+} -returnCodes {
+    error
+} -result {invalid latitude, should be -90.0 to 90.0 degrees: "91.0"}
+
+test validate-2.6 {non-numeric longitude} -body {
+    latlong validate {0.0 DUMMY}
+} -returnCodes {
+    error
+} -result {expected floating-point number but got "DUMMY"}
+
+test validate-2.7 {longitude too negative} -body {
+    latlong validate {0.0 -181.0}
+} -returnCodes {
+    error
+} -result {invalid longitude, should be -180.0 to 360.0 degrees: "-181.0"}
+
+test validate-2.8 {longitude too positive} -body {
+    latlong validate {0.0 361.0}
+} -returnCodes {
+    error
+} -result {invalid longitude, should be -180.0 to 360.0 degrees: "361.0"}
+
+#-------------------------------------------------------------------
+# area
+
+test area-1.1 {no coordinates} -body {
+    latlong area {}
+} -returnCodes {
+    error
+} -result {expected at least 3 point(s), got 0: ""}
+
+test area-1.2 {odd number of coordinates} -body {
+    latlong area {1.0 2.0 3.0}
+} -returnCodes {
+    error
+} -result {expected even number of coordinates, got 3: "1.0 2.0 3.0"}
+
+test area-1.3 {only two pairs} -body {
+    latlong area {1.0 2.0 3.0 4.0}
+} -returnCodes {
+    error
+} -result {expected at least 3 point(s), got 2: "1.0 2.0 3.0 4.0"}
+
+test area-1.4 {invalid latitude} -body {
+    latlong area {1.0 2.0 DUMMY 4.0 5.0 6.0}
+} -returnCodes {
+    error
+} -result {expected floating-point number but got "DUMMY"}
+
+test area-1.5 {invalid longitude} -body {
+    latlong area {1.0 2.0 3.0 DUMMY 5.0 6.0}
+} -returnCodes {
+    error
+} -result {expected floating-point number but got "DUMMY"}
+
+test area-2.1 {1-degree square at equator} -body {
+    set area [latlong area {
+        0.0 0.0
+        0.0 1.0
+        1.0 1.0
+        1.0 0.0
+    }]
+
+    format %.6f $area
+} -result {12363.683990}
+
+test area-2.2 {1-degree square at 35N} -body {
+    set area [latlong area {
+        35.0 0.0
+        35.0 1.0
+        36.0 1.0
+        36.0 0.0
+    }]
+
+    format %.6f $area
+} -result {10065.850277}
+
+test area-2.3 {If cw, answer is negated} -body {
+    set poly {
+        35.0 0.0
+        35.0 1.0
+        36.0 1.0
+        36.0 0.0
+    }
+
+    set a1 [format %.6f [latlong area $poly]]
+    set a2 [format %.6f [latlong area [creverse $poly]]]
+
+    expr {$a1 == -$a2}
+} -result {1}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
+
+
+
+
+
+
+

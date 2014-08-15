@@ -1,0 +1,216 @@
+<manpage {marsutil(n) geometry(n)} "Geometry Utilities">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsutil <version>
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+geometry(n) is a package of computational geometry routines.
+The optional Marsbin binary extension includes fast C
+versions of the more computationally-intensive commands.<p>
+
+<section "GEOMETRIC FIGURES">
+
+<subsection Points>
+
+A <i>point</i> is a x,y-coordinate pair of decimal numbers represented as a
+Tcl list with two elements.  In practice, the X and Y coordinates are
+often longitude and latitude in decimal degrees; however, the code in
+this module makes no such assumption.<p>
+
+For example, the following creates the point corresponding to the
+coordinate pair (1.0, 2.0):<p>
+
+<pre>
+    set p1 {1.0 2.0}
+</pre>
+
+The <iref point>, <iref px>, and <iref py> commands are defined
+for use in creating and manipulating individual points.
+
+<subsection "Polygons and Polylines">
+
+A <i>polygon</i> is a closed sequence of line segments defined by a series of
+points; a <i>polyline</i>, often simply called a <i>line</i>, is an
+open sequence.  Both polygons and polylines are represented as a flat Tcl
+list of coordinates.  Thus, the following list could represent a
+three-sided polygon (a triangle) or a polyline consisting of two line
+segments:<p>
+
+<pre>
+    set coords {0 0  1 0  1 1}
+</pre>
+
+Note that for polygons, the points should be listed in
+counter-clockwise order.  All polygons should be simple--i.e.,
+adjacent edges should intersect only at one endpoint, and non-adjacent
+edges should not intersect at all--but they may be concave.<p>
+
+The <iref cindex>, <iref clength> and <iref creverse>
+commands are defined for manipulating lists of coordinates.<p>
+
+<section COMMANDS>
+
+geometry(n) defines the following commands, apart from those
+defined in the submodules listed above.
+
+<deflist>
+
+<defitem bbox {bbox <i>coords</i>}>
+
+Returns the bounding box of a list of X,Y coordinates as a list of four
+elements: <i>xMin yMin xMax yMax</i>.<p>
+
+The binary extension includes a fast C implementation of
+<iref bbox>.<p>
+
+<defitem boxaround {boxaround <i>radius x y</i>}>
+
+Returns a box a <i>x1 y1 x2 y2</i> with radius <i>radius</i>
+centered at <i>x</i>, <i>y</i>.<p>
+
+
+<defitem ccw {ccw <i>a b c</i>}>
+
+This function is the "counterclockwise" primitive, as defined
+on page 350 of Sedgewick's <i>Algorithms in C</i> (Addison-Wesley,
+1990) and corrected by Paul Firnette for use in the Corps Battle
+Simulation.  Given three points <i>a</i>, <i>b</i>, and <i>c</i>, it
+determines whether a path from <i>a</i> to <i>b</i> to <i>c</i> turns
+counterclockwise or clockwise.  Most of the complexity is there to
+handle degenerate cases: when the three points are collinear, or two
+or more points are identical.<p>
+
+Nominally, <iref ccw> returns 1 if the path turns counterclockwise,
+-1 if it turns clockwise, and 0 in certain degenerate cases.
+The degenerate cases are handled as follows:<p>
+
+<ul>
+  <li> If <i>a</i> == <i>b</i>, assume clockwise (-1) if <i>c</i> is
+       to the left of <i>a</i> on the X-axis, counterclockwise (+1) if
+       <i>c</i> is the right of <i>a</i> on the X-axis, and 0
+       otherwise. (Thus, <iref ccw> returns 0 if all three points
+       are equal.)<p>
+
+  <li> If the three points are collinear in the order <i>c</i>,
+       <i>a</i>, <i>b</i>, return clockwise (-1).<p>
+
+  <li> If the three points are collinear in the order <i>a</i>,
+       <i>b</i>, <i>c</i>, return counterclockwise (+1).  Yes,
+       if the path does not in fact turn at all, we pretend it turns
+       counterclockwise.<p>
+
+  <li> In all other cases, return 0.<p>
+</ul>
+
+The binary extension includes a fast C implementation of
+<iref ccw>.<p>
+
+<defitem cedge {cedge <i>coords i</i>}>
+
+Retrieves the <i>i</i>th edge from a polygon represented as a flat
+list of X,Y coordinates.  Edges are indexed from 0 to N-1; however,
+indices less than zero or greater than N-1 wrap around appropriately.<p>
+
+The edge is returned as a list of four coordinates, {<i>x1 y1 x2 y2</i>}.<p>
+
+<defitem cindex {cindex <i>coords i</i>}>
+
+Retrieves the <i>i</i>th point from a flat list of X,Y coordinates.
+Points are indexed from 0 to N-1, where N is computed using
+<iref clength>.  Note that if <i>i</i> is greater than or equal to N
+it wraps around, as this is often a useful property when dealing with
+polygons:<p>
+
+<pre>
+    set coords {0 0   1 1   2 2}
+    set a [cindex $coords 0]  ;# a = {0 0}
+    set b [cindex $coords 1]  ;# b = {1 1}
+    set c [cindex $coords 2]  ;# c = {2 2}
+    set d [cindex $coords 3]  ;# d = {0 0}
+</pre>
+
+<defitem clength {clength <i>coords</i>}>
+
+Returns the number of X,Y points in a list of coordinates,
+or half the [llength] of the list.<p>
+
+<defitem creverse {creverse <i>coords</i>}>
+
+Returns the coordinates in reverse order, i.e., {1 2 3 4} becomes
+{3 4 1 2}.  This can be used to put a clockwise polygon in
+counter-clockwise order.<p>
+
+<defitem intersect {intersect <i>p1 p2 q1 q2</i>}>
+
+Determines whether the line segment from point <i>p1</i> to <i>p2</i>
+intersects the line segment from point <i>q1</i> to <i>q2</i>.
+Handles all cases, including intersection at one or both endpoints and
+degenerate segments (<i>p1</i> == <i>p2</i>, or <i>q1</i> ==
+<i>q2</i>, or both).<p>
+
+Returns 1 if the segments intersect, and 0 otherwise.<p>
+
+The binary extension includes a fast C implementation of
+<iref intersect>.<p>
+
+<defitem point {point <i>x y</i>}>
+
+Returns a point, given coordinates <i>x</i> and <i>y</i>.<p>
+
+<defitem ptinpoly {ptinpoly <i>poly p</i> ?<i>bbox</i>?}>
+
+Determines whether or not point <i>p</i> falls inside or on the border
+of polygon <i>poly</i>, where <i>poly</i> is a flat list of X,Y
+coordinates.  Returns 1 if so, and 0 if it is outside.
+If <i>bbox</i> is provided it should be the bounding box of the
+polygon, as computed by <iref bbox>; otherwise the bounding box
+is computed on the fly.<p>
+
+The binary extension includes a fast C implementation of
+<iref ptinpoly>.<p>
+
+<defitem px {px <i>point</i>}>
+
+Returns the <i>point</i>'s X-coordinate.<p>
+
+<defitem py {py <i>point</i>}>
+
+Returns the <i>point</i>'s Y-coordinate.<p>
+
+</deflist>
+
+<section "SEE ALSO">
+
+<xref geoset(n)>, <xref latlong(n)>.<p>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.<p>
+
+<section AUTHORS>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.<p>
+
+</manpage>
+
+
+
+
+
+
+

@@ -6,10 +6,6 @@ Current Goals:
 
 Next:
 
-* Pull in the geometry and geographic Tcl code from Mars 2.0, now that we've
-  got Marsbin built.
-* Once Kite supports "provide -binary" update project.kite to use it for
-  Marsbin.
 * Should marsutil and marsgui be Marsutil and Marsgui?
 * Pull in simlib
   * As appropriate

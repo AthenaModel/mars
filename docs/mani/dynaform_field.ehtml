@@ -1,0 +1,208 @@
+<manpage {dynaform_field(i)} "Dynaform Field Type Interface">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A <xref dynaform_field(i)> is an object that adds a new field type
+for use with <xref dynaform(n)>/<xref dynaview(n)>.  As such, the
+object is the glue between the <xref dynaform(n)> infrastructure
+and a <xref field(i)> widget.<p>
+
+New dynaform field types are defined using the 
+<xref dynaform(n)> <xref dynaform(n) "fieldtype define">
+command:<p>
+
+<pre>
+    ::marsutil::dynaform fieldtype define <i>name</i> {
+        ...
+    }
+</pre>
+
+This adds a command called <i>name</i> for use in form specification
+scripts, and a snit::type singleton called
+<code>::marsgui::dynaform::<i>NAME</i></code>.  The body of the
+definition is a snit::type definition body providing 
+the type methods defined below.<p>
+
+Most of the type methods depend on the item's item definition
+dictionary, or <i>idict</i>.  It
+contains all of the attributes that pertain to the item; and in
+particular, all options on the field command are turned into
+<i>idict</i> attributes by removing the hyphens from the option
+names.<p>
+
+<section "FIELD TYPE METHODS">
+
+Every field type provides the following type methods:<p>
+
+<deflist methods>
+
+<defitem attributes {<i>fieldType</i> attributes}>
+
+Returns a list of the names of the type-specific attributes for this field
+type.  These attributes become options on the newly defined field command.
+How they are used depends on the rest of the field type definition.<p>
+
+If no such typemethod appears in the field type definition script, no
+type-specific attributes are defined.<p>
+
+<defitem defvalue {<i>fieldType</i> defvalue <i>attr</i>}>
+
+Returns the default value for the named attribute, or "" if no
+default has been set.<p>
+
+If no such typemethod appears in the field type definition script,
+it is assumed that all defaults are "".<p>
+
+<defitem validate {<i>fieldType</i> validate <i>idict</i>}>
+
+This command can do any needed validation on the type-specific
+attribute, throwing an error if problems are found.<p>
+
+If no such typemethod appears in the field type definition script, no
+extra validation is done.<p>
+
+<defitem create {<i>fieldType</i> create <i>w idict</i>}>
+
+This is a factory method that creates field widgets of this type
+given the widget name, <i>w</i>, and the item definition dictionary.
+The created widget must adhere to the <xref field(i)> interface;
+and if the field's <b>readonly</b> attribute is true the field must
+be readonly (e.g., <code>-state disabled</code>).<p>
+
+The type method may use the <iref asoptions> command to convert 
+<i>idict</i> attributes into options when creating the widget.<p>
+
+<defitem ready {<i>fieldType</i> ready <i>w idict</i>}>
+
+This method should return 1 if the field is ready for data entry, and
+0 otherwise.  For example, an <xref dynaform(n) enum> field with a
+<code>-listcmd</code> is ready when the <code>-listcmd</code>
+returns a list of one or more possible choices, and unready if the
+<code>-listcmd</code> returns the empty list.<p>
+
+The <xref dynaview(n)> widget will automatically disable field
+widgets that aren't ready, as indicated by this method.  Only
+fields whose configuration changes dynamically can be unready;
+consequently, if no such typemethod appears in the field type
+definition script, it is assumed that fields of this type are always
+ready.<p>
+
+<defitem reconfigure {<i>fieldType</i> reconfigure <i>w idict vdict</i>}>
+
+Reconfigures the field widget when upstream fields change.  For
+example, an <xref dynaform(n) enum> field's list may depend on a 
+<code>-listcmd</code>.  The <xref dynaview(n)> widget will call
+this method at the appropriate time in order to configure the field
+properly.  The type method has access to the widget name, <i>w</i>,
+the field items, <i>idict</i>, and to a dictionary of the upstream
+field names and their values, the <i>vdict</i>.<p>
+
+The type method may use the <iref formcall> command to call
+commands which reference upstream field values.<p>
+
+If no such typemethod appears in the field type definition script,
+nothing special is done on reconfiguration.<p>
+
+</deflist methods>
+
+<section "HELPER COMMANDS">
+
+<xref dynaform(n)> defines the following special commands for use
+in field type methods.<p>
+
+<deflist commands>
+
+<defitem asoptions {asoptions <i>idict attr</i> ?<i>attr...</i>?}>
+
+This command is used as a convenience in <iref create> type
+methods.  It pulls the named attribute values from <i>idict</i> and
+returns an option/value list, suitable for use when creating a
+widget.<p>
+
+There are two important features.  First, if a named attribute has an
+empty value in <i>idict</i>, it will not be included in the returned
+list.  This is so that the widget's default value will be used.<p>
+
+Second, the <i>attr</i> is usually just the attribute name; the
+returned option will be the attribute name prefixed with a hyphen.
+Occasionally, however, attribute and option names differ.  In this
+case, the <i>attr</i> can be specified as a pair, {<i>attr
+option</i>}; the given option name will be used.<p>
+
+For example:<p>
+
+<pre>
+    typemethod create {w idict} {
+        myfield $w {*}[asoptions $idict width {text -label}]
+    }
+</pre>
+
+The instance of the <code>myfield</code> widget will be created with
+values for its <code>-width</code> and <code>-label</code> options,
+which are drawn from the item's <code>width</code> and
+<code>text</code> attributes.  If either attribute has an empty
+value, the option will not be set.<p>
+
+<defitem formcall {formcall <i>vdict_ cmd_</i>}>
+
+This is a command for use in <iref reconfigure> type methods.
+Here, <i>cmd_</i> is a full command, possibly referencing upstream field
+variables, and <i>vdict_</i> is a dictionary of upstream field names
+and values.  The <iref formcall> command calls <i>cmd_</i> in a
+context in which the field values in <i>vdict_</i> are defined as
+variables.  Thus, for example, an <xref dynaform(n) enum> field's
+<code>-listcmd</code> can depend on upstream fields; and this call
+is used to make it happen.<p>
+
+For example, consider this dynaform:<p>
+
+<pre>
+    enum a -listcmd {::actor names}
+    enum g -listcmd {::ownedgroups $a}
+</pre>
+
+Field <code>a</code> is an "actor"; and field <i>g</i> is to be some
+group owned by the actor--the <code>::ownedgroups</code> command
+presumably returns a list of the groups owned by actor
+<code>a</code>.<p>
+
+The magic is done by the <xref dynaform(n) enum> field type's own 
+<iref reconfigure> method.  (The standard field types are defined
+using exactly the mechanisms described in this man page.)  It looks
+like this:<p>
+
+<pre>
+    typemethod reconfigure {w idict vdict} {
+        # If the field has a -listcmd, call it and apply the
+        # results (only if they've changed).
+        dict with idict {}
+
+        if {$listcmd ne ""} {
+            set values [formcall $vdict $listcmd] 
+
+            if {$values ne [$w cget -values]} {
+                $w configure -values $values 
+            }
+        }
+    }
+</pre>
+
+
+</deflist commands>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original interface.<p>
+
+</manpage>
+
+
+

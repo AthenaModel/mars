@@ -1,0 +1,90 @@
+<manpage {simclock(i)} "Simulation Clock Interface">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsutil 1.0
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A simclock(i) is an object that tracks simulated time.  The
+simulated time is a number in integer ticks, beginning with 0 at
+simulation start, and incrementing by one or more ticks with each
+time step.  In addition to tracking simulated time, a simclock(i)
+also provides for the conversion between integer ticks and some
+human-readable string value.  For <xref simclock(n)>, for example,
+the integer ticks can correspond to a wide range of wallclock time
+intervals, and are converted to and from <xref zulu(n)> time
+strings.<p>
+
+Many library modules (<xref sqldocument(n)>, <xref logger(n)>)
+know how to make use of a simclock(i) if one is available.  The
+purpose of this man page is to document the features such an object
+needs to have for this purposes.<p>
+
+<section COMMANDS>
+
+Every simclock(i) object provides at least the following
+subcommands.<p>
+
+<deflist commands>
+
+<defitem asString {$simclock asString ?<i>offset</i>?}>
+
+Returns the current simulation time as a human-readable time
+string.  If given, <i>offset</i> should be an offset in ticks; it is
+added to the returned time.  The string format returned is up to the
+implementation.<p>
+
+<defitem cget {<i>obj</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>obj</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.  The object
+will have at least this option:<p>
+
+<deflist options>
+
+<defopt {-t0 <i>string</i>}>
+
+Sets the simulation start date ("T-zero") to <i>string</i>.<p>
+
+</deflist options>
+
+<defitem now {$simclock now ?<i>offset</i>?}>
+
+Returns the current simulation time in ticks.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.<p>
+
+<defitem toString {$simclock toString <i>ticks</i> ?<i>offset</i>?}>
+
+Converts a simulation time in integer <i>ticks</i> into a
+human-readable time string.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the specified time.<p>
+</deflist commands>
+
+<section "SEE ALSO">
+
+<xref simclock(n)>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Interface derived from the <xref simclock(n)> API, modified to
+be agnostic about the implemented string format.<p>
+
+</manpage>
+
+
+

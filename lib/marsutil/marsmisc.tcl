@@ -122,7 +122,7 @@ proc ::marsutil::restrict {varname vtype defval} {
 #
 # Evaluates the expression and assigns the value to the variable.
 # 
-# NOTE: libMarsutil defines this as a binary command.  Define it here
+# NOTE: Marsbin defines this as a binary command.  Define it here
 # only if the binary command doesn't exist.
 
 if {[llength [info commands ::marsutil::let]] == 0} {
@@ -153,7 +153,7 @@ proc roundrange {min max} {
 # Returns the current wallclock seconds as a decimal value;
 # however, the decimal will always be ".0".
 #
-# NOTE: shark(1) defines this as a binary command which
+# NOTE: Marsbin defines this as a binary command which
 # returns fractional using gettimeofday(2).  Define it
 # here only if the binary command doesn't exist.
 

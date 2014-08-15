@@ -26,6 +26,11 @@ package require snit 2.3
 package require sqlite3 3.8
 package require comm 4.6
 package require kiteutils 0.1
+
+catch {
+    # Marsbin isn't availble on all platforms.
+    package require -exact Marsbin 3.0a4
+}
 # -kite-require-end
 
 #-----------------------------------------------------------------------
@@ -71,3 +76,7 @@ source [file join $::marsutil::library dynaform_fields.tcl]
 source [file join $::marsutil::library order.tcl          ]
 source [file join $::marsutil::library undostack.tcl      ]
 source [file join $::marsutil::library gradient.tcl       ]
+source [file join $::marsutil::library geometry.tcl       ]
+source [file join $::marsutil::library geoset.tcl         ]
+source [file join $::marsutil::library latlong.tcl        ]
+source [file join $::marsutil::library mapref.tcl         ]

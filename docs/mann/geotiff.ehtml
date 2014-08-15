@@ -1,0 +1,89 @@
+<manpage {marsutil(n) geotiff(n)} "GeoTIFF Reader">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsutil <version>
+namespace import ::marsutil::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+geotiff(n) defines a type that can be used to read and return
+pertinent geo-referencing information from a GeoTIFF file.
+This operation is implemented in C and is available only in the
+optional Marsbin library extension.<p>
+NOTE: a complete description of the GeoTIFF specification is beyond the scope
+of this document. See 
+<link http://trac.osgeo.org/geotiff "the GeoTIFF spec"> for more.<p>
+
+<section COMMANDS>
+
+<deflist>
+
+<defitem "geotiff read" {geotiff read <i>filename</i>}>
+
+Given the name of a GeoTIFF file, reads pertinent geo-reference information
+from it and returns the data in the form of a dict. The only supported
+GeoTIFF model type is <b>GEOGRAPHIC</b> and the following data is returned:
+
+<ul>
+  <li> <code>modeltype</code> - the model type; <code>GEOGRAPHIC</code>
+  <li> <code>tiepoints</code> - list of six doubles: the first three are
+                   the x,y and z coords in raster space that the following
+                   three lat/long/altitude values are tied to.
+  <li> <code>pscale</code>    - list of three doubles: the scaling in the
+                   x,y and z directions that each pixel has in map coords
+</ul><p>
+
+<b>NOTE:</b> The z-coordinate and altitude values are, according to the
+GeoTIFF specification, provided in anticipation of future support for
+3D digital elevation models. As such, those are normally set to zero and
+only 2-dimensional space is considered.<p>
+
+These model types are not yet supported:
+
+<ul>
+  <li> <b>GEOCENTRIC</b>
+  <li> <b>PROJECTED</b>
+</ul><p>
+
+</deflist>
+
+<section EXAMPLES>
+
+Say a call to  <code>geotiff read</code>  returns the following dictionary:<p>
+<code>modeltype GEOGRAPHIC tiepoints {0.0 0.0 0.0 52.254312 87.31243 0.0} 
+pscale {0.000543 0.000543 0.0}</code><p>
+
+This means that the TIFF image has its upper-left corner (tie point 
+0.0, 0.0) tied to a decimal lat/long pair of 52.254312, 87.31243 and that the
+latitude and longitude values increase by 0.000543 decimal degrees for each
+pixel in the image.<p>
+
+<section ENVIRONMENT>
+
+geotiff(n) requires the Marsbin extension.<p>
+
+To use geotiff(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+<section AUTHOR>
+
+Dave Hanks<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
