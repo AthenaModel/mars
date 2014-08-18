@@ -1,0 +1,235 @@
+<manpage {simlib(n) simtypes(n)} "Mars Simulation Types">
+
+<section SYNOPSIS>
+
+<pre>
+package require simlib <version>
+namespace import ::simlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines data types required by the Mars Simulation Library,
+<xref simlib(n)>, and its clients.<p>
+
+<swallow {
+# Let's let simlib do some of the work.
+package require simlib [version]
+namespace import -force ::simlib::q* ::simlib::e* ::simlib::r*
+}>
+
+<section QUALITIES>
+
+simtypes(n) defines the following <xref quality(n)> types.<p>
+
+<deflist>
+
+<defitem qaffinity qaffinity>
+
+This quality is used to measure the degree of affinity or relationship
+between two population groups.  Numerically, the values are
+formatted as "<qaffinity cget -format>", and have the bounds
+shown in the following table:<p>
+
+<qaffinity html>
+
+
+<defitem qcooperation qcooperation>
+
+This quality is used to measure the level of cooperation between two
+population groups; it can be interpreted as the probability that one
+group will give information to another group.  Numerically, the values are
+formatted as "<qcooperation cget -format>", and have the bounds
+shown in the following table:<p>
+
+<qcooperation html>
+
+<defitem qduration qduration>
+
+This quality is used to describe the duration of <xref gram(n)>
+level inputs, in decimal days.<p>
+
+Numerically,
+<iref qduration> values are
+formatted as "<qduration cget -format>", and have a minimum of
+<qduration cget -min>.  Symbolically,
+durations are broken down into these categories:<p>
+
+<qduration html>
+
+<defitem qemphasis qemphasis>
+
+This quality is used to measure an entity's emphasis on agreement or
+disagreement with respect to a particular topic in a <xref mam(n)> belief
+system. Numerically, the values range from
+<qemphasis cget -min> to <qemphasis cget -max>, are
+formatted as "<qemphasis cget -format>", and have the bins
+shown in the following table:<p>
+
+<qemphasis html><p>
+
+For this variable, it is more usual to enter data using the symbolic
+values than to enter specific numbers.<p>
+
+<defitem qmag qmag>
+
+This quality is used to describe the magnitude of <xref gram(n)>
+level and slope inputs, among other things.
+For level inputs it represents the percent change to the level of
+satisfaction, and for slope events it represents the percent change
+per day.<p>
+
+Numerically,
+<iref qmag> values are
+formatted as "<qmag cget -format>".  Symbolically,
+magnitude is broken down into these categories:<p>
+
+<qmag html>
+
+<defitem qposition qposition>
+
+This quality is used to measure an entity's position for or against
+a topic in a <xref mam(n)> belief system.  Numerically, the values
+range from <qposition cget -min> to <qposition cget -max>, are
+formatted as "<qposition cget -format>", and have the bins
+shown in the following table:<p>
+
+<qposition html>
+
+<defitem qrel qrel>
+
+This quality is used to describe the relationship between two
+groups.<p>
+
+Numerically,
+<iref qrel> values are
+formatted as "<qrel cget -format>".  Symbolically,
+relationships are broken down into these categories:<p>
+
+<qrel html>
+
+<defitem qsaliency qsaliency>
+
+This quality is used to describe the saliency of a concern to a
+particular pgroup.  <iref qsaliency> values are used to weight a
+pgroup's level of satisfaction with each of its concerns.
+Numerically,
+<iref qsaliency> values range from
+<qsaliency cget -min> to <qsaliency cget -max> and are
+formatted as "<qsaliency cget -format>".  Symbolically,
+saliency is broken down into these categories:<p>
+
+<qsaliency html>
+
+<defitem qsat qsat>
+
+This quality is used to rate levels of group satisfaction with
+respect to various concerns.  Numerically,
+<iref qsat> values range from
+<qsat cget -min> to <qsat cget -max> and are
+formatted as "<qsat cget -format>".  Symbolically,
+satisfaction is broken down into these categories:<p>
+
+<qsat html>
+
+<defitem qtrend qtrend>
+
+This quality is used to describe the trend (slope) of
+<xref gram(n)> satisfaction curves.  Numerically,
+<iref qtrend> values are formatted as "<qtrend cget -format>".
+Symbolically, the possible trends are broken down into these
+categories:<p>
+
+<qtrend html>
+
+</deflist>
+
+<section ENUMERATIONS>
+
+simtypes(n) defines the following <xref enum(n)> types.<p>
+
+<deflist enums>
+
+<defitem egrouptype egrouptype>
+
+This enumeration defines the population group types which are used by the
+simulation.<p>
+
+<egrouptype html>
+
+<defitem eproximity eproximity>
+
+This enumeration is used to express the proximity of one neighborhood
+to another.<p>
+
+<eproximity html>
+
+</deflist enums>
+
+<section "NUMERIC TYPES">
+
+simtypes(n) defines the following numeric types.<p>
+
+<deflist ranges>
+
+<defitem ipopulation ipopulation>
+
+This <b>snit::integer</b> defines the set of valid population numbers,
+integers greater than or equal to zero.<p>
+
+<defitem rfraction rfraction>
+
+This <xref range(n)> defines the set of valid proper decimal fractions.
+Numerically, <iref rfraction> values range from
+<rfraction cget -min> to <rfraction cget -max> 
+and are formatted as "<rfraction cget -format>".<p>
+
+<defitem rfracpair rfracpair>
+
+This type defines the set of pairs of <iref rfraction>'s, where
+the elements of the pair sum to less than or equal to 1.0.<p>
+
+<defitem rmagnitude rmagnitude>
+
+This <xref range(n)> defines the set of valid real magnitudes.
+Numerically, <iref rmagnitude> values range upwards from
+<rmagnitude cget -min> and are formatted as
+"<rmagnitude cget -format>".<p>
+
+</deflist>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the <xref simlib(n)>
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

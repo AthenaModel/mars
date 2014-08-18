@@ -762,7 +762,7 @@ snit::type ::marsutil::parmset {
     # for inclusion in a man page.
 
     method manpage {} {
-        set out "<<deflist parmset>>\n\n"
+        set out "<deflist parmset>\n\n"
         set stack {}
 
         foreach {item ntype} [$self items] {
@@ -777,24 +777,24 @@ snit::type ::marsutil::parmset {
                 set oldTop [lindex $stack end]
                 set stack [lrange $stack 0 end-1]
                 
-                append out "<</deflist $oldTop>>\n\n"
+                append out "</deflist $oldTop>\n\n"
             }
 
             if {$ntype eq "subset"} {
                 # FIRST, output the docs for this subset
-                append out "<<defitem $item.* $item.*>>\n"
+                append out "<defitem $item.* $item.*>\n"
                 append out "$info(doc-$id)\n"
                 append out "<p>\n\n"
 
                 # NEXT, push the subset onto the stack.
                 lappend stack $item
 
-                append out "<<deflist $item>>\n\n"
+                append out "<deflist $item>\n\n"
             } else {
                 # FIRST, output the docs for this parameter
                 set vtype [namespace tail $info(vtype-$id)]
 
-                append out "<<defitem $item {$item <i>value</i>}>>\n"
+                append out "<defitem $item {$item <i>value</i>}>\n"
                 append out "Defaults to \"<b><tt>$info(defvalue-$id)</tt></b>\".\n"
                 append out "$info(doc-$id)\n"
                 append out "<p>\n\n"
@@ -805,10 +805,10 @@ snit::type ::marsutil::parmset {
             set oldTop [lindex $stack end]
             set stack [lrange $stack 0 end-1]
             
-            append out "<</deflist $oldTop>>\n\n"
+            append out "</deflist $oldTop>\n\n"
         }
 
-        append out "<</deflist parmset>>\n"
+        append out "</deflist parmset>\n"
 
         return $out
     }
@@ -819,7 +819,7 @@ snit::type ::marsutil::parmset {
     # dynamic scripting.
 
     method manlinks {} {
-        set out "<<mktree>>\n\n"
+        set out "<mktree>\n\n"
         append out "<ul class=\"mktree\" id=\"$self\">\n"
         set stack {}
 
@@ -840,14 +840,14 @@ snit::type ::marsutil::parmset {
 
             if {$ntype eq "subset"} {
                 # FIRST, output the items for this subset
-                append out "<li><<iref $item.*>>\n"
+                append out "<li><iref $item.*>\n"
 
                 # NEXT, push the subset onto the stack.
                 lappend stack $item
 
                 append out "<ul>\n\n"
             } else {
-                append out "<li><<iref $item>></li>\n"
+                append out "<li><iref $item></li>\n"
             }
         }
 

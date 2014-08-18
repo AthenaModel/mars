@@ -1,0 +1,442 @@
+<manpage {simlib(n) mam(n)} "Mars Affinity Model, V2">
+
+<section SYNOPSIS>
+
+<pre>
+package require simlib <version>
+namespace import ::simlib::mam
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+mam(n) is an implementation of the Mars Affinity Model described in the
+<i>Mars Analyst's Guide</i>.  It allows the creation of belief systems and
+topics of belief, and computes the affinity between belief systems.<p>
+
+<subsection "Set/Get vs. Configure/Cget">
+
+mam(n) supports both a dictionary-based <tt>set</tt>/<tt>get</tt>
+mechanism and an option-based <tt>configure</tt>/<tt>cget</tt> mechanism
+for all data.   The <tt>set</tt>/<tt>get</tt> mechanism is the lower-level
+API, and is provided for use by application orders and similar  client
+code; <tt>configure</tt>/<tt>cget</tt> mechanism is a wrapper around the
+<tt>set</tt>/<tt>get</tt> and yields more readable code when belief systems
+are modified or queried  directly.<p>
+
+The two mechanisms use identical attribute names, except that the
+<tt>configure</tt>/<tt>cget</tt> mechanism uses option notation 
+(e.g., "<tt>-position</tt>" vs. "<tt>position</tt>").<p>
+
+<subsection "Undo Mechanisms">
+
+mam(n) is designed to support an application undo stack.  The three
+of operations that can be undone are <tt>add</tt>,  
+<tt>set</tt>/<tt>configure</tt>, and <tt>delete</tt>.<p>
+
+To undo an <tt>add</tt> of a system or a topic, simply delete the new
+entity.  For example,<p>
+
+<pre>
+    # Add a new system
+    set sid [mam system add]
+
+    # Undo the addition
+    mam system delete $sid
+</pre>
+
+To undo a <tt>set</tt> or <tt>configure</tt>, save the old data before
+the change, and then restore it.  For example,<p>
+
+<pre>
+    # Save undo data:
+    set undoData [mam system get $sid]
+
+    # Make the change
+    mam system configure $sid -commonality 0.5
+
+    # Undo the change
+    mam system set $sid $undoData
+</pre>
+
+To undo a <tt>delete</tt> of a system or topic, use the related
+<tt>undelete</tt> command.  For example,<p>
+
+<pre>
+    # Delete a system
+    set undoData [mam system delete $sid]
+
+    # Undo the deletion
+    mam system undelete $undoData
+</pre>
+
+Of course, these mechanisms are only guaranteed under normal "undo" 
+conditions, e.g., a belief system can be "undeleted" when that's the
+operation on the top of the undo stack.<p>
+
+<section "COMMANDS">
+
+mam(n) provides the following commands for use by the
+application.<p>
+
+<deflist commands>
+
+<defitem "affinity" {mam affinity <i>sid1 sid2</i>}>
+
+Returns the affinity of the belief system with ID <i>sid1</i> with 
+the belief system with ID <i>sid2</i>, recomputing the affinities if
+necessary.  The affinity is a number from -1.0 to 1.0.<p>
+
+
+<defitem "belief" {mam belief <i>subcommand</i> ?<i>args...</i>?}>
+
+This family of commands is used for setting and querying the value of 
+belief attributes.  A belief is a belief system's position with respect
+to a topic; hence, beliefs are identified by the system's unique ID
+(the <i>sid</i>) and the topic's unique ID (the <i>tid</i>).<p>
+
+mam(n) defines the following belief options:<p>
+
+<deflist belief attributes>
+
+<defopt {-position <i>number</i>}>
+
+Specifies the system's position with respect to the topic, a real number
+from -1.0 to +1.0. Defaults to 0.0. The client can use 
+<xref simtypes(n) qposition> to validate position values.<p>
+
+<defopt {-emphasis <i>number</i>}>
+
+Specifies the system's emphasis on agreement or disagreement with respect
+to this topic, where 0.0 represents a complete emphasis on disagreement and
+1.0 represents a complete emphasis on agreement. The default is 0.5. Note
+that the endpoints result in pathological results; clients will usually
+want to pick from the
+<xref simtypes(n) qemphasis> symbols. Note that 
+<xref simtypes(n) qemphasis> can be used to
+validate emphasis values.<p>
+
+</deflist belief attributes>
+
+The subcommands of <iref belief> are as follows:<p>
+
+<deflist belief>
+
+<defitem "belief cget" {mam belief cget <i>sid tid option</i>}>
+
+Returns the value of the named <i>option</i> for the belief with the
+given <i>sid</i> and <i>tid</i>.<p>
+
+<defitem "belief configure" {mam belief configure <i>sid tid option value...</i>}>
+
+Sets the values of the listed options for the belief with the given
+<i>sid</i> and <i>tid</i>.<p>
+
+<defitem "belief get" {mam belief get <i>sid tid</i> ?<i>attr</i>?}>
+
+Returns the value of the named attribute for the belief with the given
+<i>sid</i> and <i>tid</i>, if <i>attr</i> is given; otherwise, returns a
+dictionary of all of the belief's attributes and their values.<p>
+
+<defitem "belief set" {mam belief set <i>sid tid attr value...</i>}>
+<defitem "belief set" {mam belief set <i>sid tid attrdict</i>}>
+
+Sets the values of the named attributes for the belief with the
+given <i>sid</i> and <i>tid</i>.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.<p>
+
+</deflist belief>
+
+<defitem "changed" {mam changed}>
+
+Returns 1 if the checkpointable data has changed since the last
+<iref checkpoint>, and 0 otherwise.<p>
+
+<defitem "checkpoint" {mam checkpoint ?-saved?}>
+
+Returns a checkpoint of this module's data.  If <b>-saved</b>
+is specified, the data is marked "unchanged".<p>
+
+<defitem "clear" {mam clear}>
+
+Clears all data and resets the module to its initial state.<p>
+
+<defitem "compute" {mam compute}>
+
+Computes all affinity values given current settings, and caches them.<p>
+
+<defitem "congruence" {mam congruence <i>sid theta hook</i>}>
+
+Computes and returns the congruence of a semantic <i>hook</i> with the
+belief system with ID <i>sid</i>.  The <i>hook</i> is a dictionary of topic
+IDs  and position numbers, and <i>theta</i> is the hook's equivalent of a
+belief system's commonality fraction.<p>
+
+Congruence is essentially the affinity of the belief system for the
+hook, taking into account only the topics included in the hook.<p>
+
+<defitem "dump" {mam dump}>
+
+Returns a human-readable string containing all mam(n) data, for
+debugging.<p>
+
+<defitem "playbox" {mam playbox <i>subcommand</i> ?<i>args...</i>?}>
+
+This family of commands is used for setting and querying the value of 
+playbox-wide attributes.<p>
+
+mam(n) defines the following playbox-wide options:<p>
+
+<deflist playbox attributes>
+
+<defopt {-gamma <i>value</i>}>
+
+This is the playbox "commonality" dial; it controls the degree of
+implicit commonality among the entities in the playbox, that is, the
+number of implicit topics about which there is general (and
+passionate) agreement in the playbox. If -gamma is 0, there is no
+implicit commonality; only explicit topics are considered. If -gamma
+is 1.0 there are as many implicit topics as explicit topics; if 0.5,
+half as many; if 2.0, twice as many.  The value must be no less than 0.0; 
+default is 1.0.<p>
+
+</deflist playbox attributes>
+
+The subcommands of <iref playbox> are as follows:<p>
+
+<deflist playbox>
+
+<defitem "playbox cget" {mam playbox cget <i>option</i>}>
+
+Returns the value of the named option.<p>
+
+<defitem "playbox configure" {mam playbox configure <i>option value...</i>}>
+
+Sets the values of the listed options.<p>
+
+<defitem "playbox get" {mam playbox get ?<i>attr</i>?}>
+
+Returns the value of the named attribute, if given; otherwise,
+returns a dictionary of all of the playbox attributes and their
+values.<p>
+
+<defitem "playbox set" {mam playbox set <i>attr value...</i>}>
+<defitem "playbox set" {mam playbox set <i>attrdict</i>}>
+
+Sets the values of the named attributes.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.<p>
+
+</deflist playbox>
+
+<defitem "restore" {mam restore <i>checkpoint</i> ?-saved?}>
+
+Restores the state of the module given the <i>checkpoint</i>, 
+produced by a previous call to <iref checkpoint>.  If 
+the <b>-saved</b> option is given, the module's contents will be
+marked "unchanged".<p>
+
+<defitem "system" {mam system <i>subcommand</i> ?<i>args...</i>?}>
+
+This family of commands is used for setting and querying the value of 
+belief system attributes.<p>
+
+mam(n) defines the following belief system options:<p>
+
+<deflist system attributes>
+
+<defopt {-name <i>name</i>}>
+
+This is the name of the belief system, for display to the user.  
+Names must be unique across belief systems.  The default name is
+"System <i>sid</i>".<p>
+
+<defopt {-commonality <i>value</i>}>
+
+This is the belief system "commonality" dial; it specifies the extent of
+the system's participation in the dominant culture in the playbox. If 1.0,
+the system shares all of the implicit cultural commonality; if 0.0, none of
+it. Defaults to 1.0. Note that the effect of this option depends on the
+playbox <b>-gamma</b> value; see <iref playbox>.
+
+</deflist system attributes>
+
+The subcommands of <iref system> are as follows:<p>
+
+<deflist system>
+
+<defitem "system add" {mam system add <i>sid</i>}>
+
+Creates a new belief system with default settings and the given
+ID, and returns the ID.  The <i>sid</i> must not already be in use.<p>
+
+<defitem "system cget" {mam system cget <i>sid option</i>}>
+
+Returns the value of the named <i>option</i> for the system with the
+given <i>sid</i>.<p>
+
+<defitem "system configure" {mam system configure <i>sid option value...</i>}>
+
+Sets the values of the listed options for the system with the given
+<i>sid</i>.<p>
+
+<defitem "system delete" {mam system delete <i>sid</i>}>
+
+Deletes the belief system with the given <i>sid</i>, and returns 
+a string of undo data that can be passed to <iref system undelete>.<p>
+
+<defitem "system exists" {mam system exists <i>sid</i>}>
+
+Returns 1 if there is a belief system with the given <i>sid</i>, and
+a 0 otherwise.<p>
+
+<defitem "system get" {mam system get <i>sid</i> ?<i>attr</i>?}>
+
+Returns the value of the named attribute for the system
+with the given <i>sid</i>, if <i>attr</i> is given; otherwise,
+returns a dictionary of all of the system's attributes and their
+values.<p>
+
+<defitem "system id" {mam system id <i>name</i>}>
+
+Returns a belief system's ID given its <i>name</i>, or "" if there
+is no such belief system.<p>
+
+<defitem "system ids" {mam system ids}>
+
+Returns a list of the IDs of all existing belief systems.<p>
+
+
+<defitem "system set" {mam system set <i>sid attr value...</i>}>
+<defitem "system set" {mam system set <i>sid attrdict</i>}>
+
+Sets the values of the named attributes for the system with the
+given <i>sid</i>.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.<p>
+
+<defitem "system undelete" {mam system undelete <i>undoData</i>}>
+
+Given an <i>undoData</i> string from <iref system delete>, undoes
+the deletion and returns the unique ID of the recreated belief system.
+Note that this command should only be used under normal "undo" conditions,
+i.e., when the deletion is the only change that's been made.
+<p>
+
+</deflist system>
+
+<defitem "topic" {mam topic <i>subcommand</i> ?<i>args...</i>?}>
+
+This family of commands is used for setting and querying the value of 
+belief topic attributes.<p>
+
+mam(n) defines the following topic options:<p>
+
+<deflist topic attributes>
+
+<defopt {-name <i>name</i>}>
+
+This is the name of the topic, for display to the user.  
+Names must be unique across topics.  The default name is
+"Topic <i>tid</i>".<p>
+
+<defopt {-affinity <i>flag</i>}>
+
+Specifies a numeric flag, 0 or 1. If 1 (the default), then beliefs on this
+topic will  be included in the computation of affinity; if 0, then it will
+be excluded.<p>
+
+<defopt {-relevance <i>fraction</i>}>
+
+Specifies the relevance of the topic as a fraction from 0.0 to 1.0 
+(the default). Positions on a topic have decreasing effect as the
+topic's relevance declines.<p>
+
+</deflist topic attributes>
+
+The subcommands of <iref topic> are as follows:<p>
+
+<deflist topic>
+
+<defitem "topic add" {mam topic add <i>tid</i>}>
+
+Creates a new topic with default settings and the given
+ID, and returns the ID.  The <i>tid</i> must not already be in use.<p>
+
+<defitem "topic cget" {mam topic cget <i>tid option</i>}>
+
+Returns the value of the named <i>option</i> for the topic with the
+given <i>tid</i>.<p>
+
+<defitem "topic configure" {mam topic configure <i>tid option value...</i>}>
+
+Sets the values of the listed options for the topic with the given
+<i>tid</i>.<p>
+
+<defitem "topic delete" {mam topic delete <i>tid</i>}>
+
+Deletes the topic with the given <i>tid</i>, and returns 
+a string of undo data that can be passed to <iref topic undelete>.<p>
+
+<defitem "topic exists" {mam topic exists <i>tid</i>}>
+
+Returns 1 if there is a topic with the given <i>tid</i>, and
+a 0 otherwise.<p>
+
+<defitem "topic get" {mam topic get <i>tid</i> ?<i>attr</i>?}>
+
+Returns the value of the named attribute for the topic
+with the given <i>tid</i>, if <i>attr</i> is given; otherwise,
+returns a dictionary of all of the topic's attributes and their
+values.<p>
+
+<defitem "topic id" {mam topic id <i>name</i>}>
+
+Returns a topic's ID given its <i>name</i>, or "" if there
+is no such topic.<p>
+
+<defitem "topic ids" {mam topic ids}>
+
+Returns a list of the IDs of all existing topics.<p>
+
+<defitem "topic set" {mam topic set <i>tid attr value...</i>}>
+<defitem "topic set" {mam topic set <i>tid attrdict</i>}>
+
+Sets the values of the named attributes for the topic with the
+given <i>tid</i>.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.<p>
+
+<defitem "topic undelete" {mam topic undelete <i>undoData</i>}>
+
+Given an <i>undoData</i> string from <iref topic delete>, undoes
+the deletion and returns the unique ID of the recreated topic.
+Note that this command should only be used under normal "undo" conditions,
+i.e., when the deletion is the only change that's been made.
+<p>
+
+</deflist topic>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+The original implementation of mam(n) relied heavily of SQLite.  This
+is a pure-Tcl version that implements the saveable(i) interface.<p>
+
+</manpage>
+
+
+
+
+

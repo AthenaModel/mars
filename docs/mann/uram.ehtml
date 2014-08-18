@@ -1,0 +1,869 @@
+<manpage {simlib(n) uram(n)} "Unified Regional Attitude Model">
+
+<section SYNOPSIS>
+
+<pre>
+package require simlib <version>
+namespace import ::simlib::*
+</pre>
+
+<swallow {
+# So we can get enum docs.
+package require simlib [version]
+namespace import ::simlib::*
+}>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref uram(n)> is the Tcl API for the Unified Regional
+Attitude Model (URAM), a successor of <xref gram(n)> and
+<xref gram2(n)> for the use of Athena.  URAM models
+relationships, group satisfaction, and inter-group
+cooperation; see the <i>Mars Analyst's Guide</i> for full details.<p>
+
+<subsection "Initialization and Time Management">
+
+URAM initialization is a three-step process.<p>
+
+<ul>
+  <li> First, the client application calls <iref init> to initialize
+       URAM, loading the client application's data and setting URAM's
+       time to -1.  Note that satisfaction and cooperation roll-ups are 
+       computed based on the current levels given to URAM as part of the 
+       data load; these current levels and roll-ups will persist until
+       <iref advance> is called.<p>
+
+  <li> Next, the client application should enter transient attitude
+       inputs reflecting the simulation starting conditions.  Note
+       that persistent inputs and baseline adjustments are not allowed
+       when t = -1.<p>
+
+  <li> Finally, the client application calls <iref advance> to
+       complete the initialization.  This first advance sets the initial
+       simulation time, and computes the current level of each attitude curve
+       based on the initial data load and the transient attitude inputs 
+       just received.  The <b>initial baseline level is not modified</b>.<p>
+
+  <li> To advance to later time steps, the client calls <iref advance>
+       again.<p>
+</ul>
+
+<b>Note:</b> URAM requires that time advances monotonically,
+e.g., {0, 1, 2, ...} or perhaps {0, 7, 14, 21, ...}; however, URAM has
+no real understanding of simulation time, and  simply uses the time value to timestamp historical data.<p>
+
+
+<subsection "Undo Stack">
+
+Many uram(n) operations are undoable; to enable the undo stack, set
+the <code>-undo</code> option to <b>on</b>.  The undo stack is then managed
+using the <iref edit> command.  Use the <iref edit undo> command
+to undo operations up to the last mark.  Marks can be
+inserted manually using the <iref edit mark> command, or
+automatically inserted with each operation by setting the
+<code>-automark</code> option to <b>on</b>.  <b>(TBD: -automark is not
+yet implemented.)</b><p>
+
+Commands may be <b>Undoable</b>, <b>Not Undoable</b>, or neither.
+A command that is <b>Not Undoable</b> clears the undo stack as part of
+its operation.  Commands that are neither usually do not affect the
+undo stack one way or another.  The <b>Undoable</b> and <b>Not
+Undoable</b> commands are so marked.<p>
+
+<subsection "Empty Civilian Groups">
+
+uram(n) allows civilian groups to be "empty", i.e., to have a
+population of zero.  Curves relating to an empty civilian group
+are "untracked" in <xref ucurve(n)>, receive no direct or
+indirect effects, and do not contribute to the neighborhood mood or
+cooperation roll-ups.<p>
+
+Civilian population is dynamic, and can change from tick to tick;
+thus a group might be empty at time 0, gain population at a later
+time, and become empty again still later.<p>
+
+<section "DATABASE SCHEMA">
+
+uram(n) stores almost all of its working data in an
+<xref sqldocument(n)> "run-time database", or RDB.  
+The names of all of the tables, views, indices, and so forth defined
+by URAM begin with the string "uram_".<p>
+
+Other modules may query any of the tables as needed, but
+should not alter them.<p>
+
+uram(n) registers the following schema definitions with
+<xref sqldocument(n)>:<p>
+
+<pre>
+<::simlib::uram sqlsection schema>
+</pre>
+
+
+<section "INPUT DATA">
+
+The client is reponsible for providing a <code>-loadcmd</code>, which
+will load input data into URAM using the <iref load> family of
+commands.  Each of these commands accepts a list of one kind of GRAM
+entity; they be called in the following order:<p>
+
+<ul>
+  <li> <iref load causes>
+  <li> <iref load actors>       
+  <li> <iref load nbhoods>
+  <li> <iref load prox>
+  <li> <iref load civg>
+  <li> <iref load otherg>
+  <li> <iref load hrel>
+  <li> <iref load vrel>
+  <li> <iref load sat>
+  <li> <iref load coop>
+</ul>
+
+Note that these commands may only be called from a <code>-loadcmd</code>.<p>
+
+URAM input data typically comes from RDB tables; hence, the
+<iref load> commands are designed to accept the result of an RDB
+query as input.  The <code>-loadcmd</code> code to load the 
+neighborhood relationship data might look like this:<p>
+
+<pre>
+    proc MyLoadCommand {gram} {
+        ...
+        $gram load prox {*}[$rdb eval {
+            SELECT m, n, proximity
+            FROM uramdb_mn
+            ORDER BY m, n;
+        }]
+        ...
+    }
+</pre>
+
+<section "ATTITUDE DRIVERS">
+
+In URAM, attitude drivers (e.g., events and situations) are identified
+by a unique integer ID.  The application is free to select these in
+any way it chooses; for convenience, the <iref driver> subcommand
+can be used to generate them on demand.  The initial driver ID is set
+using the <code>-driverbase</code> option, which defaults to 1000.<p>
+
+<subsection "Drivers and Causes">
+
+Each attitude input is associated with a driver and a cause.  The
+cause will usually be one of the predefined causes
+(see <iref load causes>); but magic drivers will sometimes have a
+unique cause not shared with any other driver.  In this case it is
+customary to use the driver ID as the cause; hence,
+<code>-driverbase</code> is set to a number higher than any predefined
+cause ID.<p>
+
+<section "CONFIGURATION PARAMETERS">
+
+uram(n) is a <xref parm(i)>, and defines the following configuration
+parameters.  The <iref uram parm> subcommand can be used to set and query
+their values.<p>
+
+<expand [::simlib::uram parm manpage]>
+
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem uram {uram <i>name ?options...?</i>}>
+
+Creates a new <iref uram> object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref uram> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+<iref uram> takes the following options:<p>
+
+<deflist uram options>
+
+<defopt {-driverbase <i>number</i>}>
+
+Specifies the initial driver ID returned by the <iref driver>
+subcommand.<p>
+
+<defopt {-loadcmd <i>cmd</i>}>
+
+Defines a command which will populate the URAM tables with data.  The
+command must take a single additional argument, the name of the
+instance of <xref uram(n)> in question.<p>
+
+
+<defopt {-logger <i>name</i>}>
+
+The name of the <xref logger(n)> object to use to log URAM
+activity.  If no -logger is specified, no logging is done.  The
+-logger may be changed at any time; set it to {} to disable logging by
+this object.<p>
+
+<defopt {-logcomponent <i>name</i>}>
+
+The component name to pass to the <code>-logger</code> object when
+logging messages; defaults to "uram".<p>
+
+<defopt {-rdb <i>name</i>}>
+
+Specifies the name of an <xref sqldocument(n)> object
+which uram(n) will use to store its data, and from which it will read
+its inputs.  See <xref "DATABASE SCHEMA">.<p>
+
+Each instance of uram(n) must be created in a distinct RDB.<p>
+
+This option must be set at creation time, and cannot be changed
+thereafter.<p>
+
+
+</deflist uram options>
+
+<defitem {uram parm} {uram parm <i>subcommand</i> ?<i>args..</i>?}>
+
+The <iref uram parm> subcommand gives access to the uram(n) module's
+configuration <xref parmset(n)>; see
+<xref "CONFIGURATION PARAMETERS"> for details.  The subcommands
+of <iref uram parm> are exactly those of <xref parmset(n)>
+instances.<p>
+
+<defitem {uram sqlsection} {uram sqlsection <i>subcommand</i>}>
+
+uram(n) is an <xref sqlsection(i)>, as it defines
+schema entities (see <xref "DATABASE SCHEMA">).
+See <xref sqlsection(i)> for a description
+of this method's subcommands.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem advance {$obj advance <i>t</i>}>
+
+<b>Not Undoable.</b> Advances the simulation time to time <i>t</i> in
+ticks, applying all effects scheduled since the previous advance and
+recomputing all attitude levels and related outputs.<p>
+
+The first call to <iref advance> after <iref init> is special:  it
+sets the simulation time for the start of simulation, and applies any
+pending transient inputs to compute current attitude levels without
+modifying the initial baseline levels in any way.  See
+<xref "Initialization and Time Management"> for more information.<p>
+
+<defitem cget {$obj cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {$obj clear}>
+
+<b>Not Undoable.</b>
+Returns the instance of uram(n) to its state at creation: the RDB
+tables are cleared, and the in-memory variables are returned to their
+initial values, before <iref init> was called.<p>
+
+<defitem configure {$obj configure <i>option value</i>}>
+
+Sets the <i>value</i> of the specified <i>option</i> (if the option is
+not read-only).<p>
+
+<defitem contribs {$obj contribs <i>subcommand</i> ?<i>indices options...</i>?}>
+
+This family of commands allows the client to query the contributions
+by driver to various curves and families of curves for specified
+periods of time.<p>
+
+The aggregated contributions are placed in a temporary table,
+<b>uram_contribs</b>, which has two columns: <b>driver</b>, the driver
+ID, and <b>contrib</b>, the total contribution by that driver.<p>
+
+All the subcommands take the following options:<p>
+
+<deflist options>
+
+<defopt {-start <i>ticks</i>}>
+<defopt {-end <i>ticks</i>}>
+
+These options specify the end-points in ticks of the time interval of
+interest.  They default to 0 and the current time, respectively.<p>
+
+</deflist options>
+
+The subcommands are as follows.
+
+<deflist contribs>
+
+<defitem "contribs coop" {$obj contribs coop <i>f g</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to civilian group <i>f</i>'s
+cooperation with force group <i>g</i>.<p>
+
+<defitem "contribs hrel" {$obj contribs hrel <i>f g</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to group <i>f</i>'s
+horizontal relationship with group <i>g</i>.<p>
+
+<defitem "contribs mood" {$obj contribs mood <i>g</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to the mood of group <i>g</i>.<p>
+
+<defitem "contribs nbcoop" {$obj contribs nbcoop <i>n g</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to the cooperation of
+neighborhood <i>n</i> with force group <i>g</i>.<p>
+
+<defitem "contribs nbmood" {$obj contribs nbmood <i>n</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to the mood of
+neighborhood <i>n</i>.<p>
+
+<defitem "contribs sat" {$obj contribs sat <i>g c</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to group <i>g</i>'s
+satisfaction with concern <i>c</i>.<p>
+
+<defitem "contribs vrel" {$obj contribs vrel <i>g a</i> ?<i>options...</i>?}>
+
+Aggregates the total contribution by driver to group <i>g</i>'s
+vertical relationship with actor <i>a</i>.<p>
+
+</deflist contribs>
+
+<defitem coop {$obj coop <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands manages the cooperation attitude
+curves.<p>
+
+<deflist coop>
+
+<defitem "coop badjust" {$obj coop badjust <i>driver f g delta</i>}>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the cooperation
+of civilian group <i>f</i> with force group <i>g</i> by <i>delta</i>, 
+which is a floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.<p>
+
+The adjustment takes effect immediately, and is ascribed to the
+driver at the next <iref advance>.<p>
+
+The command has no effect if group <i>f</i> has a population of zero.<p>
+
+<defitem "coop bset" {$obj coop bset <i>driver f g value</i>}>
+
+<b>Undoable.</b>
+This command set the baseline level of the cooperation
+of civilian group <i>f</i> with force group <i>g</i> to <i>value</i>, 
+which is a <xref simtypes(n) qcooperation>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).<p>
+
+The change takes effect immediately, and is ascribed to the
+driver at the next <iref advance>.<p>
+
+The command has no effect if group <i>f</i> has a population of zero.<p>
+
+
+<defitem "coop cset" {$obj coop cset ?<i>f g value...</i>?}>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more cooperation
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of <i>f</i>, <i>g</i>, <i>value</i>
+triples, where <i>f</i> is a civilian group, <i>g</i> is a force
+group, and <i>value</i> is a
+<xref simtypes(n) qcooperation> value, the natural level of <i>f</i>'s
+cooperation with <i>g</i>.<p>
+
+This command would normally be used to set the natural level for all
+cooperation curves just prior to a time advance.<p>
+
+<defitem "coop persistent" {$obj coop persistent <i>driver cause f g mag</i> ?<i>options...</i>?}>
+<defitem "coop transient" {$obj coop transient <i>driver cause f g mag</i> ?<i>options...</i>?}>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <xref qmag(n)> value, on the cooperation
+of civilian group <i>f</i> with force group <i>g</i>.  The input was
+produced by the specified <i>driver</i>
+(see <xref "ATTITUDE DRIVERS">) and has the specified <i>cause</i>.<p>
+
+The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <iref load causes>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.<p>
+
+The input is a direct effect with indirect effects on <i>f</i>'s cooperation 
+with all other force groups, and on other civilian groups' cooperation
+with all force groups provided that the civilian groups have a 
+sufficiently high relationship with <i>f</i> are within the 
+proximity indicated by the following options.  The magnitude of
+the indirect effects is adjusted by the relationship between the
+direct and indirect force groups and the proximity between the 
+direct and indirect civilian groups.<p>
+
+No indirect effects are created for empty civilian groups; and if 
+group <i>f</i> is empty, no effects are created at all.<p>
+
+
+<deflist options>
+
+<defopt {-s <i>factor</i>}>
+
+The "here factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on other
+civilian groups in <i>g</i>'s own neighborhood.  Defaults to 1.0.<p>
+
+<defopt {-p <i>factor</i>}>
+
+The "near factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>near</b> to <i>g</i>'s neighborhood.  Defaults to 0.0.<p>
+
+<defopt {-q <i>factor</i>}>
+
+The "far factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>far</b> from <i>g</i>'s neighborhood.  Defaults to 0.0.<p>
+
+</deflist options>
+
+</deflist coop>
+
+
+
+<defitem driver {$obj driver}>
+
+<b>Undoable.</b>
+Generates a unique integer driver ID, which may then be passed to any
+of the attitude input subcommands.  See <xref "ATTITUDE DRIVERS">.<p>
+
+<defitem edit {$obj edit <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands manages the <xref "Undo Stack">.  This
+capability is available only when the <code>-undo</code> option is set
+to <b>on</b>.<p>
+
+<deflist edit>
+
+<defitem "edit canundo" {$obj edit canundo}>
+
+Returns 1 if there's a command on the stack to be undone, and 0 otherwise.<p>
+
+<defitem "edit reset" {$obj edit reset}>
+
+Clears the undo stack.<p>
+
+<defitem "edit mark" {$obj edit mark}>
+
+Adds a mark to the undo stack.  The <iref edit undo> command
+undoes all operations back to the last mark (or until the stack
+is empty).  This allows a set of uram(n) commands relating to a
+single client operation to be undone as a group.<p>
+
+Alternatively, the <code>-automark</code> option may be set to
+<b>on</b>, and each undoable uram(n) command will insert a matching
+mark, allowing them to be undone individually.<p>
+
+<b>TBD: -automark is not yet implemented.</b><p>
+
+<defitem "edit undo" {$obj edit undo}>
+
+Undoes all commands back to the most recent mark, or until the
+stack is empty if there are no marks.  It's an error if there is
+no command to be undone.<p>
+
+</deflist edit>
+
+<defitem hrel {$obj hrel <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands manages the horizontal relationship attitude
+curves.<p>
+
+<deflist hrel>
+
+<defitem "hrel badjust" {$obj hrel badjust <i>driver f g delta</i>}>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the horizontal relationship
+of group <i>f</i> with group <i>g</i> by <i>delta</i>, which is a
+floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.<p>
+
+The adjustment takes effect immediately and is ascribed to the driver
+at the next <iref advance>.<p>
+
+The command has no effect if either group is a civilian group with a population 
+of zero.<p>
+
+<defitem "hrel bset" {$obj hrel bset <i>driver f g value</i>}>
+
+<b>Undoable.</b>
+This command set the baseline level of the horizontal relationship
+of group <i>f</i> with group <i>g</i> to <i>value</i>, 
+which is a <xref simtypes(n) qaffinity>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).<p>
+
+The change takes effect immediately, and is ascribed to the
+driver at the next <iref advance>.<p>
+
+The command has no effect if either group is a civilian group with a population 
+of zero.<p>
+
+<defitem "hrel cset" {$obj hrel cset ?<i>f g value...</i>?}>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more horizontal relationship
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of <i>f</i>, <i>g</i>, <i>value</i>
+triples, where <i>f</i> and <i>g</i> are groups and <i>value</i> is a
+<xref simtypes(n) qaffinity> value, the natural level of <i>f</i>'s
+relationship with <i>g</i>.<p>
+
+This command would normally be used to set the natural level for all
+relationship curves just prior to a time advance.<p>
+
+<defitem "hrel persistent" {$obj hrel persistent <i>driver cause f g mag</i>}>
+<defitem "hrel transient" {$obj hrel transient <i>driver cause f g mag</i>}>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <xref qmag(n)> value, on the horizontal
+relationship of group <i>f</i> with group <i>g</i>.  The input was
+produced by the specified <i>driver</i>
+(see <xref "ATTITUDE DRIVERS">) and has the specified <i>cause</i>.<p>
+
+The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <iref load causes>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.<p>
+
+We have no spread model for horizontal relationship inputs; hence,
+these commands create one direct effect and no indirect effects.<p>
+
+If either group <i>f</i> or group <i>g</i> is empty, no effect is
+created.<p>
+
+</deflist hrel>
+
+
+<defitem init {$obj init ?-reload?}>
+
+<b>Not Undoable.</b>
+Resets uram(n) to the attitude levels,
+restoring all variables to their initial values, deleting all
+history, computing all roll-ups, and setting the simulation time to -1.  
+It will then be necessary to call <iref advance> to complete the
+initialization; see
+<xref "Initialization and Time Management"> for details.
+<p>
+
+If <code>-reload</code> is specified, the object's
+<code>-loadcmd</code> will be called to reload all of the URAM input
+data from scratch; otherwise it will work from its cached (and
+possibly modified) copy of that data.<p>
+
+<defitem initialized {$obj initialized}>
+
+Returns 1 if either <iref init> or the <iref saveable> "restore"
+command has
+been called such that this instance's RDB tables are populated and it
+is capable of advancing time, and 0 otherwise.<p>
+
+<defitem load {$obj load <i>subcommand</i> ?<i>args...</i>?}>
+
+The <iref load> family of subcommands is used to load input data
+into URAM.  The
+<code>-loadcmd</code> must call each of the <iref load> commands, in
+the order shown here.<p>
+
+<deflist load>
+
+<defitem "load causes" {$obj load causes ?<i>cause</i>...?}>
+
+Specifies the set of cause names; if there are no predefined causes,
+call the routine with no arguments.  The names should be pre-sorted
+in alphabetical order.<p>
+
+<defitem "load actors" {$obj load actors <i>a</i> ?<i>a</i>...?}>
+
+Specifies the set of actor names.  Requires at least one name.
+The names should be pre-sorted in alphabetical order.<p>
+
+<defitem "load nbhoods" {$obj load nbhoods <i>n</i> ?<i>n</i>...?}>
+
+Specifies the set of neighborhood names.  Requires at least one name.
+The names should be pre-sorted in alphabetical order.<p>
+
+<defitem "load prox" {$obj load prox ?<i>m n proximity</i>...?}>
+
+This command is used to specify the set of neighborhood
+proximities.<p>
+
+<defitem "load civg" {$obj load civg <i>g n pop</i> ?<i>g n pop</i>...?}>
+
+Specifies the set of civilian groups, with their neighborhoods of
+residence and their populations.  The groups
+should be sorted by name.  There should be at least one group.<p>
+
+<defitem "load otherg" {$obj load otherg <i>g gtype</i> ?<i>g gtype</i>...?}>
+
+Specifies the set of force and organization groups, where <i>gtype</i>
+is <b>FRC</b> or <b>ORG</b>. The groups
+should be sorted by name, and there should be at least one force
+group.<p>
+
+<defitem "load hrel" {$obj load hrel <i>f g current base nat</i> ?<i>f g base nat</i>...?}>
+<defitem "load vrel" {$obj load vrel <i>g a current base nat</i> ?<i>g a base nat</i>...?}>
+<defitem "load sat" {$obj load sat <i>g c current base nat saliency</i> ?<i>g c base nat saliency</i>...?}>
+<defitem "load coop" {$obj load coop <i>f g current base nat</i> ?<i>f g base nat</i>...?}>
+
+These commands are used to specify the initial current, baseline, and natural
+(A, B, and C) levels for each attitude curve (plus, for satisfaction
+curves, the saliency as well).<p>
+
+It is usual for the initial <i>current</i> and <i>baseline</i> to be the same,
+especially since the <i>current</i> value will be recomputed on the first
+<iref advance>.  If a scenario is created as a follow-on to a preceding
+scenario, however, the client application might have good current levels
+from the preceding run; and if the client application needs access to 
+good attitude levels and roll-ups during its bootstrapping process, it may
+make sense to use them.<p>
+
+</deflist load>
+
+<defitem sat {$obj sat <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands manages the satisfaction attitude
+curves.<p>
+
+<deflist sat>
+
+<defitem "sat badjust" {$obj sat badjust <i>driver g c delta</i>}>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the satisfaction
+of group <i>g</i> with concern <i>c</i> by <i>delta</i>, which is a
+floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.<p>
+
+The adjustment takes effect immediately, and is ascribed to the driver
+at the next <iref advance>.<p>
+
+The command has no effect if group <i>g</i> has a population of zero.<p>
+
+<defitem "sat bset" {$obj sat bset <i>driver g c value</i>}>
+
+<b>Undoable.</b>
+This command set the baseline level of the satisfaction
+of group <i>g</i> with concern <i>c</i> to <i>value</i>, 
+which is a <xref simtypes(n) qsat>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).<p>
+
+The change takes effect immediately, and is ascribed to the
+driver at the next <iref advance>.<p>
+
+The command has no effect if group <i>g</i> has a population of zero.<p>
+
+<defitem "sat cset" {$obj sat cset ?<i>g c value...</i>?}>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more satisfaction
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of group <i>g</i>, concern <i>c</i>, 
+<i>value</i> triples, where <i>value</i> is a <xref simtypes(n) qsat> 
+value, the natural level of <i>g</i>'s satisfaction <i>c</i>.<p>
+
+This command would normally be used to set the natural level for all
+satisfaction curves just prior to a time advance.<p>
+
+<b>Note:</b> Given the default <xref "CONFIGURATION PARAMETERS">, 
+the natural satisfaction level will be ignored for all concerns 
+except <b>SFT</b>.<p>
+
+<defitem "sat persistent" {$obj sat persistent <i>driver cause g c mag</i> ?<i>options...</i>?}>
+<defitem "sat transient" {$obj sat transient <i>driver cause g c mag</i> ?<i>options...</i>?}>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <xref qmag(n)> value, on the satisfaction
+of group <i>g</i> with concern <i>c</i>.  The input was
+produced by the specified <i>driver</i>
+(see <xref "ATTITUDE DRIVERS">) and has the specified <i>cause</i>.<p>
+
+The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <iref load causes>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.<p>
+
+The input is a direct effect with indirect effects governed by the options:<p>
+
+No indirect effects are created for empty civilian groups; and if 
+group <i>g</i> is empty, no effects are created at all.<p>
+
+<deflist options>
+
+<defopt {-s <i>factor</i>}>
+
+The "here factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on other
+civilian groups in <i>g</i>'s own neighborhood.  Defaults to 1.0.<p>
+
+<defopt {-p <i>factor</i>}>
+
+The "near factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>near</b> to <i>g</i>'s neighborhood.  Defaults to 0.0.<p>
+
+<defopt {-q <i>factor</i>}>
+
+The "far factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>far</b> from <i>g</i>'s neighborhood.  Defaults to 0.0.<p>
+
+</deflist options>
+
+
+</deflist sat>
+
+<defitem saveable {$obj saveable <i>subcommand</i> ?<i>args..</i>?}>
+
+This command and its subcommands implement the <xref saveable(i)>
+interface.  Note that the application is responsible for checkpointing
+the RDB data.<p>
+
+<defitem time {$obj time}>
+
+Returns the current simulation time in integer ticks.<p>
+
+
+<defitem update {$obj update <i>subcommand</i> ?<i>args...</i>?}>
+
+The <iref update> family of subcommands is used to update selected
+scenario data after the initial load.<p>
+
+<deflist update>
+
+<defitem "update pop" {$obj update pop ?<i>g pop</i>...?}>
+
+This command updates the population of civilian groups
+for the specified <i>g</i> and <i>pop</i> pairs
+specified on the command line.<p>
+
+<b>NOTE:</b>  This command is optimized for speed, and consequently
+does little error checking.<p>
+
+</deflist update>
+
+
+<defitem vrel {$obj vrel <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands manages the vertical relationship attitude
+curves.<p>
+
+<deflist vrel>
+
+<defitem "vrel badjust" {$obj vrel badjust <i>driver g a delta</i>}>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the vertical relationship
+of group <i>g</i> with actor <i>a</i> by <i>delta</i>, which is a
+floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.<p>
+
+The adjustment takes effect immediately, and is ascribed to the driver
+at the next <iref advance>.<p>
+
+The command has no effect if group <i>g</i> is a civilian group with 
+a population of zero.<p>
+
+<defitem "vrel bset" {$obj vrel bset <i>driver g a value</i>}>
+
+<b>Undoable.</b>
+This command set the baseline level of the vertical relationship
+of group <i>g</i> with actor <i>a</i> to <i>value</i>, 
+which is a <xref simtypes(n) qaffinity>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <xref "ATTITUDE DRIVERS">).<p>
+
+The change takes effect immediately, and is ascribed to the
+driver at the next <iref advance>.<p>
+
+The command has no effect if group <i>g</i> is a civilian group with 
+a population of zero.<p>
+
+<defitem "vrel cset" {$obj vrel cset ?<i>g a value...</i>?}>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more vertical relationship
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of group <i>g</i>, actor <i>a</i>, 
+<i>value</i> triples, where <i>value</i> is a <xref simtypes(n) qaffinity> 
+value, the natural level of <i>g</i>'s relationship with <i>a</i>.<p>
+
+This command would normally be used to set the natural level for all
+relationship curves just prior to a time advance.<p>
+
+<defitem "vrel persistent" {$obj vrel persistent <i>driver cause g a mag</i>}>
+<defitem "vrel transient" {$obj vrel transient <i>driver cause g a mag</i>}>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <xref qmag(n)> value, on the vertical
+relationship of group <i>g</i> with actor <i>a</i>.  The input was
+produced by the specified <i>driver</i>
+(see <xref "ATTITUDE DRIVERS">) and has the specified <i>cause</i>.<p>
+
+The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <iref load causes>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.<p>
+
+We have no spread model for vertical relationship inputs; hence,
+these commands create one direct effect and no indirect effects.<p>
+
+If group <i>g</i> is empty, no effect is created.<p>
+
+</deflist vrel>
+
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use the package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package, derived from gram(n) v2.0.<p>
+
+</manpage>
+

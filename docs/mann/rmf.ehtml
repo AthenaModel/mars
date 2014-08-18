@@ -1,0 +1,168 @@
+<manpage {simlib(n) rmf(n)} "Relationship Multiplier Functions">
+
+<section SYNOPSIS>
+
+<swallow {
+    # Get some help
+    package require simlib [version]
+    namespace import ::simlib::*
+}>
+
+<pre>
+package require simlib <version>
+namespace import ::simlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+rmf(n) defines a family of "relationship multiplier functions", or
+"RMFs".  An RMF translates an <xref simtypes(n) rgrouprel> value, a
+number that ranges from -1.0 (perfect enemies) to 1.0 (perfect
+friends), into a multiplier.  Models use
+RMFs to determine the magnitude of an effect based on the relationship
+between the affected group and the acting group.<p>
+
+The various RMFs are implemented as subcommands of the <iref rmf>
+command.  Because there are many RMFs, and because the RMF to be
+used in a particular rule can be set in the <xref parmdb(5)>,
+<iref rmf> is also an <xref enum(n)> of the RMF names, which are
+as follows:<p>
+
+<rmf html><p>
+
+<subsection "Configuration Parameters">
+
+rmf(n) is a <xref parm(i)>, and defines the following configuration
+parameter.  The <iref rmf parm> subcommand can be used to set and query
+parameter values.<p>
+
+<expand [rmf parm manpage]>
+
+<subsection "Function Plots">
+
+The functions which correspond to these names are as follows, assuming
+that the <b>rmf.nominalRelationship</b> parameter is set to its
+default value of <rmf parm getdefault rmf.nominalRelationship>.
+Note that where the plots cross the -1.0 and 1.0 lines they do so at
+&plusmn;<rmf parm getdefault rmf.nominalRelationship>
+<p>
+
+<img src="rmf2.gif"><p>
+
+If <b>rmf.nominalRelationship</b> is set to 1.0, we get the RMFs used
+in JNEM 2.1.  Note that where the plots cross the -1.0 and 1.0 lines,
+they do so at &plusmn;1.0.<p>
+
+<img src="rmf.gif"><p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem rmf {rmf <i>subcommand</i> ?<i>args...</i>?}>
+
+The <iref rmf> command has all of the standard
+<xref enum(n)> subcommands; the following are defined as well.<p>
+
+In what follows, the value of the <b>rmf.nominalRelationship</b>
+parameter is indicated by <i>Rnom</i>.<p>
+
+<deflist rmf>
+
+<defitem {rmf parm} {rmf parm <i>subcommand</i> ?<i>args..</i>?}>
+
+The <iref rmf parm> subcommand gives access to the rmf(n) module's
+configuration <xref parmset(n)>; see
+<xref "Configuration Parameters"> for details.  The subcommands
+of <iref rmf parm> are exactly those of <xref parmset(n)>
+instances.<p>
+
+
+<defitem "rmf constant" {rmf constant <i>R</i>}>
+
+Returns a constant 1.0 regardless of <i>R</i>.
+The "Constant" function should be used when the
+relationship between the two groups should have no effect.<p>
+
+<defitem "rmf linear" {rmf linear <i>R</i>}>
+
+Returns <i>R/Rnom</i>.  The "Linear" function should be used when the
+effect of an input should be directly proportional to the strength of the
+relationship.<p>
+
+<defitem "rmf quad" {rmf quad <i>R</i>}>
+
+Returns (<i>R/Rnom</i>)&sup2;&sdot;sign(<i>R</i>).  The "Quad" function
+is similar to <iref rmf linear> but has a weaker effect for <i>R</i> &lt;
+<i>Rnom</i> and a stronger effect for <i>R</i> &gt; <i>Rnom</i>.<p>
+
+Note that friends are affected with the same sign as
+the input's magnitude, and enemies with the opposite sign, i.e.,
+if friends are affected positively then enemies are affected negatively.<p>
+
+<defitem "rmf frquad" {rmf frquad <i>R</i>}>
+
+Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &gt; 0, and 0 otherwise.  Friends
+are affected according to the strength of the relationship, but
+enemies are not affected at all.<p>
+
+<defitem "rmf frmore" {rmf frmore <i>R</i>}>
+
+Returns ((1+<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and friends are
+affected, but enemies are affected much less than friends, and
+perfect enemies are not affected at all.<p>
+
+Note that both friends and enemies are affected with the same sign
+as the input's magnitude; thus, if it is a positive input then
+both friends and enemies are affected positively.<p>
+
+<defitem "rmf enquad" {rmf enquad <i>R</i>}>
+
+Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &lt; 0, and 0 otherwise.  Enemies
+are affected according to the strength of the relationship, but
+friends are not affected at all.<p>
+
+<defitem "rmf enmore" {rmf enmore <i>R</i>}>
+
+Returns ((1&minus;<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and
+friends are affected, but friends are affected much less than enemies,
+and perfect friends are not affected at all.<p>
+
+Note that both friends and enemies are affected with the same sign
+as the input's magnitude; thus, if it is a positive input then
+both friends and enemies are affected positively.<p>
+
+</deflist>
+
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

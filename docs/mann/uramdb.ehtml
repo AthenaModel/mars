@@ -1,0 +1,147 @@
+<manpage {simlib(n) uramdb(n)} "uramdb(5) Parser">
+
+<swallow {package require simlib [version]}>
+
+<section SYNOPSIS>
+
+<pre>
+package require simlib <version>
+namespace import ::simlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+uramdb(n) defines a parser for <xref uramdb(5)> files.  uramdb(n)
+loads <xref uramdb(5)> data into an <xref sqldocument(n)> or
+other SQLite3 database.  uramdb(n) adheres to the
+<xref sqlsection(i)> interface.<p>
+
+<section "DATABASE SCHEMA">
+
+uramdb(n) registers the following schema definitions:<p>
+
+<pre>
+<::simlib::uramdb sqlsection schema>
+</pre>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem loadfile {uramdb loadfile <i>dbfile</i> ?<i>db</i>?}>
+
+Parses the content of the file named <i>dbfile</i>, and stores the
+data in the relevant tables in the <xref sqldocument(n)> called
+<i>db</i>.<p>
+
+If <i>db</i> is specified, the schema must already
+be initialized.  The relevant tables will be cleared prior to
+loading the data.<p>
+
+If no <i>db</i> is specified, <iref loadfile> will create,
+initialize, and return an in-memory <xref sqldocument(n)> object.
+In this case, it is the caller's responsibility to destroy the
+database object when it is no longer needed.<p>
+
+<defitem load {uramdb load <i>text</i> ?<i>db</i>?}>
+
+Identical to <iref loadfile>, but parses <xref uramdb(5)> text from
+string <i>text</i> rather than a file.<p>
+
+<defitem mkperfdb {uramdb mkperfdb <i>db</i> ?<i>options...</i>?}>
+
+Populates the <xref uramdb(5)> tables in the specified <i>db</i>
+with automatically-generated data for the purpose of measuring
+worst-case performance.  The options determine the size of the
+database:<p>
+
+<deflist options>
+<defopt {-actors <i>num</i>}>
+The number of actors in the playbox.
+
+<defopt {-nbhoods <i>num</i>}>
+The number of neighborhoods in the playbox.
+
+<defopt {-civgroups <i>num</i>}>
+The number of civilian groups per neighborhood.
+
+<defopt {-frcgroups <i>num</i>}>
+The number of force groups in the playbox.
+
+<defopt {-orggroups <i>num</i>}>
+The number of organization groups in the playbox.
+
+</deflist options>
+
+The generated data will have the following characteristics:<p>
+
+<ul>
+  <li> All neighborhood proximities are HERE or NEAR.
+  <li> All satisfaction levels are 0.0.
+  <li> All saliencies are 1.0.
+  <li> All cooperation levels are 50.0.
+  <li> All populations are 1000.
+  <li> All group relationships are 1.0, 0.5, or -0.5.
+       Each group will have a 1.0 relationship with itself and
+       0.5 or -0.5 with all other groups.
+  <li> All vertical relationships are 0.5 or -0.5.
+</ul>
+
+<defitem loader {uramdb loader <i>db uram</i>}>
+
+Loads the <xref uramdb(5)> data found in the
+<xref sqldocument(n)> object <i>db</i> into <i>uram</i>, an
+instance of <xref uram(n)>.  This command is to be used as a
+<xref uram2(n)> <b>-loadcmd</b>, like so:<p>
+
+<pre>
+uram ::myuram \
+    -loadcmd [list ::simlib::uramdb loader $db] \
+      .
+      .
+      .
+</pre>
+
+where <b>$db</b> is the name of the <xref sqldocument(n)> containing the
+data.  Note that calling it directly simply won't work, as
+<xref uram(n)> won't be expecting it.<p>
+
+<defitem sqlsection {uramdb sqlsection <i>subcommand</i>}>
+
+uramdb(n) is an <xref sqlsection(i)>, as it defines
+schema entities (see <xref "DATABASE SCHEMA">).
+See <xref sqlsection(i)> for a description
+of this method's subcommands.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+uramdb(n) is based on <xref gramdb2(n)>, tailored to the needs
+of <xref uram(n)>.<p>
+
+</manpage>
+
+
+
+
+
+
+
+

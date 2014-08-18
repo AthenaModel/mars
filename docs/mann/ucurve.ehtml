@@ -1,0 +1,505 @@
+<manpage {simlib(n) ucurve(n)} "URAM Curve Manager">
+
+<swallow {package require simlib [version]}>
+
+<section SYNOPSIS>
+
+<pre>
+package require simlib <version>
+namespace import ::simlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref ucurve(n)> is the Tcl API for the Unified Regional
+Attitude Model (URAM)'s Curve Manager.  The curve manager is
+implements the general attitude curve model.  It manages the curve
+types, individual curves, and effects to be applied to them.  It knows
+nothing about groups, actors, or the spread of indirect effects;
+these are the province of <xref uram(n)> itself.<p>
+
+See the <i>Mars Analyst's Guide</i> for the attitude curve model that
+underlies ucurve(n).<p>
+
+The client is responsible for defining the set of curves to be managed:<p>
+
+<ul>
+  <li> First, the client must define one or more curve types using
+       the <iref ctype> commands.  The
+       curve type determines the minimum and maximum bounds for curves
+       of this type, as well as the &alpha;, &beta;, and &gamma; parameters
+       that determine how the baseline changes over time.<p>
+
+  <li> Next, the client must define curves of each type using the
+       <iref curve> commands.  Each curve
+       gets a unique integer ID.  It is the client's responsibility to
+       associated that ID with other data (e.g., a civilian group and
+       concern).<p>
+
+  <li> Next, the client may enter adjustments to curve baselines using
+       <iref adjust> and also add <iref persistent> and
+       <iref transient> effects. Both adjustments and effects are
+       associated with attitude drivers.<p>
+
+  <li> Effects are retained until
+       time is advanced using the <iref apply> command.  ucurve(n)
+       has no real notion of simulation time; rather, a timestamp is
+       passed to <iref apply>, which uses it when saving the history
+       of contributions by each attitude driver.<p>
+
+  <li> Adjustments have an immediate effect on the baseline; the
+       net delta to the adjusted baseline is retained until 
+       time is advanced using the <iref apply> command, and saved
+       to the contributions table at that time.<p>
+
+  <li> After adjustments and effects are applied, they are deleted;
+       if they are to recur, the client must re-enter them during the
+       next timestep.
+</ul>
+
+<subsection "Untracked Curves">
+
+The client has the option of marking particular curves as "untracked"
+using <iref curve untrack>.  Ucurve(n) does not track changes to 
+untracked curves; instead, their current or baseline levels are always
+exactly equal to their natural levels.  For example, if the client
+allows civilian groups to have zero population then the curves related
+to those groups can be untracked.  Tracking can be turned back on
+using <iref curve track>, at which point the curve can begin to
+fluctuate from its natural level.<p>
+
+Things to note:<p>
+
+<ul>
+<li> It is an error to add adjustments or effects to an untracked
+     curve.<p>
+
+<li> For performance reasons, the error will not be detected until
+     the next time <iref apply> is called, at which point an error
+     will be thrown.<p>
+
+<li> If a curve with pending adjustments or effects is untracked,
+     the pending changes will be deleted automatically.<p>
+</ul>
+
+<subsection "Undo Stack">
+
+Many ucurve(n) operations are undoable; to enable the undo stack, set
+the <code>-undo</code> option to <b>on</b>.  The undo stack is then managed
+using the <iref edit> command.  Use the <iref edit undo> command
+to undo operations up to the last mark.  Marks can be
+inserted manually using the <iref edit mark> command, or
+automatically inserted with each operation by setting the
+<code>-automark</code> option to <b>on</b>.<p>
+
+Commands may be <b>Undoable</b>, <b>Not Undoable</b>, or neither.
+A command that is <b>Not Undoable</b> clears the undo stack as part of
+its operation.  Commands that are neither usually do not affect the
+undo stack one way or another.  The <b>Undoable</b> and <b>Not
+Undoable</b> commands are so marked.<p>
+
+The undo capability is provided by <xref undostack(n)>.
+A ucurve(n) instance usually belongs to some parent object, i.e.,
+an instance of <xref uram(n)>.  The parent object can share its own
+<xref undostack(n)> with ucurve(n) using the <code>-undostack</code>
+option.<p>
+
+<section "DATABASE SCHEMA">
+
+ucurve(n) stores almost all of its working data in an
+<xref sqldocument(n)> "run-time database", or RDB.  
+The names of all of the tables, views, indices, and so forth defined
+by UCURVE begin with the string "ucurve_".<p>
+
+Other modules may query any of the tables as needed, but
+should not alter them.<p>
+
+ucurve(n) registers the following schema definitions with
+<xref sqldocument(n)>:<p>
+
+<pre>
+<::simlib::ucurve sqlsection schema>
+</pre>
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem ucurve {ucurve <i>name ?options...?</i>}>
+
+Creates a new <iref ucurve> object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref ucurve> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+<iref ucurve> takes the following options:<p>
+
+<deflist ucurve options>
+
+<defopt {-automark <i>flag</i>}>
+
+If <b>on</b> (the default), marks will be inserted in the
+<xref "Undo Stack"> automatically.  If <b>off</b>, they will not.<p>
+
+<defopt {-rdb <i>name</i>}>
+
+Specifies the name of an <xref sqldocument(n)> object
+which ucurve(n) will use to store its data, and from which it will read
+its inputs.  See <xref "DATABASE SCHEMA">.<p>
+
+Each instance of ucurve(n) must be created in a distinct RDB.<p>
+
+This option must be set at creation time, and cannot be changed
+thereafter.<p>
+
+<defopt {-savehistory <i>flag</i>}>
+
+If <b>on</b> (the default), ucurve(n) will save the history of
+contributions to each curve by each driver in its
+<b>ucurve_contribs_t</b> table.  If <b>off</b>, it will not.  Setting
+the option to <b>off</b> will delete any existing contents of the
+<b>ucurve_contribs_t</b> table.<p>
+
+<defopt {-undo <i>flag</i>}>
+
+If <b>on</b>, then ucurve(n) will maintain an <xref "Undo Stack">.
+If <b>off</b> (the default) it will not.
+
+<defopt {-undostack <i>cmd</i>}>
+
+By default, ucurve(n) will create its own instance of
+<xref undostack(n)> to manage its <xref "Undo Stack">.  However,
+an instance of ucurve(n) will often be owned by a parent object (e.g.,
+<xref uram(n)> which has its own <xref undostack(n)>.  The parent
+can share its undo stack by setting this option to the name of the
+<xref undostack(n)> object.<p>
+
+This option must be set at creation time, and cannot be changed
+thereafter.<p>
+
+</deflist ucurve options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+<deflist instance>
+
+<defitem adjust {$obj adjust <i>driver_id curve_id delta</i> ?<i>curve_id delta...</i>?}>
+
+<b>Undoable.</b> Creates one or more adjustments associated with the given
+<i>driver_id</i>.  Each adjustment is specified as a curve ID/delta
+pair, where the delta will be applied as is (i.e., unscaled) to the
+curve's baseline value.<p>
+
+The delta is applied immediately; its net delta will be saved as
+part of the driver's contribution the next time
+<iref apply> is called.<p>
+
+<defitem apply {$obj apply <i>t</i> ?-start?}>
+
+<b>Not Undoable.</b> Applies and deletes all pending adjustments and
+effects, and records their actual contributions by curve and driver at time
+<i>t</i>, which is specified as an integer tick.
+
+Note that ucurve(n) has no little real notion of simulation time;
+<i>t</i> is usually used only as a time stamp.<p>
+
+If the option <b>-start</b> is given, ucurve(n) does two special things.  
+First, the current attitude levels are recomputed given any pending transient
+effects; the baseline levels are unchanged, and any pending persistent
+effects will be thrown away unused.  Second, the current <b>a</b>,
+<b>b</b>, and <b>c</b> values for each attitude curve are saved to the 
+<b>a0</b>, <b>b0</b>, and <b>c0</b> columns in the
+<b>ucurve_curves_t</b> table for future reference.
+This is allows the client to initialize the <b>a</b> values with
+transient effects based on the simulation starting conditions.<p>
+
+It is an error if there are pending adjustments or effects on 
+untracked curves.  See <xref "Untracked Curves"> for more
+details.<p>
+
+<defitem cget {$obj cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {$obj clear}>
+
+<b>Not Undoable.</b> Restores the instance to its creation state.
+This includes deleting all ucurve(n) data from the RDB tables.<p>
+
+<defitem configure {$obj configure <i>option value</i>}>
+
+Sets the <i>value</i> of the specified <i>option</i> (if the option is
+not read-only).<p>
+
+<defitem ctype {$obj ctype <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands is used to create and manage the set of curve
+types and their parameters.<p>
+
+<deflist ctype>
+
+<defitem "ctype add" {$obj ctype add <i>name min max</i> ?<i>options...</i>}>
+
+<b>Undoable.</b> Adds a new curve type with the given <i>name</i>.  Curves of this type
+will have the specified <i>min</i> and <i>max</i> bounds, which may be
+integer or floating point numbers.  By default the curve type will
+have &alpha; and &gamma; parameters of 0.0, resulting in a &beta; of
+1.0.<p>
+
+The command returns the new curve type's numeric ID.<p>
+
+The type may be created with the following options:<p>
+
+<deflist ctype options>
+
+<defopt {-alpha <i>value</i>}>
+<defopt {-gamma <i>value</i>}>
+
+These options set the curve type's &alpha; and &gamma; parameters;
+&beta; is computed automatically so that the three values sum to 1.0.
+The <i>value</i> must be between 0.0 and 1.0.<p>
+
+</deflist ctype options>
+
+<defitem "ctype cget" {$obj ctype cget <i>name option</i>}>
+
+Returns the value of the specified <i>option</i> for curve type
+<i>name</i>.  In addition to the creation options (see
+<iref ctype add>, the client can also query the following:<p>
+
+<deflist ctype cget options>
+
+<defopt {-beta <i>value</i>}>
+
+The curve type's computed &beta; value.<p>
+
+<defopt {-min <i>value</i>}>
+<defopt {-max <i>value</i>}>
+
+The curve type's minimum and maximum bounds.<p>
+
+</deflist ctype cget options>
+
+<defitem "ctype configure" {$obj ctype configure <i>option value</i>}>
+
+<b>Undoable.</b> Sets the <i>value</i> of the specified curve type creation
+<i>option</i>; see <iref ctype add> for the list.<p>
+
+<defitem "ctype delete" {$obj ctype delete <i>name</i>}>
+
+<b>Undoable.</b> Deletes the named curve type, along with all related
+data.<p>
+
+<defitem "ctype id" {$obj ctype id <i>name</i>}>
+
+Returns the numeric ID associated with the curve type <i>name</i>, or
+"" if none is found. The numeric ID is used to associate a curve type
+with specific curves.<p>
+
+<defitem "ctype name" {$obj ctype name <i>id</i>}>
+
+Returns the curve type name associated with the curve type <i>id</i>.<p>
+
+<defitem "ctype names" {$obj ctype names}>
+
+Returns the names of all curve types.<p>
+
+</deflist ctype>
+
+<defitem curve {$obj curve <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands is used to create and manage curves of various
+curve types.<p>
+
+<deflist curve>
+
+<defitem "curve add" {$obj curve add <i>ctype a b c</i> ?<i>a b c...</i>?}>
+
+<b>Undoable.</b> This command defines one or more curves of curve type
+<i>ctype</i>, which may be either a curve type name or ID.  Each curve
+is defined by its A, B, and C values at time 0, each of which is a
+numeric value within the minimum and maximum bounds for the curve
+type.<p>
+
+The command returns a list of curve IDs, one for each curve, in the
+order of definition.<p>
+
+<b>NOTE:</b> This command is designed for speed, and hence does
+minimal error checking.  It is the client's responsibility to make
+sure that all A, B, and C values are valid.<p>
+
+<defitem "curve bset" {$obj curve bset <i>curve_id b</i> ?<i>curve_id b</i>?}>
+
+<b>Not Undoable.</b>  Sets the B values for one or more curve IDs.
+This command is designed for speed; it is the client's
+responsibility to ensure that the arguments are valid.<p>
+
+<defitem "curve cget" {$obj curve cget <i>curve_id option</i>}>
+
+Retrieves the value of <i>option</i> for curve <i>curve_id</i>.
+The following options can be retrieved:<p>
+
+<deflist options>
+
+<defopt {-b}>
+
+The curve's B value.<p>
+
+<defopt {-c}>
+
+The curve's C value.<p>
+
+<defopt {-tracked}>
+
+The curve's "tracked" flag, 1 if the curve is tracked and 0 if it is
+untracked.<p>
+
+
+</deflist options>
+
+<defitem "curve configure" {$obj curve configure <i>curve_id</i> ?<i>options...</i>?}>
+
+<b>Undoable.</b> Modifies the curve with the given <i>curve_id</i>.
+The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-b <i>value</i>}>
+
+Sets the curve's B value.<p>
+
+<defopt {-c <i>value</i>}>
+
+Sets the curve's C value.<p>
+
+</deflist options>
+
+<defitem "curve cset" {$obj curve cset <i>curve_id c</i> ?<i>curve_id c</i>...?}>
+
+<b>Not Undoable.</b>  Sets the C values for one or more curve IDs.
+This command is designed for speed; it is the client's
+responsibility to ensure that the arguments are valid.<p>
+
+<defitem "curve exists" {$obj curve exists <i>curve_id</i>}>
+
+Returns 1 if there is a curve with the given <i>curve_id</i>, and 0
+otherwise.<p>
+
+<defitem "curve track" {$obj curve track <i>curve_ids</i>}>
+
+<b>Not Undoable.</b>  Given a list of curve IDs, marks all of the
+listed curves "tracked".  See <xref "Untracked Curves"> for
+details.<p>
+
+<defitem "curve untrack" {$obj curve untrack <i>curve_ids</i>}>
+
+<b>Not Undoable.</b>  Given a list of curve IDs, marks all of the
+listed curves "untracked", and deletes any pending adjustments or
+effects on them.  See <xref "Untracked Curves"> for details.<p>
+
+</deflist curve>
+
+<defitem edit {$obj edit <i>subcommand</i> ?<i>value...</i>?}>
+
+This family of commands manages the <xref "Undo Stack">.  This
+capability is available only when the <code>-undo</code> option is set
+to <b>on</b>.<p>
+
+<deflist edit>
+
+<defitem "edit canundo" {$obj edit canundo}>
+
+Returns 1 if there's a command on the stack to be undone, and 0 otherwise.<p>
+
+<defitem "edit reset" {$obj edit reset}>
+
+Clears the undo stack.<p>
+
+<defitem "edit mark" {$obj edit mark}>
+
+Adds a mark to the undo stack.  The <iref edit undo> command
+undoes all operations back to the last mark (or until the stack
+is empty).  This allows a set of ucurve(n) commands relating to a
+single client operation to be undone as a group.<p>
+
+Alternatively, the <code>-automark</code> option may be set to
+<b>on</b>, and each ucurve(n) command will insert a matching
+mark, allowing them to be undone individually.<p>
+
+<defitem "edit undo" {$obj edit undo}>
+
+Undoes all commands back to the most recent mark, or until the
+stack is empty if there are no marks.  It's an error if there is
+no command to be undone.<p>
+
+</deflist edit>
+
+<defitem istracked {$obj istracked <i>curve_id</i>}>
+
+Returns 1 if the curve is tracked, and 0 otherwise.<p>
+
+<defitem persistent {$obj persistent <i>driver_id cause_id curve_id mag</i> ?<i>curve_id mag...</i>?}>
+
+<b>Undoable.</b>  Creates one or more persistent effects related to
+attitude driver <i>driver_id</i> with cause <i>cause_id</i>.  Each
+effect is specified as a curve ID/magnitude pair; the magnitude will
+ultimately be scaled based on the curve's baseline.<p>
+
+The created effects will remain pending until the next time
+<iref apply> is called.  At that time they will applied,
+and deleted.<p>
+
+Persistent effects are scaled (with causes taken into account)
+relative to the baseline B.t; the resulting delta is then applied
+to the baseline, resulting in a new B.t for the current time step.
+The extent to which the resulting delta will actually persist in
+future time steps depends on the curve type's &beta; parameter.<p>
+
+<defitem reset {$obj reset}>
+
+Resets all curves to their initial values and deletes all pending
+adjustments and effects and historical contributions.<p>
+
+<defitem transient {$obj transient <i>driver_id cause_id curve_id mag</i> ?<i>curve_id mag...</i>?}>
+
+<b>Undoable.</b>  Creates one or more transient effects related to
+attitude driver <i>driver_id</i> with cause <i>cause_id</i>.  Each
+effect is specified as a curve ID/magnitude pair; the magnitude will
+ultimately be scaled based on the current baseline for the curve.<p>
+
+The created effects will remain pending until the next time
+<iref apply> is called.  At that time they will be applied and deleted.<p>
+
+Effects are scaled (with causes taken into account) relative to the
+baseline B.t after all persistent effects have been applied; the
+result delta is applied to the curve's A value for the current time
+step.  The extent to which the resulting delta will persist into
+future time steps depends on the curve type's &alpha; parameter.<p>
+
+</deflist instance>
+
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use the package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package, derived from gram(n) v2.0.<p>
+
+</manpage>
+
