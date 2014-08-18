@@ -1,0 +1,2420 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    ucurve.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for ucurve(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/simlib/pkgModules.tcl
+namespace import ::marsutil::*
+namespace import ::simlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+# Create a run-time database in memory
+sqldocument rdb \
+    -autotrans no \
+    -rollback on
+rdb open :memory:
+rdb register ::marsutil::undostack
+rdb register ::simlib::ucurve
+rdb clear
+
+
+# pprint block
+#
+# Pretty-prints a result block so that the test looks nice
+
+proc pprint {block} {
+    set block [string map [list \" \'] $block]
+    return "\n$block"
+}
+
+# create ?options...?
+#
+# Creates an instance of ucurve called "uc" with the given options.
+proc create {args} {
+    # Create a ucurve.
+    ucurve uc \
+        -rdb ::rdb \
+        {*}$args
+}
+
+proc cleanup {} {
+    uc destroy
+}
+
+#-------------------------------------------------------------------
+# Object Creation
+
+test creation-1.1 {can't create two ucurve's on one RDB} -setup {
+    create
+} -body {
+    ucurve baducurve \
+        -rdb ::rdb
+} -cleanup {
+    cleanup
+} -returnCodes {
+    error
+} -result {Error in constructor: RDB ::rdb already in use by ucurve(n) ::uc}
+
+#-------------------------------------------------------------------
+# Object Destruction
+
+test destruction-1.1 {rdb clean up} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.8
+} -body {
+    # FIRST, destroy the object
+    cleanup
+
+    # NEXT, verify that none of the ucurve(n) tables have entries
+    # for the object.
+    set badTables {}
+
+    foreach table [rdb tables] {
+        if {![string match "ucurve_*" $table]} {
+            continue
+        }
+
+        if {[rdb onecolumn "SELECT count(rowid) FROM $table"] > 0} {
+            lappend badTables $table
+        }
+    }
+
+    set badTables
+} -result {}
+
+#-------------------------------------------------------------------
+# ctype add
+
+test ctype_add-1.1 {invalid name: null} -setup {
+    create
+} -body {
+    uc ctype add "" 0 100
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {NOT NULL constraint failed: ucurve_ctypes_t.name}
+
+test ctype_add-1.2 {invalid name: duplicate} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100
+    uc ctype add T1 0 100
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {UNIQUE constraint failed: ucurve_ctypes_t.name}
+
+test ctype_add-1.3 {invalid min} -setup {
+    create
+} -body {
+    uc ctype add T1 NONESUCH 100
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test ctype_add-1.4 {invalid max} -setup {
+    create
+} -body {
+    uc ctype add T1 0 NONESUCH -alpha 0.1 -gamma 0.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test ctype_add-1.5 {min = max} -setup {
+    create
+} -body {
+    uc ctype add T1 100 100 -alpha 0.1 -gamma 0.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {min must be less than max}
+
+test ctype_add-1.6 {Invalid -alpha: non-numeric} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100 -alpha NONESUCH -gamma 0.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha NONESUCH -gamma 0.0: *}
+
+test ctype_add-1.7 {Invalid -alpha: negative} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100 -alpha -0.1 -gamma 0.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha -0.1 -gamma 0.0: *}
+
+test ctype_add-1.8 {Invalid -gamma: non-numeric} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100 -alpha 0.1 -gamma NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha 0.1 -gamma NONESUCH: *}
+
+test ctype_add-1.9 {Invalid -gamma: negative} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100 -alpha 0.1 -gamma -0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha 0.1 -gamma -0.1: *}
+
+test ctype_add-1.10 {-alpha + -gamma > 1.0} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100 -alpha 0.51 -gamma 0.51
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha 0.51 -gamma 0.51: *}
+
+test ctype_add-2.1 {No addition on error} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    catch {uc ctype add T2 0 100 -alpha 1.1}
+    uc ctype names
+} -cleanup {
+    cleanup
+} -result {T1}
+
+test ctype_add-3.1 {Defaults} -setup {
+    create
+} -body {
+    uc ctype add T1 0 100
+    
+    pprint [rdb query {SELECT * from ucurve_ctypes} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+ct_id  1
+name   T1
+min    0.0
+max    100.0
+alpha  0.0
+gamma  0.0
+beta   1.0
+}
+
+test ctype_add-3.2 {Non-defaults} -setup {
+    create
+} -body {
+    uc ctype add T1 -1.0 1.0 -alpha 0.1 -gamma 0.05
+    
+    pprint [rdb query {SELECT * from ucurve_ctypes} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+ct_id  1
+name   T1
+min    -1.0
+max    1.0
+alpha  0.1
+gamma  0.05
+beta   0.85
+}
+
+test ctype_add-3.3 {Returns ID} -setup {
+    create
+} -body {
+    set id [uc ctype add T1 -1.0 1.0 -alpha 0.1 -gamma 0.05]
+    
+    expr {$id == [uc ctype id T1]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test ctype_add-4.1 {Can undo} -setup {
+    create -undo yes
+    uc ctype add T1 0 100
+    uc ctype add T2 -1.0 1.0 -alpha 0.1 -gamma 0.05
+} -body {
+    uc edit undo
+    uc ctype names
+} -cleanup {
+    cleanup
+} -result {T1}
+
+#-------------------------------------------------------------------
+# ctype names
+
+test ctype_names-1.1 {No ctypes defined} -setup {
+    create
+} -body {
+    uc ctype names
+} -cleanup {
+    cleanup
+} -result {}
+
+test ctype_names-1.2 {ctypes defined} -setup {
+    create
+    uc ctype add T1 0 100
+    uc ctype add T2 -1 1
+} -body {
+    uc ctype names
+} -cleanup {
+    cleanup
+} -result {T1 T2}
+
+
+#-------------------------------------------------------------------
+# ctype id
+
+test ctype_id-1.1 {Unknown ctype} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc ctype id T2
+} -cleanup {
+    cleanup
+} -result {}
+
+test ctype_id-1.2 {Known ctype} -setup {
+    create
+    uc ctype add T1 0 100
+    uc ctype add T2 0 100
+} -body {
+    uc ctype id T1
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# ctype name
+
+test ctype_name-1.1 {Unknown ctype} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc ctype name 2
+} -cleanup {
+    cleanup
+} -result {}
+
+test ctype_name-1.2 {Known ctype} -setup {
+    create
+    uc ctype add T1 0 100
+    uc ctype add T2 0 100
+} -body {
+    uc ctype name 1
+} -cleanup {
+    cleanup
+} -result {T1}
+
+#-------------------------------------------------------------------
+# ctype cget
+
+test ctype_cget-1.1 {Unknown option} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+} -body {
+    uc ctype cget T1 -foo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown ucurve_ctypes option: "-foo"}
+
+test ctype_cget-1.2 {Known options} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+} -body {
+    list \
+        [uc ctype cget T1 -min]   \
+        [uc ctype cget T1 -max]   \
+        [uc ctype cget T1 -alpha] \
+        [uc ctype cget T1 -beta]  \
+        [uc ctype cget T1 -gamma]
+} -cleanup {
+    cleanup
+} -result {0.0 100.0 0.1 0.7 0.2}
+
+#-------------------------------------------------------------------
+# ctype configure
+#
+# The error checking was tested completely for [ctype add].  This
+# is just a quick check.
+
+test ctype_configure-1.1 {Invalid -alpha} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+} -body {
+    uc ctype configure T1 -alpha NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha NONESUCH: *}
+
+test ctype_configure-1.2 {Invalid -gamma} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+} -body {
+    uc ctype configure T1 -gamma NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -gamma NONESUCH: *}
+
+test ctype_configure-1.3 {-alpha + -gamma > 1.0} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+} -body {
+    uc ctype configure T1 -alpha 0.51 -gamma 0.51
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_ctypes_t -alpha 0.51 -gamma 0.51: *}
+
+test ctype_configure-2.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+    set old [rdb eval {SELECT * FROM ucurve_ctypes}]
+} -body {
+    catch {uc ctype configure T1 -alpha 0.0 -gamma 1.1}
+    set new [rdb eval {SELECT * FROM ucurve_ctypes}]
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test ctype_configure-3.1 {Change is saved} -setup {
+    create
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+} -body {
+    uc ctype configure T1 -alpha 0.2 -gamma 0.1
+    
+    pprint [rdb query {SELECT * from ucurve_ctypes} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+ct_id  1
+name   T1
+min    0.0
+max    100.0
+alpha  0.2
+gamma  0.1
+beta   0.7
+}
+
+test ctype_configure-4.1 {Can undo} -setup {
+    create -undo yes -automark yes
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+    set old [rdb eval {SELECT * FROM ucurve_ctypes}]
+    uc ctype configure T1 -alpha 0.2 -gamma 0.1
+} -body {
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_ctypes}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# ctype delete
+
+test ctype_delete-1.1 {Can delete} -setup {
+    create
+    uc ctype add T1 0 100
+    uc ctype add T2 0 100
+} -body {
+    uc ctype delete T1
+    uc ctype names
+} -cleanup {
+    cleanup
+} -result {T2}
+
+test ctype_delete-2.1 {Can undo} -setup {
+    create -undo yes -automark yes
+    uc ctype add T1 0 100 -alpha 0.1 -gamma 0.2
+    uc ctype add T2 -1 1
+    set old [rdb eval {SELECT * FROM ucurve_ctypes}]
+    uc ctype delete T1
+} -body {
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_ctypes}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+# TBD: Should check that curves and effects are removed as
+# well, and replaced on undo.
+
+#-------------------------------------------------------------------
+# curve add
+
+test curve_add-1.1 {Invalid curve type} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc curve add FOO 1 2 3
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown curve type, "FOO"}
+
+
+test curve_add-2.1 {Add given ctype name} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc curve add T1 1 2 3
+
+    pprint [rdb query {SELECT * FROM ucurve_curves_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id   1
+ct_id      1
+tracked    1
+a          1.0
+b          2.0
+c          3.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         1.0
+b0         2.0
+c0         3.0
+}
+
+test curve_add-2.2 {Add given ctype ID} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc curve add [uc ctype id T1] 1 2 3
+
+    pprint [rdb query {SELECT * FROM ucurve_curves_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id   1
+ct_id      1
+tracked    1
+a          1.0
+b          2.0
+c          3.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         1.0
+b0         2.0
+c0         3.0
+}
+
+test curve_add-2.3 {Add multiple} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+
+    pprint [rdb query {SELECT * FROM ucurve_curves_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id   1
+ct_id      1
+tracked    1
+a          1.0
+b          2.0
+c          3.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         1.0
+b0         2.0
+c0         3.0
+
+curve_id   2
+ct_id      1
+tracked    1
+a          4.0
+b          5.0
+c          6.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         4.0
+b0         5.0
+c0         6.0
+
+curve_id   3
+ct_id      1
+tracked    1
+a          7.0
+b          8.0
+c          9.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         7.0
+b0         8.0
+c0         9.0
+}
+
+test curve_add-2.4 {Returns curve IDs} -setup {
+    create
+    uc ctype add T1 0 100
+} -body {
+    uc curve add [uc ctype id T1] 1 2 3 4 5 6 7 8 9
+} -cleanup {
+    cleanup
+} -result {1 2 3}
+
+test curve_add-3.1 {Can undo} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6
+    set old [rdb eval {SELECT * FROM ucurve_curves_t}]
+    uc curve add T1 7 8 9
+} -body {
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_curves_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# curve untrack/track
+
+test curve_untrack-1.1 {Untrack one} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+} -body {
+    uc curve untrack 2
+    
+    pprint [rdb query {
+        SELECT curve_id, tracked FROM ucurve_curves_t
+    } -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id  1
+tracked   1
+
+curve_id  2
+tracked   0
+
+curve_id  3
+tracked   1
+}
+
+test curve_untrack-1.2 {Untrack several} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+} -body {
+    uc curve untrack {2 3}
+    
+    pprint [rdb query {
+        SELECT curve_id, tracked FROM ucurve_curves_t
+    } -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id  1
+tracked   1
+
+curve_id  2
+tracked   0
+
+curve_id  3
+tracked   0
+}
+
+test curve_untrack-1.3 {Untrack deletes pending adjustments} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+
+    # Add an adjustment to curve 2.
+    uc adjust 1 2 10.0
+} -body {
+    set a [rdb eval {SELECT count(*) FROM ucurve_adjustments_t}]
+    uc curve untrack 2
+    set b [rdb eval {SELECT count(*) FROM ucurve_adjustments_t}]
+    
+    list $a $b 
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test curve_untrack-1.4 {Untrack deletes pending effects} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+
+    # Add an effect to curve 3.
+    uc transient 1 1 3 10.0
+} -body {
+    set a [rdb eval {SELECT count(*) FROM ucurve_effects_t}]
+    uc curve untrack 3
+    set b [rdb eval {SELECT count(*) FROM ucurve_effects_t}]
+    
+    list $a $b 
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test curve_untrack-2.1 {Track sets tracked flag} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves and untrack them.
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+    uc curve untrack {1 2 3}
+} -body {
+    uc curve track {1 3}
+
+    pprint [rdb query {
+        SELECT curve_id, tracked FROM ucurve_curves_t
+    } -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id  1
+tracked   1
+
+curve_id  2
+tracked   0
+
+curve_id  3
+tracked   1
+}
+
+test curve_untrack-3.1 {Untrack is not undoable} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+} -body {
+    uc curve untrack 2
+    
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test curve_untrack-3.2 {Track is not undoable} -setup {
+    create
+    uc ctype add T1 0 100
+
+    # Add three curves
+    uc curve add T1 0 0 10 0 0 20 0 0 30
+} -body {
+    uc curve track 2
+    
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# istracked
+
+test istracked-1.1 {Can query tracked flag} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    uc curve untrack 2
+} -body {
+    list \
+        [uc istracked 1] \
+        [uc istracked 2] \
+        [uc istracked 3]
+} -cleanup {
+    cleanup
+} -result {1 0 1}
+
+#-------------------------------------------------------------------
+# curve exists
+
+test curve_exists-1.1 {No such curve} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve exists 4
+} -cleanup {
+    cleanup
+} -result {0}
+
+test curve_exists-1.2 {Curve exists} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve exists 2
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# curve configure
+
+test curve_configure-1.1 {Invalid curve_id} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve configure 5 -b 0.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown ucurve_curves_t key: "5"}
+
+test curve_configure-1.2 {Invalid -b} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve configure 2 -b NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_curves_t -b NONESUCH: *}
+
+test curve_configure-1.3 {Invalid -c} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve configure 2 -c NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid ucurve_curves_t -c NONESUCH: *}
+
+test curve_configure-2.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_curves_t}]
+    catch {uc curve configure 2 -b 5 -c NONESUCH}
+    set new [rdb eval {SELECT * FROM ucurve_curves_t}]
+
+    expr {$old eq $new}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test curve_configure-3.1 {Changes take effect} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve configure 2 -b 5 -c 10
+    pprint [rdb query {
+        SELECT * FROM ucurve_curves_t WHERE curve_id=2
+    } -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id   2
+ct_id      1
+tracked    1
+a          4.0
+b          5.0
+c          10.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         4.0
+b0         5.0
+c0         6.0
+}
+
+test curve_configure-4.1 {Can undo} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    set old [rdb eval {SELECT * FROM ucurve_curves_t}]
+    catch {uc curve configure 2 -b 5 -c 10}
+} -body {
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_curves_t}]
+
+    expr {$old eq $new}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# curve cget
+
+test curve_cget-1.1 {Invalid curve_id} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve cget 5 -b
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown ucurve_curves_t key: "5"}
+
+test curve_cget-2.1 {Retrieve options} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    list \
+        [uc curve cget 2 -b]      \
+        [uc curve cget 2 -c]      \
+        [uc curve cget 2 -tracked]
+} -cleanup {
+    cleanup
+} -result {5.0 6.0 1}
+
+#-------------------------------------------------------------------
+# curve bset
+
+test curve_bset-1.1 {Invalid curve_id is ignored} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve bset 5 1
+} -cleanup {
+    cleanup
+} -result {}
+
+test curve_bset-1.2 {Invalid b} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve bset 2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {CHECK constraint failed: ucurve_curves_t}
+
+test curve_bset-2.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_curves_t}]
+    catch {uc curve bset 1 1 2 NONESUCH 3 3}
+    set new [rdb eval {SELECT * FROM ucurve_curves_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test curve_bset-3.1 {Changes take effect} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve bset 1 -1 2 -2 3 -3
+    pprint [rdb query {SELECT curve_id,b FROM ucurve_curves_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id  1
+b         -1.0
+
+curve_id  2
+b         -2.0
+
+curve_id  3
+b         -3.0
+}
+
+test curve_bset-4.1 {Cannot be undone} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve bset 1 1 2 2 3 3
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+#-------------------------------------------------------------------
+# curve cset
+
+test curve_cset-1.1 {Invalid curve_id is ignored} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve cset 5 1
+} -cleanup {
+    cleanup
+} -result {}
+
+test curve_cset-1.2 {Invalid c} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve cset 2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {CHECK constraint failed: ucurve_curves_t}
+
+test curve_cset-2.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_curves_t}]
+    catch {uc curve cset 1 1 2 NONESUCH 3 3}
+    set new [rdb eval {SELECT * FROM ucurve_curves_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test curve_cset-3.1 {Changes take effect} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve cset 1 -1 2 -2 3 -3
+    pprint [rdb query {SELECT curve_id,c FROM ucurve_curves_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id  1
+c         -1.0
+
+curve_id  2
+c         -2.0
+
+curve_id  3
+c         -3.0
+}
+
+test curve_cset-4.1 {Cannot be undone} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc curve cset 1 1 2 2 3 3
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# transient
+
+test transient-1.1 {Invalid curve_id} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc transient 1 1 NONESUCH 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {FOREIGN KEY constraint failed}
+
+test transient-1.2 {Invalid mag} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc transient 1 1 2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {CHECK constraint failed: ucurve_effects_t}
+
+test transient-2.1 {Create one effect} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc transient 10 20 1 -5
+    pprint [rdb query {SELECT * FROM ucurve_effects_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+e_id       1
+curve_id   1
+driver_id  10
+cause_id   20
+pflag      0
+mag        -5.0
+actual     0.0
+}
+
+test transient-2.2 {Create several effects} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc transient 10 20 1 -5 2 -10 3 -15 
+    pprint [rdb query {SELECT * FROM ucurve_effects_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+e_id       1
+curve_id   1
+driver_id  10
+cause_id   20
+pflag      0
+mag        -5.0
+actual     0.0
+
+e_id       2
+curve_id   2
+driver_id  10
+cause_id   20
+pflag      0
+mag        -10.0
+actual     0.0
+
+e_id       3
+curve_id   3
+driver_id  10
+cause_id   20
+pflag      0
+mag        -15.0
+actual     0.0
+}
+
+test transient-3.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_effects_t}]
+    catch {uc transient 10 20 1 -5 2 -10 3 NONESUCH}
+    set new [rdb eval {SELECT * FROM ucurve_effects_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test transient-4.1 {Can undo} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_effects_t}]
+    uc transient 10 20 1 -5 2 -10 3 -15
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_effects_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# persistent
+
+test persistent-1.1 {Invalid curve_id} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc persistent 1 1 NONESUCH 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {FOREIGN KEY constraint failed}
+
+test persistent-1.2 {Invalid mag} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc persistent 1 1 2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {CHECK constraint failed: ucurve_effects_t}
+
+test persistent-2.1 {Create one effect} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc persistent 10 20 1 -5
+    pprint [rdb query {SELECT * FROM ucurve_effects_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+e_id       1
+curve_id   1
+driver_id  10
+cause_id   20
+pflag      1
+mag        -5.0
+actual     0.0
+}
+
+test persistent-2.2 {Create several effects} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc persistent 10 20 1 -5 2 -10 3 -15 
+    pprint [rdb query {SELECT * FROM ucurve_effects_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+e_id       1
+curve_id   1
+driver_id  10
+cause_id   20
+pflag      1
+mag        -5.0
+actual     0.0
+
+e_id       2
+curve_id   2
+driver_id  10
+cause_id   20
+pflag      1
+mag        -10.0
+actual     0.0
+
+e_id       3
+curve_id   3
+driver_id  10
+cause_id   20
+pflag      1
+mag        -15.0
+actual     0.0
+}
+
+test persistent-3.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_effects_t}]
+    catch {uc persistent 10 20 1 -5 2 -10 3 NONESUCH}
+    set new [rdb eval {SELECT * FROM ucurve_effects_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test persistent-4.1 {Can undo} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_effects_t}]
+    uc persistent 10 20 1 -5 2 -10 3 -15
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_effects_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# adjust
+
+test adjust-1.1 {Invalid curve_id} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc adjust 1 NONESUCH 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid curve_id "NONESUCH"}
+
+test adjust-2.1 {Create one adjustment} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50 50 50
+} -body {
+    uc adjust 10 1 -5
+    pprint [rdb query {SELECT * FROM ucurve_adjustments_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+a_id       1
+curve_id   1
+driver_id  10
+delta      -5.0
+}
+
+test adjust-2.2 {Create several adjustments} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50 50 50  50 50 50  50 50 50
+} -body {
+    uc adjust 10 1 -5 2 -10 3 -15 
+    pprint [rdb query {SELECT * FROM ucurve_adjustments_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+a_id       1
+curve_id   1
+driver_id  10
+delta      -5.0
+
+a_id       2
+curve_id   2
+driver_id  10
+delta      -10.0
+
+a_id       3
+curve_id   3
+driver_id  10
+delta      -15.0
+}
+
+test adjust-2.3 {Adjustments are clamped} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50 50 50
+} -body {
+    uc adjust 10 1 60
+    pprint [rdb query {SELECT * FROM ucurve_adjustments_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+a_id       1
+curve_id   1
+driver_id  10
+delta      50.0
+}
+
+test adjust-2.4 {Baselines are affected immediately} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50 50 50
+} -body {
+    uc adjust 10 1 -10
+    pprint [rdb query {SELECT * FROM ucurve_curves_t} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+curve_id   1
+ct_id      1
+tracked    1
+a          50.0
+b          40.0
+c          50.0
+delta      0.0
+posfactor  0.0
+negfactor  0.0
+a0         50.0
+b0         50.0
+c0         50.0
+}
+
+test adjust-3.1 {No change on error} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_adjustments_t}]
+    catch {uc adjust 10 1 -5 2 -10 3 NONESUCH}
+    set new [rdb eval {SELECT * FROM ucurve_adjustments_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test adjust-4.1 {Baselines fixed on undo} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 50 50 50  50 50 50  50 50 50
+} -body {
+    set old [rdb eval {SELECT b FROM ucurve_curves_t ORDER BY curve_id}]
+    uc adjust 10 1 -5 2 -10 3 -15
+    uc edit undo
+    set new [rdb eval {SELECT b FROM ucurve_curves_t ORDER BY curve_id}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test adjust-4.2 {Adjustments table fixed on undo} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    set old [rdb eval {SELECT * FROM ucurve_adjustments_t}]
+    uc adjust 10 1 -5 2 -10 3 -15
+    uc edit undo
+    set new [rdb eval {SELECT * FROM ucurve_adjustments_t}]
+
+    expr {$new eq $old}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# clear
+
+test clear-1.1 {rdb clean up} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    uc transient 10 20 1 -5 2 -10 3 -15
+} -body {
+    # FIRST, clear all data
+    uc clear
+
+    # NEXT, verify that none of the ucurve(n) tables have entries.
+    set badTables {}
+
+    foreach table [rdb tables] {
+        if {![string match "ucurve_*" $table]} {
+            continue
+        }
+
+        if {[rdb onecolumn "SELECT count(rowid) FROM $table"] > 0} {
+            lappend badTables $table
+        }
+    }
+
+    set badTables
+} -cleanup {
+    cleanup
+} -result {}
+
+test clear-1.2 {cannot be undone} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    uc transient 10 20 1 -5 2 -10 3 -15
+} -body {
+    uc clear
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# reset
+
+test reset-1.1 {No effects} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    uc transient 10 20 1 -5 2 -10 3 -15
+} -body {
+    uc reset
+
+    rdb onecolumn {SELECT count(rowid) FROM ucurve_effects_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test reset-1.2 {No contribs} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    uc transient 10 20 1 -5 2 -10 3 -15
+    uc apply 1
+} -body {
+    uc reset
+
+    rdb onecolumn {SELECT count(rowid) FROM ucurve_contribs_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test reset-1.3 {Curves are reset} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+    
+    rdb eval {
+        UPDATE ucurve_curves_t
+        SET a=2*a,
+            b=2*b,
+            c=2*c;
+    }
+} -body {
+    uc reset
+
+    rdb onecolumn {
+        SELECT count(rowid) FROM ucurve_curves_t
+        WHERE a=a0 AND b=b0 AND c=c0
+    }
+} -cleanup {
+    cleanup
+} -result {3}
+
+test reset-1.4 {cannot be undone} -setup {
+    create -undo on
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+} -body {
+    uc reset
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+#-------------------------------------------------------------------
+# apply
+
+# 1.x -- Tests basic details with no effects to worry about.
+
+test apply-1.1 {deltas are cleared} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 1 2 3 4 5 6 7 8 9
+
+    # Set a non-zero delta, so that we can see that it gets zeroed.
+    rdb eval {UPDATE ucurve_curves_t SET delta=10}
+} -body {
+    uc apply 1
+    rdb eval {SELECT delta FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {0.0 0.0 0.0}
+
+test apply-1.2 {b is recomputed} -setup {
+    create
+    uc ctype add T1 -100 100 -alpha 0.1
+    uc curve add T1 20.0 50.0 0.0
+} -body {
+    uc apply 1
+    rdb eval {SELECT b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {47.0}
+
+test apply-1.3 {b is recomputed with gamma and C} -setup {
+    create
+    uc ctype add T1 -100 100 -alpha 0.1 -gamma 0.4
+    uc curve add T1 20.0 50.0 -50.0
+} -body {
+    uc apply 1
+    rdb eval {SELECT b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {7.0}
+
+test apply-1.4 {posfactor and negfactor are computed} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0
+} -body {
+    uc apply 1
+    rdb eval {SELECT posfactor, negfactor FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {0.5 1.5}
+
+test apply-1.5 {no contributions are saved} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0
+} -body {
+    uc apply 1
+    rdb onecolumn {SELECT count(rowid) FROM ucurve_contribs_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test apply-1.6 {effects remains empty} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0
+} -body {
+    uc apply 1
+    rdb onecolumn {SELECT count(rowid) FROM ucurve_effects_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test apply-1.y {adjustments remains empty} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0
+} -body {
+    uc apply 1
+    rdb onecolumn {SELECT count(rowid) FROM ucurve_adjustments_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+# 2.x -- Applying Adjustments
+
+test apply-2.1 {apply one adjustment} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0
+    uc adjust 10 1 10.0
+} -body {
+    uc apply 1
+
+    rdb eval {SELECT curve_id, b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {1 60.0}
+
+test apply-2.2 {two adjustments, different curves} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 60.0 60.0 0.0
+    uc adjust 10 1 10.0 2 -20.0
+} -body {
+    uc apply 1
+
+    rdb eval {SELECT curve_id, b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {1 60.0 2 40.0}
+
+test apply-2.3 {two adjustments, same curves} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 60.0 60.0 0.0
+    uc adjust 10 1 10.0 1 -20.0
+} -body {
+    uc apply 1
+
+    rdb eval {SELECT curve_id, b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {1 40.0 2 60.0}
+
+test apply-2.4 {clamps to min} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50.0 50.0 0.0
+    uc adjust 10 1 -60.0
+} -body {
+    uc apply 1
+
+    rdb eval {SELECT curve_id, b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {1 0.0}
+
+test apply-2.5 {clamps to max} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50.0 50.0 0.0
+    uc adjust 10 1 60.0
+} -body {
+    uc apply 1
+
+    rdb eval {SELECT curve_id, b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {1 100.0}
+
+# 3.x -- Adjustment contributions by driver
+
+test apply-3.1 {Multiple adjustments} -setup {
+    create
+    uc ctype add T1 0 100
+    uc curve add T1 50.0 50.0 0.0 60.0 60.0 0.0
+    uc adjust 10 1 10.0 2 -20.0
+    uc adjust 11 1 5.0 1 15.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        10        1 10.0    
+1        11        1 20.0    
+2        10        1 -20.0   
+}
+
+# 4.x -- Applying effects
+#
+# This section shows that we can compute deltas from effects.
+# This code is identical for persistent and transient effects;
+# however, the transient deltas are visible after apply is called,
+# so we test those.
+
+test apply-4.1 {apply one effect} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0
+    uc transient 10 20 1 10.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        5.0   
+}
+
+test apply-4.2 {apply two effects to distinct curves} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 2 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        5.0   
+2        30.0  
+}
+
+test apply-4.3 {two pos. effects to one curve; different causes} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 1 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        15.0  
+2        0.0   
+}
+
+test apply-4.4 {two pos. effects to one curve; same cause} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 1 1 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        10.0  
+2        0.0   
+}
+
+test apply-4.5 {pos/neg effects to curve; different causes} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 -10.0
+    uc transient 2 2 1  20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        -5.0  
+2        0.0   
+}
+
+test apply-4.5 {pos/neg effects to curve; same cause, pos > neg} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 -10.0
+    uc transient 2 1 1  20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        5.0   
+2        0.0   
+}
+
+test apply-4.6 {pos/neg effects to curve; same cause, neg > pos} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 -20.0
+    uc transient 2 1 1  10.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id delta 
+-------- ----- 
+1        -15.0 
+2        0.0   
+}
+
+# 5.x -- B is affected by persisent effects.
+
+test apply-5.1 {b is unchanged when there are no effects} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 0.0 50.0 0.0
+} -body {
+    set bold [uc curve cget 1 -b]
+    uc apply 1
+    set bnew [uc curve cget 1 -b]
+
+    # No persistent effects, so b should be unchanged before and
+    # after apply.
+    list $bold $bnew
+} -cleanup {
+    cleanup
+} -result {50.0 50.0}
+
+test apply-5.2 {delta is added to b} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc persistent 1 1 1 10.0
+    uc persistent 2 2 2 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, b0, b FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id b0    b     
+-------- ----- ----- 
+1        50.0  55.0  
+2        -50.0 -20.0 
+}
+
+test apply-5.3 {b is clamped} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc persistent 1 1 1 200.0
+    uc persistent 2 2 2 -200.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, b, b0 FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id b      b0    
+-------- ------ ----- 
+1        100.0  50.0  
+2        -100.0 -50.0 
+}
+
+test apply-5.4 {scaling factors are recomputed} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc persistent 1 1 1 10.0
+    uc persistent 2 2 2 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {
+        SELECT curve_id, b, posfactor, negfactor FROM ucurve_curves_t
+    }]
+} -cleanup {
+    cleanup
+} -result {
+curve_id b     posfactor negfactor 
+-------- ----- --------- --------- 
+1        55.0  0.45      1.55      
+2        -20.0 1.2       0.8       
+}
+
+# 6.x -- A is computed
+
+test apply-6.1 {a is computed} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 0.0 50.0 0.0
+} -body {
+    uc apply 1
+
+    # a is b+delta; delta is 0, and since beta=1.0, b is unchanged.
+    # so a should equal b.
+    rdb eval {SELECT a, b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {50.0 50.0}
+
+test apply-6.2 {delta is added} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 2 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, a, b, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a     b     delta 
+-------- ----- ----- ----- 
+1        55.0  50.0  5.0   
+2        -20.0 -50.0 30.0  
+}
+
+test apply-6.3 {a is clamped} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 200.0
+    uc transient 2 2 2 -200.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, a, b, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a      b     delta  
+-------- ------ ----- ------ 
+1        100.0  50.0  100.0  
+2        -100.0 -50.0 -100.0 
+}
+
+test apply-6.4 {persistent + transient} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 0.0 0.0 0.0
+    uc persistent 1 1 1 10.0
+    uc transient  2 2 1 10.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT curve_id, a, b, delta FROM ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a    b    delta 
+-------- ---- ---- ----- 
+1        19.0 10.0 9.0   
+}
+
+
+# 7.x -- Effect contributions by driver.
+
+test apply-7.1 {one effect, one driver} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 5.0     
+}
+
+test apply-7.2 {two effects, two drivers, two curves} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 2 -20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 5.0     
+2        2         1 -10.0   
+}
+
+test apply-7.3 {two effects, two drivers, two causes, two signs} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 1 -20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 5.0     
+1        2         1 -30.0   
+}
+
+test apply-7.4 {two effects, two drivers, two causes, same sign} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 1 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 5.0     
+1        2         1 10.0    
+}
+
+test apply-7.5 {two effects, two drivers, one cause, two signs} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 1 1 -20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 15.0    
+1        2         1 -30.0   
+}
+
+test apply-7.6 {two effects, two drivers, one cause, same sign} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 1 1 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib           
+-------- --------- - ----------------- 
+1        1         1 3.333333333333333 
+1        2         1 6.666666666666666 
+}
+
+test apply-7.7 {two effects, one driver, one cause, two signs} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 1 1 1 -20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 -15.0   
+}
+
+test apply-7.8 {two effects, one driver, one cause, same sign} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 1 1 1 20.0
+} -body {
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 10.0    
+}
+
+test apply-7.9 {one persistent effect} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc persistent 1 1 1 10.0
+} -body {
+    # Persistent effects are handled exactly like transient
+    # ones so far as contributions are concerned; all of the
+    # above tests should apply equally to persisent effects.
+    # So simply verify that persistent contributions are
+    # saved.
+    uc apply 1
+
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 5.0     
+}
+
+
+
+# 8.x -- contributions of adjustments and effects together
+
+test apply-8.1 {one adjustment, one effect} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 45.0 45.0 0.0
+    uc adjust 1 1 5
+    uc transient 1 1 1 10.0
+} -body {
+    uc apply 1
+
+    # Adjustment of 5.0 brings B from 45.0 to 50.0, and contributes 5.0.
+    # Effect of 10.0 is then scaled to contribute 5.0.
+    # Total contrib, 10.0.
+    pprint [rdb query {SELECT * FROM ucurve_contribs_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id driver_id t contrib 
+-------- --------- - ------- 
+1        1         1 10.0    
+}
+
+
+# 9.x -- effects and adjustments are deleted
+
+test apply-9.1 {effects are deleted} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc persistent 2 2 2 20.0
+} -body {
+    uc apply 1
+
+    rdb onecolumn {SELECT count(e_id) FROM ucurve_effects_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test apply-9.2 {adjustments are deleted} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc adjust 1 1 10.0
+    uc adjust 2 2 20.0
+} -body {
+    uc apply 1
+
+    rdb onecolumn {SELECT count(a_id) FROM ucurve_adjustments_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+# 10.x -- Undo
+
+test apply-10.1 {cannot be undone} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 200.0
+    uc transient 2 2 2 -200.0
+} -body {
+    uc apply 1
+
+    uc edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+# 11.x -- special behavior on -start
+
+test apply-11.1 {b is not recomputed} -setup {
+    create
+    uc ctype add T1 -100 100 -alpha 0.1
+    uc curve add T1 20.0 50.0 0.0
+} -body {
+    uc apply 0 -start
+    rdb eval {SELECT b FROM ucurve_curves_t}
+} -cleanup {
+    cleanup
+} -result {50.0}
+
+test apply-11.2 {b is unchanged by persistent effects} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 0.0 50.0 0.0
+} -body {
+    uc persistent 1 1 1 10.0
+    uc apply 0 -start
+    uc curve cget 1 -b
+} -cleanup {
+    cleanup
+} -result {50.0}
+
+test apply-11.3 {a is changed by transient effects} -setup {
+    create
+    uc ctype add t1 -100 100
+    uc curve add t1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 10.0
+    uc transient 2 2 2 20.0
+} -body {
+    uc apply 0 -start
+
+    pprint [rdb query {select curve_id, a, b, delta from ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a     b     delta 
+-------- ----- ----- ----- 
+1        55.0  50.0  5.0   
+2        -20.0 -50.0 30.0  
+}
+
+test apply-11.4 {a0, b0, and c0 are set} -setup {
+    create
+    uc ctype add t1 -100 100
+    uc curve add t1 50.0 50.0 0.0
+    uc transient 1 1 1 10.0
+} -body {
+    uc apply 0 -start
+
+    pprint [rdb query {select curve_id, a0, b0, c0 from ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a0   b0   c0  
+-------- ---- ---- --- 
+1        55.0 50.0 0.0 
+}
+
+# 12.x: Untracked curves
+
+test apply-12.1 {error on untracked adjustments} -setup {
+    create
+    uc ctype add t1 -100 100
+    uc curve add t1 50.0 50.0 0.0
+    uc curve untrack 1
+    uc adjust 1 1 10.0
+} -body {
+    uc apply 0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Effects or adjustments exist on untracked curves.}
+
+test apply-12.2 {error on untracked effects} -setup {
+    create
+    uc ctype add t1 -100 100
+    uc curve add t1 50.0 50.0 0.0
+    uc curve untrack 1
+    uc transient 1 1 1 10.0
+} -body {
+    uc apply 0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Effects or adjustments exist on untracked curves.}
+
+test apply-12.3 {A=B=C} -setup {
+    create
+    uc ctype add t1 -100 100
+    uc curve add t1 0.0 0.0 50.0
+    uc curve untrack 1
+} -body {
+    uc apply 0
+    
+    # All should be 50.0.
+    pprint [rdb query {select curve_id, a, b, c from ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a    b    c    
+-------- ---- ---- ---- 
+1        50.0 50.0 50.0 
+}
+
+test apply-12.3 {A=B=C after C is changed} -setup {
+    create
+    uc ctype add t1 -100 100
+    uc curve add t1 0.0 0.0 50.0
+    uc curve untrack 1
+    uc apply 0
+    uc curve cset 1 20.0
+} -body {
+    uc apply 0
+    
+    # All should be 20.0.
+    pprint [rdb query {select curve_id, a, b, c from ucurve_curves_t}]
+} -cleanup {
+    cleanup
+} -result {
+curve_id a    b    c    
+-------- ---- ---- ---- 
+1        20.0 20.0 20.0 
+}
+
+#-------------------------------------------------------------------
+# -savehistory
+#
+# We've already tested "-savehistory on", the default.
+
+test savehistory-1.1 {no history saved when off} -setup {
+    create -savehistory off
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 200.0
+} -body {
+    uc apply 1
+
+    rdb onecolumn {SELECT count(rowid) FROM ucurve_contribs_t}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test savehistory-1.2 {clears history when set off} -setup {
+    create
+    uc ctype add T1 -100 100
+    uc curve add T1 50.0 50.0 0.0 -50.0 -50.0 0.0
+    uc transient 1 1 1 200.0
+} -body {
+    uc apply 1
+
+    set a [rdb onecolumn {SELECT count(rowid) FROM ucurve_contribs_t}]
+    uc configure -savehistory off
+    set b [rdb onecolumn {SELECT count(rowid) FROM ucurve_contribs_t}]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests

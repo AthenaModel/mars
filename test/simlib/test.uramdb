@@ -1,0 +1,143 @@
+#-----------------------------------------------------------------------
+# TITLE:
+#    test.uramdb
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Test file for uram(n) unit tests.
+#
+#-----------------------------------------------------------------------
+
+table uramdb_a {
+    record a A1 { }
+    record a A2 { }
+}
+
+table uramdb_n {
+    record n N1 { }
+    record n N2 { }
+}
+
+table uramdb_civ_g {
+    record g CA1 {
+        field n N1
+        field pop 10000
+    }
+
+    record g CB1  {
+        field n N1
+        field pop 10000
+    }
+
+    record g CC1  {
+        field n N1
+        field pop 10000
+    }
+
+    record g CA2 {
+        field n N2
+        field pop 10000
+    }
+
+    record g CB2  {
+        field n N2
+        field pop 10000
+    }
+
+    record g CC2  {
+        field n N2
+        field pop 10000
+    }
+}
+
+table uramdb_frc_g {
+    record g F1 { }
+    record g F2 { }
+    record g F3 { }
+}
+
+table uramdb_org_g {
+    record g O1 { }
+}
+
+table uramdb_hrel {
+    record f CA1 g CA1  {field hrel   1.0}
+    record f CA1 g CB1  {field hrel   0.6}
+    record f CA1 g CC1  {field hrel   0.0}
+    record f CA1 g CA2  {field hrel   1.0}
+    record f CA1 g CB2  {field hrel   0.6}
+    record f CA1 g CC2  {field hrel   0.0}
+
+    record f CB1 g CB1  {field hrel   1.0}
+    record f CB1 g CA1  {field hrel   0.6}
+    record f CB1 g CC1  {field hrel  -0.6}
+    record f CB1 g CB2  {field hrel   1.0}
+    record f CB1 g CA2  {field hrel   0.6}
+    record f CB1 g CC2  {field hrel  -0.6}
+
+    record f CC1 g CC1  {field hrel   1.0}
+    record f CC1 g CA1  {field hrel  -0.3}
+    record f CC1 g CB1  {field hrel  -0.6}
+    record f CC1 g CC2  {field hrel   1.0}
+    record f CC1 g CA2  {field hrel  -0.3}
+    record f CC1 g CB2  {field hrel  -0.6}
+
+    record f CA2 g CA1  {field hrel   1.0}
+    record f CA2 g CB1  {field hrel   0.6}
+    record f CA2 g CC1  {field hrel   0.0}
+    record f CA2 g CA2  {field hrel   1.0}
+    record f CA2 g CB2  {field hrel   0.6}
+    record f CA2 g CC2  {field hrel   0.0}
+
+    record f CB2 g CB1  {field hrel   1.0}
+    record f CB2 g CA1  {field hrel   0.6}
+    record f CB2 g CC1  {field hrel  -0.6}
+    record f CB2 g CB2  {field hrel   1.0}
+    record f CB2 g CA2  {field hrel   0.6}
+    record f CB2 g CC2  {field hrel  -0.6}
+
+    record f CC2 g CC1  {field hrel   1.0}
+    record f CC2 g CA1  {field hrel  -0.3}
+    record f CC2 g CB1  {field hrel  -0.6}
+    record f CC2 g CC2  {field hrel   1.0}
+    record f CC2 g CA2  {field hrel  -0.3}
+    record f CC2 g CB2  {field hrel  -0.6}
+
+    record f F1 g F2 {field hrel   0.8}
+    record f F1 g F3 {field hrel  -0.8}
+
+    record f F2 g F1 {field hrel   0.8}
+    record f F2 g F3 {field hrel  -0.8}
+
+    record f F3 g F1 {field hrel  -0.8}
+    record f F3 g F2 {field hrel  -0.8}
+}
+
+table uramdb_vrel {
+    record g CA1 a A1 {field vrel  0.0}
+    record g CB1 a A1 {field vrel -0.5}
+    record g CC1 a A1 {field vrel -0.5}
+    record g CA2 a A1 {field vrel  0.5}
+    record g CB2 a A1 {field vrel -0.5}
+    record g CC2 a A1 {field vrel -0.5}
+    record g F1  a A1 {field vrel  1.0}
+    record g F2  a A1 {field vrel  1.0}
+    record g F3  a A1 {field vrel -0.5}
+
+    record g CA1 a A2 {field vrel -0.5}
+    record g CB1 a A2 {field vrel  0.5}
+    record g CC1 a A2 {field vrel  0.5}
+    record g CA2 a A2 {field vrel -0.5}
+    record g CB2 a A2 {field vrel  0.5}
+    record g CC2 a A2 {field vrel  0.5}
+    record g F1  a A2 {field vrel -0.5}
+    record g F2  a A2 {field vrel -0.5}
+    record g F3  a A2 {field vrel  1.0}
+}
+
+table uramdb_sat { }
+
+table uramdb_coop { }
+

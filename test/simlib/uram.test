@@ -1,0 +1,5093 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    uram.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for uram(n) 
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+
+# Define a constraint to comment out tests which shouldn't
+# or haven't been updated yet:
+#
+# * Tests requiring coop indirect effects in other neighborhoods
+#   depend on removing "n" from coop and then revising the coop
+#   influence mechanism.
+
+::tcltest::testConstraint tbd
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/simlib/pkgModules.tcl
+namespace import ::marsutil::*
+namespace import ::simlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+# Create a run-time database in memory
+sqldocument rdb
+rdb register ::marsutil::undostack
+rdb register ::simlib::uramdb
+rdb register ::simlib::ucurve
+rdb register ::simlib::uram
+rdb open :memory:
+rdb clear
+
+uramdb loadfile ./test.uramdb ::rdb
+
+# pprint block
+#
+# Pretty-prints a result block so that the test looks nice
+
+proc pprint {block} {
+    set block [string map [list \" \'] $block]
+    return "\n$block"
+}
+
+# create ?options?
+#
+# Creates a pre-configured URAM.  All uram options can be
+# used.
+#
+# -sql               - SQL command run to modify the uramdb data before
+#                      URAM is initialized.
+# -advance0  flag    - Whether to advance to 0 automatically.
+#                      Defaults to yes.
+
+proc create {args} {
+    # FIRST, set up the RDB
+    rdb clear
+    set rdb ::rdb
+    
+    set advance0 [optval args -advance0 yes]
+    set sql [optval args -sql ""]
+
+    uramdb loadfile ./test.uramdb $rdb
+
+    if {$sql ne ""} {
+        rdb eval $sql
+    }
+
+    uram jr \
+        -rdb     $rdb                                \
+        -loadcmd [list ::simlib::uramdb loader $rdb] \
+        {*}$args
+
+    jr init
+
+    # Set the negative RAF to 0.0 so that indirect effects
+    # are easier to predict.  We'll reset it for testing RAFs.
+    uram parm set uram.raf.negative 1.0
+
+    if {$advance0} {
+        jr advance 0
+    }
+
+    return
+}
+
+# setprox f g prox
+#
+# Artificially sets group proximities in uram_civprox
+
+proc setprox {f g prox} {
+    set f_id [rdb onecolumn {SELECT g_id FROM uram_g WHERE g=$f}]
+    set g_id [rdb onecolumn {SELECT g_id FROM uram_g WHERE g=$g}]
+
+    rdb eval {
+        UPDATE uram_civrel_t 
+        SET proximity=$prox
+        WHERE f_id=$f_id AND g_id=$g_id
+    }
+}
+
+proc cleanup {} {
+    rdb clear
+
+    foreach o [uram info instances] {
+        catch {$o destroy}
+    }
+}
+
+#-------------------------------------------------------------------
+# Object creation
+#
+# Verify state at creation, as well as creation errors.
+
+test creation-1.1 {invariant succeeds on creation} -body {
+    create
+} -cleanup {
+    cleanup
+} -result {}
+
+test creation-1.2 {initialized flag not set on creation} -body {
+    uram temp_jr \
+        -logcomponent temp                          \
+        -rdb          ::rdb      \
+        -loadcmd      ::DataLoader
+    
+    temp_jr initialized
+} -cleanup {
+    cleanup
+} -result {0}
+
+test creation-1.3 {cannot create multiple instances on one RDB} -body {
+    create
+
+    uram temp_jr \
+        -logcomponent temp                          \
+        -rdb          ::rdb      \
+        -loadcmd      ::DataLoader
+    
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Error in constructor: RDB ::rdb already in use by URAM ::jr}
+
+#-------------------------------------------------------------------
+# Object destruction
+#
+# Verify that the RDB is cleaned up on destruction.
+
+test destruction-1.1 {rdb clean up} -body {
+    create
+} -body {
+    # FIRST, destroy the object
+    cleanup
+
+    # NEXT, verify that none of the URAM tables have entries
+    # for the object.
+    set badTables {}
+
+    foreach table [rdb tables] {
+        if {![string match "uram_*" $table]} {
+            continue
+        }
+
+        set count [rdb onecolumn "
+            SELECT count(rowid) FROM $table
+        "]
+
+        if {$count > 0} {
+            lappend badTables $table
+        }
+    }
+
+    set badTables
+} -result {}
+
+#--------------------------------------------------------------------
+# option -loadcmd
+
+test option_loadcmd-1.1 {-loadcmd missing} -body {
+    uram jr
+} -returnCodes {
+    error
+} -result {Error in constructor: Assertion failed: $options(-loadcmd) ne ""}
+
+
+#--------------------------------------------------------------------
+# option -rdb
+
+test option_rdb-1.1 {-rdb missing} -body {
+    uram jr -loadcmd dummy
+} -returnCodes {
+    error
+} -result {Error in constructor: Assertion failed: [info commands $rdb] ne ""}
+
+test option_rdb-1.2 {-rdb invalid} -body {
+    uram jr -loadcmd dummy -rdb nonesuch
+} -returnCodes {
+    error
+} -result {Error in constructor: Assertion failed: [info commands $rdb] ne ""}
+
+#-------------------------------------------------------------------
+# init
+
+test init-1.1 {initialized flag set on initialization} -setup {
+    create
+} -body {
+    jr initialized
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-1.2 {tables populated on first initialization} -setup {
+    create
+} -body {
+    rdb eval {
+        SELECT count(a) AS count
+        FROM uram_a
+    } {}
+
+    expr {$count > 0}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-1.3 {-loadcmd not accessed on subsequent inits} -setup {
+    create
+} -body {
+    # FIRST, get the number of non-remote neighborhoods
+    set prox [eproximity index REMOTE]
+
+    set count1 [rdb onecolumn {
+        SELECT count(mn_id) FROM uram_mn
+        WHERE proximity < $prox
+    }]
+
+    # NEXT, set all neighborhoods remote, and reinitialize
+    rdb eval {
+        UPDATE uram_mn SET proximity=$prox
+    } {}
+
+    jr init
+
+    # NEXT, the number of non-remote nbhoods should still be 0
+    set count2 [rdb onecolumn {
+        SELECT count(mn_id) FROM uram_mn
+        WHERE proximity < $prox
+    }]
+
+    list [expr {$count1 > 0}] $count2
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test init-1.4 {Data reloaded on init -reload} -setup {
+    create
+} -body {
+    # FIRST, set all neighborhoods remote, and reinitialize
+    rdb eval {
+        UPDATE uram_mn SET proximity=$prox
+    } {}
+
+    jr init
+
+    set prox [eproximity index REMOTE]
+
+    set count1 [rdb onecolumn {
+        SELECT count(mn_id) FROM uram_mn
+        WHERE proximity < $prox
+    }]
+
+    # NEXT, reload, and get the count.
+    jr init -reload
+
+    set count2 [rdb onecolumn {
+        SELECT count(mn_id) FROM uram_mn
+        WHERE proximity < $prox
+    }]
+
+    list [expr {$count1 > 0}] [expr {$count2 > 0}]
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+test init-1.5 {Initial time is -1} -setup {
+    create -advance0 off
+} -body {
+    jr time
+} -cleanup {
+    cleanup
+} -result {-1}
+
+test init-2.1 {initial contents: uram_a} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_a}]
+} -cleanup {
+    cleanup
+} -result {
+a_id a  
+---- -- 
+1    A1 
+2    A2 
+}
+
+test init-2.2 {initial contents: uram_n} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_n}]
+} -cleanup {
+    cleanup
+} -result {
+n_id n  pop   nbmood_denom nbmood nbmood0 
+---- -- ----- ------------ ------ ------- 
+1    N1 30000 120000.0     0.0    0.0     
+2    N2 30000 120000.0     0.0    0.0     
+}
+
+test init-2.3 {initial contents: uram_mn} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_mn}]
+} -cleanup {
+    cleanup
+} -result {
+mn_id m_id n_id proximity 
+----- ---- ---- --------- 
+1     1    1    0         
+2     1    2    3         
+3     2    1    3         
+4     2    2    0         
+}
+
+test init-2.4 {initial contents: uram_g} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_g}]
+} -cleanup {
+    cleanup
+} -result {
+g_id g   gtype 
+---- --- ----- 
+1    CA1 CIV   
+2    CA2 CIV   
+3    CB1 CIV   
+4    CB2 CIV   
+5    CC1 CIV   
+6    CC2 CIV   
+7    F1  FRC   
+8    F2  FRC   
+9    F3  FRC   
+10   O1  ORG   
+}
+
+test init-2.5 {initial contents: uram_civ_g} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_civ_g}]
+} -cleanup {
+    cleanup
+} -result {
+g_id n_id pop   mood_denom mood mood0 
+---- ---- ----- ---------- ---- ----- 
+1    1    10000 4.0        0.0  0.0   
+2    2    10000 4.0        0.0  0.0   
+3    1    10000 4.0        0.0  0.0   
+4    2    10000 4.0        0.0  0.0   
+5    1    10000 4.0        0.0  0.0   
+6    2    10000 4.0        0.0  0.0   
+}
+
+test init-2.6 {initial contents: uram_c} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_c}]
+} -cleanup {
+    cleanup
+} -result {
+c_id c   
+---- --- 
+1    AUT 
+2    CUL 
+3    QOL 
+4    SFT 
+}
+
+
+test init-2.7 {initial contents: uram_hrel} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT f,g,hrel0 FROM uram_hrel}]
+} -cleanup {
+    cleanup
+} -result {
+f   g   hrel0 
+--- --- ----- 
+CA1 CA1 1.0   
+CA1 CA2 1.0   
+CA1 CB1 0.6   
+CA1 CB2 0.6   
+CA1 CC1 0.0   
+CA1 CC2 0.0   
+CA1 F1  0.0   
+CA1 F2  0.0   
+CA1 F3  0.0   
+CA1 O1  0.0   
+CA2 CA1 1.0   
+CA2 CA2 1.0   
+CA2 CB1 0.6   
+CA2 CB2 0.6   
+CA2 CC1 0.0   
+CA2 CC2 0.0   
+CA2 F1  0.0   
+CA2 F2  0.0   
+CA2 F3  0.0   
+CA2 O1  0.0   
+CB1 CA1 0.6   
+CB1 CA2 0.6   
+CB1 CB1 1.0   
+CB1 CB2 1.0   
+CB1 CC1 -0.6  
+CB1 CC2 -0.6  
+CB1 F1  0.0   
+CB1 F2  0.0   
+CB1 F3  0.0   
+CB1 O1  0.0   
+CB2 CA1 0.6   
+CB2 CA2 0.6   
+CB2 CB1 1.0   
+CB2 CB2 1.0   
+CB2 CC1 -0.6  
+CB2 CC2 -0.6  
+CB2 F1  0.0   
+CB2 F2  0.0   
+CB2 F3  0.0   
+CB2 O1  0.0   
+CC1 CA1 -0.3  
+CC1 CA2 -0.3  
+CC1 CB1 -0.6  
+CC1 CB2 -0.6  
+CC1 CC1 1.0   
+CC1 CC2 1.0   
+CC1 F1  0.0   
+CC1 F2  0.0   
+CC1 F3  0.0   
+CC1 O1  0.0   
+CC2 CA1 -0.3  
+CC2 CA2 -0.3  
+CC2 CB1 -0.6  
+CC2 CB2 -0.6  
+CC2 CC1 1.0   
+CC2 CC2 1.0   
+CC2 F1  0.0   
+CC2 F2  0.0   
+CC2 F3  0.0   
+CC2 O1  0.0   
+F1  CA1 0.0   
+F1  CA2 0.0   
+F1  CB1 0.0   
+F1  CB2 0.0   
+F1  CC1 0.0   
+F1  CC2 0.0   
+F1  F1  1.0   
+F1  F2  0.8   
+F1  F3  -0.8  
+F1  O1  0.0   
+F2  CA1 0.0   
+F2  CA2 0.0   
+F2  CB1 0.0   
+F2  CB2 0.0   
+F2  CC1 0.0   
+F2  CC2 0.0   
+F2  F1  0.8   
+F2  F2  1.0   
+F2  F3  -0.8  
+F2  O1  0.0   
+F3  CA1 0.0   
+F3  CA2 0.0   
+F3  CB1 0.0   
+F3  CB2 0.0   
+F3  CC1 0.0   
+F3  CC2 0.0   
+F3  F1  -0.8  
+F3  F2  -0.8  
+F3  F3  1.0   
+F3  O1  0.0   
+O1  CA1 0.0   
+O1  CA2 0.0   
+O1  CB1 0.0   
+O1  CB2 0.0   
+O1  CC1 0.0   
+O1  CC2 0.0   
+O1  F1  0.0   
+O1  F2  0.0   
+O1  F3  0.0   
+O1  O1  1.0   
+}
+
+test init-2.8 {invariants: uram_hrel} -setup {
+    create
+} -body {
+    set count1 [rdb query {SELECT count(fg_id) FROM uram_hrel}]
+    set count2 [rdb query {
+        SELECT count(fg_id) FROM uram_hrel
+        WHERE hrel=hrel0
+        AND   hrel=avalue
+        AND   hrel=bvalue
+        AND   hrel=cvalue
+        AND   avalue0=avalue
+        AND   bvalue0=bvalue
+        AND   cvalue0=cvalue
+    }]
+
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-2.9 {initial contents: uram_vrel} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT g,a,vrel0 FROM uram_vrel}]
+} -cleanup {
+    cleanup
+} -result {
+g   a  vrel0 
+--- -- ----- 
+CA1 A1 0.0   
+CA1 A2 -0.5  
+CA2 A1 0.5   
+CA2 A2 -0.5  
+CB1 A1 -0.5  
+CB1 A2 0.5   
+CB2 A1 -0.5  
+CB2 A2 0.5   
+CC1 A1 -0.5  
+CC1 A2 0.5   
+CC2 A1 -0.5  
+CC2 A2 0.5   
+F1  A1 1.0   
+F1  A2 -0.5  
+F2  A1 1.0   
+F2  A2 -0.5  
+F3  A1 -0.5  
+F3  A2 1.0   
+O1  A1 0.0   
+O1  A2 0.0   
+}
+
+test init-2.10 {invariants: uram_vrel} -setup {
+    create
+} -body {
+    set count1 [rdb query {SELECT count(ga_id) FROM uram_vrel}]
+    set count2 [rdb query {
+        SELECT count(ga_id) FROM uram_vrel
+        WHERE vrel=vrel0
+        AND   vrel=avalue
+        AND   vrel=bvalue
+        AND   vrel=cvalue
+        AND   avalue0=avalue
+        AND   bvalue0=bvalue
+        AND   cvalue0=cvalue
+    }]
+
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-2.11 {initial contents: uram_sat} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT g,c,sat0,saliency FROM uram_sat}]
+} -cleanup {
+    cleanup
+} -result {
+g   c   sat0 saliency 
+--- --- ---- -------- 
+CA1 AUT 0.0  1.0      
+CA1 CUL 0.0  1.0      
+CA1 QOL 0.0  1.0      
+CA1 SFT 0.0  1.0      
+CA2 AUT 0.0  1.0      
+CA2 CUL 0.0  1.0      
+CA2 QOL 0.0  1.0      
+CA2 SFT 0.0  1.0      
+CB1 AUT 0.0  1.0      
+CB1 CUL 0.0  1.0      
+CB1 QOL 0.0  1.0      
+CB1 SFT 0.0  1.0      
+CB2 AUT 0.0  1.0      
+CB2 CUL 0.0  1.0      
+CB2 QOL 0.0  1.0      
+CB2 SFT 0.0  1.0      
+CC1 AUT 0.0  1.0      
+CC1 CUL 0.0  1.0      
+CC1 QOL 0.0  1.0      
+CC1 SFT 0.0  1.0      
+CC2 AUT 0.0  1.0      
+CC2 CUL 0.0  1.0      
+CC2 QOL 0.0  1.0      
+CC2 SFT 0.0  1.0      
+}
+
+test init-2.12 {invariants: uram_sat} -setup {
+    create
+    rdb unlock uramdb_sat
+    rdb eval {UPDATE uramdb_sat SET sat=1.0}
+    jr init -reload
+} -body {
+    set count1 [rdb query {SELECT count(gc_id) FROM uram_sat}]
+    set count2 [rdb query {
+        SELECT count(gc_id) FROM uram_sat
+        WHERE sat=sat0
+        AND   sat=avalue
+        AND   sat=bvalue
+        AND   sat=cvalue
+        AND   avalue0=avalue
+        AND   bvalue0=bvalue
+        AND   cvalue0=cvalue
+    }]
+
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-2.13 {initial contents: uram_coop} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT f,g,n_id,pop,coop0 FROM uram_coop}]
+} -cleanup {
+    cleanup
+} -result {
+f   g  n_id pop   coop0 
+--- -- ---- ----- ----- 
+CA1 F1 1    10000 50.0  
+CA1 F2 1    10000 50.0  
+CA1 F3 1    10000 50.0  
+CA2 F1 2    10000 50.0  
+CA2 F2 2    10000 50.0  
+CA2 F3 2    10000 50.0  
+CB1 F1 1    10000 50.0  
+CB1 F2 1    10000 50.0  
+CB1 F3 1    10000 50.0  
+CB2 F1 2    10000 50.0  
+CB2 F2 2    10000 50.0  
+CB2 F3 2    10000 50.0  
+CC1 F1 1    10000 50.0  
+CC1 F2 1    10000 50.0  
+CC1 F3 1    10000 50.0  
+CC2 F1 2    10000 50.0  
+CC2 F2 2    10000 50.0  
+CC2 F3 2    10000 50.0  
+}
+
+test init-2.14 {invariants: uram_coop} -setup {
+    create
+} -body {
+    set count1 [rdb query {SELECT count(fg_id) FROM uram_coop}]
+    set count2 [rdb query {
+        SELECT count(fg_id) FROM uram_coop
+        WHERE coop=coop0
+        AND   coop=avalue
+        AND   coop=bvalue
+        AND   coop=cvalue
+        AND   avalue0=avalue
+        AND   bvalue0=bvalue
+        AND   cvalue0=cvalue
+    }]
+
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-2.15 {shared fg_id's: uram_coop_t and uram_hrel_t} -setup {
+    create
+} -body {
+    set count1 [rdb eval {SELECT count(fg_id) FROM uram_coop_t}]
+    set count2 [rdb eval {
+        SELECT count(fg_id)
+        FROM uram_hrel_t AS H
+        JOIN uram_coop_t AS C USING (fg_id)
+        WHERE H.f_id = C.f_id
+        AND   H.g_id = C.g_id
+    }]
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-2.16 {initial contents: uram_nbcoop} -setup {
+    create
+} -body {
+    pprint [rdb query {
+        SELECT n,g,nbcoop,nbcoop0 FROM uram_nbcoop
+    }]
+} -cleanup {
+    cleanup
+} -result {
+n  g  nbcoop nbcoop0 
+-- -- ------ ------- 
+N1 F1 50.0   50.0    
+N1 F2 50.0   50.0    
+N1 F3 50.0   50.0    
+N2 F1 50.0   50.0    
+N2 F2 50.0   50.0    
+N2 F3 50.0   50.0    
+}
+
+test init-2.17 {initial contents: uram_cause} -setup {
+    create
+} -body {
+    pprint [rdb query {SELECT * FROM uram_cause}]
+} -cleanup {
+    cleanup
+} -result {
+cause_id cause   
+-------- ------- 
+1        CAUSE01 
+2        CAUSE02 
+3        CAUSE03 
+4        CAUSE04 
+5        CAUSE05 
+6        CAUSE06 
+7        CAUSE07 
+8        CAUSE08 
+9        CAUSE09 
+10       CAUSE10 
+}
+
+# 3.x: uram_civrel_t table
+
+test init-3.1 {invariant: uram_civrel_t size} -setup {
+    create
+} -body {
+    set n  [rdb onecolumn {SELECT count(g_id)  FROM uram_civ_g}]
+    set nn [rdb onecolumn {SELECT count(fg_id) FROM uram_civrel_t}]
+
+    expr {$nn == $n*$n}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-3.2 {shared fg_id's: uram_civrel_t and uram_hrel_t} -setup {
+    create
+} -body {
+    set count1 [rdb eval {SELECT count(fg_id) FROM uram_civrel_t}]
+    set count2 [rdb eval {
+        SELECT count(fg_id)
+        FROM uram_hrel_t AS H
+        JOIN uram_civrel_t AS P USING (fg_id)
+        WHERE H.f_id = P.f_id
+        AND   H.g_id = P.g_id
+    }]
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-3.3 {invariant: civrel.hrel_id = hrel.curve_id} -setup {
+    create
+} -body {
+    set n1 [rdb onecolumn {SELECT count(fg_id) FROM uram_civrel_t}]
+
+    set n2 [rdb onecolumn {
+        SELECT count(fg_id)
+        FROM uram_civrel_t AS C
+        JOIN uram_hrel_t   AS H USING (fg_id)
+        WHERE C.hrel_id = H.curve_id;
+    }]
+
+    expr {$n1 == $n2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-3.4 {invariant: civ prox is nbhood prox} -setup {
+    create
+} -body {
+    set ngrp [rdb onecolumn {SELECT count(g_id)  FROM uram_civ_g}]
+    set nrel [rdb onecolumn {SELECT count(fg_id) FROM uram_civrel_t}]
+
+    set nsame [rdb onecolumn {
+        SELECT count(fg_id)
+        FROM uram_civrel_t AS C
+        JOIN uram_civ_g AS F  ON (F.g_id = C.f_id)
+        JOIN uram_civ_g AS G  ON (G.g_id = C.g_id)
+        JOIN uram_mn    AS MN ON (MN.m_id = F.n_id AND MN.n_id = G.n_id)
+        WHERE C.proximity = MN.proximity;
+    }]
+
+    # The group proximity is the same as the neighborhood proximity
+    # except that group proximity is -1 for a group with itself.
+    # Thus, the number of records for which proximity is the same
+    # should be nrel - ngrp
+    expr {$nsame == $nrel - $ngrp}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-3.5 {invariant: civprox.gg = -1} -setup {
+    create
+} -body {
+    set ngrp [rdb onecolumn {SELECT count(g_id)  FROM uram_civ_g}]
+
+    set nsame [rdb onecolumn {
+        SELECT count(fg_id)
+        FROM uram_civrel_t
+        WHERE f_id = g_id AND proximity=-1
+    }]
+
+    expr {$nsame == $ngrp}
+} -cleanup {
+    cleanup
+} -result {1}
+
+# 4.x: uram_frcrel_t table
+
+test init-4.1 {invariant: uram_frcrel_t size} -setup {
+    create
+} -body {
+    set n  [rdb onecolumn {
+        SELECT count(g_id)  
+        FROM uram_g
+        WHERE gtype='FRC'
+    }]
+    set nn [rdb onecolumn {SELECT count(fg_id) FROM uram_frcrel_t}]
+
+    expr {$nn == $n*$n}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-4.2 {shared fg_id's: uram_frcrel_t and uram_hrel_t} -setup {
+    create
+} -body {
+    set count1 [rdb eval {SELECT count(fg_id) FROM uram_frcrel_t}]
+    set count2 [rdb eval {
+        SELECT count(fg_id)
+        FROM uram_hrel_t AS H
+        JOIN uram_frcrel_t AS F USING (fg_id)
+        WHERE H.f_id = F.f_id
+        AND   H.g_id = F.g_id
+    }]
+    expr {$count1 == $count2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test init-4.3 {invariant: frcrel.hrel_id = hrel.curve_id} -setup {
+    create
+} -body {
+    set n1 [rdb onecolumn {SELECT count(fg_id) FROM uram_frcrel_t}]
+
+    set n2 [rdb onecolumn {
+        SELECT count(fg_id)
+        FROM uram_frcrel_t AS F
+        JOIN uram_hrel_t   AS H USING (fg_id)
+        WHERE F.hrel_id = H.curve_id;
+    }]
+
+    expr {$n1 == $n2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+# init-5.x: Empty civilian groups are untracked on load.
+
+test init-5.1 {hrel curves are untracked for empty groups} -setup {
+    create -sql {
+        UPDATE uramdb_civ_g SET pop = 0 WHERE g = 'CA2';
+    }
+} -body {
+    set tracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_hrel
+        WHERE (f = 'CA2' OR g = 'CA2') AND tracked; 
+    }]
+    set untracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_hrel
+        WHERE (f = 'CA2' OR g = 'CA2') AND NOT tracked; 
+    }]
+
+    list $tracked $untracked
+} -cleanup {
+    cleanup
+} -result {0 19}
+
+test init-5.2 {vrel curves are untracked for empty groups} -setup {
+    create -sql {
+        UPDATE uramdb_civ_g SET pop = 0 WHERE g = 'CA2';
+    }
+} -body {
+    set tracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_vrel
+        WHERE g = 'CA2' AND tracked; 
+    }]
+    set untracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_vrel
+        WHERE g = 'CA2' AND NOT tracked; 
+    }]
+
+    list $tracked $untracked
+} -cleanup {
+    cleanup
+} -result {0 2}
+
+test init-5.3 {sat curves are untracked for empty groups} -setup {
+    create -sql {
+        UPDATE uramdb_civ_g SET pop = 0 WHERE g = 'CA2';
+    }
+} -body {
+    set tracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_sat
+        WHERE g = 'CA2' AND tracked; 
+    }]
+    set untracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_sat
+        WHERE g = 'CA2' AND NOT tracked; 
+    }]
+
+    list $tracked $untracked
+} -cleanup {
+    cleanup
+} -result {0 4}
+
+test init-5.4 {coop curves are untracked for empty groups} -setup {
+    create -sql {
+        UPDATE uramdb_civ_g SET pop = 0 WHERE g = 'CA2';
+    }
+} -body {
+    set tracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_coop
+        WHERE f = 'CA2' AND tracked; 
+    }]
+    set untracked [rdb onecolumn {
+        SELECT count(tracked) 
+        FROM uram_coop
+        WHERE f = 'CA2' AND NOT tracked; 
+    }]
+
+    list $tracked $untracked
+} -cleanup {
+    cleanup
+} -result {0 3}
+
+#-------------------------------------------------------------------
+# clear
+
+test clear-1.1 {clears initialized flag} -setup {
+    create
+} -body {
+    jr clear
+    jr initialized
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test clear-1.2 {clears tables} -setup {
+    create
+} -body {
+    jr clear
+
+    # We'll spot check, since we know that "clear" queries to
+    # get the list of uram_* tables.
+
+    rdb eval {SELECT count(a) FROM uram_a}
+    
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+#-------------------------------------------------------------------
+# driver
+
+
+test driver-1.1 {driver returns successive IDs} -setup {
+    create
+} -body {
+    list [jr driver] [jr driver] [jr driver]
+} -cleanup {
+    cleanup
+} -result {1000 1001 1002}
+
+test driver-1.2 {init resets driver ID} -setup {
+    create
+} -body {
+    set a [list [jr driver] [jr driver] [jr driver]]
+    jr init
+    set b [list [jr driver] [jr driver] [jr driver]]
+
+    expr {$a eq $b}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test driver-2.1 {driver can be undone} -setup {
+    create -undo on
+} -body {
+    set a [jr driver]
+    jr edit undo
+    set b [jr driver]
+
+    expr {$a == $b}
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# hrel persistent
+
+test hrel_persistent-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr hrel persistent [jr driver] NONESUCH F1 F2 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_persistent-1.2 {unknown f} -setup {
+    create
+} -body {
+    jr hrel persistent [jr driver] CAUSE01 NONESUCH F2 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_persistent-1.3 {unknown g} -setup {
+    create
+} -body {
+    jr hrel persistent [jr driver] CAUSE01 F1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_persistent-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr hrel persistent [jr driver] CAUSE01 F1 F2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+
+test hrel_persistent-1.5 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr hrel persistent [jr driver] CAUSE01 F1 F2 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Persistent inputs not allowed when t=-1}
+
+test hrel_persistent-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr hrel persistent [jr driver] CAUSE01 F1 F2 10.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f  g  e_id driver_id cause   mag  
+----- -- -- ---- --------- ------- ---- 
+1     F1 F2 1    1000      CAUSE01 10.0 
+}
+
+
+test hrel_persistent-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr hrel persistent [jr driver] "" F1 F2 10.0
+    jr hrel persistent [jr driver] "" CA1 CB1 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+        ORDER BY e_id
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g   e_id driver_id cause mag  
+----- --- --- ---- --------- ----- ---- 
+1     F1  F2  1    1000      1000  10.0 
+1     CA1 CB1 2    1001      1001  5.0  
+}
+
+test hrel_persistent-2.3 {empty civilian groups are ignored} -setup {
+    create
+    jr update pop CA1 0
+} -body {
+    jr hrel persistent [jr driver] "" CA1 F1 10.0
+    jr hrel persistent [jr driver] "" CB1 F2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+        ORDER BY e_id
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag 
+----- --- -- ---- --------- ----- --- 
+1     CB1 F2 1    1001      1001  5.0 
+}
+
+test hrel_persistent-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr hrel persistent [jr driver] "" F1 F2 10.0
+    jr edit mark
+    jr hrel persistent [jr driver] "" CA1 CB1 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f  g  e_id driver_id cause mag  
+----- -- -- ---- --------- ----- ---- 
+1     F1 F2 1    1000      1000  10.0 
+}
+
+#-------------------------------------------------------------------
+# hrel transient
+
+test hrel_transient-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr hrel transient [jr driver] NONESUCH F1 F2 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_transient-1.2 {unknown f} -setup {
+    create
+} -body {
+    jr hrel transient [jr driver] CAUSE01 NONESUCH F2 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_transient-1.3 {unknown g} -setup {
+    create
+} -body {
+    jr hrel transient [jr driver] CAUSE01 F1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_transient-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr hrel transient [jr driver] CAUSE01 F1 F2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test hrel_transient-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr hrel transient [jr driver] CAUSE01 F1 F2 10.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f  g  e_id driver_id cause   mag  
+----- -- -- ---- --------- ------- ---- 
+0     F1 F2 1    1000      CAUSE01 10.0 
+}
+
+
+test hrel_transient-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr hrel transient [jr driver] "" F1 F2 10.0
+    jr hrel transient [jr driver] "" CA1 CB1 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+        ORDER BY e_id
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g   e_id driver_id cause mag  
+----- --- --- ---- --------- ----- ---- 
+0     F1  F2  1    1000      1000  10.0 
+0     CA1 CB1 2    1001      1001  5.0  
+}
+
+test hrel_transient-2.3 {empty civilian groups are ignored} -setup {
+    create
+    jr update pop CA1 0
+} -body {
+    jr hrel transient [jr driver] "" CA1 F1 10.0
+    jr hrel transient [jr driver] "" CB1 F2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+        ORDER BY e_id
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag 
+----- --- -- ---- --------- ----- --- 
+0     CB1 F2 1    1001      1001  5.0 
+}
+
+test hrel_transient-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr hrel transient [jr driver] "" F1 F2 10.0
+    jr edit mark
+    jr hrel transient [jr driver] "" CA1 CB1 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_hrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f  g  e_id driver_id cause mag  
+----- -- -- ---- --------- ----- ---- 
+0     F1 F2 1    1000      1000  10.0 
+}
+
+#-------------------------------------------------------------------
+# hrel badjust
+
+test hrel_badjust-1.1 {unknown f} -setup {
+    create
+} -body {
+    jr hrel badjust [jr driver] NONESUCH F2 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_badjust-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr hrel badjust [jr driver] F1 NONESUCH 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_badjust-1.3 {invalid delta} -setup {
+    create
+} -body {
+    jr hrel badjust [jr driver] F1 F2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test hrel_badjust-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr hrel badjust [jr driver] F1 F2 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test hrel_badjust-2.1 {adjustment is saved} -setup {
+    create
+} -body {
+    jr hrel badjust [jr driver] F1  F2  0.1
+    jr hrel badjust [jr driver] CA1 CB1 0.2
+    
+    pprint [rdb query {
+        SELECT f, g, adj_id, driver_id, delta 
+        FROM uram_hrel_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g   adj_id driver_id delta 
+--- --- ------ --------- ----- 
+F1  F2  1      1000      0.1   
+CA1 CB1 2      1001      0.2   
+}
+
+test hrel_badjust-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr hrel badjust [jr driver] F1 F2 0.1
+    jr edit mark
+    jr hrel badjust [jr driver] CA1 CB1 0.2
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT f, g, adj_id, driver_id, delta 
+        FROM uram_hrel_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f  g  adj_id driver_id delta 
+-- -- ------ --------- ----- 
+F1 F2 1      1000      0.1   
+}
+
+
+#-------------------------------------------------------------------
+# hrel bset
+
+test hrel_bset-1.1 {unknown f} -setup {
+    create
+} -body {
+    jr hrel bset [jr driver] NONESUCH F2 0.75
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_bset-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr hrel bset [jr driver] F1 NONESUCH 0.75
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_bset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr hrel bset [jr driver] F1 F2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+
+test hrel_bset-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr hrel bset [jr driver] F1 F2 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test hrel_bset-2.1 {value is set} -setup {
+    create
+} -body {
+    jr hrel bset [jr driver] F1  F2  0.75
+    jr hrel bset [jr driver] CA1 CB1 0.25
+    
+    pprint [rdb query {
+        SELECT f, g, bvalue 
+        FROM uram_hrel WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g   bvalue 
+--- --- ------ 
+CA1 CB1 0.25   
+F1  F2  0.75   
+}
+
+test hrel_bset-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr hrel bset [jr driver] F1  F2  0.75
+    jr edit mark
+    jr hrel bset [jr driver] CA1 CB1 0.5
+    jr edit undo
+
+    # All we are really checking is that ucurve(n) is
+    # undoing.
+    pprint [rdb query {
+        SELECT f, g, bvalue 
+        FROM uram_hrel WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f  g  bvalue 
+-- -- ------ 
+F1 F2 0.75   
+}
+
+#-------------------------------------------------------------------
+# hrel cset
+
+test hrel_cset-1.1 {unknown f} -setup {
+    create
+} -body {
+    jr hrel cset NONESUCH F2 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_cset-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr hrel cset F1 NONESUCH 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test hrel_cset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr hrel cset F1 F2 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+
+test hrel_cset-2.1 {change is made} -setup {
+    create
+} -body {
+    jr hrel cset F1 F2 0.1 CA1 CB2 0.2
+    
+    pprint [rdb query {
+        SELECT f, g, cvalue
+        FROM uram_hrel
+        WHERE cvalue != hrel0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g   cvalue 
+--- --- ------ 
+CA1 CB2 0.2    
+F1  F2  0.1    
+}
+
+test hrel_cset-3.1 {effect is not undoable} -setup {
+    create -undo on
+} -body {
+    # Add to undo stack
+    jr driver
+
+    # Make change
+    jr hrel cset F1 F2 0.1 CA1 CB2 0.2
+
+    jr edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# vrel persistent
+
+test vrel_persistent-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr vrel persistent [jr driver] NONESUCH F1 A1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_persistent-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr vrel persistent [jr driver] CAUSE01 NONESUCH A1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_persistent-1.3 {unknown a} -setup {
+    create
+} -body {
+    jr vrel persistent [jr driver] CAUSE01 F1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_persistent-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr vrel persistent [jr driver] CAUSE01 F1 A1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test vrel_persistent-1.5 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr vrel persistent [jr driver] CAUSE01 F1 A1 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Persistent inputs not allowed when t=-1}
+
+test vrel_persistent-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr vrel persistent [jr driver] CAUSE01 F1 A1 10.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g  a  e_id driver_id cause   mag  
+----- -- -- ---- --------- ------- ---- 
+1     F1 A1 1    1000      CAUSE01 10.0 
+}
+
+
+test vrel_persistent-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr vrel persistent [jr driver] "" F1 A1 10.0
+    jr vrel persistent [jr driver] "" F2 A2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g  a  e_id driver_id cause mag  
+----- -- -- ---- --------- ----- ---- 
+1     F1 A1 1    1000      1000  10.0 
+1     F2 A2 2    1001      1001  5.0  
+}
+
+test vrel_persistent-2.3 {empty civilian groups are ignored} -setup {
+    create
+    jr update pop CA1 0
+} -body {
+    jr vrel persistent [jr driver] "" CA1 A1 10.0
+    jr vrel persistent [jr driver] "" CB1 A2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+        ORDER BY e_id
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   a  e_id driver_id cause mag 
+----- --- -- ---- --------- ----- --- 
+1     CB1 A2 1    1001      1001  5.0 
+}
+
+test vrel_persistent-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr vrel persistent [jr driver] "" F1 A1 10.0
+    jr edit mark
+    jr vrel persistent [jr driver] "" F2 A2 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g  a  e_id driver_id cause mag  
+----- -- -- ---- --------- ----- ---- 
+1     F1 A1 1    1000      1000  10.0 
+}
+
+
+#-------------------------------------------------------------------
+# vrel transient
+
+test vrel_transient-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr vrel transient [jr driver] NONESUCH F1 A1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_transient-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr vrel transient [jr driver] CAUSE01 NONESUCH A1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_transient-1.3 {unknown a} -setup {
+    create
+} -body {
+    jr vrel transient [jr driver] CAUSE01 F1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_transient-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr vrel transient [jr driver] CAUSE01 F1 A1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test vrel_transient-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr vrel transient [jr driver] CAUSE01 F1 A1 10.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g  a  e_id driver_id cause   mag  
+----- -- -- ---- --------- ------- ---- 
+0     F1 A1 1    1000      CAUSE01 10.0 
+}
+
+
+test vrel_transient-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr vrel transient [jr driver] "" F1 A1 10.0
+    jr vrel transient [jr driver] "" F2 A2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g  a  e_id driver_id cause mag  
+----- -- -- ---- --------- ----- ---- 
+0     F1 A1 1    1000      1000  10.0 
+0     F2 A2 2    1001      1001  5.0  
+}
+
+test vrel_transient-2.3 {empty civilian groups are ignored} -setup {
+    create
+    jr update pop CA1 0
+} -body {
+    jr vrel transient [jr driver] "" CA1 A1 10.0
+    jr vrel transient [jr driver] "" CB1 A2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+        ORDER BY e_id
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   a  e_id driver_id cause mag 
+----- --- -- ---- --------- ----- --- 
+0     CB1 A2 1    1001      1001  5.0 
+}
+
+test vrel_transient-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr vrel transient [jr driver] "" F1 A1 10.0
+    jr edit mark
+    jr vrel transient [jr driver] "" F2 A2 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, g, a, e_id, driver_id, cause, mag 
+        FROM uram_vrel_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g  a  e_id driver_id cause mag  
+----- -- -- ---- --------- ----- ---- 
+0     F1 A1 1    1000      1000  10.0 
+}
+
+#-------------------------------------------------------------------
+# vrel badjust
+
+test vrel_badjust-1.1 {unknown g} -setup {
+    create
+} -body {
+    jr vrel badjust [jr driver] NONESUCH A1 -0.25
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_badjust-1.2 {unknown a} -setup {
+    create
+} -body {
+    jr vrel badjust [jr driver] F1 NONESUCH -0.25
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_badjust-1.3 {invalid delta} -setup {
+    create
+} -body {
+    jr vrel badjust [jr driver] F1 A1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test vrel_badjust-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr vrel badjust [jr driver] F1 A1 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test vrel_badjust-2.1 {adjustment is saved} -setup {
+    create
+} -body {
+    jr vrel badjust [jr driver] F1 A1 -0.25
+    jr vrel badjust [jr driver] F2 A2 0.25
+    
+    pprint [rdb query {
+        SELECT g, a, adj_id, driver_id, delta 
+        FROM uram_vrel_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g  a  adj_id driver_id delta 
+-- -- ------ --------- ----- 
+F1 A1 1      1000      -0.25 
+F2 A2 2      1001      0.25  
+}
+
+test vrel_badjust-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr vrel badjust [jr driver] F1 A1 -0.25
+    jr edit mark
+    jr vrel badjust [jr driver] F2 A2 0.25
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT g, a, adj_id, driver_id, delta 
+        FROM uram_vrel_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g  a  adj_id driver_id delta 
+-- -- ------ --------- ----- 
+F1 A1 1      1000      -0.25 
+}
+
+#-------------------------------------------------------------------
+# vrel bset
+
+test vrel_bset-1.1 {unknown g} -setup {
+    create
+} -body {
+    jr vrel bset [jr driver] NONESUCH A1 -0.25
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_bset-1.2 {unknown a} -setup {
+    create
+} -body {
+    jr vrel bset [jr driver] F1 NONESUCH -0.25
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_bset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr vrel bset [jr driver] F1 A1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+
+
+test vrel_bset-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr vrel bset [jr driver] F1 A1 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test vrel_bset-2.1 {value is set} -setup {
+    create
+} -body {
+    jr vrel bset [jr driver] F1 A1 -0.25
+    jr vrel bset [jr driver] F2 A2 0.25
+    
+    pprint [rdb query {
+        SELECT g, a, bvalue 
+        FROM uram_vrel WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g  a  bvalue 
+-- -- ------ 
+F1 A1 -0.25  
+F2 A2 0.25   
+}
+
+test vrel_bset-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr vrel bset [jr driver] F1 A1 -0.25
+    jr edit mark
+    jr vrel bset [jr driver] F2 A2 0.25
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT g, a, bvalue 
+        FROM uram_vrel WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g  a  bvalue 
+-- -- ------ 
+F1 A1 -0.25  
+}
+
+#-------------------------------------------------------------------
+# vrel cset
+
+test vrel_cset-1.1 {unknown g} -setup {
+    create
+} -body {
+    jr vrel cset NONESUCH A1 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_cset-1.2 {unknown a} -setup {
+    create
+} -body {
+    jr vrel cset F1 NONESUCH 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test vrel_cset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr vrel cset F1 A1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+
+test vrel_cset-2.1 {change is made} -setup {
+    create
+} -body {
+    jr vrel cset F1 A1 0.1 F2 A2 0.2
+    
+    pprint [rdb query {
+        SELECT g, a, cvalue
+        FROM uram_vrel
+        WHERE cvalue != vrel0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g  a  cvalue 
+-- -- ------ 
+F1 A1 0.1    
+F2 A2 0.2    
+}
+
+test vrel_cset-3.1 {effect is not undoable} -setup {
+    create -undo on
+} -body {
+    # Add to undo stack; this can be undone.
+    jr driver
+
+    # Make change
+    jr vrel cset F1 A1 0.1 F2 A2 0.2
+
+    jr edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# sat persistent
+
+test sat_persistent-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr sat persistent [jr driver] NONESUCH CA1 AUT 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_persistent-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr sat persistent [jr driver] CAUSE01 NONESUCH AUT 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_persistent-1.3 {unknown c} -setup {
+    create
+} -body {
+    jr sat persistent [jr driver] CAUSE01 CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_persistent-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr sat persistent [jr driver] CAUSE01 CA1 AUT NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test sat_persistent-1.5 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr sat persistent [jr driver] CAUSE01 CA1 AUT 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Persistent inputs not allowed when t=-1}
+
+test sat_persistent-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr sat persistent [jr driver] CAUSE01 CA1 AUT 10.0 -s 0.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, c, e_id, driver_id, cause, mag 
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   c   e_id driver_id cause   mag  
+----- --- --- ---- --------- ------- ---- 
+1     CA1 AUT 1    1000      CAUSE01 10.0 
+}
+
+
+test sat_persistent-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 10.0 -s 0.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, c, e_id, driver_id, cause, mag 
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   c   e_id driver_id cause mag  
+----- --- --- ---- --------- ----- ---- 
+1     CA1 AUT 1    1000      1000  10.0 
+}
+
+test sat_persistent-2.3 {spread factor includes hrel} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    pprint [rdb query {
+        SELECT E.g     AS f, 
+               E.mag   AS mag,
+               H.hrel  AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag  hrel 
+--- ---- ---- 
+CA1 1.0  1.0  
+CA2 1.0  1.0  
+CB1 0.6  0.6  
+CC1 -0.3 -0.3 
+}
+
+test sat_persistent-2.4 {spread factor includes hrel with RAF} -setup {
+    create
+    
+    # Reset the RAF parameters
+    uram parm reset
+
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    pprint [rdb query {
+        SELECT E.g     AS f, 
+               E.mag   AS mag,
+               H.hrel  AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag   hrel 
+--- ----- ---- 
+CA1 1.0   1.0  
+CA2 1.0   1.0  
+CB1 0.6   0.6  
+CC1 -0.15 -0.3 
+}
+
+test sat_persistent-2.5 {spread factor includes s, p, q} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 1.0 -s 0.8 -p 0.5 -q 0.1
+    
+    pprint [rdb query {
+        SELECT E.g   AS f, 
+               E.mag AS mag,
+               H.hrel AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag   hrel 
+--- ----- ---- 
+CA1 1.0   1.0  
+CA2 0.8   1.0  
+CB1 0.3   0.6  
+CC1 -0.03 -0.3 
+}
+
+test sat_persistent-2.6 {a factor of zero limits spread} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 1.0 -s 0.8
+    
+    pprint [rdb query {
+        SELECT E.g   AS f, 
+               E.mag AS mag,
+               H.hrel AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag hrel 
+--- --- ---- 
+CA1 1.0 1.0  
+CA2 0.8 1.0  
+}
+
+test sat_persistent-2.7 {No indirect effects on empty groups} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+    jr update pop CB1 0
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    pprint [rdb query {
+        SELECT g, c, mag
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   mag  
+--- --- ---- 
+CA1 AUT 1.0  
+CA2 AUT 1.0  
+CC1 AUT -0.3 
+}
+
+test sat_persistent-2.8 {No effects if g is empty} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+    jr update pop CA1 0
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    rdb onecolumn {
+        SELECT count(*) FROM uram_sat_effects
+    }
+} -cleanup {
+    cleanup
+} -result {0}
+
+test sat_persistent-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr sat persistent [jr driver] "" CA1 AUT 10.0
+    jr edit mark
+    jr sat persistent [jr driver] "" CB2 QOL 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, g, c, e_id, driver_id, cause, mag 
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   c   e_id driver_id cause mag  
+----- --- --- ---- --------- ----- ---- 
+1     CA1 AUT 1    1000      1000  10.0 
+1     CB1 AUT 2    1000      1000  6.0  
+1     CC1 AUT 3    1000      1000  -3.0 
+}
+
+
+#-------------------------------------------------------------------
+# sat transient
+
+test sat_transient-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr sat transient [jr driver] NONESUCH CA1 AUT 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_transient-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr sat transient [jr driver] CAUSE01 NONESUCH AUT 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_transient-1.3 {unknown c} -setup {
+    create
+} -body {
+    jr sat transient [jr driver] CAUSE01 CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_transient-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr sat transient [jr driver] CAUSE01 CA1 AUT NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test sat_transient-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr sat transient [jr driver] CAUSE01 CA1 AUT 10.0 -s 0.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, c, e_id, driver_id, cause, mag 
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   c   e_id driver_id cause   mag  
+----- --- --- ---- --------- ------- ---- 
+0     CA1 AUT 1    1000      CAUSE01 10.0 
+}
+
+
+test sat_transient-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 10.0 -s 0.0
+    
+    pprint [rdb query {
+        SELECT pflag, g, c, e_id, driver_id, cause, mag 
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   c   e_id driver_id cause mag  
+----- --- --- ---- --------- ----- ---- 
+0     CA1 AUT 1    1000      1000  10.0 
+}
+
+test sat_transient-2.3 {spread factor includes hrel} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    pprint [rdb query {
+        SELECT E.g     AS f, 
+               E.mag   AS mag,
+               H.hrel  AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag  hrel 
+--- ---- ---- 
+CA1 1.0  1.0  
+CA2 1.0  1.0  
+CB1 0.6  0.6  
+CC1 -0.3 -0.3 
+}
+
+test sat_transient-2.4 {spread factor includes s, p, q} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 1.0 -s 0.8 -p 0.5 -q 0.1
+    
+    pprint [rdb query {
+        SELECT E.g   AS f, 
+               E.mag AS mag,
+               H.hrel AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag   hrel 
+--- ----- ---- 
+CA1 1.0   1.0  
+CA2 0.8   1.0  
+CB1 0.3   0.6  
+CC1 -0.03 -0.3 
+}
+
+test sat_transient-2.5 {a factor of zero limits spread} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 1.0 -s 0.8
+    
+    pprint [rdb query {
+        SELECT E.g   AS f, 
+               E.mag AS mag,
+               H.hrel AS hrel
+        FROM uram_sat_effects AS E
+        JOIN uram_hrel AS H ON (E.g = H.f AND H.g='CA1')
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   mag hrel 
+--- --- ---- 
+CA1 1.0 1.0  
+CA2 0.8 1.0  
+}
+
+test sat_transient-2.6 {No indirect effects on empty groups} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+    jr update pop CB1 0
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    pprint [rdb query {
+        SELECT g, c, mag
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   mag  
+--- --- ---- 
+CA1 AUT 1.0  
+CA2 AUT 1.0  
+CC1 AUT -0.3 
+}
+
+test sat_transient-2.7 {No effects if g is empty} -setup {
+    create
+    
+    # Set up some group proximities
+    setprox CA2 CA1 0  ;# HERE
+    setprox CB1 CA1 1  ;# NEAR
+    setprox CC1 CA1 2  ;# FAR
+    setprox CB2 CA1 3  ;# REMOTE
+    setprox CC2 CA1 3  ;# REMOTE
+    jr update pop CA1 0
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 1.0 -s 1.0 -p 1.0 -q 1.0
+    
+    rdb onecolumn {
+        SELECT count(*) FROM uram_sat_effects
+    }
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test sat_transient-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 10.0
+    jr edit mark
+    jr sat transient [jr driver] "" CB2 QOL 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, g, c, e_id, driver_id, cause, mag 
+        FROM uram_sat_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag g   c   e_id driver_id cause mag  
+----- --- --- ---- --------- ----- ---- 
+0     CA1 AUT 1    1000      1000  10.0 
+0     CB1 AUT 2    1000      1000  6.0  
+0     CC1 AUT 3    1000      1000  -3.0 
+}
+
+#-------------------------------------------------------------------
+# sat badjust
+
+test sat_badjust-1.1 {unknown g} -setup {
+    create
+} -body {
+    jr sat badjust [jr driver] NONESUCH AUT 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_badjust-1.2 {unknown c} -setup {
+    create
+} -body {
+    jr sat badjust [jr driver] CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_badjust-1.3 {invalid delta} -setup {
+    create
+} -body {
+    jr sat badjust [jr driver] CA1 AUT NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test sat_badjust-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr sat badjust [jr driver] CA1 AUT 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test sat_badjust-2.1 {adjustment is saved} -setup {
+    create
+} -body {
+    jr sat badjust [jr driver] CA1 AUT 10.0
+    jr sat badjust [jr driver] CB2 QOL 5.0
+    
+    pprint [rdb query {
+        SELECT g, c, adj_id, driver_id, delta 
+        FROM uram_sat_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   adj_id driver_id delta 
+--- --- ------ --------- ----- 
+CA1 AUT 1      1000      10.0  
+CB2 QOL 2      1001      5.0   
+}
+
+test sat_badjust-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr sat badjust [jr driver] CA1 AUT 10.0
+    jr edit mark
+    jr sat badjust [jr driver] CB2 QOL 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT g, c, adj_id, driver_id, delta 
+        FROM uram_sat_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   adj_id driver_id delta 
+--- --- ------ --------- ----- 
+CA1 AUT 1      1000      10.0  
+}
+
+#-------------------------------------------------------------------
+# sat bset
+
+test sat_bset-1.1 {unknown g} -setup {
+    create
+} -body {
+    jr sat bset [jr driver] NONESUCH AUT 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_bset-1.2 {unknown c} -setup {
+    create
+} -body {
+    jr sat bset [jr driver] CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_bset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr sat bset [jr driver] CA1 AUT NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+
+
+test sat_bset-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr sat bset [jr driver] CA1 AUT 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test sat_bset-2.1 {value is set} -setup {
+    create
+} -body {
+    jr sat bset [jr driver] CA1 AUT 10.0
+    jr sat bset [jr driver] CB2 QOL 5.0
+    
+    pprint [rdb query {
+        SELECT g, c, bvalue 
+        FROM uram_sat WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   bvalue 
+--- --- ------ 
+CA1 AUT 10.0   
+CB2 QOL 5.0    
+}
+
+test sat_bset-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr sat bset [jr driver] CA1 AUT 10.0
+    jr edit mark
+    jr sat bset [jr driver] CB2 QOL 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT g, c, bvalue 
+        FROM uram_sat WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   bvalue 
+--- --- ------ 
+CA1 AUT 10.0   
+}
+
+#-------------------------------------------------------------------
+# sat cset
+
+test sat_cset-1.1 {unknown g} -setup {
+    create
+} -body {
+    jr sat cset NONESUCH AUT 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_cset-1.2 {unknown c} -setup {
+    create
+} -body {
+    jr sat cset CA1 NONESUCH 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test sat_cset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr sat cset CA1 AUT NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+
+test sat_cset-2.1 {change is made} -setup {
+    create
+} -body {
+    jr sat cset CA1 AUT 0.1 CB2 QOL 0.2
+    
+    pprint [rdb query {
+        SELECT g, c, cvalue
+        FROM uram_sat
+        WHERE cvalue != sat0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   c   cvalue 
+--- --- ------ 
+CA1 AUT 0.1    
+CB2 QOL 0.2    
+}
+
+test sat_cset-3.1 {effect is not undoable} -setup {
+    create -undo on
+} -body {
+    # Add to undo stack; this can be undone.
+    jr driver
+
+    # Make change
+    jr sat cset CA1 AUT 0.1 CB2 QOL 0.2
+
+    jr edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+#-------------------------------------------------------------------
+# coop persistent
+
+test coop_persistent-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr coop persistent [jr driver] NONESUCH CA1 F1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_persistent-1.2 {unknown f} -setup {
+    create
+} -body {
+    jr coop persistent [jr driver] CAUSE01 NONESUCH F1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_persistent-1.3 {unknown g} -setup {
+    create
+} -body {
+    jr coop persistent [jr driver] CAUSE01 CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_persistent-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr coop persistent [jr driver] CAUSE01 CA1 F1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test coop_persistent-1.5 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr coop persistent [jr driver] CAUSE01 CA1 F2 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Persistent inputs not allowed when t=-1}
+
+test coop_persistent-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr coop persistent [jr driver] CAUSE01 CA1 F1 10.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause   mag  
+----- --- -- ---- --------- ------- ---- 
+1     CA1 F1 1    1000      CAUSE01 10.0 
+1     CA1 F2 2    1000      CAUSE01 8.0  
+1     CA1 F3 3    1000      CAUSE01 -8.0 
+}
+
+
+test coop_persistent-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0
+    jr coop persistent [jr driver] "" CA2 F2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+1     CA1 F1 1    1000      1000  10.0 
+1     CA1 F2 2    1000      1000  8.0  
+1     CA1 F3 3    1000      1000  -8.0 
+1     CA2 F1 4    1001      1001  4.0  
+1     CA2 F2 5    1001      1001  5.0  
+1     CA2 F3 6    1001      1001  -4.0 
+}
+
+test coop_persistent-2.3 {effect on other civ groups HERE} -setup {
+    create
+    setprox CA2 CA1 0 ;# CA2 is HERE to CA1
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0 -s 0.5
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+1     CA1 F1 1    1000      1000  10.0 
+1     CA1 F2 2    1000      1000  8.0  
+1     CA1 F3 3    1000      1000  -8.0 
+1     CA2 F1 4    1000      1000  5.0  
+1     CA2 F2 5    1000      1000  4.0  
+1     CA2 F3 6    1000      1000  -4.0 
+}
+
+test coop_persistent-2.4 {effect on groups HERE with RAF} -setup {
+    create
+    uram parm reset
+    setprox CA2 CA1 0 ;# CA2 is HERE to CA1
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0 -s 0.5
+    
+    # Negative effects should be half the size as in test
+    # 2.3.
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+1     CA1 F1 1    1000      1000  10.0 
+1     CA1 F2 2    1000      1000  8.0  
+1     CA1 F3 3    1000      1000  -4.0 
+1     CA2 F1 4    1000      1000  5.0  
+1     CA2 F2 5    1000      1000  4.0  
+1     CA2 F3 6    1000      1000  -2.0 
+}
+
+test coop_persistent-2.5 {effect on other civ groups NEAR} -setup {
+    create
+    setprox CA2 CA1 1 ;# CA2 is NEAR to CA1
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0 -p 0.1
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, format('%.1f',mag)
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause format('%.1f',mag) 
+----- --- -- ---- --------- ----- ------------------ 
+1     CA1 F1 1    1000      1000  10.0               
+1     CA1 F2 2    1000      1000  8.0                
+1     CA1 F3 3    1000      1000  -8.0               
+1     CA2 F1 4    1000      1000  1.0                
+1     CA2 F2 5    1000      1000  0.8                
+1     CA2 F3 6    1000      1000  -0.8               
+}
+
+test coop_persistent-2.6 {No indirect effects on empty groups} -setup {
+    create
+    setprox CA2 CA1 1 ;# CA2 is NEAR to CA1
+    jr update pop CA2 0
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0 -p 0.1
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, format('%.1f',mag)
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause format('%.1f',mag) 
+----- --- -- ---- --------- ----- ------------------ 
+1     CA1 F1 1    1000      1000  10.0               
+1     CA1 F2 2    1000      1000  8.0                
+1     CA1 F3 3    1000      1000  -8.0               
+}
+
+test coop_persistent-2.7 {No effects at all if f is empty} -setup {
+    create
+    setprox CA2 CA1 1 ;# CA2 is NEAR to CA1
+    jr update pop CA1 0
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0 -p 0.1
+    
+    rdb onecolumn {
+        SELECT count(*) FROM uram_coop_effects
+    }
+} -cleanup {
+    cleanup
+} -result {0}
+
+test coop_persistent-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr coop persistent [jr driver] "" CA1 F1 10.0 
+    jr edit mark
+    jr coop persistent [jr driver] "" CA2 F2 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+1     CA1 F1 1    1000      1000  10.0 
+1     CA1 F2 2    1000      1000  8.0  
+1     CA1 F3 3    1000      1000  -8.0 
+}
+
+
+#-------------------------------------------------------------------
+# coop transient
+
+test coop_transient-1.1 {unknown cause name} -setup {
+    create
+} -body {
+    jr coop transient [jr driver] NONESUCH CA1 F1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_transient-1.2 {unknown f} -setup {
+    create
+} -body {
+    jr coop transient [jr driver] CAUSE01 NONESUCH F1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_transient-1.3 {unknown g} -setup {
+    create
+} -body {
+    jr coop transient [jr driver] CAUSE01 CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_transient-1.4 {invalid mag} -setup {
+    create
+} -body {
+    jr coop transient [jr driver] CAUSE01 CA1 F1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test coop_transient-2.1 {effect when cause is known} -setup {
+    create
+} -body {
+    jr coop transient [jr driver] CAUSE01 CA1 F1 10.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause   mag  
+----- --- -- ---- --------- ------- ---- 
+0     CA1 F1 1    1000      CAUSE01 10.0 
+0     CA1 F2 2    1000      CAUSE01 8.0  
+0     CA1 F3 3    1000      CAUSE01 -8.0 
+}
+
+
+test coop_transient-2.2 {effect when cause is omitted} -setup {
+    create
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0
+    jr coop transient [jr driver] "" CA2 F2 5.0
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+0     CA1 F1 1    1000      1000  10.0 
+0     CA1 F2 2    1000      1000  8.0  
+0     CA1 F3 3    1000      1000  -8.0 
+0     CA2 F1 4    1001      1001  4.0  
+0     CA2 F2 5    1001      1001  5.0  
+0     CA2 F3 6    1001      1001  -4.0 
+}
+
+test coop_transient-2.3 {effect on other civ groups HERE} -setup {
+    create
+    setprox CA2 CA1 0 ;# CA2 is HERE to CA1
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0 -s 0.5
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+0     CA1 F1 1    1000      1000  10.0 
+0     CA1 F2 2    1000      1000  8.0  
+0     CA1 F3 3    1000      1000  -8.0 
+0     CA2 F1 4    1000      1000  5.0  
+0     CA2 F2 5    1000      1000  4.0  
+0     CA2 F3 6    1000      1000  -4.0 
+}
+
+test coop_transient-2.4 {effect on other civ groups NEAR} -setup {
+    create
+    setprox CA2 CA1 1 ;# CA2 is NEAR to CA1
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0 -p 0.1
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, format('%.1f',mag)
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause format('%.1f',mag) 
+----- --- -- ---- --------- ----- ------------------ 
+0     CA1 F1 1    1000      1000  10.0               
+0     CA1 F2 2    1000      1000  8.0                
+0     CA1 F3 3    1000      1000  -8.0               
+0     CA2 F1 4    1000      1000  1.0                
+0     CA2 F2 5    1000      1000  0.8                
+0     CA2 F3 6    1000      1000  -0.8               
+}
+
+test coop_transient-2.5 {No indirect effects on empty groups} -setup {
+    create
+    setprox CA2 CA1 1 ;# CA2 is NEAR to CA1
+    jr update pop CA2 0
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0 -p 0.1
+    
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, format('%.1f',mag)
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause format('%.1f',mag) 
+----- --- -- ---- --------- ----- ------------------ 
+0     CA1 F1 1    1000      1000  10.0               
+0     CA1 F2 2    1000      1000  8.0                
+0     CA1 F3 3    1000      1000  -8.0               
+}
+
+test coop_transient-2.6 {No effects at all if f is empty} -setup {
+    create
+    setprox CA2 CA1 1 ;# CA2 is NEAR to CA1
+    jr update pop CA1 0
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0 -p 0.1
+    
+    rdb onecolumn {
+        SELECT count(*) FROM uram_coop_effects
+    }
+} -cleanup {
+    cleanup
+} -result {0}
+
+test coop_transient-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0 
+    jr edit mark
+    jr coop transient [jr driver] "" CA2 F2 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT pflag, f, g, e_id, driver_id, cause, mag 
+        FROM uram_coop_effects
+    }]
+} -cleanup {
+    cleanup
+} -result {
+pflag f   g  e_id driver_id cause mag  
+----- --- -- ---- --------- ----- ---- 
+0     CA1 F1 1    1000      1000  10.0 
+0     CA1 F2 2    1000      1000  8.0  
+0     CA1 F3 3    1000      1000  -8.0 
+}
+
+#-------------------------------------------------------------------
+# coop badjust
+
+test coop_badjust-1.1 {unknown f} -setup {
+    create
+} -body {
+    jr coop badjust [jr driver] NONESUCH F1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_badjust-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr coop badjust [jr driver] CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_badjust-1.3 {invalid delta} -setup {
+    create
+} -body {
+    jr coop badjust [jr driver] CA1 F1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected double}
+
+test coop_badjust-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr coop badjust [jr driver] CA1 F1 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test coop_badjust-2.1 {adjustment is saved} -setup {
+    create
+} -body {
+    jr coop badjust [jr driver] CA1 F1 10.0
+    jr coop badjust [jr driver] CA2 F2 5.0
+    
+    pprint [rdb query {
+        SELECT f, g, adj_id, driver_id, delta 
+        FROM uram_coop_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g  adj_id driver_id delta 
+--- -- ------ --------- ----- 
+CA1 F1 1      1000      10.0  
+CA2 F2 2      1001      5.0   
+}
+
+test coop_badjust-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr coop badjust [jr driver] CA1 F1 10.0
+    jr edit mark
+    jr coop badjust [jr driver] CA2 F2 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT f, g, adj_id, driver_id, delta 
+        FROM uram_coop_adjustments
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g  adj_id driver_id delta 
+--- -- ------ --------- ----- 
+CA1 F1 1      1000      10.0  
+}
+
+#-------------------------------------------------------------------
+# coop bset
+
+test coop_bset-1.1 {unknown f} -setup {
+    create
+} -body {
+    jr coop bset [jr driver] NONESUCH F1 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_bset-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr coop bset [jr driver] CA1 NONESUCH 10.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_bset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr coop bset [jr driver] CA1 F1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range 0.0, 100.0, or one of: AC, VC, C, MC, U, VU, NC}
+
+test coop_bset-1.4 {invalid at t=-1} -setup {
+    create -advance0 off
+} -body {
+    jr coop bset [jr driver] CA1 F1 5.0
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {baseline adjustments not allowed when t=-1}
+
+test coop_bset-2.1 {value is set} -setup {
+    create
+} -body {
+    jr coop bset [jr driver] CA1 F1 10.0
+    jr coop bset [jr driver] CA2 F2 5.0
+    
+    pprint [rdb query {
+        SELECT f, g, bvalue 
+        FROM uram_coop WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g  bvalue 
+--- -- ------ 
+CA1 F1 10.0   
+CA2 F2 5.0    
+}
+
+test coop_bset-3.1 {effect is undoable} -setup {
+    create -undo on
+} -body {
+    jr coop bset [jr driver] CA1 F1 10.0
+    jr edit mark
+    jr coop bset [jr driver] CA2 F2 5.0
+    jr edit undo
+
+    pprint [rdb query {
+        SELECT f, g, bvalue 
+        FROM uram_coop WHERE bvalue != bvalue0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g  bvalue 
+--- -- ------ 
+CA1 F1 10.0   
+}
+
+#-------------------------------------------------------------------
+# coop cset
+
+test coop_cset-1.1 {unknown f} -setup {
+    create
+} -body {
+    jr coop cset NONESUCH F1 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_cset-1.2 {unknown g} -setup {
+    create
+} -body {
+    jr coop cset CA1 NONESUCH 0.1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test coop_cset-1.3 {invalid value} -setup {
+    create
+} -body {
+    jr coop cset CA1 F1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be a real number in range 0.0, 100.0, or one of: AC, VC, C, MC, U, VU, NC}
+
+test coop_cset-2.1 {change is made} -setup {
+    create
+} -body {
+    jr coop cset CA1 F1 0.1 CA2 F2 0.2
+    
+    pprint [rdb query {
+        SELECT f, g, cvalue
+        FROM uram_coop
+        WHERE cvalue != coop0
+    }]
+} -cleanup {
+    cleanup
+} -result {
+f   g  cvalue 
+--- -- ------ 
+CA1 F1 0.1    
+CA2 F2 0.2    
+}
+
+test coop_cset-3.1 {effect is not undoable} -setup {
+    create -undo on
+} -body {
+    # Add to undo stack
+    jr driver
+
+    # Make change
+    jr coop cset CA1 F1 0.1 CA2 F2 0.2
+
+    jr edit canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# update pop
+
+test update_pop-1.1 {change is made} -setup {
+    create
+} -body {
+    jr update pop CA1 5000 CA2 20000
+    
+    pprint [rdb query {
+        SELECT g, pop
+        FROM uram_g JOIN uram_civ_g USING (g_id)
+        ORDER BY g
+    }]
+} -cleanup {
+    cleanup
+} -result {
+g   pop   
+--- ----- 
+CA1 5000  
+CA2 20000 
+CB1 10000 
+CB2 10000 
+CC1 10000 
+CC2 10000 
+}
+
+test update_pop-1.2 {newly empty groups are untracked} -setup {
+    create
+} -body {
+    jr update pop CA1 5000 CB1 0 CC1 8000
+    
+    # the init-5.* tests verify that SetTracking catches all 
+    # curves.  Here, we'll just check the satisfaction curves.
+     
+    set tracked [rdb onecolumn {
+        SELECT count(tracked) FROM uram_sat WHERE tracked; 
+    }]
+    set untracked [rdb onecolumn {
+        SELECT count(tracked) FROM uram_sat WHERE NOT tracked; 
+    }]
+
+    # Only one group is untracked, so there should be 4 curves
+    # untracked.
+    list $tracked $untracked
+} -cleanup {
+    cleanup
+} -result {20 4}
+
+test update_pop-1.3 {newly populated groups are tracked} -setup {
+    create
+    jr update pop CA1 5000 CB1 0 CC1 8000
+} -body {
+    jr update pop CA1 5000 CB1 10000 CC1 8000
+
+    # the init-5.* tests verify that SetTracking catches all 
+    # curves.  Here, we'll just check the satisfaction curves.
+     
+    set tracked [rdb onecolumn {
+        SELECT count(tracked) FROM uram_sat WHERE tracked; 
+    }]
+    set untracked [rdb onecolumn {
+        SELECT count(tracked) FROM uram_sat WHERE NOT tracked; 
+    }]
+
+    # All satisfaction curves should be tracked. 
+    list $tracked $untracked
+} -cleanup {
+    cleanup
+} -result {24 0}
+
+test update_pop-1.4 {bug 4044: hrel should remain untracked.} -setup {
+    create
+    jr update pop CA1 0 CB1 0
+} -body {
+    jr update pop CA1 5000
+
+    rdb onecolumn {
+        SELECT tracked FROM uram_hrel WHERE f='CB1' AND g='CA1'
+    }
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+#-------------------------------------------------------------------
+# Parms
+
+test parms-1.1 {Default ctype parameters} -setup {
+    create
+} -body {
+    pprint [rdb query {
+        SELECT * FROM ucurve_ctypes_t
+    }]
+} -cleanup {
+    cleanup
+} -result {
+ct_id name min    max   alpha gamma 
+----- ---- ------ ----- ----- ----- 
+1     AUT  -100.0 100.0 0.05  0.0   
+2     CUL  -100.0 100.0 0.05  0.0   
+3     QOL  -100.0 100.0 0.05  0.0   
+4     SFT  -100.0 100.0 0.05  0.02  
+5     HREL -1.0   1.0   0.05  0.02  
+6     VREL -1.0   1.0   0.05  0.02  
+7     COOP 0.0    100.0 0.05  0.02  
+}
+
+test parms-1.2 {ctype parameters change with uram.factors.*} -setup {
+    create
+} -body {
+    uram parm set uram.factors.AUT  {0.1 0.2}
+    uram parm set uram.factors.CUL  {0.2 0.3}
+    uram parm set uram.factors.QOL  {0.3 0.4}
+    uram parm set uram.factors.SFT  {0.4 0.5}
+    uram parm set uram.factors.HREL {0.1 0.2}
+    uram parm set uram.factors.VREL {0.2 0.3}
+    uram parm set uram.factors.COOP {0.3 0.4}
+
+    pprint [rdb query {
+        SELECT * FROM ucurve_ctypes_t
+    }]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+ct_id name min    max   alpha gamma 
+----- ---- ------ ----- ----- ----- 
+1     AUT  -100.0 100.0 0.1   0.2   
+2     CUL  -100.0 100.0 0.2   0.3   
+3     QOL  -100.0 100.0 0.3   0.4   
+4     SFT  -100.0 100.0 0.4   0.5   
+5     HREL -1.0   1.0   0.1   0.2   
+6     VREL -1.0   1.0   0.2   0.3   
+7     COOP 0.0    100.0 0.3   0.4   
+}
+
+#-------------------------------------------------------------------
+# advance
+
+test advance-1.1 {t must advance} -setup {
+    create
+} -body {
+    jr advance 1
+    jr advance 1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {time did not advance, new time 1, old time 1}
+
+test advance-1.2 {t advances} -setup {
+    create
+} -body {
+    jr advance 1
+    jr advance 2
+    jr time
+} -cleanup {
+    cleanup
+} -result {2}
+
+test advance-1.3 {first advance doesn't update the baseline} -setup {
+    create -advance0 off
+    
+    # hrel baseline between F1 and F2 is initially 0.8.
+    # Set natural level to 0.0; this would ordinarily cause
+    # a baseline change on advance.
+    jr hrel cset F1 F2 0.0
+} -body {
+    set bold [rdb onecolumn {
+        SELECT bvalue FROM uram_hrel WHERE f='F1' and g='F2'
+    }]
+    jr advance 0
+    set bnew [rdb onecolumn {
+        SELECT bvalue FROM uram_hrel WHERE f='F1' and g='F2'
+    }]
+
+    list $bold $bnew
+} -cleanup {
+    cleanup
+} -result {0.8 0.8}
+
+
+test advance-2.1 {curves are updated} -setup {
+    create
+} -body {
+    # This is a spot check, since updating the curves is done
+    # by ucurve(n).  We've already verified that we can create
+    # ucurve(n) effects and adjustments; now we just need to
+    # verify that ucurve(n)'s apply method is being called.
+
+    jr sat transient [jr driver] "" CA1 AUT 10.0
+    jr advance 1
+
+    pprint [rdb query {SELECT g, c, sat FROM uram_sat WHERE g='CA1'}]
+} -cleanup {
+    cleanup
+} -result {
+g   c   sat  
+--- --- ---- 
+CA1 AUT 10.0 
+CA1 CUL 0.0  
+CA1 QOL 0.0  
+CA1 SFT 0.0  
+}
+
+test advance-3.1 {group moods are updated} -setup {
+    create
+    # Set SFT gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.SFT {0.05 0.0}
+} -body {
+    # Verify that satisfaction rollups are computed properly.
+    jr sat transient [jr driver] "" CA1 AUT 10.0
+    jr sat transient [jr driver] "" CA1 QOL 10.0
+    jr sat transient [jr driver] "" CA1 CUL 10.0
+    jr sat transient [jr driver] "" CA1 SFT 10.0
+    jr advance 1
+
+    # CA1 has indirect effects on CB1 and CC1.  All saliencies
+    # are 1.0, so the mood is just the normal average, and since
+    # the effect on each concern is the same and we started at 0.0,
+    # it's simply the input magnitude.
+    pprint [rdb query {SELECT * FROM uram_mood}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+g_id g   mood_denom mood mood0 
+---- --- ---------- ---- ----- 
+1    CA1 4.0        10.0 0.0   
+2    CA2 4.0        0.0  0.0   
+3    CB1 4.0        6.0  0.0   
+4    CB2 4.0        0.0  0.0   
+5    CC1 4.0        -3.0 0.0   
+6    CC2 4.0        0.0  0.0   
+}
+
+test advance-4.1 {nbhood moods are updated} -setup {
+    create
+    # Set SFT gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.SFT {0.05 0.0}
+} -body {
+    # Verify that satisfaction rollups are computed properly.
+    jr sat transient [jr driver] "" CA1 AUT 10.0
+    jr sat transient [jr driver] "" CA1 QOL 10.0
+    jr sat transient [jr driver] "" CA1 CUL 10.0
+    jr sat transient [jr driver] "" CA1 SFT 10.0
+    jr advance 1
+
+    # CA1 has indirect effects on CB1 and CC1.  All saliencies
+    # are 1.0, so the mood is just the normal average, and since
+    # the effect on each concern is the same and we started at 0.0,
+    # it's simply the input magnitude.
+    pprint [rdb query {SELECT * FROM uram_n}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+n_id n  pop   nbmood_denom nbmood            nbmood0 
+---- -- ----- ------------ ----------------- ------- 
+1    N1 30000 120000.0     4.333333333333333 0.0     
+2    N2 30000 120000.0     0.0               0.0     
+}
+
+test advance-4.2 {nbhood moods are OK with empty groups} -setup {
+    create
+    # Set SFT gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.SFT {0.05 0.0}
+
+    # Empty group CC1.
+    jr update pop CC1 0
+} -body {
+    jr sat transient [jr driver] "" CA1 AUT 10.0
+    jr sat transient [jr driver] "" CA1 QOL 10.0
+    jr sat transient [jr driver] "" CA1 CUL 10.0
+    jr sat transient [jr driver] "" CA1 SFT 10.0
+    jr advance 1
+
+    pprint [rdb query {SELECT * FROM uram_n}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+n_id n  pop   nbmood_denom nbmood nbmood0 
+---- -- ----- ------------ ------ ------- 
+1    N1 20000 80000.0      8.0    0.0     
+2    N2 30000 120000.0     0.0    0.0     
+}
+
+test advance-4.3 {nbhood moods are OK with empty nbhoods} -setup {
+    create
+    # Set SFT gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.SFT {0.05 0.0}
+
+    # Empty all groupis in N1.
+    jr update pop CA1 0 CB1 0 CC1 0
+} -body {
+    jr advance 1
+
+    pprint [rdb query {SELECT * FROM uram_n}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+n_id n  pop   nbmood_denom nbmood nbmood0 
+---- -- ----- ------------ ------ ------- 
+1    N1 0     0.0          0.0    0.0     
+2    N2 30000 120000.0     0.0    0.0     
+}
+
+test advance-5.1 {cooperation roll-ups are updated} -setup {
+    create
+    # Set COOP gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.COOP {0.05 0.0}
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0
+    jr coop transient [jr driver] "" CB1 F1 10.0
+    jr coop transient [jr driver] "" CC1 F1 10.0
+    jr advance 1
+
+    # For each civ group in N1, we give a 10.0 effect on F1.
+    # Scaled, this is a change of 5.0.  Since all civ groups get
+    # the same change, the nbcoop should be 55.0, up from 50.0.
+    # Relationships of F2 and F3 with F1 are 0.8 and -0.8, yielding
+    # scaled changes of 4.0 and -4.0, as we see.  N2 is not affected
+    # at all.
+    pprint [rdb query {SELECT * FROM uram_nbcoop}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+ng_id n_id g_id n  g  nbcoop nbcoop0 
+----- ---- ---- -- -- ------ ------- 
+1     1    7    N1 F1 55.0   50.0    
+2     1    8    N1 F2 54.0   50.0    
+3     1    9    N1 F3 46.0   50.0    
+4     2    7    N2 F1 50.0   50.0    
+5     2    8    N2 F2 50.0   50.0    
+6     2    9    N2 F3 50.0   50.0    
+}
+
+test advance-5.2 {nbcoop is OK with empty groups} -setup {
+    create
+    # Set COOP gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.COOP {0.05 0.0}
+    jr update pop CC1 0
+} -body {
+    jr coop transient [jr driver] "" CA1 F1 10.0
+    jr coop transient [jr driver] "" CB1 F1 10.0
+    jr coop transient [jr driver] "" CC1 F1 10.0
+    jr advance 1
+
+    pprint [rdb query {SELECT * FROM uram_nbcoop}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+ng_id n_id g_id n  g  nbcoop nbcoop0 
+----- ---- ---- -- -- ------ ------- 
+1     1    7    N1 F1 55.0   50.0    
+2     1    8    N1 F2 54.0   50.0    
+3     1    9    N1 F3 46.0   50.0    
+4     2    7    N2 F1 50.0   50.0    
+5     2    8    N2 F2 50.0   50.0    
+6     2    9    N2 F3 50.0   50.0    
+}
+
+test advance-5.3 {nbcoop is OK with empty neighborhoods} -setup {
+    create
+    # Set COOP gamma to 0.0, so that it doesn't affect the results.
+    uram parm set uram.factors.COOP {0.05 0.0}
+    jr update pop CA1 0 CB1 0 CC1 0
+} -body {
+    jr advance 1
+
+    pprint [rdb query {SELECT * FROM uram_nbcoop}]
+} -cleanup {
+    uram parm reset
+    cleanup
+} -result {
+ng_id n_id g_id n  g  nbcoop nbcoop0 
+----- ---- ---- -- -- ------ ------- 
+1     1    7    N1 F1 0.0    50.0    
+2     1    8    N1 F2 0.0    50.0    
+3     1    9    N1 F3 0.0    50.0    
+4     2    7    N2 F1 50.0   50.0    
+5     2    8    N2 F2 50.0   50.0    
+6     2    9    N2 F3 50.0   50.0    
+}
+
+
+#-------------------------------------------------------------------
+# contribs hrel
+
+test contribs_hrel-1.1 {Unknown g} -setup {
+    create
+} -body {
+    jr contribs hrel NONESUCH F1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_hrel-1.2 {Unknown c} -setup {
+    create
+} -body {
+    jr contribs hrel CA1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_hrel-1.3 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs hrel CA1 F1 -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_hrel-1.4 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs hrel CA1 F1 -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_hrel-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs hrel CA1 F1
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test contribs_hrel-2.2 {compute contribs for entire run, 1 tick} -setup {
+    create
+} -body {
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr contribs hrel CA1 F1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   0.04    
+1003   0.03    
+1002   0.02    
+1001   0.01    
+}
+
+
+test contribs_hrel-2.3 {compute contribs for entire run, 5 ticks} -setup {
+    create
+} -body {
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 2
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 3
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 4
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 5
+
+    jr contribs hrel CA1 F1
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.4f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   0.1980  
+1003   0.1485  
+1002   0.0990  
+1001   0.0495  
+}
+
+test contribs_hrel-2.4 {compute contribs for partial run} -setup {
+    create
+} -body {
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 2
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 3
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 4
+
+    jr hrel transient 1001 "" CA1 F1 1.0
+    jr hrel transient 1002 "" CA1 F1 2.0
+    jr hrel transient 1003 "" CA1 F1 3.0
+    jr hrel transient 1004 "" CA1 F1 4.0
+    jr advance 5
+
+    jr contribs hrel CA1 F1 -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.4f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   0.1188  
+1003   0.0891  
+1002   0.0594  
+1001   0.0297  
+}
+
+#-------------------------------------------------------------------
+# contribs vrel
+
+test contribs_vrel-1.1 {Unknown g} -setup {
+    create
+} -body {
+    jr contribs vrel NONESUCH A1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_vrel-1.2 {Unknown c} -setup {
+    create
+} -body {
+    jr contribs vrel CA1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_vrel-1.3 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs vrel CA1 A1 -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_vrel-1.4 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs vrel CA1 A1 -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_vrel-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs vrel CA1 A1
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test contribs_vrel-2.2 {compute contribs for entire run, 1 tick} -setup {
+    create
+} -body {
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 1
+
+    jr contribs vrel CA1 A1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   0.04    
+1003   0.03    
+1002   0.02    
+1001   0.01    
+}
+
+
+test contribs_vrel-2.3 {compute contribs for entire run} -setup {
+    create
+} -body {
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 1
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 2
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 3
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 4
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 5
+
+    jr contribs vrel CA1 A1
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.4f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   0.1980  
+1003   0.1485  
+1002   0.0990  
+1001   0.0495  
+}
+
+test contribs_vrel-2.4 {compute contribs for partial run} -setup {
+    create
+} -body {
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 1
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 2
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 3
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 4
+
+    jr vrel transient 1001 "" CA1 A1 1.0
+    jr vrel transient 1002 "" CA1 A1 2.0
+    jr vrel transient 1003 "" CA1 A1 3.0
+    jr vrel transient 1004 "" CA1 A1 4.0
+    jr advance 5
+
+    jr contribs vrel CA1 A1 -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.4f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   0.1188  
+1003   0.0891  
+1002   0.0594  
+1001   0.0297  
+}
+
+#-------------------------------------------------------------------
+# contribs sat
+
+test contribs_sat-1.1 {Unknown g} -setup {
+    create
+} -body {
+    jr contribs sat NONESUCH AUT
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_sat-1.2 {Unknown c} -setup {
+    create
+} -body {
+    jr contribs sat CA1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_sat-1.3 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs sat CA1 AUT -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_sat-1.4 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs sat CA1 AUT -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_sat-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs sat CA1 AUT
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test contribs_sat-2.2 {compute contribs for entire run, 1 tick} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr contribs sat CA1 AUT
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   4.0     
+1003   3.0     
+1002   2.0     
+1001   1.0     
+}
+
+
+test contribs_sat-2.3 {compute contribs for entire run, 5 ticks} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 2
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 3
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 4
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 5
+
+    jr contribs sat CA1 AUT
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   19.80   
+1003   14.85   
+1002   9.90    
+1001   4.95    
+}
+
+test contribs_sat-2.4 {compute contribs for partial run} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 2
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 3
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 4
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 5
+
+    jr contribs sat CA1 AUT -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   11.88   
+1003   8.91    
+1002   5.94    
+1001   2.97    
+}
+
+#-------------------------------------------------------------------
+# contribs coop
+
+test contribs_coop-1.1 {Unknown f} -setup {
+    create
+} -body {
+    jr contribs coop NONESUCH F1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_coop-1.2 {Unknown g} -setup {
+    create
+} -body {
+    jr contribs coop CA1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {key "NONESUCH" not known in dictionary}
+
+test contribs_coop-1.3 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs coop CA1 F1 -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_coop-1.4 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs coop CA1 F1 -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_coop-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs coop CA1 F1
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test contribs_coop-2.2 {compute contribs for entire run, 1 tick} -setup {
+    create
+} -body {
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr contribs coop CA1 F1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   2.0     
+1003   1.5     
+1002   1.0     
+1001   0.5     
+}
+
+
+test contribs_coop-2.3 {compute contribs for entire run, 5 ticks} -setup {
+    create
+} -body {
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 2
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 3
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 4
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 5
+
+    jr contribs coop CA1 F1
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   9.90    
+1003   7.43    
+1002   4.95    
+1001   2.48    
+}
+
+test contribs_coop-2.4 {compute contribs for partial run} -setup {
+    create
+} -body {
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 2
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 3
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 4
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 5
+
+    jr contribs coop CA1 F1 -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   5.94    
+1003   4.46    
+1002   2.97    
+1001   1.49    
+}
+
+#-------------------------------------------------------------------
+# contribs mood
+
+
+test contribs_mood-1.1 {Unknown g} -setup {
+    create
+} -body {
+    jr contribs mood NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {No civilian group "NONESUCH"}
+
+test contribs_mood-1.2 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs mood CA1 -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_mood-1.3 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs mood CA1 -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_mood-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs mood CA1
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test contribs_mood-2.2 {compute mood contribs: 4 drivers} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr contribs mood CA1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   1.0     
+1003   0.75    
+1002   0.5     
+1001   0.25    
+}
+
+test contribs_mood-2.3 {compute contribs for entire run, 5 ticks} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 2
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 3
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 4
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 5
+
+    jr contribs mood CA1
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   4.95    
+1003   3.71    
+1002   2.48    
+1001   1.24    
+}
+
+test contribs_mood-2.4 {compute contribs for partial} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 2
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 3
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 4
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 5
+
+    jr contribs mood CA1 -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   2.97    
+1003   2.23    
+1002   1.49    
+1001   0.74    
+}
+
+
+#-------------------------------------------------------------------
+# contribs nbmood
+
+test contribs_nbmood-1.1 {Unknown n} -setup {
+    create
+} -body {
+    jr contribs nbmood NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {No such nbhood "NONESUCH"}
+
+test contribs_nbmood-1.2 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs nbmood N1 -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_nbmood-1.3 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs nbmood N1 -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_nbmood-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs nbmood N1
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test contribs_nbmood-2.2 {compute nbmood contribs: 1 tick} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr contribs nbmood N1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib             
+------ ------------------- 
+1004   0.43333333333333335 
+1003   0.325               
+1002   0.21666666666666667 
+1001   0.10833333333333334 
+}
+
+test contribs_nbmood-2.3 {compute contribs for 5 ticks} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 2
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 3
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 4
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 5
+
+    jr contribs nbmood N1
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   2.15    
+1003   1.61    
+1002   1.07    
+1001   0.54    
+}
+
+test contribs_nbmood-2.3 {compute contribs for partial run} -setup {
+    create
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 2
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 3
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 4
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 5
+
+    jr contribs nbmood N1 -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   1.29    
+1003   0.97    
+1002   0.64    
+1001   0.32    
+}
+
+
+#-------------------------------------------------------------------
+# contribs nbcoop
+
+test contribs_nbcoop-1.1 {Unknown n} -setup {
+    create
+} -body {
+    jr contribs nbcoop NONESUCH F1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {No such nbhood "NONESUCH"}
+
+test contribs_nbcoop-1.2 {Unknown g} -setup {
+    create
+} -body {
+    jr contribs nbcoop N1 NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {No force group "NONESUCH"}
+
+test contribs_nbcoop-1.3 {invalid -start} -setup {
+    create
+} -body {
+    jr contribs nbcoop N1 F1 -start NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_nbcoop-1.4 {invalid -end} -setup {
+    create
+} -body {
+    jr contribs nbcoop N1 F1 -end NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test contribs_nbcoop-2.1 {no contribs} -setup {
+    create
+} -body {
+    jr advance 1
+
+    jr contribs nbcoop N1 F1
+
+    rdb onecolumn {SELECT count(rowid) FROM uram_contribs}
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test contribs_nbcoop-2.2 {compute contribs for entire run, 1 tick} -setup {
+    create
+} -body {
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr contribs nbcoop N1 F1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib             
+------ ------------------- 
+1004   0.6666666666666666  
+1003   0.5                 
+1002   0.3333333333333333  
+1001   0.16666666666666666 
+}
+
+
+test contribs_nbcoop-2.3 {compute contribs for 5 ticks} -setup {
+    create
+} -body {
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 2
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 3
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 4
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 5
+
+    jr contribs nbcoop N1 F1
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   3.30    
+1003   2.48    
+1002   1.65    
+1001   0.83    
+}
+
+test contribs_nbcoop-2.4 {compute contribs for partial run} -setup {
+    create
+} -body {
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 1
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 2
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 3
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 4
+
+    jr coop transient 1001 "" CA1 F1 1.0
+    jr coop transient 1002 "" CA1 F1 2.0
+    jr coop transient 1003 "" CA1 F1 3.0
+    jr coop transient 1004 "" CA1 F1 4.0
+    jr advance 5
+
+    jr contribs nbcoop N1 F1 -start 2 -end 4
+
+    pprint [rdb query {
+        SELECT driver                 AS driver,
+               format('%.2f',contrib) AS contrib 
+        FROM uram_contribs
+        ORDER BY abs(uram_contribs.contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+driver contrib 
+------ ------- 
+1004   1.98    
+1003   1.49    
+1002   0.99    
+1001   0.50    
+}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
+
+
+
+
+
+
+
+
+
+
+

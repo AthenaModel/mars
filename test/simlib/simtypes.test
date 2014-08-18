@@ -1,0 +1,391 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    simtypes.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for simtypes(n).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/simlib/pkgModules.tcl
+namespace import ::marsutil::*
+namespace import ::simlib::*
+
+
+# For the qualities, the basic functionality is tested in the marsutil(n)
+# test suite.  What we want to test here is that the mapping is correct.
+# So test that long names map to short names and short names map to 
+# values.
+
+#-------------------------------------------------------------------
+# qsat
+
+test qsat-1.1 {long names map to short names} -body {
+    list \
+        [qsat name "Very Satisfied"]    \
+        [qsat name "Satisfied"]         \
+        [qsat name "Ambivalent"]        \
+        [qsat name "Dissatisfied"]      \
+        [qsat name "Very Dissatisfied"] 
+} -result {VS S A D VD}
+
+test qsat-1.2 {short names map to values} -body {
+    list \
+        [qsat value "VS"] \
+        [qsat value "S"]  \
+        [qsat value "A"]  \
+        [qsat value "D"]  \
+        [qsat value "VD"] 
+} -result {80.0 40.0 0.0 -40.0 -80.0}
+
+test qsat-1.3 {options} -body {
+    list \
+        [qsat cget -min]    \
+        [qsat cget -max]    \
+        [qsat cget -format]
+} -result {-100.0 100.0 %7.2f}
+
+#-------------------------------------------------------------------
+# qcooperation
+
+test qcooperation-1.1 {long names map to short names} -body {
+    list \
+        [qcooperation name "Always Cooperative"]     \
+        [qcooperation name "Very Cooperative"]       \
+        [qcooperation name "Cooperative"]            \
+        [qcooperation name "Marginally Cooperative"] \
+        [qcooperation name "Uncooperative"]          \
+        [qcooperation name "Very Uncooperative"]     \
+        [qcooperation name "Never Cooperative"] 
+} -result {AC VC C MC U VU NC}
+
+test qcooperation-1.2 {short names map to values} -body {
+    list \
+        [qcooperation value "AC"] \
+        [qcooperation value "VC"] \
+        [qcooperation value "C"]  \
+        [qcooperation value "MC"] \
+        [qcooperation value "U"]  \
+        [qcooperation value "VU"] \
+        [qcooperation value "NC"]
+} -result {100.0 90.0 70.0 50.0 30.0 10.0 0.0}
+
+test qcooperation-1.3 {options} -body {
+    list \
+        [qcooperation cget -min]    \
+        [qcooperation cget -max]    \
+        [qcooperation cget -format]
+} -result {0.0 100.0 %5.1f}
+
+#-------------------------------------------------------------------
+# qposition
+
+test qposition-1.1 {long names map to short names} -body {
+    list \
+        [qposition name "Passionately For"]     \
+        [qposition name "Strongly For"]         \
+        [qposition name "Weakly For"]           \
+        [qposition name "Ambivalent"]           \
+        [qposition name "Weakly Against"]       \
+        [qposition name "Strongly Against"]     \
+        [qposition name "Passionately Against"] 
+} -result {P+ S+ W+ A W- S- P-}
+
+test qposition-1.2 {short names map to values} -body {
+    list \
+        [qposition value "P+"] \
+        [qposition value "S+"] \
+        [qposition value "W+"] \
+        [qposition value "A"]  \
+        [qposition value "W-"] \
+        [qposition value "S-"] \
+        [qposition value "P-"]
+} -result {0.9 0.6 0.3 0.0 -0.3 -0.6 -0.9}
+
+test qposition-1.3 {options} -body {
+    list \
+        [qposition cget -min]    \
+        [qposition cget -max]    \
+        [qposition cget -format]
+} -result {-1.0 1.0 %5.2f}
+
+
+#-------------------------------------------------------------------
+# qemphasis
+
+test qemphasis-1.1 {long names map to short names} -body {
+    list \
+        [qemphasis name "Agreement--Strong"]     \
+        [qemphasis name "Agreement"]             \
+        [qemphasis name "Neither"]               \
+        [qemphasis name "Disagreement"]          \
+        [qemphasis name "Disagreement--Strong"]  \
+        [qemphasis name "Disagreement--Extreme"] 
+} -result {ASTRONG AWEAK NEITHER DWEAK DSTRONG DEXTREME}
+
+test qemphasis-1.2 {short names map to values} -body {
+    list \
+        [qemphasis value "ASTRONG"] \
+        [qemphasis value "AWEAK"]  \
+        [qemphasis value "NEITHER"]  \
+        [qemphasis value "DWEAK"]  \
+        [qemphasis value "DSTRONG"] \
+        [qemphasis value "DEXTREME"] 
+} -result {0.9 0.7 0.5 0.35 0.25 0.15}
+
+test qemphasis-1.3 {values map to short names} -body {
+    list \
+        [qemphasis name 0.9] \
+        [qemphasis name 0.7]  \
+        [qemphasis name 0.5]  \
+        [qemphasis name 0.35]  \
+        [qemphasis name 0.25] \
+        [qemphasis name 0.15] 
+} -result {ASTRONG AWEAK NEITHER DWEAK DSTRONG DEXTREME}
+
+test qemphasis-1.4 {options} -body {
+    list \
+        [qemphasis cget -min]    \
+        [qemphasis cget -max]    \
+        [qemphasis cget -format]
+} -result {0.0 1.0 %4.2f}
+
+#-------------------------------------------------------------------
+# qtrend
+
+test qtrend-1.1 {long names map to short names} -body {
+    list \
+        [qtrend name "Very High"] \
+        [qtrend name "High"]      \
+        [qtrend name "Neutral"]   \
+        [qtrend name "Low"]       \
+        [qtrend name "Very Low"] 
+} -result {VH H N L VL}
+
+test qtrend-1.2 {short names map to values} -body {
+    list \
+        [qtrend value "VH"] \
+        [qtrend value "H"]  \
+        [qtrend value "N"]  \
+        [qtrend value "L"]  \
+        [qtrend value "VL"] 
+} -result {8.0 4.0 -1.0 -4.0 -8.0}
+
+test qtrend-1.3 {options} -body {
+    list \
+        [qtrend cget -min]    \
+        [qtrend cget -max]    \
+        [qtrend cget -format]
+} -result {{} {} %4.1f}
+
+#-------------------------------------------------------------------
+# qsaliency
+
+test qsaliency-1.1 {long names map to short names} -body {
+    list \
+        [qsaliency name "Crucial"]        \
+        [qsaliency name "Very Important"] \
+        [qsaliency name "Important"]      \
+        [qsaliency name "Less Important"] \
+        [qsaliency name "Unimportant"]    \
+        [qsaliency name "Negligible"]
+} -result {CR VI I LI UN NG}
+
+test qsaliency-1.2 {short names map to values} -body {
+    list \
+        [qsaliency value "CR"] \
+        [qsaliency value "VI"] \
+        [qsaliency value "I"]  \
+        [qsaliency value "LI"] \
+        [qsaliency value "UN"] \
+        [qsaliency value "NG"] 
+} -result {1.000 0.850 0.700 0.550 0.400 0.000}
+
+test qsaliency-1.3 {options} -body {
+    list \
+        [qsaliency cget -min]    \
+        [qsaliency cget -max]    \
+        [qsaliency cget -format]
+} -result {0.0 1.0 %5.3f}
+
+#-----------------------------------------------------------------------
+# qmag
+
+test qmag-1.1 {long names map to short names} -body {
+    list \
+        [qmag name "XXXXL+" ] \
+        [qmag name "XXXL+"  ] \
+        [qmag name "XXL+"   ] \
+        [qmag name "XL+"    ] \
+        [qmag name "L+"     ] \
+        [qmag name "M+"     ] \
+        [qmag name "S+"     ] \
+        [qmag name "XS+"    ] \
+        [qmag name "XXS+"   ] \
+        [qmag name "XXXS+"  ] \
+        [qmag name "ZERO"   ] \
+        [qmag name "XXXS-"  ] \
+        [qmag name "XXS-"   ] \
+        [qmag name "XS-"    ] \
+        [qmag name "S-"     ] \
+        [qmag name "M-"     ] \
+        [qmag name "L-"     ] \
+        [qmag name "XL-"    ] \
+        [qmag name "XXL-"   ] \
+        [qmag name "XXXL-"  ] \
+        [qmag name "XXXXL-" ] 
+} -result {XXXXL+ XXXL+ XXL+ XL+ L+ M+ S+ XS+ XXS+ XXXS+ ZERO XXXS- XXS- XS- S- M- L- XL- XXL- XXXL- XXXXL-}
+
+test qmag-1.2 {short names map to values} -body {
+    list \
+        [qmag value XXXXL+] \
+        [qmag value XXXL+]  \
+        [qmag value XXL+]   \
+        [qmag value XL+]    \
+        [qmag value L+]     \
+        [qmag value M+]     \
+        [qmag value S+]     \
+        [qmag value XS+]    \
+        [qmag value XXS+]   \
+        [qmag value XXXS+]  \
+        [qmag value ZERO]   \
+        [qmag value XXXS-]  \
+        [qmag value XXS-]   \
+        [qmag value XS-]    \
+        [qmag value S-]     \
+        [qmag value M-]     \
+        [qmag value L-]     \
+        [qmag value XL-]    \
+        [qmag value XXL-]   \
+        [qmag value XXXL-]  \
+        [qmag value XXXXL-]
+} -result {30.0 20.0 15.0 10.0 7.5 5.0 3.0 2.0 1.5 1.0 0.0 -1.0 -1.5 -2.0 -3.0 -5.0 -7.5 -10.0 -15.0 -20.0 -30.0}
+
+test qmag-1.3 {options} -body {
+    list \
+        [qmag cget -min]    \
+        [qmag cget -max]    \
+        [qmag cget -format]
+} -result {-100.0 100.0 %5.2f}
+
+#-----------------------------------------------------------------------
+# qduration
+
+test qduration-1.1 {long names map to short names} -body {
+    list \
+        [qduration name "X_LONG"]   \
+        [qduration name "LONG"]     \
+        [qduration name "MEDIUM"]   \
+        [qduration name "SHORT"]    \
+        [qduration name "X_SHORT"]
+} -result {XL L M S XS}
+
+test qduration-1.2 {short names map to values} -body {
+    list \
+        [qduration value "XL"] \
+        [qduration value "L"]  \
+        [qduration value "M"]  \
+        [qduration value "S"]  \
+        [qduration value "XS"]
+} -result {5.0 2.5 1.0 0.1 0.042}
+
+test qduration-1.3 {options} -body {
+    list \
+        [qduration cget -min]    \
+        [qduration cget -max]    \
+        [qduration cget -format]
+} -result {0.0 {} %3.1f}
+
+#-------------------------------------------------------------------
+# egrouptype
+
+test egrouptype-1.1 {long names map to short names} -body {
+    list \
+        [egrouptype name "CIVILIAN"] \
+        [egrouptype name "ORGANIZATION"] \
+        [egrouptype name "FORCE"]
+} -result {CIV ORG FRC}
+
+test egrouptype-1.2 {short names map to indices} -body {
+    list \
+        [egrouptype index "CIV"] \
+        [egrouptype index "ORG"] \
+        [egrouptype index "FRC"]
+} -result {0 1 2}
+
+
+#-------------------------------------------------------------------
+# eproximity
+
+test eproximity-1.1 {long names map to short names} -body {
+    list \
+        [eproximity name "Here"]  \
+        [eproximity name "Near"]  \
+        [eproximity name "Far"]   \
+        [eproximity name "Remote"]
+} -result {HERE NEAR FAR REMOTE}
+
+test eproximity-1.2 {short names map to indices} -body {
+    list \
+        [eproximity index "Here"]  \
+        [eproximity index "Near"]  \
+        [eproximity index "Far"]   \
+        [eproximity index "Remote"]
+} -result {0 1 2 3}
+
+
+#-------------------------------------------------------------------
+# rfracpair
+
+test rfracpair-1.1 {bad list} -body {
+    rfracpair validate {0.0}
+} -returnCodes {
+    error
+} -result {expected a list of exactly two numbers between 0.0 and 1.0, got "0.0"}
+
+test rfracpair-1.2 {bad a} -body {
+    rfracpair validate {NONESUCH 0.0}
+} -returnCodes {
+    error
+} -result {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+
+test rfracpair-1.3 {bad b} -body {
+    rfracpair validate {0.0 NONESUCH}
+} -returnCodes {
+    error
+} -result {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+
+test rfracpair-1.4 {bad sum} -body {
+    rfracpair validate {0.9 0.9}
+} -returnCodes {
+    error
+} -result {expected a pair of fractions whose sum is less than or equal to 1.0, got "0.9 0.9"}
+
+test rfracpair-2.1 {good value} -body {
+    rfracpair validate {0.4 0.6}
+} -result {0.4 0.6}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests
+
