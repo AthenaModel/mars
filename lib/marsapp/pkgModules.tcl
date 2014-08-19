@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide marsapp 3.0.0
+package provide marsapp 3.0.1a0
 # -kite-provide-end
 
 #-----------------------------------------------------------------------

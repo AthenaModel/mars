@@ -38,7 +38,7 @@ namespace eval ::kiteinfo:: {
         includes {}
         require-BWidget {version 1.9 local 0}
         clean-libTiff {make clean}
-        pkgversion 3.0.0
+        pkgversion 3.0.1a0
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
         shell {
     package require marsutil 3.0
@@ -55,7 +55,7 @@ namespace eval ::kiteinfo:: {
         require-Tkhtml {version 3.0 local 0}
         require-comm {version 4.6 local 0}
         binary-Marsbin 1
-        version 3.0.0
+        version 3.0.1a0
         require-sqlite3 {version 3.8 local 0}
         build-libGeotrans {make clean all}
     }

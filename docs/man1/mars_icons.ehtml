@@ -1,0 +1,43 @@
+<manpage {mars(1) mars_icons(1)} "Mars Icon Browser">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<deflist program>
+
+<defitem "mars icons" {mars icons [<i>namespace</i>]}>
+
+</deflist program>
+
+mars_icons(1) is a browser for the icon images that are included with
+<xref marsgui(n)>. By default, it shows the standard set of
+<xref marsicons(n)> icons; it can also be passed a namespace name to
+browse the icons from other namespaces.<p>
+
+<subsection "Icon Namespaces">
+
+The <xref marsgui(n)> icon set is displayed by default; it consists of a 
+number of icons created using the <xref mkicon(n)> command, which allows 
+multiple icons to be created from a single pattern, editable in a text 
+editor, and which also allows icons to contain transparent pixels.  These 
+icons have names like <code>::marsgui::icon::<i>name</i></code>.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original application.<p>
+
+</manpage>
+
+
+
+
+
+
+

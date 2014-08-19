@@ -1,0 +1,346 @@
+<manpage {mars(1) mars_cmtool(1)} "cellmodel(5) tool">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<swallow {
+package require simlib [version]
+namespace import ::simlib::*
+}>
+
+<section DESCRIPTION>
+
+<deflist program>
+
+<defitem {mars cmtool} {mars cmtool <i>subcommand</i> ?<i>options...</i>?}>
+
+</deflist program>
+
+mars_cmtool(1) is a command-line tool for working with <xref cellmodel(5)>
+models; see that man page for specifics of the <xref cellmodel(5)>
+syntax and semantics.  It defines a number of subcommands, each of
+which has its own syntax.<p>
+
+To check a model file for errors, use <iref check>.  To dump the
+cells and formulas in the model, use <iref dump>; this is useful to
+verify that <xref cellmodel(5)> macros have expanded as expected.
+The <iref xref> command shows who references each cell.<p>
+
+There are three ways to solve the model and output results.  The
+<iref solve> command solves the model once, and can output a variety
+of detailed information about the solution.  This is the command to
+use to find out why a model does not converge.<p>
+
+The <iref run> command solves the model for a small number of cases,
+entered on the command line, and outputs the results in parallel
+columns.<p>
+
+The <iref mash> command solves the model for a large number of
+cases, looking for problems and logging a selected set of inputs and
+outputs for plotting or other analysis.<p>
+
+<section COMMANDS>
+
+The application's subcommands are as follows:<p>
+
+<deflist subcommands>
+
+<defitem check {mars cmtool check <i>modelfile</i>}>
+
+Loads a <xref cellmodel(5)> model from <i>modelfile</i>.  If the file
+cannot be loaded, outputs an error and halts.  Otherwise, outputs a
+detailed sanity check of the model.  If <iref run> or <iref solve>
+reject a model becase it is not "sane", use this command to determine
+the problem.<p>
+
+<defitem dump {mars cmtool dump <i>modelfile</i> ?-page <i>page</i>?}>
+
+Produces a dump of the cells in the model, including their values and
+formulas.  If the <b>-page</b> option is included, the output only
+includes the cells from the named <i>page</i>.<p>
+
+<defitem help {mars cmtool help}>
+
+Outputs a list of the available subcommands, with a one-line
+description of each.<p>
+
+<defitem mash {mars cmtool mash <i>modelfile mashfile</i> ?<i>options...</i>?}>
+
+This command runs the model contained in <i>modelfile</i> for the
+cases defined in the <i>mashfile</i>, and saves a variety of outputs
+as determined by the options.  See <xref "MASH FILE"> for
+information on how to set up a mash file.<p>
+
+Called with no options, it simply outputs the number of cases that
+had problems.  The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-epsilon <i>epsilon</i>}>
+
+Specifies the <i>epsilon</i> to use in the convergence test.  Defaults
+to 0.0001.<p>
+
+<defopt {-maxiters <i>num</i>}>
+
+Specifies the maximum number of iterations when iterating a cyclic
+page to convergence.  If the page's "max delta" is still greater than
+the <b>-epsilon</b> after <i>num</i> iterations, the page is said to
+have diverged.  Defaults to 100.<p>
+
+<defopt {-logfile <i>filename</i>}>
+
+Logs the input and output cell values for all cases to the named
+file.<p>
+
+Each row contains an integer case ID, a flag (<b ok> or <b no>)
+that indicates whether the case was succesful or not, and the values of
+the input and output cells in the order they were defined in the
+mash file.<p>
+
+The first row of the while contains the column names: "cid", "ok", and
+the cell names.<p>
+
+Columns are delimited by whitespace.<p>
+
+<defopt {-csvfile <i>filename</i>}>
+
+Logs the successful cases in Comma-Separated-Value format, suitable
+for loading into a spreadsheet application.  The
+columns are the same as for the <b>-logfile</b>, except that the
+"ok" column is omitted.<p>
+
+<defopt {-errfile <i>filename</i>}>
+
+Any problem cases are logged to the named file.  For each case,
+the file will contain a line with the case ID and a dictionary of
+the input values, followed by one indented line for each problem
+found.  Note that a case is a failure if it diverges, or if any of
+the conditions required by the mash file are not met.<p>
+
+</deflist options>
+
+<defitem run {mars cmtool run <i>modelfile</i> ?<i>options...</i>?}>
+
+Solves the model in the named file one or more times, and outputs a
+comparison of the results for the different cases.  The options are as
+follows:<p>
+
+<deflist options>
+
+<defopt {-epsilon <i>epsilon</i>}>
+
+Specifies the <i>epsilon</i> to use in the convergence test.  Defaults
+to 0.0001.<p>
+
+<defopt {-maxiters <i>num</i>}>
+
+Specifies the maximum number of iterations when iterating a cyclic
+page to convergence.  If the page's "max delta" is still greater than
+the <b>-epsilon</b> after <i>num</i> iterations, the page is said to
+have diverged.  Defaults to 100.<p>
+
+<defopt {-case <i>name</i> ?<i>cell value...</i>?}>
+
+This option may be repeated any number of times to define individual
+cases.  Each case has a <i>name</i>, used as a column header in the
+output, and may specify the starting values of one or more cells.
+Before running each case, the model is reset, and the specified values
+are assigned to the cells.<p>
+
+</deflist options>
+
+<defitem solve {mars cmtool solve <i>modelfile</i> ?<i>options...</i>?}>
+
+Attempts solve the model, computing acyclic pages and iterating
+acyclic pages to convergence, writing a dump of the final values to
+standard output.  The options allow the computation to be controlled
+and traced.<p>
+
+<deflist options>
+
+<defopt {-epsilon <i>epsilon</i>}>
+
+Specifies the <i>epsilon</i> to use in the convergence test.  Defaults
+to 0.0001.<p>
+
+<defopt {-initfrom <i>filename</i>}>
+
+Specifies a file that contains fully qualified cell names and values
+that the cellmodel reads for the purpose of setting
+initial values. This is useful when debugging initial conditions
+from some other source (such as Athena) that cause the cell model
+to not solve.<p> 
+
+
+<defopt {-maxiters <i>num</i>}>
+
+Specifies the maximum number of iterations when iterating a cyclic
+page to convergence.  If the page's "max delta" is still greater than
+the <b>-epsilon</b> after <i>num</i> iterations, the page is said to
+have diverged.  Defaults to 100.<p>
+
+<defopt {-dumpstart}>
+
+Dumps the model (as for <iref dump>) with its initial cell values,
+before computing any pages.<p>
+
+<defopt {-dumpfinal}>
+
+Dumps the model (as for <iref dump>) after all computations are
+complete.  If pages diverged, the dumped values might or might not be
+useful.  If no other output is requested, this option is assumed.<p>
+
+<defopt {-diffpages <i>a b</i>}>
+
+Dumps a comparison of the content of the two pages named <i>a</i> and
+<i>b</i>.  This option may be repeated multiple times, to request
+comparisons of additional pairs of pages.<p>
+
+<defopt {-logiters <i>page</i>}>
+
+Logs the iteration delta for each iteration of the named <i>page</i>.
+This option may be repeated multiple times, to request logging for
+multiple pages.<p>
+
+<defopt {-dumpiters <i>page</i>}>
+
+Does a <iref dump> of the intermediate values following each
+iteration of <i>page</i>.  This option may be repeated multiple times,
+to request iteration dumping for multiple pages.<p>
+
+<defopt {-tracevalues <i>page</i>}>
+
+After the named <i>page</i> has converged or diverged, outputs a table
+of the page's cell values for the first and last three iterations.
+This can be useful when diagnosing divergence errors.  This option may
+be repeated multiple times, to request tracing for multiple
+pages.<p>
+
+<defopt {-tracedeltas <i>page</i>}>
+
+After the named <i>page</i> has converged or diverged, outputs a table
+of the deltas for each of the page's cell values for the first and
+last three iterations.  This can be useful when diagnosing divergence
+errors.  This option may be repeated multiple times, to request
+tracing for multiple pages.<p>
+
+</deflist options>
+
+<defitem xref {mars cmtool xref <i>modelfile</i>}>
+
+For each cell, in order of definition, outputs a list of the other
+cells whose formulas reference the cell.<p>
+
+</deflist subcommands>
+
+<section "MASH FILE">
+
+The "mash file" required by the <iref mash> subcommand is a
+Tcl-formatted file containing the following commands:<p>
+
+<deflist mash>
+
+<defitem range {range <i>cell lower upper step</i>}>
+
+Directs <iref mash> to run the model for a number of values
+of the named input <i>cell</i>, from <i>lower</i> to <i>upper</i> with a
+step size of <i>step</i>.  For example,<p>
+
+<pre>
+    range A 0 5 1
+</pre>
+
+will run the model with A taking on the values 0, 1, 2, 3, 4, 5.<p>
+
+Note that the <i>upper</i> value will be included only if the
+difference between <i>upper</i> and <i>lower</i> is a multiple of
+<i>step</i>, <b>and</b> round-off error doesn't prevent it.<p>
+
+If the mash file contains multiple <iref range> commands, the model
+will be run for all combinations.<p>
+
+Note that <i>lower</i>, <i>upper</i>, and <i>step</i> can be either
+numbers or formulas; the formulas will be evaluated in the context of
+the cell model, given the values of the other cells.  For example,<p>
+
+<pre>
+    range A 1 100 1
+    range B 1 {[A]} 1
+</pre>
+
+For each value of A from 1 to 100, B will range from 1 to the current
+value of A.<p>
+
+<defitem let {let <i>cell</i> = <i>formula</i>}>
+
+Assigns an input <i>cell</i> the value indicated by the
+<i>formula</i>, which is evaluated in the context of the cell model.
+This is used to give an input a value that's related to the values of
+one or more other inputs.  For example,<p>
+
+<pre>
+    range A 100 500 10
+    let   B = {[A] * 1.5}
+</pre>
+
+B will always have a value 50% higher than that of A.<p>
+
+<defitem log {log <i>cell</i>}>
+
+Tells <iref mash> to include the named <i>cell</i> in the
+<b>-logfile</b> and <b>-csvfile</b>. (Note that cells named in
+<iref range> and <iref let> commands are logged automatically.)
+For example,<p>
+
+<pre>
+    log C
+</pre>
+
+will log the value of C for each case.<p>
+
+<defitem require {require <i>condition</i>}>
+
+Specifies a logical <i>condition</i> that must be true for a case to
+be considered successful, in addition to convergence.  The
+<i>condition</i> is a boolean expression to be evaluated in the
+context of the cell model.  For example,<p>
+
+<pre>
+    require {[A] == [B]}
+</pre>
+
+requires that cells A and B should have the same value or the case is
+a failure.  Note that when doing this kind of comparison it's often
+wise to use the <xref cellmodel(5) ediff>() function, and require
+that the cell values are equal to within <b>-epsilon</b>:<p>
+
+<pre>
+    require {ediff([A],[B]) == 0}
+</pre>
+
+
+
+</deflist mash>
+
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original application.<p>
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

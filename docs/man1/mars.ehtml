@@ -1,0 +1,37 @@
+<manpage mars(1) "Mars Development Tool">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<deflist program>
+
+<defitem mars {mars <i>app</i> [<i>args...</i>]}>
+
+</deflist program>
+
+The mars(1) command is the launcher for a number of Mars development
+tools.  See the individual Mars man pages for the full set.<p>
+
+<section ENVIRONMENT>
+
+mars(1) requires tclsh8.5.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+

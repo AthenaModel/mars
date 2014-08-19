@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide marsgui 3.0.0
+package provide marsgui 3.0.1a0
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -32,7 +32,7 @@ package require tablelist 5.11
 package require Tktable 2.11
 package require Tkhtml 3.0
 package require kiteutils 0.1.2
-package require -exact marsutil 3.0.0
+package require -exact marsutil 3.0.1a0
 # -kite-require-end
 
 #-----------------------------------------------------------------------

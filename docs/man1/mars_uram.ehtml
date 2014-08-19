@@ -1,0 +1,503 @@
+<manpage {mars(1) mars_uram(1)} "URAM Workbench">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<swallow {
+package require simlib
+namespace import ::simlib::*
+}>
+
+<section DESCRIPTION>
+
+<deflist program>
+
+<defitem {mars uram} {mars uram ?options...? ?database?}>
+
+</deflist program>
+
+mars_uram(1) is a tool for working with <xref uram(n)>
+interactively, and especially for performance optimization.
+It loads URAM data from a <xref uramdb(5)> file into an
+instance of <xref uram(n)>,
+and allows the user to schedule attitude inputs, query inputs
+and outputs, and advance simulation time.<p>
+
+The <xref uramdb(5)> file name may be specified on the command line,
+in which case it will be loaded automatically.  The database file will
+be loaded before any <code>-script</code> specified on the
+command-line is executed.  Alternatively, <xref uramdb(5)> files can be
+loaded interactively using the <iref load> command.<p>
+<p>
+
+The mars_uram(1) user interface consists of three areas: a simulation tool
+bar, a browser area containing the scrolling log and (ultimately) a
+number of data browsers, and an interactive
+command-line interface (CLI). As the model is exercised, a trace of
+activities is written to the scrolling log. The CLI provides
+a terminal-like command line interface at which mars_uram(1) commands can
+be typed; for example, entering the command <iref select> will dump the
+results of a satisfaction query at the CLI.<p>
+
+Note that the boundary between the browser area and the CLI can be dragged
+up or down with the mouse.<p>
+
+See <xref MENUS> for a description of mars_uram(1)'s menus.
+See <xref COMMANDS> for a full list of mars_uram(1) commands.
+See <xref CLI> for details on the shell's editing features.
+See <xref SCRIPTS> for details on how to write mars_uram(1)
+scripts.<p>
+
+<subsection "Simulation Time">
+
+mars_uram(1) measures simulation time in timesteps called
+"ticks", which are nominally one week long.  However, mars_uram(1) has
+no notion of simulation time beyond the tick.<p>
+
+<section OPTIONS>
+
+mars_uram(1) may be invoked with the following command-line
+options:<p>
+
+<deflist options>
+
+<defopt {-help}>
+
+Writes the command-line syntax to standard output, and halts.<p>
+
+<defopt {-script <i>scriptFile</i>}>
+
+The specified script file will executed automatically.<p>
+
+</deflist options>
+
+<section MENUS>
+
+mars_uram(1) provides the following menus:<p>
+
+<subsection "File Menu">
+
+<deflist>
+  <def "New Browser...">
+   Opens a new window containing a set of browser tabs.<p>
+
+  <def "Load uramdb(5) File...">
+   Pops up the "Load uramdb(5) File..." dialog.  The selected file
+       will be loaded into the simulation.<p>
+
+  <def "Save RDB File...">
+   Saves the current contents of the RDB, including all uramdb(5)
+       and uram(n) data, to disk as an RDB file.<p>
+       
+  <def "Save CLI Scrollback Buffer...">
+   Saves the current contents of the CLI's scrollback buffer to disk
+       as a text file.<p>
+
+  <def "Exit">
+   Terminates the application.<p>
+</deflist>
+
+<subsection "Edit Menu">
+
+<deflist>
+  <def "Cut">
+   Cuts selected text to the clipboard.<p>
+
+  <def "Copy">
+   Copies selected text to the clipboard.<p>
+
+  <def "Paste">
+   Pastes the text from the clipboard.<p>
+
+  <def "Select All">
+   Selects all text in the scrolling log or CLI.<p>
+</deflist>
+
+<section COMMANDS>
+
+mars_uram(1) provides the following commands, which may be
+entered at the <xref CLI> or used in <xref SCRIPTS>:<p>
+
+<deflist commands>
+
+<defitem _equals_ {= <i>expression...</i>}>
+
+Computes and returns the value of an arithmetic expression:<p>
+
+<pre>
+    &gt; = 1 + 1
+    2
+    &gt;
+</pre>
+
+Variables can be defined with <iref set> and retrieved using "$"
+notation:<p>
+
+<pre>
+    &gt; set num 5
+    5
+    &gt; = $num * 2
+    10
+    &gt;
+</pre>
+
+<defitem bgerrtrace {bgerrtrace}>
+
+Returns (and logs) the stack trace from the most recent bgerror.<p>
+
+<defitem call {call <i>script</i>}>
+
+Calls the named <i>script</i>, which is assumed to be in the
+current working directory unless a path
+is specified. The ".tcl"
+extension may be omitted; <iref call> will add it automatically.<p>
+
+<defitem coop {coop <i>subcommand</i> <i>args...</i>}>
+
+This command allows the user to enter cooperation inputs.  The
+subcommands are as follows:<p>
+
+<deflist coop>
+
+<defitem "coop badjust" {coop badjust <i>driver f g delta</i>}>
+<defitem "coop bset" {coop bset <i>driver f g value</i>}>
+<defitem "coop cset" {coop cset <i>f g value...</i>}>
+<defitem "coop persistent" {coop persistent <i>driver cause f g mag</i> ?<i>options...</i>?}>
+<defitem "coop transient" {coop transient <i>driver cause f g mag</i> ?<i>options...</i>?}>
+These subcommands are delegated to <xref uram(n)> as is.<p>
+
+<defitem "coop mass" {coop mass ?<i>driver</i>?}>
+
+This subcommand creates cooperation inputs <i>en masse</i>, with
+<code>-p</code> and <code>-q</code> both set to 1.0.  The
+inputs are associated with the specified <i>driver</i>; if no driver
+is specified, one is generated automatically.<p>
+
+</deflist coop>
+
+<defitem debug {debug ?<i>command...</i>?}>
+
+Invokes a debugger window.  The debugger is simply a Tcl interpreter
+with full access to the application's code and data; it's intended for
+developer use only.<p>
+
+If a command name is given, the command will be loaded into the
+debugger's mod editor.<p>
+
+
+<defitem errtrace {errtrace}>
+
+When used interactively, returns the stack trace associated with the
+last command which returned an error.  This command is a debugging
+aid, and has no effect on the execution of the program.<p>
+
+<defitem help {help ?-info? <i>command...</i>}>
+
+Returns the calling syntax for the named <i>command</i> in
+human-readable format.  If <b>-info</b> is specified, then
+information on the linkage from the executive commands to the
+simulation internals is included in the output.<p>
+
+For example,<p>
+
+<pre>
+&gt; <b>help rdb</b>
+Usage: rdb subcommand ?args...?
+Valid subcommands: eval, query, schema, table
+&gt; <b>help rdb query</b>
+Usage: rdb query sql
+&gt;
+</pre>
+
+<defitem hrel {hrel <i>subcommand</i> <i>args...</i>}>
+
+This command allows the user to enter horizontal relationship inputs.  The
+subcommands are as follows:<p>
+
+<deflist hrel>
+
+<defitem "hrel badjust" {hrel badjust <i>driver f g delta</i>}>
+<defitem "hrel bset" {hrel bset <i>driver f g value</i>}>
+<defitem "hrel cset" {hrel cset <i>f g value...</i>}>
+<defitem "hrel persisent" {hrel persistent <i>driver cause f g mag</i>}>
+<defitem "hrel transient" {hrel transient <i>driver cause f g mag</i>}>
+These subcommands are delegated to <xref uram(n)> as is.<p>
+
+<defitem "hrel mass" {hrel mass ?<i>driver</i>?}>
+
+This subcommand creates horizontal relationship inputs <i>en masse</i>.  The
+inputs are associated with the specified <i>driver</i>; if no driver
+is specified, one is generated automatically.<p>
+
+</deflist hrel>
+
+<defitem load {load <i>filename</i>}>
+
+Tries to load the named <xref uramdb(5)> file.  mars_uram(1)
+looks for the file in the current working directory, which is the
+location from which mars_uram(1) was invoked; alternatively, you
+can specify an absolute path.<p>
+
+<defitem loadperf {loadperf ?<i>options...</i>?}>
+
+Creates a synthetic scenario for performance testing, and loads
+it into <xref uram(n)>.  See <xref uramdb(n)>
+<xref uramdb(n) mkperfdb> for the options.<p>
+
+The call to <xref uram(n)> <xref uram(n) init> is profiled
+automatically.<p>
+
+<defitem log {log <i>message</i>}>
+
+Writes <i>message</i> to the scrolling log, e.g.,<p>
+
+<pre>
+    100000ZJAN05&gt; log "Hello, World!"
+</pre>
+
+
+<defitem now {now}>
+
+Returns the current simulation time in ticks.<p>
+
+<defitem parm {parm <i>subcommand</i> <i>args...</i>}>
+
+The <iref parm> command sets and queries preference parameters.
+Note that parameter values are saved automatically to
+~/.mars_uram/parmdb.defaults when the program exits, and reloaded
+at start up.<p>
+
+<deflist parm>
+
+<defitem {parm get} {parm get <i>parm</i>}>
+
+Retrieves the value of the named parameter.<p>
+
+<defitem {parm help} {parm help <i>parm</i>}>
+
+Retrieves the documentation string for the parameter.<p>
+
+<defitem {parm list} {parm list ?<i>pattern</i>?}>
+
+Returns a human-readable list of parameters whose names match
+the specified wildcard pattern, in alphabetical order.
+If no <i>pattern</i> is
+specified, all parameters will be returned.<p>
+
+<defitem {parm load} {parm load}>
+
+Loads the parameter set from "~/.mars_uram/parmdb.defaults"; this also
+happens automatically at start up.<p>
+
+<defitem {parm names} {parm names ?<i>pattern</i>?}>
+
+Returns a list of the parameter names, in alphabetical order, which
+match the specified wildcard pattern; if no <i>pattern</i> is
+specified, all names will be returned.<p>
+
+<defitem {parm set} {parm set <i>parm value</i>}>
+
+Sets the value of the named parameter, which must be valid.<p>
+
+<defitem {parm reset} {parm reset}>
+
+Resets all parameters to their default values.<p>
+
+<defitem {parm save} {parm save}>
+
+Saves the parameter set to "~/.mars_uram/parmdb.defaults";  this also
+happens automatically at shut down.<p>
+
+</deflist parm>
+
+<defitem profile {profile <i>command</i> ?<i>args...</i>?}>
+
+Executes the command and times its execution. The time in microseconds and
+the command are logged, and the command's result is returned.<p>
+
+<defitem "rdb" {rdb <i>subcommand</i> ?<i>args...</i>?}>
+
+Queries the application's run-time database. The subcommands are as
+follows:<p>
+
+<deflist rdb>
+
+<defitem {rdb eval} {rdb eval <i>sql</i>}>
+
+Executes the specified <i>sql</i> query and returns a list of the results.
+Note that the query will not be allowed to modify the database.<p>
+
+This command is appropriate for use in scripts; prefer
+<iref rdb query> or <iref select> for interactive use.<p>
+
+<defitem {rdb query} {rdb query <i>sql</i>}>
+
+Executes the specified <i>sql</i> query and returns the results in tabular
+form.  See also <iref select>, which is often more convenient.<p>
+
+<defitem {rdb schema} {rdb schema ?<i>table</i>?}>
+
+Returns the SQL schema for the named table, or by default the entire
+database.<p>
+
+<defitem {rdb tables} {rdb tables}>
+
+Returns a list of the names of the database tables.<p>
+
+</deflist rdb>
+
+<defitem reset {reset}>
+
+Re-initializes URAM back to simulation time 0; this is
+equivalent to reloading the <xref uramdb(5)> file.<p>
+
+<defitem sat {sat <i>subcommand</i> <i>args...</i>}>
+
+This command allows the user to enter satisfaction inputs.  The
+subcommands are as follows:<p>
+
+<deflist sat>
+
+<defitem "sat badjust" {sat badjust <i>driver g c delta</i>}>
+<defitem "sat bset" {sat bset <i>driver g c value</i>}>
+<defitem "sat cset" {sat cset <i>g c value...</i>}>
+<defitem "sat persistent" {sat persistent <i>driver cause g c mag</i> ?<i>options...</i>?}>
+<defitem "sat transient" {sat transient <i>driver cause g c mag</i> ?<i>options...</i>?}>
+These subcommands are delegated to <xref uram(n)> as is.<p>
+
+<defitem "sat mass" {sat mass ?<i>driver</i>?}>
+
+This subcommand creates satisfaction inputs <i>en masse</i>, with
+<code>-p</code> and <code>-q</code> both set to 1.0.  The
+inputs are associated with the specified <i>driver</i>; if no driver
+is specified, one is generated automatically.<p>
+
+</deflist sat>
+
+<defitem select {select <i>sql...</i>}>
+
+Executes the SQL query and returns the results in tabular form.
+This is simply a wrapper around <iref rdb query>; compare
+
+<pre>
+  &gt; select * from uramdb_n
+</pre>
+
+with
+
+<pre>
+  &gt; rdb query {select * from uramdb_n}
+</pre><p>
+
+<defitem set {set <i>variable value</i>}>
+
+Assigns a <i>value</i> to a named <i>variable</i>.<p>
+
+<defitem step {step ?<i>ticks</i>?}>
+
+Advances simulation time by the specified number of <i>ticks</i>, if
+given; otherwise, by 1 tick.<p>
+
+The call to <xref uram(n)> <xref uram(n) advance> is profiled
+automatically.<p>
+
+<defitem super {super <i>args...</i>}>
+
+Concatenates its arguments into a single command, and executes
+that command in the context of the application rather than in the
+URAM Workbench executive.<p>
+
+<defitem unload {unload}>
+
+Unloads the current uramdb(5) file.<p>
+
+<defitem vrel {vrel <i>subcommand</i> <i>args...</i>}>
+
+This command allows the user to enter vertical relationship inputs.  The
+subcommands are as follows:<p>
+
+<deflist vrel>
+
+<defitem "vrel badjust" {vrel badjust <i>driver g a delta</i>}>
+<defitem "vrel bset" {vrel bset <i>driver g a value</i>}>
+<defitem "vrel cset" {vrel cset <i>g a value...</i>}>
+<defitem "vrel persistent" {vrel persistent <i>driver cause g a mag</i>}>
+<defitem "vrel transient" {vrel transient <i>driver cause g a mag</i>}>
+These subcommands are delegated to <xref uram(n)> as is.<p>
+
+<defitem "vrel mass" {vrel mass ?<i>driver</i>?}>
+
+This subcommand creates vertical relationship inputs <i>en masse</i>.
+The inputs are associated with the specified <i>driver</i>; if no
+driver is specified, one is generated automatically.<p>
+
+</deflist vrel>
+
+</deflist>
+
+In addition to the specific commands listed above, mars_uram(1)
+supports most standard Tcl commands.<p>
+
+<section CLI>
+
+The mars_uram(1) command-line interface (CLI) provides the following
+conveniences:<p>
+
+<ul>
+  <li> Full command-line editing.  Use the left and right arrow keys
+       (or the mouse) to edit the text on the command-line before
+       executing it.<p>
+
+  <li> Command-history.  Use the up and down arrow keys to retrieve
+       the previous commands to the command-line for execution.<p>
+
+  <li> Command-completion.  Press the Tab key to expand a partial
+       command name into a full command name, e.g., type "st" and
+       press Tab to expand "st" into "step".<p>
+
+  <li> Standard cut, copy, and paste.  Use Ctrl+X, Ctrl+C, and Ctrl+V
+       to cut, copy, and paste on the command line.  Use the mouse to
+       select older text in the shell (e.g., command outputs) and copy
+       it with Ctrl+C.<p>
+</ul>
+
+<section SCRIPTS>
+
+A mars_uram(1) script is simply a sequence of <xref COMMANDS>
+placed on consecutive lines of a text file, e.g.,<p>
+
+<pre>
+    load mydata.uramdb
+    step
+</pre>
+
+Use the <iref call> command to execute a script:<p>
+
+<pre>
+    &gt; call myscript.tcl
+</pre>
+
+mars_uram(1) scripts are in fact Tcl scripts, and can define
+procs, perform loops, and so forth.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+mars_uram(1) is the most recent in a series of similar tools that
+accompanied predecessors of <xref uram(n)>.<p>
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
