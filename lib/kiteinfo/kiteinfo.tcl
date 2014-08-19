@@ -23,8 +23,8 @@ namespace eval ::kiteinfo:: {
         require-snit {version 2.3 local 0}
         build-Marsbin {make -f MakeTEA clean all}
         clean-libGeotrans {make clean}
-        apptype-mars kit
         binary-marsutil 0
+        apptype-mars kit
         clean-Marsbin {make -f MakeTEA clean}
         build-libGeostars {make clean all}
         description {Mars Simulation Support Library}
