@@ -1,0 +1,65 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    main.test
+#
+# PROJECT:
+#    athena-mars - Mars Simulation Support Library
+#
+# DESCRIPTION:
+#    marsapp(n) test suite for main.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsapp/pkgModules.tcl
+namespace import ::marsapp::*
+
+#-------------------------------------------------------------------
+# Setup
+
+# setup
+#
+# Set up for tests
+
+proc setup {} {
+    # TBD
+}
+
+# cleanup
+#
+# Cleans up after a test.
+
+proc cleanup {} {
+    # TBD
+}
+
+
+#-------------------------------------------------------------------
+# dummy
+
+test dummy-1.1 {Dummy} -setup {
+    setup
+} -body {
+    set result 0
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests

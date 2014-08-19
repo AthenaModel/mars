@@ -24,7 +24,7 @@ package provide simlib 3.0a4
 # -kite-require-start  REQUIRE EXTERNAL PACKAGES HERE
 package require snit 2.3
 package require sqlite3 3.8
-package require kiteutils 0.1
+package require kiteutils 0.1.2
 package require -exact marsutil 3.0a4
 # -kite-require-end
 
