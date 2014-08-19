@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide marsgui 3.0a4
+package provide marsgui 3.0.0
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -25,14 +25,14 @@ package provide marsgui 3.0a4
 package require Tk 8.6
 package require snit 2.3
 package require sqlite3 3.8
-package require Img 1.4.1-1.4.1
+package require Img 1.4.1
 package require BWidget 1.9
 package require treectrl 2.4
 package require tablelist 5.11
 package require Tktable 2.11
 package require Tkhtml 3.0
 package require kiteutils 0.1.2
-package require -exact marsutil 3.0a4
+package require -exact marsutil 3.0.0
 # -kite-require-end
 
 #-----------------------------------------------------------------------

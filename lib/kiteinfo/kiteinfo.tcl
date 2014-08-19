@@ -28,17 +28,17 @@ namespace eval ::kiteinfo:: {
         clean-Marsbin {make -f MakeTEA clean}
         build-libGeostars {make clean all}
         description {Mars Simulation Support Library}
-        provides {marsutil marsgui Marsbin app_sql}
+        provides {marsutil marsgui Marsbin}
         build-libTiff {make clean all}
         require-tablelist {version 5.11 local 0}
         require-treectrl {version 2.4 local 0}
-        require-Img {version 1.4.1-1.4.1 local 0}
+        require-Img {version 1.4.1 local 0}
         clean-libGTiff {make clean}
         clean-libGeostars {make clean}
         includes {}
         require-BWidget {version 1.9 local 0}
         clean-libTiff {make clean}
-        pkgversion 3.0a4
+        pkgversion 3.0.0
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
         shell {
     package require marsutil 3.0
@@ -46,7 +46,6 @@ namespace eval ::kiteinfo:: {
 }
         require-Tktable {version 2.11 local 0}
         name athena-mars
-        binary-app_sql 0
         binary-marsgui 0
         poc William.H.Duquette@jpl.nasa.gov
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
@@ -56,7 +55,7 @@ namespace eval ::kiteinfo:: {
         require-Tkhtml {version 3.0 local 0}
         require-comm {version 4.6 local 0}
         binary-Marsbin 1
-        version 3.0a4
+        version 3.0.0
         require-sqlite3 {version 3.8 local 0}
         build-libGeotrans {make clean all}
     }

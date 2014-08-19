@@ -1,5 +1,5 @@
 # project.kite
-project athena-mars 3.0a4 {Mars Simulation Support Library}
+project athena-mars 3.0.0 {Mars Simulation Support Library}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
@@ -9,7 +9,6 @@ app mars -apptype kit
 provide marsutil
 provide marsgui
 provide Marsbin -binary
-provide app_sql
 
 # Compiled Directories
 src libGeotrans
@@ -22,7 +21,7 @@ src Marsbin -build {make -f MakeTEA clean all} -clean {make -f MakeTEA clean}
 require snit 2.3
 require sqlite3 3.8
 require comm 4.6
-require Img 1.4.1-1.4.1
+require Img 1.4.1
 require BWidget 1.9
 require treectrl 2.4
 require tablelist 5.11
