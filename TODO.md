@@ -6,7 +6,7 @@ Current Goals:
 
 Next:
 
-* Add the mars(1) man pages.
+* Revise Mars CM plan
 
 # To Be Cleaned Up
 
