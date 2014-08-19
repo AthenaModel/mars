@@ -28,9 +28,8 @@ namespace eval ::kiteinfo:: {
         clean-Marsbin {make -f MakeTEA clean}
         build-libGeostars {make clean all}
         description {Mars Simulation Support Library}
-        provides {marsutil marsgui Marsbin app_icons}
+        provides {marsutil marsgui Marsbin}
         build-libTiff {make clean all}
-        binary-app_icons 0
         require-tablelist {version 5.11 local 0}
         require-treectrl {version 2.4 local 0}
         require-Img {version 1.4.1-1.4.1 local 0}
