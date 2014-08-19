@@ -9,6 +9,7 @@ app mars -apptype kit
 provide marsutil
 provide marsgui
 provide Marsbin -binary
+provide app_sql
 
 # Compiled Directories
 src libGeotrans
