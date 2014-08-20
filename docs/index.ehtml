@@ -3,7 +3,8 @@
 <preface doc "Top-level Documentation">
 
 <ul>
-  <li> <link cm.html "CM Plan">
+  <li> <link cm.html           "CM Plan">
+  <li> <link tcl_standard.html "TCL Coding Standard">
 </ul>
 
 <preface man "Man Pages">

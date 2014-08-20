@@ -31,7 +31,7 @@ package require snit 2.3
 package require kiteutils 0.1.2
 package require -exact marsutil 3.0.1a0
 package require -exact marsgui 3.0.1a0
-package require -exact simlib 3.0a4
+package require -exact simlib 3.0.1a0
 # -kite-require-end
 
 namespace import ::kiteutils::*

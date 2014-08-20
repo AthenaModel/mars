@@ -23,12 +23,20 @@ namespace eval ::kiteinfo:: {
         require-snit {version 2.3 local 0}
         build-Marsbin {make -f MakeTEA clean all}
         clean-libGeotrans {make clean}
+        binary-simlib 0
         binary-marsutil 0
         apptype-mars kit
         clean-Marsbin {make -f MakeTEA clean}
         build-libGeostars {make clean all}
         description {Mars Simulation Support Library}
-        provides {marsutil marsgui Marsbin}
+        provides {marsutil marsgui simlib Marsbin}
+        distpat-install {
+    README.md
+    %apps
+    %libs
+    docs/*.html
+    docs/man*/*.html
+}
         build-libTiff {make clean all}
         require-tablelist {version 5.11 local 0}
         require-treectrl {version 2.4 local 0}
@@ -58,6 +66,7 @@ namespace eval ::kiteinfo:: {
         version 3.0.1a0
         require-sqlite3 {version 3.8 local 0}
         build-libGeotrans {make clean all}
+        dists install
     }
 
     namespace export \

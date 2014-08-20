@@ -17,6 +17,7 @@ teapot.txt
 autom4te.cache
 /lib/Marsbin*
 *.bak
+/*.zip
 
 
 # SublimeText artifacts
