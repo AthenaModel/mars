@@ -19,17 +19,46 @@ namespace eval ::kiteinfo:: {
     variable kiteInfo
 
     array set kiteInfo {
-        require-kiteutils {version 0.1.2 local 1}
-        require-snit {version 2.3 local 0}
+        reqver-Tktable 2.11
+        build-libTiff {make clean all}
+        local-Img 0
+        reqver-comm 4.6
+        clean-libGTiff {make clean}
+        local-Tktable 0
+        pkgversion 3.0.1a0
+        apps mars
+        build-libGTiff {make clean all}
+        local-Tkhtml 0
+        dists install
         build-Marsbin {make -f MakeTEA clean all}
+        build-libGeostars {make clean all}
+        local-tablelist 0
+        local-treectrl 0
+        clean-libGeostars {make clean}
+        reqver-kiteutils 0.1.2
+        binary-marsgui 0
+        local-snit 0
+        build-libGeotrans {make clean all}
+        reqver-treectrl 2.4
+        reqver-BWidget 1.9
         clean-libGeotrans {make clean}
-        binary-simlib 0
         binary-marsutil 0
+        provides {marsutil marsgui simlib Marsbin}
+        description {Mars Simulation Support Library}
+        local-BWidget 0
+        reqver-sqlite3 3.8
+        shell {
+    package require marsutil 3.0
+    namespace import -force marsutil::*
+}
+        clean-libTiff {make clean}
+        reqver-snit 2.3
+        name athena-mars
+        local-sqlite3 0
+        reqver-tablelist 5.11
+        binary-simlib 0
         apptype-mars kit
         clean-Marsbin {make -f MakeTEA clean}
-        build-libGeostars {make clean all}
-        description {Mars Simulation Support Library}
-        provides {marsutil marsgui simlib Marsbin}
         distpat-install {
     README.md
     %apps
@@ -37,36 +66,16 @@ namespace eval ::kiteinfo:: {
     docs/*.html
     docs/man*/*.html
 }
-        build-libTiff {make clean all}
-        require-tablelist {version 5.11 local 0}
-        require-treectrl {version 2.4 local 0}
-        require-Img {version 1.4.1 local 0}
-        clean-libGTiff {make clean}
-        clean-libGeostars {make clean}
-        includes {}
-        require-BWidget {version 1.9 local 0}
-        clean-libTiff {make clean}
-        pkgversion 3.0.1a0
+        reqver-Tkhtml 3.0
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
-        shell {
-    package require marsutil 3.0
-    namespace import -force marsutil::*
-}
-        require-Tktable {version 2.11 local 0}
-        name athena-mars
-        binary-marsgui 0
         poc William.H.Duquette@jpl.nasa.gov
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
-        build-libGTiff {make clean all}
-        apps mars
+        local-comm 0
         gui-mars 0
-        require-Tkhtml {version 3.0 local 0}
-        require-comm {version 4.6 local 0}
-        binary-Marsbin 1
         version 3.0.1a0
-        require-sqlite3 {version 3.8 local 0}
-        build-libGeotrans {make clean all}
-        dists install
+        binary-Marsbin 1
+        local-kiteutils 1
+        reqver-Img 1.4.1
     }
 
     namespace export \
@@ -134,22 +143,4 @@ proc ::kiteinfo::gui {app} {
     variable kiteInfo
 
     return $kiteInfo(gui-$app)
-}
-
-# require name
-#
-# name  - Name of a "require"'d teapot package.
-#
-# Does a Tcl [package require] on the given package, using the
-# version specified by the "require" statement in project.kite.
-#
-# DEPRECATED
-
-proc ::kiteinfo::require {name} {
-    variable kiteInfo
-    
-    if {$name ni $kiteInfo(requires)} {
-        error "unknown package name: \"$name\""
-    }
-    set version [dict get $kiteInfo(require-$name) version]
 }
