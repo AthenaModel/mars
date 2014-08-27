@@ -65,6 +65,10 @@ namespace eval ::kiteinfo:: {
     %libs
     docs/*.html
     docs/man*/*.html
+    %get {
+        docs/mag.docx 
+        https://pepper.jpl.nasa.gov/athena/docx/mars/3.0/mag20140826.docx
+    }
 }
         reqver-Tkhtml 3.0
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}

@@ -38,6 +38,10 @@ dist install {
     %libs
     docs/*.html
     docs/man*/*.html
+    %get {
+        docs/mag.docx 
+        https://pepper.jpl.nasa.gov/athena/docx/mars/3.0/mag20140826.docx
+    }
 }
 
 # Shell Initialization
