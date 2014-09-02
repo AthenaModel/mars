@@ -494,8 +494,12 @@ snit::widget ::marsgui::orderdialog {
     # If the dialog is fully obscured, this raises it above its parent.
 
     method KeepVisible {} {
-        if {[wm stackorder $win isbelow [$type Parent]]} {
-            raise $win
+        set p [$type Parent]
+
+        if {[winfo exists $p] && [winfo ismapped $p]} {
+            if {[wm stackorder $win isbelow $p]} {
+                raise $win
+            }
         }
     }
 
