@@ -143,7 +143,7 @@ The project directory tree is as follows:<p>
 <th><td>Path</td> <td>Description</td></th>
 
 <treedir (root)/       > Root of project tree</treedir>
-<treedir +project.kite > <xref kite(1)> Project File
+<treedir +project.kite > <xref kite(1)> Project File </treedir>
 <treedir +bin/         > Executable loader scripts and ancillary 
                          tools.</treedir>
 <treedir +docs/        > Project documentation</treedir>

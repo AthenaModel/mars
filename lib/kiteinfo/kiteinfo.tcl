@@ -19,46 +19,18 @@ namespace eval ::kiteinfo:: {
     variable kiteInfo
 
     array set kiteInfo {
-        reqver-Tktable 2.11
-        build-libTiff {make clean all}
-        local-Img 0
-        reqver-comm 4.6
-        clean-libGTiff {make clean}
-        local-Tktable 0
-        pkgversion 3.0.1a0
-        apps mars
-        build-libGTiff {make clean all}
-        local-Tkhtml 0
-        dists install
-        build-Marsbin {make -f MakeTEA clean all}
-        build-libGeostars {make clean all}
-        local-tablelist 0
-        local-treectrl 0
-        clean-libGeostars {make clean}
-        reqver-kiteutils 0.1.2
-        binary-marsgui 0
-        local-snit 0
-        build-libGeotrans {make clean all}
-        reqver-treectrl 2.4
         reqver-BWidget 1.9
+        reqver-Tktable 2.11
+        build-Marsbin {make -f MakeTEA clean all}
         clean-libGeotrans {make clean}
-        binary-marsutil 0
-        provides {marsutil marsgui simlib Marsbin}
-        description {Mars Simulation Support Library}
-        local-BWidget 0
-        reqver-sqlite3 3.8
-        shell {
-    package require marsutil 3.0
-    namespace import -force marsutil::*
-}
-        clean-libTiff {make clean}
-        reqver-snit 2.3
-        name athena-mars
-        local-sqlite3 0
-        reqver-tablelist 5.11
         binary-simlib 0
+        binary-marsutil 0
         apptype-mars kit
+        local-tablelist 0
         clean-Marsbin {make -f MakeTEA clean}
+        build-libGeostars {make clean all}
+        description {Mars Simulation Support Library}
+        provides {marsutil marsgui simlib Marsbin}
         distpat-install {
     README.md
     %apps
@@ -67,19 +39,46 @@ namespace eval ::kiteinfo:: {
     docs/man*/*.html
     %get {
         docs/mag.docx 
-        https://pepper.jpl.nasa.gov/athena/docx/mars/3.0/mag20140826.docx
+        https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
     }
 }
+        local-treectrl 0
+        local-Img 0
+        build-libTiff {make clean all}
         reqver-Tkhtml 3.0
+        local-BWidget 0
+        reqver-comm 4.6
+        local-Tktable 0
+        reqver-sqlite3 3.8
+        clean-libGTiff {make clean}
+        clean-libGeostars {make clean}
+        reqver-kiteutils 0.1.2
+        reqver-snit 2.3
+        clean-libTiff {make clean}
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
+        shell {
+    package require marsutil 3.0
+    namespace import -force marsutil::*
+}
+        name athena-mars
+        binary-marsgui 0
         poc William.H.Duquette@jpl.nasa.gov
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
+        local-Tkhtml 0
         local-comm 0
+        build-libGTiff {make clean all}
+        apps mars
+        local-sqlite3 0
         gui-mars 0
-        version 3.0.1a0
-        binary-Marsbin 1
         local-kiteutils 1
+        reqver-tablelist 5.11
+        local-snit 0
+        binary-Marsbin 1
+        version 3.0.1a0
+        reqver-treectrl 2.4
         reqver-Img 1.4.1
+        build-libGeotrans {make clean all}
+        dists install
     }
 
     namespace export \

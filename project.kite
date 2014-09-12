@@ -40,7 +40,7 @@ dist install {
     docs/man*/*.html
     %get {
         docs/mag.docx 
-        https://pepper.jpl.nasa.gov/athena/docx/mars/3.0/mag20140826.docx
+        https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
     }
 }
 
