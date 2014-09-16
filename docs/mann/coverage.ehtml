@@ -2,12 +2,6 @@
 
 <section SYNOPSIS>
 
-<swallow {
-    # Get some help
-    package require simlib [version]
-    namespace import ::simlib::*
-}>
-
 <pre>
 package require simlib <version>
 namespace import ::simlib::*

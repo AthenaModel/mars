@@ -3,9 +3,14 @@
 <section SYNOPSIS>
 
 <swallow {
-    # Get some help
-    package require simlib [version]
-    namespace import ::simlib::*
+    proc withlib {lib script} {
+      set tclscript [format {
+          package require %s %s
+          %s
+      } $lib [version] $script]
+
+      return [tclsh $tclscript]
+  }
 }>
 
 <pre>
@@ -30,7 +35,7 @@ used in a particular rule can be set in the <xref parmdb(5)>,
 <iref rmf> is also an <xref enum(n)> of the RMF names, which are
 as follows:<p>
 
-<rmf html><p>
+<withlib simlib {::simlib::rmf html}><p>
 
 <subsection "Configuration Parameters">
 
@@ -38,15 +43,16 @@ rmf(n) is a <xref parm(i)>, and defines the following configuration
 parameter.  The <iref rmf parm> subcommand can be used to set and query
 parameter values.<p>
 
-<expand [rmf parm manpage]>
+<expand [withlib simlib {::simlib::rmf parm manpage}]>
 
 <subsection "Function Plots">
 
 The functions which correspond to these names are as follows, assuming
 that the <b>rmf.nominalRelationship</b> parameter is set to its
-default value of <rmf parm getdefault rmf.nominalRelationship>.
+default value of 
+<withlib simlib {::simlib::rmf parm getdefault rmf.nominalRelationship}>.
 Note that where the plots cross the -1.0 and 1.0 lines they do so at
-&plusmn;<rmf parm getdefault rmf.nominalRelationship>
+&plusmn;<withlib simlib {::simlib::rmf parm getdefault rmf.nominalRelationship}>
 <p>
 
 <img src="rmf2.gif"><p>

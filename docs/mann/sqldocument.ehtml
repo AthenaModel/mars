@@ -7,6 +7,17 @@ package require marsutil <version>
 namespace import ::marsutil::*
 </pre>
 
+<swallow {
+    proc withlib {lib script} {
+      set tclscript [format {
+          package require %s %s
+          %s
+      } $lib [version] $script]
+
+      return [tclsh $tclscript]
+  }
+}>
+
 
 <itemlist>
 
@@ -52,9 +63,8 @@ Call <iref close> explicitly!<p>
 At present, sqldocument(n) adds no definitions of its own to the database
 schema; if it did, they would appear here.<p>
 
-<swallow {package require marsutil [version]}>
 <pre>
-<::marsutil::sqldocument sqlsection schema>
+<withlib marsutil {::marsutil::sqldocument sqlsection schema}>
 </pre>
 
 <section "SQL FUNCTIONS">

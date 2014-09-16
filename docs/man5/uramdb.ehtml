@@ -4,6 +4,17 @@
 
 <itemlist>
 
+<swallow {
+    proc withlib {lib args} {
+      set script [format {
+          package require %s %s
+          %s
+      } $lib [version] $args]
+
+      return [tclsh $script]
+    }
+}>
+
 <section DESCRIPTION>
 
 uramdb(5) defines a database format used for initializing
@@ -15,12 +26,6 @@ development.<p>
 an <xref sqldocument(n)> database.
 run-time database.  The syntax of the file mirrors the SQL
 <xref "DATABASE SCHEMA">.<p> 
-
-<swallow {
-# Let's let simlib do some of the work.
-package require simlib
-namespace import -force ::simlib::*
-}>
 
 <section "BASIC SYNTAX">
 
@@ -264,7 +269,7 @@ The value is the proximity of neighborhood <b>n</b> to neighborhood
 neighborhoods, as perceived by the residents.  Proximity can have any
 of the following <xref simtypes(n) eproximity> values:
 
-<eproximity html>
+<withlib simlib ::simlib::eproximity html>
 
 Note that proximity need not be symmetric.
 </td>
@@ -476,10 +481,10 @@ group tables.
 The relationship between the two groups from group <b>f</b>'s point
 of view (the relationship need not be symmetric).  The value is a
 <xref simtypes(n) qaffinity> value and may range from
-<qrel cget -min> to <qrel cget -max>. The
+-1.0 to +1.0. The
 following symbolic constants may be used during data entry:<p>
 
-<qaffinity html>
+<withlib simlib ::simlib::qaffinity html>
 </td>
 </tr>
 
@@ -539,10 +544,10 @@ group tables.
 The relationship between the group and actor from the group's point
 of view.  The value is a
 <xref simtypes(n) qaffinity> value and may range from
-<qrel cget -min> to <qrel cget -max>. The
+-1.0 to +1.0. The
 following symbolic constants may be used during data entry:<p>
 
-<qaffinity html>
+<withlib simlib ::simlib::qaffinity html>
 </td>
 </tr>
 
@@ -603,7 +608,7 @@ group and concern.<p>
 The initial satisfaction at time 0.0, a numeric or symbolic
 <xref simtypes(n) qsat> value:
 
-<qsat html>
+<withlib simlib ::simlib::qsat html>
 </td>
 </tr>
 
@@ -614,7 +619,7 @@ The initial satisfaction at time 0.0, a numeric or symbolic
 The saliency (importance) of this concern to this group, a numeric or
 symbolic <xref simtypes(n) qsaliency> value:
 
-<qsaliency html>
+<withlib simlib ::simlib::qsaliency html>
 </td>
 </tr>
 
@@ -683,10 +688,10 @@ of groups.<p>
 The probability that group <b>f</b> will cooperate with (provide
 information to) group <b>g</b>.  The value is a
 <xref simtypes(n) qcooperation> value and may range from
-<qcooperation cget -min> to <qcooperation cget -max>.  The
+-100.0 to +100.0.  The
 following symbolic constants may be used during data entry:<p>
 
-<qcooperation html>
+<withlib simlib ::simlib::qcooperation html>
 </td>
 </tr>
 
@@ -716,7 +721,7 @@ The <xref uramdb(n)> parser defines the following SQL schema which
 will receive the <xref uramdb(5)> data:<p>
 
 <pre>
-<uramdb sqlsection schema>
+<withlib simlib ::simlib::uramdb sqlsection schema>
 </pre>
 
 <section AUTHOR>

@@ -1,5 +1,17 @@
 <manpage {marsutil(n) eventq(n)} "Discrete Event Queue Manager">
 
+<swallow {
+    proc withlib {lib script} {
+      set tclscript [format {
+          package require %s %s
+          %s
+      } $lib [version] $script]
+
+      return [tclsh $tclscript]
+  }
+}>
+
+
 <section SYNOPSIS>
 
 <pre>
@@ -45,12 +57,6 @@ procs.<p>
 
 <section "DATABASE SCHEMA">
 
-<swallow {
-    package require marsutil [version]
-    # Define a dummy event
-    ::marsutil::eventq define dummy {a b} { ... }
-}>
-
 eventq(n) stores the queued events in an <xref sqldocument(n)>;
 eventq(n) is thus an <xref sqlsection(i)> object.  The event IDs,
 execution times, and event types are stored in a single table,
@@ -69,7 +75,10 @@ The schema looks as follows; as an example, an event type <b>dummy</b>
 with arguments <i>a</i> and <i>b</i> has been defined.
 
 <pre>
-<marsutil::eventq sqlsection schema>
+<withlib marsutil {
+    ::marsutil::eventq define dummy {a b} { ... }
+    marsutil::eventq sqlsection schema
+}>
 </pre>
 
 

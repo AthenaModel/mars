@@ -8,7 +8,7 @@
     #    ...
     # </table>
 
-    macro treedir {path} {
+    template treedir {path} {
         set trans {
             +   &nbsp;&nbsp;&nbsp;&nbsp; 
             (   <i> 
@@ -22,7 +22,7 @@
         <td>
     }
 
-    macro /treedir {} {
+    template /treedir {} {
         |<--
         </td>
         [/tr]

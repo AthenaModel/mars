@@ -8,9 +8,14 @@ namespace import ::simlib::*
 </pre>
 
 <swallow {
-# So we can get enum docs.
-package require simlib [version]
-namespace import ::simlib::*
+    proc withlib {lib script} {
+      set tclscript [format {
+          package require %s %s
+          %s
+      } $lib [version] $script]
+
+      return [tclsh $tclscript]
+  }
 }>
 
 <itemlist>
@@ -98,7 +103,7 @@ uram(n) registers the following schema definitions with
 <xref sqldocument(n)>:<p>
 
 <pre>
-<::simlib::uram sqlsection schema>
+<withlib simlib {::simlib::uram sqlsection schema}>
 </pre>
 
 
@@ -165,7 +170,7 @@ uram(n) is a <xref parm(i)>, and defines the following configuration
 parameters.  The <iref uram parm> subcommand can be used to set and query
 their values.<p>
 
-<expand [::simlib::uram parm manpage]>
+<expand [withlib simlib {::simlib::uram parm manpage}]>
 
 
 <section COMMANDS>

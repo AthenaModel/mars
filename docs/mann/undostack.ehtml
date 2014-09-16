@@ -7,6 +7,17 @@ package require marsutil <version>
 namespace import ::marsutil::undostack
 </pre>
 
+<swallow {
+    proc withlib {lib script} {
+      set tclscript [format {
+          package require %s %s
+          %s
+      } $lib [version] $script]
+
+      return [tclsh $tclscript]
+  }
+}>
+
 <itemlist>
 
 <section DESCRIPTION>
@@ -46,9 +57,8 @@ by undostack(n) begin with the string "undostack_".<p>
 undostack(n) registers the following schema definitions with
 <xref sqldocument(n)>:<p>
 
-<swallow {package require marsutil [version]}>
 <pre>
-<::marsutil::undostack sqlsection schema>
+<withlib marsutil {::marsutil::undostack sqlsection schema}>
 </pre>
 
 <section COMMANDS>

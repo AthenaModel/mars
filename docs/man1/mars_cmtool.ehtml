@@ -4,11 +4,6 @@
 
 <itemlist>
 
-<swallow {
-package require simlib [version]
-namespace import ::simlib::*
-}>
-
 <section DESCRIPTION>
 
 <deflist program>
