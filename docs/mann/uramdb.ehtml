@@ -7,16 +7,7 @@ package require simlib <version>
 namespace import ::simlib::*
 </pre>
 
-<swallow {
-    proc withlib {lib script} {
-      set tclscript [format {
-          package require %s %s
-          %s
-      } $lib [version] $script]
-
-      return [tclsh $tclscript]
-  }
-}>
+<toproject {package require simlib [version]}>
 
 <itemlist>
 
@@ -32,7 +23,7 @@ other SQLite3 database.  uramdb(n) adheres to the
 uramdb(n) registers the following schema definitions:<p>
 
 <pre>
-<withlib simlib {::simlib::uramdb sqlsection schema}>
+<fromproject {::simlib::uramdb sqlsection schema}>
 </pre>
 
 <section COMMANDS>

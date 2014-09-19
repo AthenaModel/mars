@@ -4,16 +4,7 @@
 
 <itemlist>
 
-<swallow {
-    proc withlib {lib args} {
-      set script [format {
-          package require %s %s
-          %s
-      } $lib [version] $args]
-
-      return [tclsh $script]
-    }
-}>
+<toproject {package require simlib [version]}>
 
 <section DESCRIPTION>
 
@@ -269,7 +260,7 @@ The value is the proximity of neighborhood <b>n</b> to neighborhood
 neighborhoods, as perceived by the residents.  Proximity can have any
 of the following <xref simtypes(n) eproximity> values:
 
-<withlib simlib ::simlib::eproximity html>
+<fromproject {::simlib::eproximity html}>
 
 Note that proximity need not be symmetric.
 </td>
@@ -484,7 +475,7 @@ of view (the relationship need not be symmetric).  The value is a
 -1.0 to +1.0. The
 following symbolic constants may be used during data entry:<p>
 
-<withlib simlib ::simlib::qaffinity html>
+<fromproject {::simlib::qaffinity html}>
 </td>
 </tr>
 
@@ -547,7 +538,7 @@ of view.  The value is a
 -1.0 to +1.0. The
 following symbolic constants may be used during data entry:<p>
 
-<withlib simlib ::simlib::qaffinity html>
+<fromproject {::simlib::qaffinity html}>
 </td>
 </tr>
 
@@ -608,7 +599,7 @@ group and concern.<p>
 The initial satisfaction at time 0.0, a numeric or symbolic
 <xref simtypes(n) qsat> value:
 
-<withlib simlib ::simlib::qsat html>
+<fromproject {::simlib::qsat html}>
 </td>
 </tr>
 
@@ -619,7 +610,7 @@ The initial satisfaction at time 0.0, a numeric or symbolic
 The saliency (importance) of this concern to this group, a numeric or
 symbolic <xref simtypes(n) qsaliency> value:
 
-<withlib simlib ::simlib::qsaliency html>
+<fromproject {::simlib::qsaliency html}>
 </td>
 </tr>
 
@@ -691,7 +682,7 @@ information to) group <b>g</b>.  The value is a
 -100.0 to +100.0.  The
 following symbolic constants may be used during data entry:<p>
 
-<withlib simlib ::simlib::qcooperation html>
+<fromproject {::simlib::qcooperation html}>
 </td>
 </tr>
 
@@ -721,7 +712,7 @@ The <xref uramdb(n)> parser defines the following SQL schema which
 will receive the <xref uramdb(5)> data:<p>
 
 <pre>
-<withlib simlib ::simlib::uramdb sqlsection schema>
+<fromproject {::simlib::uramdb sqlsection schema}>
 </pre>
 
 <section AUTHOR>

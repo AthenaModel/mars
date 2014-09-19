@@ -1,17 +1,5 @@
 <manpage {marsutil(n) eventq(n)} "Discrete Event Queue Manager">
 
-<swallow {
-    proc withlib {lib script} {
-      set tclscript [format {
-          package require %s %s
-          %s
-      } $lib [version] $script]
-
-      return [tclsh $tclscript]
-  }
-}>
-
-
 <section SYNOPSIS>
 
 <pre>
@@ -75,7 +63,8 @@ The schema looks as follows; as an example, an event type <b>dummy</b>
 with arguments <i>a</i> and <i>b</i> has been defined.
 
 <pre>
-<withlib marsutil {
+<fromproject {
+    package require marsutil [version]
     ::marsutil::eventq define dummy {a b} { ... }
     marsutil::eventq sqlsection schema
 }>

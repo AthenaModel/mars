@@ -7,37 +7,7 @@ package require simlib <version>
 namespace import ::simlib::*
 </pre>
 
-<swallow {
-    proc withlib {lib script} {
-      set tclscript [format {
-          package require %s %s
-          %s
-      } $lib [version] $script]
-
-      return [tclsh $tclscript]
-  }
-}>
-
-<array set qtype [withlib simlib {
-    foreach qt {
-        qaffinity
-        qcooperation
-        qduration
-        qemphasis
-        qmag
-        qposition
-        qrel
-        qsaliency
-        qsat
-        qtrend        
-        egrouptype
-        eproximity
-    } {
-        set qtypes($qt) [::simlib::$qt html]
-    }
-
-    array get qtypes
-}]>
+<toproject {package require simlib [version]}>
 
 <itemlist>
 
@@ -58,7 +28,7 @@ This quality is used to measure the degree of affinity or relationship
 between two population groups.  Values have the bounds
 shown in the following table:<p>
 
-<set qtype(qaffinity)>
+<fromproject {::simlib::qaffinity html}>
 
 
 <defitem qcooperation qcooperation>
@@ -68,7 +38,7 @@ population groups; it can be interpreted as the probability that one
 group will give information to another group.  Values have the bounds
 shown in the following table:<p>
 
-<set qtype(qcooperation)>
+<fromproject {::simlib::qcooperation html}>
 
 <defitem qduration qduration>
 
@@ -80,7 +50,7 @@ Numerically,
 Symbolically,
 durations are broken down into these categories:<p>
 
-<set qtype(qduration)>
+<fromproject {::simlib::qduration html}>
 
 <defitem qemphasis qemphasis>
 
@@ -89,7 +59,7 @@ disagreement with respect to a particular topic in a <xref mam(n)> belief
 system. Numerically, the values range from 0.0 to 1.0 and have the bins
 shown in the following table:<p>
 
-<set qtype(qemphasis)><p>
+<fromproject {::simlib::qemphasis html}>
 
 For this variable, it is more usual to enter data using the symbolic
 values than to enter specific numbers.<p>
@@ -104,7 +74,7 @@ per day.<p>
 
 Symbolically, magnitude is broken down into these categories:<p>
 
-<set qtype(qmag)>
+<fromproject {::simlib::qmag html}>
 
 <defitem qposition qposition>
 
@@ -113,7 +83,7 @@ a topic in a <xref mam(n)> belief system.  Numerically, the values
 range from -1.0 to 1.0, and have the bins
 shown in the following table:<p>
 
-<set qtype(qposition)>
+<fromproject {::simlib::qposition html}>
 
 <defitem qrel qrel>
 
@@ -123,7 +93,7 @@ groups.<p>
 Numerically, <iref qrel> values range from -1.0 to +1.0.  Symbolically,
 relationships are broken down into these categories:<p>
 
-<set qtype(qrel)>
+<fromproject {::simlib::qrel html}>
 
 <defitem qsaliency qsaliency>
 
@@ -135,7 +105,7 @@ Numerically,
 0.0 to 1.0.  Symbolically,
 saliency is broken down into these categories:<p>
 
-<set qtype(qsaliency)>
+<fromproject {::simlib::qsaliency html}>
 
 <defitem qsat qsat>
 
@@ -144,7 +114,7 @@ respect to various concerns.  Numerically,
 <iref qsat> values range from -100.0 to +100.0.
 Symbolically, satisfaction is broken down into these categories:<p>
 
-<set qtype(qsat)>
+<fromproject {::simlib::qsat html}>
 
 <defitem qtrend qtrend>
 
@@ -153,7 +123,7 @@ This quality is used to describe the trend (slope) of
 Symbolically, the possible trends are broken down into these
 categories:<p>
 
-<set qtype(qtrend)>
+<fromproject {::simlib::qtrend html}>
 
 </deflist>
 
@@ -168,14 +138,14 @@ simtypes(n) defines the following <xref enum(n)> types.<p>
 This enumeration defines the population group types which are used by the
 simulation.<p>
 
-<set qtype(egrouptype)>
+<fromproject {::simlib::egrouptype html}>
 
 <defitem eproximity eproximity>
 
 This enumeration is used to express the proximity of one neighborhood
 to another.<p>
 
-<set qtype(eproximity)>
+<fromproject {::simlib::eproximity html}>
 
 </deflist enums>
 

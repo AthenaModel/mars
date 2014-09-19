@@ -7,17 +7,7 @@ package require simlib <version>
 namespace import ::simlib::*
 </pre>
 
-<swallow {
-    proc withlib {lib script} {
-      set tclscript [format {
-          package require %s %s
-          %s
-      } $lib [version] $script]
-
-      return [tclsh $tclscript]
-  }
-}>
-
+<toproject {package require simlib [version]}>
 
 <itemlist>
 
@@ -130,7 +120,7 @@ ucurve(n) registers the following schema definitions with
 <xref sqldocument(n)>:<p>
 
 <pre>
-<withlib simlib {::simlib::ucurve sqlsection schema}>
+<fromproject {::simlib::ucurve sqlsection schema}>
 </pre>
 
 <section COMMANDS>
