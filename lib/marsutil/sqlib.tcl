@@ -448,7 +448,7 @@ snit::type ::marsutil::sqlib {
             if {$qopts(-maxcolwidth) > 0} {
                 if {$len > $qopts(-maxcolwidth)} {
                     # At least three characters
-                    set len [::marsutil::max $qopts(-maxcolwidth) 3]
+                    set len [expr {max($qopts(-maxcolwidth), 3)}]
                     set end [expr {$len - 4}]
                     set qrow($name) \
                         "[string range $qrow($name) 0 $end]..."
@@ -615,104 +615,6 @@ snit::type ::marsutil::sqlib {
         return "[join $cols {,}]\n"
     }
 
-
-    proc dummy {} {
-
-        # NEXT, get the data; accumulate column widths as we go.
-        set rows {}
-        set names {}
-        $db eval $sql row {
-            if {[llength $names] eq 0} {
-                set names $row(*)
-                unset row(*)
-
-                foreach name $names {
-                    set colwidth($name) 0
-                }
-            }
-
-            foreach name $names {
-                set row($name) [string map [list \n \\n] $row($name)]
-
-                set len [string length $row($name)]
-
-                if {$qopts(-maxcolwidth) > 0} {
-                    if {$len > $qopts(-maxcolwidth)} {
-                        # At least three characters
-                        set len [::marsutil::max $qopts(-maxcolwidth) 3]
-                        set end [expr {$len - 4}]
-                        set row($name) \
-                            "[string range $row($name) 0 $end]..."
-                    }
-                }
-
-                if {$len > $colwidth($name)} {
-                    set colwidth($name) $len
-                }
-            }
-
-            lappend rows [array get row]
-        }
-
-        if {[llength $names] == 0} {
-            return ""
-        }
-
-        # NEXT, include the label widths.
-        if {[llength $qopts(-labels)] > 0} {
-            set labels $qopts(-labels)
-        } else {
-            set labels $names
-        }
-
-        foreach label $labels name $names {
-            set len [string length $label]
-
-            if {$len > $colwidth($name)} {
-                set colwidth($name) $len
-            }
-        }
-
-        # NEXT, format the header lines.
-        set out ""
-
-        foreach label $labels name $names {
-            append out [format "%-*s " $colwidth($name) $label]
-        }
-        append out "\n"
-
-        foreach name $names {
-            append out [string repeat "-" $colwidth($name)]
-            append out " "
-
-            # Initialize the lastrow array
-            set lastrow($name) ""
-        }
-        append out "\n"
-        
-        # NEXT, format the rows
-        foreach entry $rows {
-            array set row $entry
-
-            set i 0
-            foreach name $names {
-                # Append either the column value or a blank, with the
-                # required width
-                if {$i < $qopts(-headercols) && 
-                    $row($name) eq $lastrow($name)} {
-                    append out [format "%-*s " $colwidth($name) "\""]
-                } else {
-                    append out [format "%-*s " $colwidth($name) $row($name)]
-                }
-                incr i
-            }
-            append out "\n"
-
-            array set lastrow $entry
-        }
-
-        return $out
-    }
 
     # mat db table iname jname ename ?options?
     #
