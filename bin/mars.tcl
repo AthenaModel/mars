@@ -63,17 +63,6 @@ if {[kiteinfo gui mars]} {
 }
 
 #-----------------------------------------------------------------------
-# Next, add any includes libraries to the auto_path.
-#
-# This presumes that the include follows the usual project tree, with
-# all Tcl packages in $root/lib/<package>.
-
-foreach iname [kiteinfo includes] {
-    set idir [file join $appdir .. includes $iname lib]
-    set auto_path [linsert $auto_path 0 [file normalize $idir]]
-}
-
-#-----------------------------------------------------------------------
 # NEXT, load the application code.  This should define the "main"
 # command.
 
