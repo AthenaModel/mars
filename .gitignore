@@ -14,6 +14,7 @@
 teapot.txt
 /src/Marsbin/pkgIndex.tcl
 /src/Marsbin/config.status
+/src/Marsbin/Makefile
 autom4te.cache
 /lib/Marsbin*
 *.bak
