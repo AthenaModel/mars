@@ -25,7 +25,7 @@ package provide marsutil 3.0.1a0
 package require snit 2.3
 package require sqlite3 3.8
 package require comm 4.6
-package require kiteutils 0.1.2
+package require kiteutils 0.3.1a0
 
 catch {
     # Marsbin isn't availble on all platforms.

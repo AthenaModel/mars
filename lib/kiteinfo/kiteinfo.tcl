@@ -52,14 +52,11 @@ namespace eval ::kiteinfo:: {
         reqver-sqlite3 3.8
         clean-libGTiff {make clean}
         clean-libGeostars {make clean}
-        reqver-kiteutils 0.1.2
+        reqver-kiteutils 0.3.1a0
         reqver-snit 2.3
         clean-libTiff {make clean}
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
-        shell {
-    package require marsutil 3.0
-    namespace import -force marsutil::*
-}
+        shell {}
         name athena-mars
         binary-marsgui 0
         poc William.H.Duquette@jpl.nasa.gov

@@ -28,7 +28,7 @@ require treectrl 2.4
 require tablelist 5.11
 require Tktable 2.11
 require Tkhtml 3.0
-require kiteutils 0.1.2 -local
+require kiteutils 0.3.1a0 -local
 
 # Distribution Targets
 
@@ -42,10 +42,4 @@ dist install {
         docs/mag.docx 
         https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
     }
-}
-
-# Shell Initialization
-shell {
-    package require marsutil 3.0
-    namespace import -force marsutil::*
 }
