@@ -796,7 +796,7 @@ snit::type ::marsutil::parmset {
 
                 append out "<defitem $item {$item <i>value</i>}>\n"
                 append out "Defaults to \"<b><tt>$info(defvalue-$id)</tt></b>\".\n"
-                append out "$info(doc-$id)\n"
+                append out [QuoteText "$info(doc-$id)\n"]
                 append out "<p>\n\n"
             }
         }
@@ -813,14 +813,19 @@ snit::type ::marsutil::parmset {
         return $out
     }
 
+    # QuoteText text
+
+    proc QuoteText {text} {
+        string map {& &amp; < &lt; > &gt;} $text
+    }
+
     # manlinks
     #
     # Produces an indented list of parameters, set to use the "mktree"
     # dynamic scripting.
 
     method manlinks {} {
-        set out "<mktree>\n\n"
-        append out "<ul class=\"mktree\" id=\"$self\">\n"
+        set out "<mktree [list $self]>\n\n"
         set stack {}
 
         foreach {item ntype} [$self items] {
@@ -857,7 +862,7 @@ snit::type ::marsutil::parmset {
             append out "</ul></li>\n\n"
         }
 
-        append out "</ul>\n"
+        append out "</mktree>\n"
 
         return $out
     }
