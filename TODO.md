@@ -3,6 +3,7 @@
 Current Goals:
 
 * Get Mars 3.0 to where it can support Athena 6.2.
+* Build mars as exe
 
 Next:
 
