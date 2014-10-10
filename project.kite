@@ -1,5 +1,5 @@
 # project.kite
-project athena-mars 3.0.1a0 {Mars Simulation Support Library}
+project athena-mars 3.0.2a0 {Mars Simulation Support Library}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
@@ -28,11 +28,11 @@ require treectrl 2.4
 require tablelist 5.11
 require Tktable 2.11
 require Tkhtml 3.0
-require kiteutils 0.3.1a0 -local
+require kiteutils 0.4.0a0 -local
 
 # Distribution Targets
 
-dist install {
+dist install-%platform {
     README.md
     %apps
     %libs

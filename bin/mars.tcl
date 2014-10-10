@@ -66,7 +66,7 @@ if {[kiteinfo gui mars]} {
 # NEXT, load the application code.  This should define the "main"
 # command.
 
-package require marsapp
+package require app_mars
 
 #-----------------------------------------------------------------------
 # Run the program

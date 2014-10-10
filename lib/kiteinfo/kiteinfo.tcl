@@ -31,17 +31,6 @@ namespace eval ::kiteinfo:: {
         build-libGeostars {make clean all}
         description {Mars Simulation Support Library}
         provides {marsutil marsgui simlib Marsbin}
-        distpat-install {
-    README.md
-    %apps
-    %libs
-    docs/*.html
-    docs/man*/*.html
-    %get {
-        docs/mag.docx 
-        https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
-    }
-}
         local-treectrl 0
         local-Img 0
         build-libTiff {make clean all}
@@ -52,11 +41,22 @@ namespace eval ::kiteinfo:: {
         reqver-sqlite3 3.8
         clean-libGTiff {make clean}
         clean-libGeostars {make clean}
-        reqver-kiteutils 0.3.1a0
+        reqver-kiteutils 0.4.0a0
         reqver-snit 2.3
         clean-libTiff {make clean}
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
         shell {}
+        distpat-install-win32-ix86 {
+    README.md
+    %apps
+    %libs
+    docs/*.html
+    docs/man*/*.html
+    %get {
+        docs/mag.docx 
+        https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
+    }
+}
         name athena-mars
         binary-marsgui 0
         poc William.H.Duquette@jpl.nasa.gov
@@ -71,11 +71,11 @@ namespace eval ::kiteinfo:: {
         reqver-tablelist 5.11
         local-snit 0
         binary-Marsbin 1
-        version 3.0.1a0
+        version 3.0.2a0
         reqver-treectrl 2.4
         reqver-Img 1.4.1
         build-libGeotrans {make clean all}
-        dists install
+        dists install-win32-ix86
     }
 
     namespace export \

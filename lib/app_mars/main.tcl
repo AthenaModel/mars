@@ -6,7 +6,7 @@
 #   athena-mars - Mars Simulation Support Library
 #
 # DESCRIPTION:
-#   marsapp(n) Package, main module.
+#   app_mars(n) Package, main module.
 #
 #   This is the main program for the mars(1) tool.  It consists of an
 #   application loader that [package requires] an "app_<name>" package
