@@ -1,0 +1,187 @@
+<manpage {marsutil(n) maprect(n)} "Rectangular map projection">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsutil <version>
+namespace import ::marsutil::maprect
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+Instances of the <xref maprect(n)> type are map
+<xref projection(i)> objects suitable for use with
+<xref mapcanvas(n)>.  <xref maprect(n)> implements a 
+geographic map projection for rectangular projected map images 
+such as those found in the GeoTIFF format.<p>
+
+<subsection "Map Coordinates">
+
+Map coordinates are defined by the options supplied with this projection. 
+The lower-left and upper-right corners are tied to specific latitude/longitude
+pairs and then the image width and image height determine the number of
+degrees per pixel in those directions.  It is assumed that the map is a
+rectangular projection of a piece of the Earth.  The number of latitudinal 
+degrees per pixel does not need to be the same as the number of longitudinal
+degrees per pixel, but the image will look skewed.  Because of this, 
+<xref maprect(n)> should be used for parts of the world between about 
++60.0 and -60.0 degrees latitude to avoid excessive warping of the image.<p>
+
+<subsection "Map Reference Strings">
+
+A <xref maprect(n)> map reference string is a standard MGRS string converted
+from the latitude/longitude of a particular pixel.  
+
+<subsection "Zoom Factors">
+
+Note that the <xref mapcanvas(n)> can display a given map
+at a variety of zoom factors.  The zoom factor is an integer number
+between 1 and 300, interpeted as a percentage.  At a zoom factor of
+200, for example, there are twice as many pixels in each direction.
+The conversion between canvas coordinates and map coordinates must
+take the zoom factor into account.<p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem maprect {maprect <i>name ?options?</i>}>
+
+Creates a new maprect(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref maprect> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+The <iref maprect> may be created with the following options:<p>
+
+<deflist maprect options>
+
+<defopt {-height <i>pixels</i>}>
+
+Sets the height of the map in pixels, at a zoom factor of 100%.<p>
+
+<defopt {-width <i>pixels</i>}>
+
+Sets the width of the map in pixels, at a zoom factor of 100%.<p>
+
+<defopt {-minlat <i>degrees</i>}>
+
+Sets the minimum latitude of the map in decimal degrees.<p>
+
+<defopt {-minlon <i>degrees</i>}>
+
+Sets the minimum longitude of the map in decimal degrees.<p>
+
+<defopt {-maxlat <i>degrees</i>}>
+
+Sets the maximum latitude of the map in decimal degrees.<p>
+
+<defopt {-maxlon <i>pixels</i>}>
+
+Sets the maximum longitude of the map in decimal degrees.<p>
+
+</deflist maprect options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of the <iref maprect> object has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>obj</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>obj</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.<p>
+
+<defitem box {<i>obj</i> box}>
+
+Returns the bounding box of the map in map units.<p>
+
+<defitem c2m {<i>object</i> c2m <i>zoom cx cy</i>}>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map coordinate pair as a list of two coordinates
+<i>mx</i> and <i>my</i>.<p>
+
+<defitem c2ref {<i>object</i> c2ref <i>zoom cx cy</i>}>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map reference string.<p>
+
+<defitem c2loc {<i>object</i> c2loc <i>zoom cx cy</i>}>
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map location string.  The map location string
+is the MGRS location followed by a lat/long coordinate pair with four
+decimals of precision.  This is useful if the location on the image
+needs to be displayed in a GUI.<p>
+
+<defitem dim {<i>obj</i> dim}>
+
+Returns the dimensions of the map in map units.<p>
+
+<defitem m2c {<i>object</i> m2c <i>zoom mx my....</i>}>
+
+Given a <i>zoom</i> factor and one or more map coordinate pairs
+<i>mx</i> and <i>my</i>, returns a list of canvas 
+coordinate pairs as a flat list of coordinates <i>cx cy...</i>.<p>
+
+<defitem m2ref {<i>obj</i> m2ref <i>mx my...</i>}>
+
+Given one or more map coordinate pairs <i>mx</i> and <i>my</i>, returns a
+list of one or map reference strings.  Each coordinate is a separate
+argument.<p>
+
+<defitem ref2c {<i>object</i> ref2c <i>zoom ref...</i>}>
+
+Given a <i>zoom</i> factor and one or more map reference strings,
+returns a list of canvas coordinate pair as a flat list of coordinates
+<i>cx cy...</i>.<p> 
+
+<defitem ref2m {<i>obj</i> ref2m <i>ref...</i>}>
+
+Given one or more map reference strings as arguments, returns a
+corresponding list of <i>mx</i> and <i>my</i> map coordinates.<p>
+
+<defitem "ref validate" {<i>obj</i> ref validate <i>ref...</i>}>
+
+Given one or more map reference strings as arguments, validates
+each. Throws an error with <code>-errorcode</code> <b>INVALID</b> if
+any reference string is invalid.<p>
+
+</deflist instance>
+
+<section "SEE ALSO">
+
+<xref projection(i)>, <xref mapcanvas(n)>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<section AUTHOR>
+
+Dave Hanks<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
