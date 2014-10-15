@@ -68,8 +68,8 @@ BINARIES	= $(lib_BINARIES)
 SHELL		= /bin/sh
 
 srcdir		= .
-prefix		= /c/Users/will/github/athena-mars
-exec_prefix	= /c/Users/will/github/athena-mars
+prefix		= /c/Users/will/github/mars
+exec_prefix	= /c/Users/will/github/mars
 
 bindir		= ${exec_prefix}/bin
 libdir		= ${exec_prefix}/lib

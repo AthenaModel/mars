@@ -28,8 +28,7 @@ NORMALDIR  = $(PREFIX)/lib/Marsbin
 .PHONY: all clean
 
 all:
-	cp configure.in configure.bak
-	sed 's/AC_INIT\(.*\)/AC_INIT([Marsbin],[$(KITE_VERSION)])/' configure.bak >configure.in
+	sed 's/AC_INIT\(.*\)/AC_INIT([Marsbin],[$(KITE_VERSION)])/' configure.in.in >configure.in
 	autoconf
 	chmod +x configure
 	./configure --with-tcl=$(KITE_TCL_HOME)/lib --prefix $(PREFIX) --exec-prefix $(PREFIX)
