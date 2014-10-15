@@ -41,7 +41,7 @@ namespace eval ::kiteinfo:: {
         reqver-sqlite3 3.8
         clean-libGTiff {make clean}
         clean-libGeostars {make clean}
-        reqver-kiteutils 0.4.0a0
+        reqver-kiteutils 0.4.1
         reqver-snit 2.3
         clean-libTiff {make clean}
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
