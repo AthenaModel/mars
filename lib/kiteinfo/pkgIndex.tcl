@@ -3,7 +3,7 @@
 #    pkgIndex.tcl
 #
 # PROJECT:
-#    athena-mars - Mars Simulation Support Library
+#    mars - Mars Simulation Support Library
 #
 # DESCRIPTION:
 #    kiteinfo(n) package index file
