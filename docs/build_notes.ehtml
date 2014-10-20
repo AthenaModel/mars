@@ -1,0 +1,19 @@
+<document "Mars Build Notes">
+
+<h3 Mars v3.0.2 -- 20 October 2014>
+
+Mars v3.0.2 is the first complete build of Mars 3.x with all of the i's
+dotted and the t's crossed.  The changes in moving from Mars 2.x to Mars
+3.x are too numerous to list but include:<p>
+
+<ul>
+<li> Using Kite as the Mars project's automation tool.
+<li> Removing obsolete libraries and applications.
+<li> Moving particular infrastructure libraries from Mars to
+     Kite's <xref kite:kiteutils(n)> and <xref kite:kitedocs(n)>
+     packages (with appropriate changes).
+<li> Moving Mars CM from Subversion to 
+     <link https:github.jpl.nasa.gov/Athena/mars "GitHub@JPL">.
+</ul><p>
+
+</document>

@@ -11,6 +11,9 @@
 *.so
 /docs/*.html
 /docs/*/*.html
+*.docx
+*.xlsx
+*.pptx
 teapot.txt
 /src/Marsbin/pkgIndex.tcl
 /src/Marsbin/config.status

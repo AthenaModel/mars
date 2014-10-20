@@ -6,6 +6,7 @@
   <li> <link cm.html           "CM Plan">
   <li> <link tcl_standard.html "TCL Coding Standard">
   <li> Mars Analyst's Guide <link mag.docx "(docx)">
+  <li> <link build_notes.html "Build Notes">
 </ul>
 
 <preface man "Man Pages">

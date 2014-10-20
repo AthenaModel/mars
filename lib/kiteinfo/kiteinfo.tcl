@@ -25,6 +25,7 @@ namespace eval ::kiteinfo:: {
         reqver-comm 4.6
         clean-libGTiff {make clean}
         local-Tktable 0
+        xfiles docs/mag.docx
         apps mars
         build-libGTiff {make clean all}
         local-Tkhtml 0
@@ -34,7 +35,8 @@ namespace eval ::kiteinfo:: {
         local-tablelist 0
         local-treectrl 0
         clean-libGeostars {make clean}
-        reqver-kiteutils 0.4.1
+        reqver-kiteutils 0.4.3
+        url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         binary-marsgui 0
         distpat-install-%platform {
     README.md
@@ -42,10 +44,7 @@ namespace eval ::kiteinfo:: {
     %libs
     docs/*.html
     docs/man*/*.html
-    %get {
-        docs/mag.docx 
-        https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
-    }
+    docs/*.docx
 }
         local-snit 0
         build-libGeotrans {make clean all}
@@ -73,7 +72,7 @@ namespace eval ::kiteinfo:: {
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
         local-comm 0
         gui-mars 0
-        version 3.0.2a0
+        version 3.0.2
         binary-Marsbin 1
         local-kiteutils 1
         reqver-Img 1.4.1
