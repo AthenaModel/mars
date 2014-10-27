@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide simlib 3.0.2
+package provide simlib 3.0.3
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -25,7 +25,7 @@ package provide simlib 3.0.2
 package require snit 2.3
 package require sqlite3 3.8
 package require kiteutils 0.4.3
-package require -exact marsutil 3.0.2
+package require -exact marsutil 3.0.3
 # -kite-require-end
 
 #-----------------------------------------------------------------------

@@ -1,13 +1,6 @@
-# athena-mars TODO List
+# mars TODO List
 
-Current Goals:
-
-* Get Mars 3.0 to where it can support Athena 6.2.
-* Build mars as exe
-
-Next:
-
-* Revise Mars CM plan
+Mars is in pretty good shape at the moment.
 
 # To Be Cleaned Up
 

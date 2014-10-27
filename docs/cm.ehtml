@@ -38,6 +38,10 @@
 <preface changelog "Change Log">
 
 <changelog>
+<change 10/27/2014 update will>
+Final changes now that the Kite/GitHub transition is complete.<p>
+</change>
+
 <change 8/20/2014 update will>
 Minor tweaks for Mars 3.0.0, as Kite has solidified.<p>
 </change>
@@ -98,42 +102,30 @@ development tasks. This document explains how this works in practice.<p>
 
 <section overview.numbering "Mars Version Numbering">
 
-Versions of the Mars software are numbered <i>x.y.z</i>, following
+The Mars version number is set in the <xref kite(1)> project file.<p>
+
+Tagged releases of the Mars software are numbered <i>x.y.z</i>, following
 standard Tcl <xref package(n)> version numbering conventions.  
 The version number applies to all Mars library packages.  The
-head of Mars development is currently version 3.0.0<p>
+head of Mars development is currently version <version>.<p>
 
-Tcl indicates unstable versions by adding an alpha or beta suffix
-to the version number.  Thus the unstable code that will eventually
-become the stable Mars 3.0.1 is designated Mars 3.0.1a0.  This syntax allows
-for multiple unstable versions to be made public, e.g., "3.0.1a0", 
-"3.0.1a1", and so on.  All of these numbers are logically greater than
-the stable "3.0.0" version, and logicall less than the future stable "3.0.1"
-version.<p>
+If development a new version of Mars is prolonged over two or more days,
+the version number in <tt project.kite> can be set to an "unstable" version 
+number, e.g., "3.<i>x.y</i>a0".  Otherwise, the version number in
+<tt project.kite> will be the current stable version number (if no
+changes have been made since the last tagged release) or the version 
+number of the forthcoming tagged release.<p>
 
-The Mars version number is set in the <xref kite(1)> project file.
-During normal development, it is set to an "unstable" version number,
-e.g., "3.<i>x.y</i>a0".  Client applications in on-going development will 
-generally reference this "unstable" version so as to run with the 
-unstable "HEAD" of Mars development.<p>
+<section overview.tagged_releases "Tagged Releases">
 
-Official builds of Mars usually take place in conjunction with an
-official build of a client application.  When this happens, we
-drop the "a0" suffix in the Kite project file:<p>
+Whenever significant changes have been made to Mars, the Mars build manager
+may elect to perform an <xref proc.cmbuild "official build">, resulting
+in a new tagged release.  Client projects should always perform their own
+official builds against a tagged release, not against the HEAD.<p>
 
-<ul>
-<li> Mars is built and tagged with a stable version number: 
-     "3.<i>x.y</i>a0" becomes "3.<i>x.y</i>" in <code>project.kite</code> 
-     (e.g., "3.0.1a0" becomes "3.0.1").
-     This version is made available to clients.
-<li> After the build, the version number in <code>project.kite</code>
-     is incremented and the "a0" suffix is added again: "3.<i>x.y</i>" 
-     becomes "3.<i>x.y+1</i>a0" (e.g., "3.0.1" becomes "3.0.2a0").
-<li> The client application then builds against the stable version.
-</ul>
-
-See also <xref clients> for the relation between Mars and its client
-projects.<p>
+With each tagged release, the Mars version number is updated in 
+accordance with the principles of 
+<link http://semver.org "semantic versioning">.<p>
 
 <section overview.tree "Project Tree">
 
@@ -171,7 +163,7 @@ The project directory tree is as follows:<p>
   <li> By convention, Tcl man pages are placed in section (n) of the
        Unix manual.
   <li> The structure of Tcl package directories is described in the
-       <xref Coding>.
+       <xref kite:kdg.html "Kite Developer's Guide">.
 </ul>
 
 <section overview.docs "Development Documentation">
@@ -189,21 +181,23 @@ described in <xref overview.tree>, and are written in <xref manpage(5)>
 format.<p>
 
 Other documents will be written in HTML or in MS Office formats; however,
-MS Office documents must not be saved in the code repository.  They will
+MS Office documents must not be saved in the code repository.  
+They will be archived on the <xref boxkite> and pulled
 be pulled temporarily into the <tt docs> directory for inclusion in the
 distribution .zip file.<p>
 
 HTML documents, like this CM plan, will usually use the 
-<xref marsdoc(5)> extended HTML format, and will be stored in the
+<xref kitedoc(5)> extended HTML format, and will be stored in the
 repository in the <code>docs</code> directory.<p>
 
 <section overview.references "References">
 
 <ul>
 <li> <xrefset Git "Git" http://git-scm.com>
-<li> <xrefset GitHub "GitHub 4 JPL" http://github.jpl.nasa.gov>
-<li> <xrefset kite(1) kite(1) https://github.jpl.nasa.gov/will/athena-kite>
+<li> <xrefset GitHub "GitHub 4 JPL" http://github.jpl.nasa.gov/athena/mars>
+<li> <xrefset kite(1) kite(1) https://github.jpl.nasa.gov/athena/kite>
 <li> <xrefset Coding "Mars Tcl Coding Standard" ./coding.html>
+<li> <xrefset boxkite "Boxkite Server" https://pepper.jpl.nasa.gov/kite>
 <li> <xrefset package(n) package(n) http://www.tcl.tk/man/tcl8.6/TclCmd/package.htm>
 </ul>
 
@@ -224,12 +218,9 @@ Mars uses the <xref Git> version control system, hosted at
 
 <section vc.repository "The Git Repository">
 
-The Mars repository URL is<p>
+The Mars repository URL is
+<tt><link https://github.jpl.nasa.gov/athena/mars></tt>.<p>
 
-<pre>    https://github.jpl.nasa.gov/will/athena-mars</pre>
-
-In the remainder of this document, the string <i>repository</i> will
-mean the repository's base URL in the above form.<p>
 
 <section vc.branches "Git Branches and Tags">
 
@@ -245,7 +236,8 @@ Main-line development takes place on the <b>master</b> branch.<p>
 
 At each official build during normal development, we tag the <b>master</b>
 branch as "<code>v3.<i>x.y</i></code>" This serves as a snapshot of the
-build, and allows it to be recovered at any time.<p>
+build, and allows it to be recovered at any time.  This is done 
+through <xref GitHub>'s "releases" interface.<p>
 
 <section vc.branches.exper "Experimental Branches">
 
@@ -254,24 +246,34 @@ results can later be merged with the trunk or deleted.  Experimental
 branches should be given a descriptive name.  Branches should be deleted
 when no longer needed.  Branches may be synced with the
 <xref GitHub> server or retained solely on the user's machine, at the 
-user's discretion.  Obsolete branches should be cleaned up.<p>
+user's discretion.  Obsolete branches should be removed.<p>
 
 <section vc.branches.bugfix "Bug-fix Branches">
 
 When fixing complicated bugs over a period of time, it is sometimes
 useful to do the fix on a separate branch.  This allows multiple
 commits without any chance of destabilizing the trunk.  Such branches
-should be called "<code>issue<i>nnnn</i></code>", where
-<code>nnnn</code> is the issue number in the tracker at
+should be called "<code>issue<i>n</i></code>", where
+<code>n</code> is the issue number in the tracker at
 <xref GitHub>.  The completed fix can be merged
 back to the trunk just as with an experimental branch.<p>
 
 <section vc.branches.release "Release Branches">
 
-FIXME: I'm not clear yet on how to do release branches well with
-<xref Git>/<xref GitHub>.  However, it would appear that if we
-need a release branch rooted at, say, Mars 3.3.0, it should be easy
-to create after the fact based on the "v3.3.0" tag.<p>
+We have not usually needed release branches for Mars, and so do not
+create them by default.  A release branch is created under the following
+circumstances:<p>
+
+<ul>
+<li> A change is made to a released piece of software
+<li> That builds against an older version of Mars
+<li> Where the change requires changes to Mars
+<li> And we can't reasonably build against the latest version of Mars.
+</ul>
+
+In this case we will create a release branch based on the release's
+tag.  If the tag is, say, v3.0.10, then the tags on the release
+branch will be "v.3.0.10.1", "v3.0.10.2", and so forth.<p>
 
 <section vc.commits "Committing Changes">
 
@@ -314,8 +316,11 @@ issues can be associated with the future milestones for which they are
 scheduled to be closed.<p>
 
 We will create a milestone for each official version of Mars 
-(see <xref overview.numbering>).  As issues are completed, the developer
-will associate them with the milestone for the next build.
+(see <xref overview.numbering>).  As issues are closed, the developer
+will associate them with the milestone for the next build.<p>
+
+Milestones are initially open; a milestone can be closed any time after
+it is built and tagged.<p>
 
 <section issue.reporting "Issue Contents">
 
@@ -330,7 +335,8 @@ Each issue should include:<p>
 <section issue.lifecycle "Life Cycle">
 
 An issue is opened when a problem, bug, defect, or enhancement is noted,
-and assigned to the relevant developer.<p>
+and assigned to the relevant developer.  It should be labeled as a "Bug",
+"Enhancement", etc.<p>
 
 An issue is assigned to the next milestone (version) when the work is 
 complete.<p>
@@ -339,9 +345,11 @@ If Mars went through the I&T process as an application, the issues for
 a given  milestone would be closed by the tester.  As an infrastructure
 library, Mars does not go through I&T on its own, but only as part
 of a client application.  Thus, the developer is responsible for 
-opening and closing Mars issues.  An issue can be closed by the developer 
-either when it is assigned to a milestone, or after the change is tested 
-"in-use" in a client application.<p>
+opening and closing Mars issues.<p>
+
+Each issue is closed by the developer when the work on it is complete
+and it is assigned to a milestone.  The milestone may be closed when
+the changes in it have been tested "in-use" in a client application.<p>
 
 <section clients "Client Projects">
 
@@ -357,129 +365,52 @@ are needed: one on the Mars issue tracker and one on the client's issue
 tracker.  The Mars issue provides a record of what's changed in
 Mars, and the client issue goes through I&amp;T with the client.<p>
 
-<section clients.main "Main-Line Development">
-
-During main-line development on the client's trunk, the client should
-be using the latest Mars code.  Assuming that the client is also a
-<xref kite(1)> project, this is accomplished by cloning Mars onto the
-client's machine, building it, and installing the Mars packages into the
-local teapot as updates warrant.  The client then requires the Mars
-packages in its <tt project.kite> as follows:<p>
-
-<pre>
-require marsutil <i version> -local
-</pre>
-
-
 <section clients.cmbuilds "Client Official Builds">
 
 When an official build is to be done for the client, the client should
 build with a stable version of Mars.  This is done by installing the
-stable version of Mars on the client's machine from distribution file, or
-by cloning the Mars repository and building the stable version locally.
-The client the builds with the proper version of Mars by updating the version numbers in its <tt project.kite> file.<p>
+stable version of Mars on the client's machine from the 
+<xref boxkite>, or by cloning the Mars repository and building the stable
+version locally. The client the builds with the proper version of Mars by updating the version numbers for the Mars packages 
+in its <tt project.kite> file.<p>
 
 <section proc "Procedures">
 
-This section describes procedures for Mars
-development.<p>
+This section describes procedures for Mars development.  Procedures 
+common to all Git projects are ignored; the emphasis is on policy.<p>
 
 <section proc.clone "Cloning the Repository">
 
 By convention, <xref GitHub> repositories are cloned to the
-<code>~/github/<i>project</i></code> directory.<p>
-
-<procedure>
-
-<step>
-Clone Mars to <code>~/github/athena-mars</code>.
-</step/>
-<pre>
-$ cd ~/github
-$ git clone https://github.jpl.nasa.gov/will/athena-mars.git athena-mars
-</step>
-
-<step>
-Go to work.
-</step/>
-<pre>
-$ cd athena-mars
-$ ...
-</pre>
-</step>
-
-</procedure>
-
-<section proc.checkout "Checking Out A Tag or Branch">
-
-To check out a tag or branch, first
-<xref proc.clone "clone the repository">.  Then check out the
-tag or branch.<p>
-
-<procedure>
-
-<step>
-Check out the tag or branch, e.g., "v3.3.0".
-</step/>
-<pre>
-$ cd ~/github/athena-mars
-$ git checkout v3.3.0
-</pre>
-</step>
-
-<step>
-Go to work.
-</step/>
-<pre>
-$ ...
-</pre>
-</step>
-
-</procedure>
-
-Alternative, use the <xref GitHub> desktop software to switch the
-work area to the desired branch or tag.<p>
+<code>~/github/<i>project</i></code> directory; hence, Mars is cloned
+to <tt>~/github/mars</tt>.<p>
 
 <section proc.devbuild "Performing a Development Build">
 
 A development build is simply a build performed during the course of
-development.   For Mars, it runs all unit tests, builds the documentation, 
-produces <code>mars.kit</code>, and packages up the libraries for installation
-in the local teapot.<p>
+development.   For Mars, it builds all binary extensions and Marsbin, 
+runs all unit tests, builds the documentation, packages up the libraries
+for teapot installation, produces <code>mars.kit</code>, and packages up 
+distribution for archival on the <xref boxkite>.<p>
 
 <procedure>
 
 <step>
 Go to the work area.
 </step/>
-<pre>$ cd ~/github/athena-mars</pre>
+<pre>$ cd ~/github/mars</pre>
 </step>
 
 <step>
-Update dependencies, if necessary
+Build the project.
 </step/>
-<pre>$ kite deps update</pre>
-</step>
-
-<step>
-Run all tests, if desired.
-</step/>
-<pre>$ kite test</pre>
-</step>
-
-<step>
-Build all build products.
-</step/>
-<pre>$ kite build</pre>
-</step>
-
-<step>
-Install the build products for local use, if desired.
-</step/>
-<pre>$ kite install</pre>
+<pre>$ kite build all</pre>
 </step>
 </procedure>
 
+Alternatively, <xref kite(1)>'s other subcommands can be used to do 
+particular parts of the build, e.g., just running tests or formatting
+documents.<p>
 
 <section proc.cmbuild "Performing Official Builds">
 
@@ -496,26 +427,25 @@ n/a
 </step>
 
 <step>
-Check the <b>master</b> branch out of the repository
-into <code>~/github/athena-mars</code>.  Either
-<xref proc.clone "clone it"> or <xref proc.checkout "checkout">
-the <b>master</b> branch.
+Sync the <b>master</b> branch out of the repository
+into <code>~/github/mars</code>.
 </step/>
-See the procedures referenced to the left.
+n/a.
 </step>
 
 <step>
 Determine the version number.  This will almost always be the version
-in the <code>project.kite</code> file, less the unstable "a0" suffix.
+in the <code>project.kite</code> file.  If necessary, bump the version
+number, applying <link http://semver.org "semantic versioning">.
 </step/>
-E.g., "3.3.0" if <code>project.kite</code> says "3.3.0a0"
+E.g., for a simple bug fix step from "3.3.0" to "3.3.1".
 </step>
 
 <step>
 Update the version in <code>project.kite</code>.
 </step/>
 </pre>
-$ cd ~/github/athena-mars
+$ cd ~/github/mars
 $ vim project.kite 
 </pre>
 </step>
@@ -527,7 +457,7 @@ usually include the version, the date, a general description of the
 changes, and a list of issue included in the build, with titles.
 </step/>
 <pre>
-$ cd ~/github/athena-mars/docs
+$ cd ~/github/mars/docs
 $ vim build_notes.ehtml
 </pre>
 </step>
@@ -538,18 +468,17 @@ Build and test the software, resolving any problems found until the
 build is clean.
 </step/>
 <pre>
-$ cd ~/github/athena-mars
-$ kite clean
-# kite buildall
+$ cd ~/github/mars
+# kite build all
 </pre>
 </step>
 
 <step>
 Commit the changes, using the GitHub desktop application or the 
-commands to the right.
+'git' command line tool.
 </step/>
 <pre>
-$ cd ~/github/athena-mars
+$ cd ~/github/mars
 $ git commit -a "Building Mars 3.3.0"
 </pre>
 </step>
@@ -558,23 +487,16 @@ $ git commit -a "Building Mars 3.3.0"
 Tag the <b>master</b> branch with the build number.
 This is most easily done using the GitHub web page.
 </step/>
-On the GitHub athena-mars web page, click on "releases" and make a 
+On the GitHub mars web page, click on "releases" and make a 
 new release.  Tag it as "v3.3.0", title it "Mars v3.3.0", and enter
 a brief description.<p>
 
 Or,<p>
 
 </pre>
-$ cd ~/github/athena-mars
+$ cd ~/github/mars
 $ git tag -a -m "Mars v3.3.0" v3.3.0
 </pre>
-</step>
-
-<step>
-If desired, the Mars documentation tree and other build products
-can be copied to some central location.
-</step/>
-TBD: We are setting up a web server for this purpose.
 </step>
 
 <step>
@@ -588,11 +510,21 @@ $ kite install
 </step>
 
 <step>
-Increment the version number in <code>project.kite</code> 
-to the next unstable version, e.g., from "3.3.0" to "3.3.1a0".
+If desired, the installation distribution set can be archived to the
+<xref boxkite>.<p>
 </step/>
 <pre>
-$ cd ~/github/athena-mars
+$ cd ~/github/mars
+$ boxkite put
+<pre>
+</step>
+
+<step>
+Increment the version number in <code>project.kite</code> 
+to the next version, e.g., from "3.3.0" to "3.3.1".
+</step/>
+<pre>
+$ cd ~/github/mars
 $ vim project.kite
 $ kite info
 $ git commit -a "Incremented version."
@@ -615,6 +547,9 @@ Using the <xref GitHub> desktop software or the <xref Git>
 command line tools, commit the changes, referencing the issue
 number as "#<i>nnn</i>".  If you use one of the phrases from 
 "<xref vc.commits.issues>", the issue will be closed automatically.<p>
+
+When the issue is complete resolved, close the issue and assign it to
+the milestone for the next build, creating the milestone if necessary.<p>
 
 
 </document>

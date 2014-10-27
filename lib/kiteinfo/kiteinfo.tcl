@@ -72,7 +72,7 @@ namespace eval ::kiteinfo:: {
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
         local-comm 0
         gui-mars 0
-        version 3.0.2
+        version 3.0.3
         binary-Marsbin 1
         local-kiteutils 1
         reqver-Img 1.4.1
