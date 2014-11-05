@@ -1,5 +1,16 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.3 -- 5 November 2014>
+
+This build contains some documentation updates and a change to the project
+name from athena-mars to just mars.<p>
+
+<ul>
+<li> Issue #17: Update CM Plan
+<li> Issue #16: Update license and readme 
+<li> Issue #15: Rename project in project.kite 
+</ul>
+
 <h3 Mars v3.0.2 -- 20 October 2014>
 
 Mars v3.0.2 is the first complete build of Mars 3.x with all of the i's
