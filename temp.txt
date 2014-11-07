@@ -1,0 +1,36 @@
+Tcltest options: -match contribs_nbmood-3.1
+Testing simlib uram
+
+
+==== contribs_nbmood-3.1 contribs when saliencies are 0 FAILED
+==== Contents of test case:
+
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr contribs nbmood N1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+
+---- Result was:
+
+
+---- Result should have been (exact matching):
+
+driver contrib 
+------ ------- 
+1001   0.0     
+1002   0.0     
+1003   0.0     
+1004   0.0     
+
+==== contribs_nbmood-3.1 FAILED
+
+uram.test:	Total	271	Passed	0	Skipped	270	Failed	1
+

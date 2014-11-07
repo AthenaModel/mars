@@ -4711,6 +4711,29 @@ driver contrib
 1001   0.74    
 }
 
+test contribs_mood-3.1 {contribs when saliencies are 0} -setup {
+    create -sql {
+        UPDATE uramdb_sat SET saliency=0.0;
+    }
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr contribs mood CA1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
+}
+
+
 
 #-------------------------------------------------------------------
 # contribs nbmood
@@ -4885,6 +4908,28 @@ driver contrib
 1003   0.97    
 1002   0.64    
 1001   0.32    
+}
+
+test contribs_nbmood-3.1 {contribs when saliencies are 0} -setup {
+    create -sql {
+        UPDATE uramdb_sat SET saliency=0.0;
+    }
+} -body {
+    jr sat transient 1001 "" CA1 AUT 1.0
+    jr sat transient 1002 "" CA1 AUT 2.0
+    jr sat transient 1003 "" CA1 AUT 3.0
+    jr sat transient 1004 "" CA1 AUT 4.0
+    jr advance 1
+
+    jr contribs nbmood N1
+
+    pprint [rdb query {
+        SELECT * FROM uram_contribs
+        ORDER BY abs(contrib) DESC
+    }]
+} -cleanup {
+    cleanup
+} -result {
 }
 
 

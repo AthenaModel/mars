@@ -2380,6 +2380,10 @@ snit::type ::simlib::uram {
     #
     # Computes the contributions by driver to group g's mood.  Contributions
     # to each of the four concerns are weighted by saliency.
+    #
+    # If the group's saliency is 0.0 for all concerns, the contribution
+    # is necessarily 0.0; this is handled by the coalesce() function
+    # in the SQL query.
 
     method {contribs mood} {g args} {
         # FIRST, get the group
@@ -2403,6 +2407,7 @@ snit::type ::simlib::uram {
             JOIN ucurve_contribs_t AS C USING (curve_id)
             JOIN uram_civ_g AS G ON (G.g_id = S.g_id)
             WHERE S.g_id = $g_id
+            AND G.mood_denom > 0.0
             AND t >= $ts AND t <= $te
             GROUP BY C.driver_id
         }
