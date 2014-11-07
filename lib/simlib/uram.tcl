@@ -2402,7 +2402,7 @@ snit::type ::simlib::uram {
         $rdb eval {
             INSERT INTO uram_contribs(driver,contrib)
             SELECT C.driver_id,
-                   coalesce(total(S.saliency*C.contrib)/G.mood_denom, 0.0)
+                   total(S.saliency*C.contrib)/G.mood_denom
             FROM uram_sat_t AS S
             JOIN ucurve_contribs_t AS C USING (curve_id)
             JOIN uram_civ_g AS G ON (G.g_id = S.g_id)
