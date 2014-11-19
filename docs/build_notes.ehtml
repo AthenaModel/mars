@@ -1,5 +1,15 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.4 -- 19 November 2014>
+
+This build fixes a bug found in Athena 6.1 related to saliencies being zero for
+all concerns.  A database query in the civilian group detail browser page 
+was failing.<p>
+
+<ul>
+<li> Issue #19: uram(n): contribs mood, contribs nbmood
+</ul>
+
 <h3 Mars v3.0.3 -- 5 November 2014>
 
 This build contains some documentation updates and a change to the project

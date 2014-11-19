@@ -47,6 +47,7 @@ namespace eval ::kiteinfo:: {
     docs/*.docx
 }
         local-snit 0
+        force-mars 0
         build-libGeotrans {make clean all}
         reqver-treectrl 2.4
         reqver-BWidget 1.9
@@ -63,6 +64,7 @@ namespace eval ::kiteinfo:: {
         icon-mars {}
         local-sqlite3 0
         reqver-tablelist 5.11
+        exclude-mars {}
         binary-simlib 0
         apptype-mars kit
         clean-Marsbin {make -f MakeTEA clean}
@@ -72,9 +74,9 @@ namespace eval ::kiteinfo:: {
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
         local-comm 0
         gui-mars 0
+        local-kiteutils 1
         version 3.0.4
         binary-Marsbin 1
-        local-kiteutils 1
         reqver-Img 1.4.1
     }
 
