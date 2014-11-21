@@ -506,7 +506,8 @@ snit::widgetadaptor ::marsgui::mapcanvas {
 
             $self GetProjection
 
-            # Set the scroll region
+            # NEXT, get and set the scroll region
+            $self GetScrollRegions
             $self region normal
         } else {
             # NEXT, get the projection.
@@ -592,8 +593,9 @@ snit::widgetadaptor ::marsgui::mapcanvas {
             # x1,y1 = 0,0
             lassign $bbox x1 y1 x2 y2
         } else {
-            set x2 [expr {$info(zoom)*[$proj cget -width]}]
-            set y2 [expr {$info(zoom)*[$proj cget -height]}]
+            let fact {$info(zoom)/100.0}
+            set x2 [expr {int($fact*[$proj cget -width ])}]
+            set y2 [expr {int($fact*[$proj cget -height])}]
         }
 
         set info(regionNormal) [list 0 0 $x2 $y2]
