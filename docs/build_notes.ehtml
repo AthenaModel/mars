@@ -1,5 +1,15 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.5 -- 21 November 2014>
+
+This build contains a bug fix to the mapcanvas(n). If there's no map image
+the scroll regions are incorrectly computed.  With this fix, they are 
+correct.<p>
+
+<ul>
+<li> Issue #21: Scroll regions are incorrect in mapcanvas(n) when no map image is present
+</ul><p>
+
 <h3 Mars v3.0.4 -- 19 November 2014>
 
 This build fixes a bug found in Athena 6.1 related to saliencies being zero for

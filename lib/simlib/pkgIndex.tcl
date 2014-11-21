@@ -12,7 +12,7 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded simlib 3.0.4 [list source [file join $dir pkgModules.tcl]]
+package ifneeded simlib 3.0.5 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end
 
 
