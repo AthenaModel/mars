@@ -1,5 +1,13 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.6 -- 3 December 2014>
+
+This build extends the order(n) <tt prepare> command.
+
+<ul>
+<li> Issue #22: order(n): prepare -with, -listwith
+</ul>
+
 <h3 Mars v3.0.5 -- 21 November 2014>
 
 This build contains a bug fix to the mapcanvas(n). If there's no map image
@@ -9,6 +17,7 @@ correct.<p>
 <ul>
 <li> Issue #21: Scroll regions are incorrect in mapcanvas(n) when no map image is present
 </ul><p>
+
 
 <h3 Mars v3.0.4 -- 19 November 2014>
 
