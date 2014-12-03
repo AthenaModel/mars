@@ -1567,6 +1567,58 @@ test prepare-15.2 {prepare -oncheck disallows tests on send} -setup {
     cleanup
 } -result {a 0.1 _order MY:ORDER}
 
+test prepare-16.1 {prepare -with, valid} -setup {
+    setup
+    order define MY:ORDER { form {text a} } {
+        prepare a -with {::marsutil::test::goodness validate}
+        returnOnError
+        return OK
+    }
+} -body {
+    order send app MY:ORDER a GOOD
+} -cleanup {
+    cleanup
+} -result {OK}
+
+test prepare-16.2 {prepare -with, invalid} -setup {
+    setup
+    order define MY:ORDER { form {text a} } {
+        prepare a -with {::marsutil::test::goodness validate}
+        returnOnError
+        return OK
+    }
+} -body {
+    codecatch order send app MY:ORDER a UGLY
+} -cleanup {
+    cleanup
+} -result {REJECT a {invalid value "UGLY", should be one of: GOOD, BAD}}
+
+test prepare-17.1 {prepare -listwith, valid} -setup {
+    setup
+    order define MY:ORDER { form {text a} } {
+        prepare a -listwith {::marsutil::test::goodness validate}
+        returnOnError
+        return OK
+    }
+} -body {
+    order send app MY:ORDER a {GOOD BAD GOOD}
+} -cleanup {
+    cleanup
+} -result {OK}
+
+test prepare-17.2 {prepare -listwith, invalid} -setup {
+    setup
+    order define MY:ORDER { form {text a} } {
+        prepare a -listwith {::marsutil::test::goodness validate}
+        returnOnError
+        return OK
+    }
+} -body {
+    codecatch order send app MY:ORDER a {GOOD BAD UGLY}
+} -cleanup {
+    cleanup
+} -result {REJECT a {invalid value "UGLY", should be one of: GOOD, BAD}}
+
 #-------------------------------------------------------------------
 # reject
 

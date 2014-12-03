@@ -1233,6 +1233,28 @@ snit::type ::marsutil::order {
                         }
                     }
                 }
+                -with {
+                    set checker [lshift args]
+
+                    validate $parm { 
+                        set parms($parm) [{*}$checker $parms($parm)]
+                    }
+                }
+
+                -listwith {
+                    set checker [lshift args]
+
+                    validate $parm {
+                        set newvalue [list]
+
+                        foreach val $parms($parm) {
+                            lappend newvalue [{*}$checker $val]
+                        }
+
+                        set parms($parm) $newvalue
+                    }
+                }
+
                 -selector {
                     set frm [order options $parms(_order) -dynaform]
 

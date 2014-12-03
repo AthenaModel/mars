@@ -694,6 +694,12 @@ a list of which every element must be a member of the specified
 validation type.  If any element fails, the parameter is
 <iref reject>ed.<p>
 
+<defopt {-listwith <i>valcmd</i>}>
+
+This is similar to <tt -with>.  It indicates that the value is a list of
+which every element must be valid according to the specified validation
+command.  If any element values, the parameter is <iref reject>ed.<p>
+
 <defopt {-normalize}>
 
 Normalizes internal whitespace: all internal whitespace sequences are
@@ -765,12 +771,40 @@ same as including the following code snippet in the order body:<p>
 The <i>valtype</i>'s "validate" method is used to validate the value,
 and may also put it into canonical form.<p>
 
+Note that 
+
+<example>
+prepare -type ::foo
+</example> 
+
+is simply a convenient shorthand for
+
+<example>
+prepare -with {::foo validate}
+</example>
+
 <defopt {-unused}>
 
 This option is used for entity names, e.g., neighborhood or group
 IDs, that are meant to be unique across the application; it requires
 that the value is unused in the RDB.  This option requires that the
 <code>-usedtable</code> is set in the call to <iref order init>.<p>
+
+<defopt {-with <i>valcmd</i>}>
+
+Indicates that the value of the parameter must be acceptable to a 
+validation command called <i>valcmd</i>.  Specifying this option is 
+essentially the same as including the following code snippet in the order 
+body:<p>
+
+<pre>
+    validate $parm {
+        set parms($parm) [{*}$valcmd $parms($parm)]
+    }
+</pre>
+
+The validation command should accept and return a valid input, possibly
+putting it into canonical form, and throw <b INVALID> for invalid inputs.<p>
 
 <defopt {-xform <i>cmd</i>}>
 
