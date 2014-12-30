@@ -898,21 +898,22 @@ snit::type ::marsutil::dynaform {
         return $result
     }
 
-    # formcall vdict_ cmd_
+    # formcall vdict_ cmd_ args
     #
     # vdict_   - A field value dictionary
     # cmd_     - A -listcmd or -dictcmd, etc., that might contain
     #            field name interpolations.
+    # args     - Other arguments
     #
     # Evaluates the command in a scope with the field name variables
     # defined, using [eval] so that proper argument substitution is done.
 
-    proc formcall {vdict_ cmd_} {
+    proc formcall {vdict_ cmd_ args} {
         # FIRST, bring the field variables into scope.
         dict with vdict_ {
             # NEXT, evaluate the command in that scope, and return
-            # the rulset.
-            return [eval $cmd_]
+            # the result.
+            return [eval $cmd_ $args]
         }
     }
 

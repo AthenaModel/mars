@@ -75,6 +75,9 @@ form.  For example, a <iref key> field might use a <code>-loadcmd</code>
 to load a database entity's attributes into the form when the key
 changes.<p>
 
+The <i command> may reference upstream field values by name, as well
+as the <i entity_> variable (if defined).<p>
+
 Note: It is OK if the returned dictionary contains keys
 that don't match any field in the form; they will simply be
 ignored.<p>
@@ -646,6 +649,21 @@ field <code>a</code> has a non-empty value:<p>
 </pre>
 
 </deflist spec>
+
+<subsection "The entity_ Variable">
+
+As noted above, the various field callback commands (e.g., <tt -loadcmd>, 
+<tt -listcmd>, and so forth) can refer to "upstream" field values.  In 
+addition, the <xref dynaview(n)> defines an additional variable that
+can be used in these commands: <tt entity_>.  Its value is set by the
+<xref dynaview(n)> widget's <tt -entity> option.<p>
+
+This is used when the callbacks are relative to some context object 
+that might change from one use of the form type to another.<p>
+
+<b NOTE:> If <tt entity_> is used in a form, it is the application's
+responsibility to ensure that it is provided to the <xref dynaview(n)>
+widget.<p>
 
 <subsection "Layout Algorithm">
 

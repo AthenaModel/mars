@@ -134,6 +134,15 @@ snit::widget ::marsgui::dynaview {
         $self ShowState
     }
 
+    # -entity object
+    #
+    # Defines a value (usually an object name) that is accessible as
+    # "$entity_" in field callbacks.  This can be changed at any time,
+    # but should be followed by "$win clear".
+
+    option -entity \
+        -default ""
+
     # -changecmd cmd
     #
     # Specifies a command to be called whenever any field's value
@@ -672,17 +681,12 @@ snit::widget ::marsgui::dynaview {
                 $info(w-$id) set [dict get $dict $f]
 
                 # NEXT, if there's a load command, load subsequent values.
-                set loadcmd [dict get $idict loadcmd]
-
-                if {$loadcmd ne ""} {
-                    # FIRST, get the dictionary of loaded values.
-                    set loaded [{*}$loadcmd $idict [$info(w-$id) get]] 
+                set loaded [CallLoadCmd $vdict $idict [$info(w-$id) get]]
                     
-                    # NEXT, explicitly set values have priority; so
-                    # merge the explicitly set values into the loaded
-                    # values.
-                    set dict [dict merge $loaded $dict]
-                }
+                # NEXT, explicitly set values have priority; so
+                # merge the explicitly set values into the loaded
+                # values.
+                set dict [dict merge $loaded $dict]
             }
         }]
 
@@ -696,6 +700,24 @@ snit::widget ::marsgui::dynaview {
         }
 
         return [list $ids $changed]
+    }
+
+    # CallLoadCmd vdict idict value
+    #
+    # vdict - vdict of field names and values, plus entity_
+    # idict - A field's item dictionary
+    # value - A field's value
+    #
+    # Calls the field's loadcmd using the vdict.
+
+    proc CallLoadCmd {vdict idict value} {
+        set loadcmd [dict get $idict loadcmd]
+
+        if {$loadcmd eq ""} {
+            return [dict create]
+        }
+
+        return [::marsutil::dynaform::formcall $vdict $loadcmd $idict $value]
     }
 
 
@@ -721,12 +743,10 @@ snit::widget ::marsgui::dynaview {
         set newdata [dict create]
 
         if {$cid ne ""} {
-            set loadcmd [dynaform item $cid loadcmd]
-
-            if {$loadcmd ne ""} {
-                set newdata [{*}$loadcmd [dynaform item $cid] \
-                                [$info(w-$cid) get]]
-            }
+            set vdict [dict create entity_ $options(-entity)]
+            set idict [dynaform item $cid]
+            set value [$info(w-$cid) get]
+            set newdata [CallLoadCmd $vdict $idict $value]
         }
 
         # NEXT, fields up to and including cid don't need to be reconfigured.
@@ -764,16 +784,8 @@ snit::widget ::marsgui::dynaview {
                 $info(w-$id) set [dict get $newdata $f]
 
                 # NEXT, if there's a load command, load subsequent values.
-                set loadcmd [dict get $idict loadcmd]
-
-                if {$loadcmd ne ""} {
-                    # FIRST, get the dictionary of loaded values.
-                    set loaded [{*}$loadcmd $idict [$info(w-$id) get]] 
-                    
-                    # NEXT, merge the loaded values into the set
-                    # of new values.
-                    set newdata [dict merge $newdata $loaded]
-                }
+                set loaded [CallLoadCmd $vdict $idict [$info(w-$id) get]]
+                set newdata [dict merge $newdata $loaded]
             }
         }]
 
@@ -882,7 +894,7 @@ snit::widget ::marsgui::dynaview {
         upvar 1 vdict vdict
 
         # NEXT, prepare to accumulate field values.
-        set vdict [dict create]
+        set vdict [dict create entity_ $options(-entity)]
 
         # NEXT, get the list of candidate items.
         set candidates [dynaform topitems $ftype]

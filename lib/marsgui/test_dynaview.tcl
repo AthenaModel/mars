@@ -14,11 +14,9 @@
 #
 #-----------------------------------------------------------------------
 
-lappend auto_path ~/mars/lib 
-package require marsutil
 package require marsgui
 
-namespace import marsutil::* marsgui::* 
+namespace import kiteutils::* marsutil::* marsgui::* 
 
 source test_dynaview_samples.tcl
 
@@ -45,6 +43,7 @@ puts [dynaform dump $ftype]
 label .lab -text "Dynaform" -width 80
 
 dynaview .df \
+    -entity     ::nbhood \
     -formtype   $ftype \
     -changecmd  [list FormChanged] \
     -currentcmd [list CurrentField]
