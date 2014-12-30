@@ -134,6 +134,15 @@ snit::widget ::marsgui::dynaview {
         $self ShowState
     }
 
+    # -entity object
+    #
+    # Defines a value (usually an object name) that is accessible as
+    # "$entity_" in field callbacks.  This can be changed at any time,
+    # but should be followed by "$win clear".
+
+    option -entity \
+        -default ""
+
     # -changecmd cmd
     #
     # Specifies a command to be called whenever any field's value
@@ -882,7 +891,7 @@ snit::widget ::marsgui::dynaview {
         upvar 1 vdict vdict
 
         # NEXT, prepare to accumulate field values.
-        set vdict [dict create]
+        set vdict [dict create entity_ $options(-entity)]
 
         # NEXT, get the list of candidate items.
         set candidates [dynaform topitems $ftype]

@@ -259,6 +259,14 @@ dynaform define CONTROL4 {
     }
 }
 
+dynaform define NBHOOD {
+    rcc "Neighborhood:" -for n
+    enum n -listcmd {::nbhood names}
+
+    rcc "Long Name:"
+    disp long_name -textcmd {$entity_ longname $n}
+}
+
 dynaform define testform1 {
     rcc "Entity ID:" -for entity_id
     text entity_id -context yes

@@ -32,6 +32,25 @@ returns <i>pathName</i>.  The widget supports the following
 options:<p>
 
 <deflist options>
+<defopt {-entity <i>object</i>}>
+
+Specifies a value that will be accessible to the form's 
+field callbacks in the same way that upstream field values are, 
+using the variable name <tt entity_>.  It can have any value, but 
+will usually to be the name of an object command.<p>
+
+The dynaview(n) widget never explicitly uses this value itself; it
+simply makes it available to the form's callback commands.  It is the
+application's responsibility to ensure that the proper entity is
+provided.<p>
+
+<b WARNING>: if this option is used, it must be set <i before> the 
+<tt -formtype> option, e.g., it must precede it on the command line if
+both are specified when the widget is created.  The configuration 
+handle for <tt -formtype> assumes that it has everything it needs to 
+initialize the form, and will bgerror if the <tt -entity> is needed
+but not set.<p>
+
 <defopt {-formtype <i>name</i>}>
 
 Specifies the name of a <xref dynaform(n)> form type.  The named

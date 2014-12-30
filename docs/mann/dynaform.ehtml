@@ -647,6 +647,21 @@ field <code>a</code> has a non-empty value:<p>
 
 </deflist spec>
 
+<subsection "The entity_ Variable">
+
+As noted above, the various field callback commands (e.g., <tt -loadcmd>, 
+<tt -listcmd>, and so forth) can refer to "upstream" field values.  In 
+addition, the <xref dynaview(n)> defines an additional variable that
+can be used in these commands: <tt entity_>.  Its value is set by the
+<xref dynaview(n)> widget's <tt -entity> option.<p>
+
+This is used when the callbacks are relative to some context object 
+that might change from one use of the form type to another.<p>
+
+<b NOTE:> If <tt entity_> is used in a form, it is the application's
+responsibility to ensure that it is provided to the <xref dynaview(n)>
+widget.<p>
+
 <subsection "Layout Algorithm">
 
 Each dynaform is associated with a specific layout algorithm; this
