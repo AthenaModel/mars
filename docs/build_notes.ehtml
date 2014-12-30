@@ -1,5 +1,13 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.7 -- 30 December 2014>
+
+This build adds <tt -entity> support to dynaform(n)/dynaview(n).<p>
+
+<ul>
+<li> #24: Dynaview Entity Changes
+</ul>
+
 <h3 Mars v3.0.6 -- 3 December 2014>
 
 This build extends the order(n) <tt prepare> command.
