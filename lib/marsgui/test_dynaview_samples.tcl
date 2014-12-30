@@ -7,7 +7,8 @@ enum actor {
     BRIAN "Brian Kahovec"
 }
 
-proc actorData {idict a} {
+proc actorData {entity idict a} {
+    puts "actorData a=$a entity_=$entity"
     set adata {
         JOE   { longname "Joe Provenzano"  income 100 }
         BOB   { longname "Bob Chamberlain" income 200 }
@@ -62,7 +63,7 @@ dynaform define cmderr {
 
 dynaform define ACTOR {
     rcc "Actor:" -for a
-    actor a -loadcmd {::actorData}
+    actor a -loadcmd {::actorData $entity_}
     
     rcc "Long Name:" -for longname
     text longname -width 20

@@ -75,6 +75,9 @@ form.  For example, a <iref key> field might use a <code>-loadcmd</code>
 to load a database entity's attributes into the form when the key
 changes.<p>
 
+The <i command> may reference upstream field values by name, as well
+as the <i entity_> variable (if defined).<p>
+
 Note: It is OK if the returned dictionary contains keys
 that don't match any field in the form; they will simply be
 ignored.<p>
