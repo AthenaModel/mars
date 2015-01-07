@@ -174,51 +174,6 @@ Specifies the Tk image to display as the checkbutton label.<p>
 Defines a color field, based on the <xref colorfield(n)> widget.
 There are no field-type-specific options.<p>
 
-<defitem contextkey {contextkey <i>field</i> ?<i>options...</i>?}>
-
-Defines a field for displaying a single key value from a
-database table in non-editable (i.e., context) form.  This would be
-used, for example, in an order dialog for editing an entity identified
-by its numeric ID, where the user is not allowed to pick a different
-numeric ID.  The widget includes the <code>-db</code>,
-<code>-table</code>, and <code>-keys</code> options (though it does
-not use them itself) and hence is compatible with the
-<xref orderdialog(n)> <xref orderdialog(n) keyload> command.  In
-behavior, it is identical to a <xref dispfield(n)> widget.<p>
-
-In addition to the standard field options, the field type defines 
-the following:<p>
-
-<deflist option>
-<defopt {-db <i>db</i>}>
-Specifies the name of an <xref sqldocument(n)> or the equivalent
-containing the relevant table.<p>
-
-<defopt {-table <i>table</i>}>
-
-Specifies the name of the table or view in the database.<p>
-
-<defopt {-keys <i>keys</i>}>
-
-Specifies a list of the names of the key column or columns in the table.<p>
-
-<defopt {-width <i>columns</i>}>
-Specifies the width of the field in characters of the current
-font.<p>
-
-</deflist options>
-
-This design allows different dynaforms to access databases via
-different handles.  If it is certain that the application will only 
-use one database handle, the application can define an alias like
-this:<p>
-
-<pre>
-    dynaform fieldtype alias contextkey contextkey -db ::rdb
-</pre>
-
-All contextkey fields will then use the same database handle.<p>
-
 <defitem disp {disp <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for displaying an arbitrary, read-only text string.

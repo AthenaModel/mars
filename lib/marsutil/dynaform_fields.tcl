@@ -59,16 +59,6 @@
     }
 }
 
-::marsutil::dynaform fieldtype define contextkey {
-    typemethod attributes {} {
-        return {width db table keys}
-    }
-
-    typemethod create {w idict} {
-        dispfield $w {*}[asoptions $idict width]
-    }
-}
-
 ::marsutil::dynaform fieldtype define disp {
     typemethod attributes {} {
         return {width textcmd}
