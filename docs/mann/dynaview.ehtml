@@ -32,23 +32,30 @@ returns <i>pathName</i>.  The widget supports the following
 options:<p>
 
 <deflist options>
-<defopt {-entity <i>object</i>}>
+<defopt {-resources <i>rdict</i>}>
 
-Specifies a value that will be accessible to the form's 
-field callbacks in the same way that upstream field values are, 
-using the variable name <tt entity_>.  It can have any value, but 
-will usually to be the name of an object command.<p>
+Specifies a dictionary of "application resource" values that will be 
+accessible to the form's field callbacks in the same way that 
+upstream field values are, by name.  For example, if the <i rdict>
+contains the key "<tt db_>", the key's value may appear in a 
+<tt -loadcmd> prefix as "<tt>$db_</tt>".<p>
 
-The dynaview(n) widget never explicitly uses this value itself; it
-simply makes it available to the form's callback commands.  It is the
-application's responsibility to ensure that the proper entity is
-provided.<p>
+Each form may explicitly define the resources it needs, via the
+<xref dynaform(n)> <xref dynaform(n) resources> specification command;
+and certain field types (notably <xref dynaform(n) dbkey>) have their
+own requirements.<p>
+
+The dynaview(n) widget never explicitly uses the resources itself; it
+simply makes them available to the form's callback commands, and to those
+field types that require them when creating the form's field widgets.  
+It is the application's responsibility to ensure that the proper 
+resources are made available.<p>
 
 <b WARNING>: if this option is used, it must be set <i before> the 
 <tt -formtype> option, e.g., it must precede it on the command line if
 both are specified when the widget is created.  The configuration 
 handle for <tt -formtype> assumes that it has everything it needs to 
-initialize the form, and will bgerror if the <tt -entity> is needed
+initialize the form, and will bgerror if <tt -resources> is needed
 but not set.<p>
 
 <defopt {-formtype <i>name</i>}>

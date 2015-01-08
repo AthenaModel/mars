@@ -36,6 +36,7 @@
 #
 #-----------------------------------------------------------------------
 
+# check
 ::marsutil::dynaform fieldtype define check {
     typemethod attributes {} {
         return {text image}
@@ -50,6 +51,7 @@
     }
 }
 
+# color
 ::marsutil::dynaform fieldtype define color {
     typemethod create {w idict} {
         set context [dict get $idict context]
@@ -59,6 +61,43 @@
     }
 }
 
+# dbkey
+::marsutil::dynaform fieldtype define dbkey {
+    typemethod resources {} {
+        return {db_}
+    }
+
+    typemethod attributes {} {
+        # "table" and "keys" are used by the field's -loadcmd.
+        return {table keys dispcols widths labels}
+    }
+
+    typemethod create {w idict rdict} {
+        set context [dict get $idict context]
+        set db_     [dict get $rdict db_]
+
+        keyfield $w \
+            -db    $db_                                      \
+            -state [expr {$context ? "disabled" : "normal"}] \
+            {*}[asoptions $idict table keys dispcols widths labels]
+    }
+}
+
+# dbmulti
+::marsutil::dynaform fieldtype define dbmulti {
+    typemethod attributes {} {
+        # These are used by the field's -loadcmd.
+        return {table key}
+    }
+
+    typemethod create {w idict} {
+        # Don't need to worry about context flag; multi fields are
+        # always context.
+        multifield $w 
+    }
+}
+
+# disp
 ::marsutil::dynaform fieldtype define disp {
     typemethod attributes {} {
         return {width textcmd}
@@ -80,6 +119,7 @@
     }
 }
 
+# enum
 ::marsutil::dynaform fieldtype define enum {
     typemethod attributes {} {
         return {list listcmd}
@@ -118,6 +158,7 @@
     }
 }
 
+# enumlong
 ::marsutil::dynaform fieldtype define enumlong {
     typevariable defaults {
         dict     {}
@@ -180,6 +221,7 @@
     }
 }
 
+# enumlist
 ::marsutil::dynaform fieldtype define enumlist {
     typemethod attributes {} {
         return {list listcmd width height stripe}
@@ -219,6 +261,7 @@
     }
 }
 
+# enumlonglist
 ::marsutil::dynaform fieldtype define enumlonglist {
     typemethod attributes {} {
         return {dict dictcmd width height stripe showkeys}
@@ -257,6 +300,7 @@
     }
 }
 
+# key
 ::marsutil::dynaform fieldtype define key {
     typemethod attributes {} {
         return {db table keys dispcols widths labels}
@@ -271,6 +315,7 @@
     }
 }
 
+# multi
 ::marsutil::dynaform fieldtype define multi {
     typemethod attributes {} {
         return {db table key}
@@ -283,6 +328,7 @@
     }
 }
 
+# range
 ::marsutil::dynaform fieldtype define range {
     typemethod attributes {} {
         return {
@@ -302,6 +348,7 @@
     }
 }
 
+# text
 ::marsutil::dynaform fieldtype define text {
     typemethod attributes {} {
         return {width}

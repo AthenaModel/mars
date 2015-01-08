@@ -42,8 +42,14 @@ puts [dynaform dump $ftype]
 
 label .lab -text "Dynaform" -width 80
 
+sqldocument ::rdb
+::rdb open :memory:
+::rdb eval {
+    CREATE TABLE nbhoods(n);
+}
+
 dynaview .df \
-    -entity     ::nbhood \
+    -resources  {entity_ ::nbhood db_ ::rdb} \
     -formtype   $ftype \
     -changecmd  [list FormChanged] \
     -currentcmd [list CurrentField]

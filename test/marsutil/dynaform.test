@@ -383,6 +383,51 @@ Items:
 }
 
 #-------------------------------------------------------------------
+# define resources
+
+test define_resources-1.1 {form resources} -body {
+    dynaform define TESTFORM {
+        resources a_ b_
+    }
+
+    dynaform resources TESTFORM
+} -cleanup {
+    cleanup
+} -result {a_ b_}
+
+test define_resources-1.2 {resources accumulate} -body {
+    dynaform define TESTFORM {
+        resources a_ b_
+        resources c_ d_
+    }
+
+    dynaform resources TESTFORM
+} -cleanup {
+    cleanup
+} -result {a_ b_ c_ d_}
+
+test define_resources-1.3 {from fields} -body {
+    dynaform define TESTFORM {
+        dbkey id -table this -keys that
+    }
+
+    dynaform resources TESTFORM
+} -cleanup {
+    cleanup
+} -result {db_}
+
+test define_resources-1.4 {both} -body {
+    dynaform define TESTFORM {
+        resources order_
+        dbkey id -table this -keys that
+    }
+
+    dynaform resources TESTFORM
+} -cleanup {
+    cleanup
+} -result {order_ db_}
+
+#-------------------------------------------------------------------
 # define selector
 
 test define_selector-1.1 {no options} -body {

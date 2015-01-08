@@ -174,6 +174,80 @@ Specifies the Tk image to display as the checkbutton label.<p>
 Defines a color field, based on the <xref colorfield(n)> widget.
 There are no field-type-specific options.<p>
 
+<defitem dbkey {dbkey <i>field</i> ?<i>options...</i>?}>
+
+Defines a field for selecting a key value from a database table,
+i.e., a <xref keyfield(n)> widget.  The field displays a labeled
+pulldown for each key column.<p>
+
+This field type depends on an 
+<xref "Application Resources" "application resource"> called
+"<tt db_>", whose value must be the relevant SQLite3 database handle
+(or the equivalent).<p>
+
+In addition to the standard field options, the field type defines 
+the following:<p>
+
+<deflist option>
+<defopt {-table <i>table</i>}>
+
+Specifies the name of the table or view in the database.<p>
+
+<defopt {-keys <i>keys</i>}>
+
+Specifies a list of the names of the key column or columns in the table.<p>
+
+<defopt {-dispcols <i>names</i>}>
+
+Specifies the names of columns whose values are to be displayed in
+place of the <code>-keys</code> columns in the pulldowns. The values
+in the <code>-dispcols</code> columns need to be paired one-to-one
+with the matching values in the <code>-keys</code> columns.<p>
+
+This is usually used when the <code>-table</code>'s key is a bare
+integer. The <code>-table</code> can be a view that provides a
+human-readable version of the key as a parallel column. The GUI then
+uses the human-readable text, while the underlying order uses the
+integer key.<p>
+
+<defopt {-widths <i>widths</i>}>
+
+Specifies a list of widths, in characters of the current font, for
+each key column.  The widths will determine the approximate width of
+each pulldown.<p>
+
+<defopt {-labels <i>strings</i>}>
+Specifies a list of label strings, one for each key column.  If a
+column's label string is not the empty string, it will appear to the
+left of the column's pulldown.<p>
+</deflist options>
+
+This design allows each invocation of the dynaform to serve a 
+different database.<p>
+
+<defitem dbmulti {dbmulti <i>field</i> ?<i>options...</i>?}>
+
+Defines a context field containing multiple table keys for a given
+database and table.  The field (a <xref multifield(n)> widget) displays
+the number of selected items.  The field type defines the following
+additional options:<p>
+
+<deflist option>
+<defopt {-table <i>table</i>}>
+
+Specifies the name of the table or view in the database.<p>
+
+<defopt {-key <i>key</i>}>
+
+Specifies a list of the name of the key column.  It is assumed that
+the table has a single key column; however, this can be simulated using
+a view that concatenates the values of the key columns in some
+way.<p>
+</deflist options>
+
+The field itself makes no use of these options; they are provided for
+use by the field's <tt -loadcmd>.<p>
+
 <defitem disp {disp <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for displaying an arbitrary, read-only text string.
@@ -544,6 +618,21 @@ specified in HTML length units, e.g., "<code>3in</code>" or
 
 </deflist options>
 
+<defitem resources {resources <i name> ?<i name...>?}>
+
+Specifies the name(s) of <xref "Application Resources"> required by a
+specific instance of the form at run time.  Resource values are provided 
+to the <xref dynaview(n)> widget when it is created, and it in turn makes
+them available to the form's callback commands.  In particular,  
+field callback commands may refer to resource values by name, just
+as they may refer to upstream fields by name.  For example, a 
+<tt -loadcmd> might refer to the relevant order object as "<tt>$order_</tt>".
+<p>
+
+Resource names conventionally have a trailing underscore so that
+they won't collide with parameter names, e.g., "<tt db_>", 
+"<tt order_>".<p>
+
 <defitem selector {selector <i>field</i> ?<i>options...</i>? <i>selscript</i>}>
 
 Defines a selector.  A selector is a field-like item that controls
@@ -605,20 +694,26 @@ field <code>a</code> has a non-empty value:<p>
 
 </deflist spec>
 
-<subsection "The entity_ Variable">
+<subsection "Application Resources">
 
 As noted above, the various field callback commands (e.g., <tt -loadcmd>, 
-<tt -listcmd>, and so forth) can refer to "upstream" field values.  In 
-addition, the <xref dynaview(n)> defines an additional variable that
-can be used in these commands: <tt entity_>.  Its value is set by the
-<xref dynaview(n)> widget's <tt -entity> option.<p>
+<tt -listcmd>, and so forth) can refer to "upstream" field values. In 
+addition, they can also refer to "application resources": named values
+provided by the application when the form is invoked.  Certain field 
+types, notably <iref dbkey>, also require application resources.<p>
 
-This is used when the callbacks are relative to some context object 
-that might change from one use of the form type to another.<p>
+For example, a particular field's <tt -loadcmd> might need to access 
+a database.  We can't hardcode the database handle into the <tt -loadcmd>
+without limiting the form to being used with only that one database.
+Instead, we define an application resource, "<b><tt>db_</tt></b>", whose
+value must be set to the required database handle.  The form's field 
+callbacks can than refer freely to "<b><tt>$db_</tt></b>".<p>
 
-<b NOTE:> If <tt entity_> is used in a form, it is the application's
-responsibility to ensure that it is provided to the <xref dynaview(n)>
-widget.<p>
+A dynaform(n) is displayed in a <xref dynaview(n)> widget; and the 
+application must provide the form's resource values to the 
+<xref dynaview(n)> widget via its <tt -resources> option.  If there's
+a mismatch between the given and required resources, the widget will
+throw an error.<p>
 
 <subsection "Layout Algorithm">
 
@@ -747,6 +842,12 @@ the entire item definition dictionary.<p>
 Returns the name of the <iref layout> algorithm for the named form
 type.<p>
 
+<defitem "dynaform resources" {dynaform resources <i>ftype</i>}>
+Returns the names of the <xref "Application Resources"> required by
+this form.  The returned list will include all resources 
+explicitly declared in the form specification using the 
+<iref resources> command along with all resources implicitly 
+required by the field types used in the specification.<p>
 
 <defitem topitems {dynaform topitems <i>ftype</i>}>
 

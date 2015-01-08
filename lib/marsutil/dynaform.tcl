@@ -91,6 +91,8 @@ snit::type ::marsutil::dynaform {
     #                    form type.
     # top-$ftype       - List of numeric item IDs of the top-level items 
     #                    for this form type.
+    # resources-$ftype - List of application resource names for this
+    #                    form type.
     # fields-$ftype    - List of distinct field names for this form type.
     #                    Items on different branches can share a field name.
     # layout-$ftype    - The layout algorithm for this form type.
@@ -260,6 +262,7 @@ snit::type ::marsutil::dynaform {
         $finterp alias para       ${type}::FormPara
         $finterp alias rc         ${type}::FormRC
         $finterp alias rcc        ${type}::FormRCC
+        $finterp alias resources  ${type}::FormResources
         $finterp alias selector   ${type}::FormSelector
         $finterp alias when       ${type}::FormWhen
 
@@ -291,6 +294,7 @@ snit::type ::marsutil::dynaform {
 
         set meta(all-$ftype)       [list]
         set meta(top-$ftype)       [list]
+        set meta(resources-$ftype) [list]
         set meta(fields-$ftype)    [list]
         set meta(layout-$ftype)    ncolumn
         set meta(height-$ftype)    200
@@ -349,6 +353,7 @@ snit::type ::marsutil::dynaform {
             # Make it a singleton
             pragma -hasinstances no
 
+            typemethod resources   {}              { }
             typemethod attributes  {}              { }
             typemethod defvalue    {args}          { return {} }
             typemethod ready       {w idict}       { return 1 }
@@ -507,6 +512,11 @@ snit::type ::marsutil::dynaform {
 
         # NEXT, validate the idict.
         $ft validate $meta(item-$id)
+
+        # NEXT, add the field type's resources to the form's.
+        foreach name [$ft resources] {
+            FormResources $name
+        }
     }
 
     # FormLabel text ?options...?
@@ -615,6 +625,19 @@ snit::type ::marsutil::dynaform {
         dict set meta(item-$id) text $label
         SaveOptions $id $opts
     }
+
+    # FormResources ?name...?
+    #
+    # name - An application resource name.
+    #
+    # Adds the name(s) to the list of resources for this form type.
+
+    proc FormResources {args} {
+        foreach name $args {
+            ladd meta(resources-$compile(ftype)) $name
+        }
+    }
+
 
     # FormSelector field ?options...? selscript
     #
@@ -985,6 +1008,21 @@ snit::type ::marsutil::dynaform {
         }
 
         return $meta(top-$ftype)
+    }
+
+    # resources ftype
+    #
+    # ftype - A form type
+    #
+    # Returns the names of the resources 
+    # associated with this form type.
+
+    typemethod resources {ftype} {
+        if {![info exists meta(resources-$ftype)]} {
+            return ""
+        }
+
+        return $meta(resources-$ftype)
     }
 
     # fields ftype

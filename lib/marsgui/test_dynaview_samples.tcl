@@ -268,6 +268,17 @@ dynaform define NBHOOD {
     disp long_name -textcmd {$entity_ longname $n}
 }
 
+dynaform define DBKEY {
+    rcc "Neighborhood:" -for n
+    dbkey n -table nbhoods -keys n
+}
+
+dynaform define BAD {
+    resources nonesuch
+    rcc "Neighborhood:" -for n
+    dbkey n -table nbhoods -keys n
+}
+
 dynaform define testform1 {
     rcc "Entity ID:" -for entity_id
     text entity_id -context yes

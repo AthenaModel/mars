@@ -92,6 +92,13 @@ snit::widget ::marsgui::dynaview {
         set options($opt) $val
         set ftype $options(-formtype)
 
+        # NEXT, check resources
+        foreach name [dynaform resources $ftype] {
+            if {![dict exists $options(-resources) $name]} {
+                error "Resource \"$name\" is required but not provided."
+            }
+        }
+
         # NEXT, get rid of any existing child widgets, first clearing the
         # current HTML layout.  (Note: that might not be necessary, but
         # it seems desirable.)
@@ -134,13 +141,16 @@ snit::widget ::marsgui::dynaview {
         $self ShowState
     }
 
-    # -entity object
+    # -resources rdict
     #
-    # Defines a value (usually an object name) that is accessible as
-    # "$entity_" in field callbacks.  This can be changed at any time,
-    # but should be followed by "$win clear".
+    # Defines a dictionary of resource names and values to be used by
+    # the loaded form at runtime.  Resources are provided by the 
+    # application.  Resources are usable by name in field callbacks,
+    # and can be passed to field widgets when they are created.
+    # By convention, resource names are lowercase with a trailing
+    # underscore, e.g., "db_"
 
-    option -entity \
+    option -resources \
         -default ""
 
     # -changecmd cmd
@@ -253,7 +263,11 @@ snit::widget ::marsgui::dynaview {
         switch -exact -- [dict get $idict itype] {
             field {
                 set ft [dict get $idict ft]
-                $ft create $w $idict 
+                if {[$ft resources] eq ""} {
+                    $ft create $w $idict 
+                } else {
+                    $ft create $w $idict $options(-resources)
+                }
                 $w configure \
                     -changecmd [mymethod FieldChange $id $f] \
             }
@@ -704,7 +718,7 @@ snit::widget ::marsgui::dynaview {
 
     # CallLoadCmd vdict idict value
     #
-    # vdict - vdict of field names and values, plus entity_
+    # vdict - vdict of field names and values, plus -resources
     # idict - A field's item dictionary
     # value - A field's value
     #
@@ -743,7 +757,7 @@ snit::widget ::marsgui::dynaview {
         set newdata [dict create]
 
         if {$cid ne ""} {
-            set vdict [dict create entity_ $options(-entity)]
+            set vdict $options(-resources)
             set idict [dynaform item $cid]
             set value [$info(w-$cid) get]
             set newdata [CallLoadCmd $vdict $idict $value]
@@ -894,7 +908,7 @@ snit::widget ::marsgui::dynaview {
         upvar 1 vdict vdict
 
         # NEXT, prepare to accumulate field values.
-        set vdict [dict create entity_ $options(-entity)]
+        set vdict $options(-resources)
 
         # NEXT, get the list of candidate items.
         set candidates [dynaform topitems $ftype]
