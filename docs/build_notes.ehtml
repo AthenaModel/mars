@@ -1,5 +1,16 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.8 -- 13 January 2015>
+
+This build replaces the <tt -entity> support in dynaform(n)/dynaview(n)
+with <tt -resources> support.  The difference is that the client can
+specify an entire dictionary of resources.<p>
+
+<ul>
+<li> Issue #25: dynaform: contextkey is obsolete
+<li> Issue #26: dynaform(n): Application Resources
+</ul><p>
+
 <h3 Mars v3.0.7 -- 30 December 2014>
 
 This build adds <tt -entity> support to dynaform(n)/dynaview(n).<p>
