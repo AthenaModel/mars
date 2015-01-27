@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Tcltest test suite for marsutil(n) order(n)
+#    Tcltest test suite for marsutil(n) order(n).
 #
 #-----------------------------------------------------------------------
 
@@ -20,1864 +20,969 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 }
 
 # Import tcltest(n)
-namespace import ::tcltest::test
+namespace import ::tcltest::*
+
  
 #-----------------------------------------------------------------------
 # Load the package to be tested
 
 source ../../lib/marsutil/pkgModules.tcl
-namespace import ::kiteutils::lmaxlen
 namespace import ::marsutil::*
+
+#------------------------------------------------------------------------
+# Set up the test environment
+
+::marsutil::order_set create myorders
+::marsutil::order_flunky create myflunky ::myorders
+
+myorders define MY:ORDER {
+    meta title "My Order"
+    meta sendstates "PREP"
+    meta defaults {
+        x 1
+        y yes
+    }
+
+    method _validate {} {
+        my prepare x -type snit::integer
+        my prepare y -type snit::boolean
+    }
+
+    method _execute {{flunky ""}} {
+        my variable parms
+        my setundo [list set ::orderResult $::orderResult]
+        set ::orderResult [list $parms(x) $parms(y)]
+    }
+}
+
+myorders define MY:FORM {
+    meta title "My Form"
+    meta sendstates "PREP"
+    meta defaults {
+        x 1
+        y 2
+    }
+    meta form {
+        text x
+        text y
+    }
+}
+
+myorders define MY:MODE {
+    meta title "My Mode"
+    meta defaults {
+        x 1
+        y 2
+    }
+
+    method _validate {} {
+        # n/a
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo "# foo!"
+        return [my mode]
+    }
+
+    method mymode {} {
+        return [my mode]
+    }
+}
+
+myorders define MY:VALIDATE {
+    meta defaults { x "" }
+
+    method _validate {} { 
+        my checkon x {
+            snit::integer validate $parms(x)
+        }
+    }
+
+    method copyparms {} {
+        my variable parmdict
+        array set parms $parmdict
+    }
+
+    method preparex {value args} {
+        my set x $value
+
+        my variable errdict
+        my variable parmdict
+        array unset errdict
+        array set parms $parmdict
+
+        return [my prepare x {*}$args]
+    }
+
+    method mybadparm {parm} {
+        return [my badparm $parm]
+    }
+
+}
+
+myorders define MY:RETURN {
+    meta defaults { 
+        x "" 
+    }
+
+    method _validate {} { 
+        my variable parms
+        my checkon x {
+            snit::integer validate $parms(x)
+        }
+
+        my returnOnError
+        my set x 0
+    }
+}
+
+myorders define MY:CANCEL {
+    meta defaults { x 1 }
+    method _validate {} {
+        my variable parms
+        my checkon x {
+            snit::integer validate $parms(x)
+        }
+    }
+
+    method _execute {{flunky ""}} {
+        my cancel
+        error "Shouldn't get here"
+    }
+}
+
+
+variable orderResult {}
+
+proc setup {{cls MY:ORDER}} {
+    [myorders class $cls] create ord
+}
+
+proc cleanup {} {
+    variable orderResult
+    set orderResult {}
+    ord destroy
+}
+
+#-----------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {initial state} -setup {
+    setup
+} -body {
+    ord state
+} -cleanup {
+    cleanup
+} -result {CHANGED}
+
+test creation-1.2 {initial errdict} -setup {
+    setup
+} -body {
+    ord errdict
+} -cleanup {
+    cleanup
+} -result {}
+
+test creation-1.3 {initial values} -setup {
+    setup
+} -body {
+    ord getdict
+} -cleanup {
+    cleanup
+} -result {x 1 y yes}
+
+test creation-1.4 {can set values} -setup {
+    setup
+    set o [[myorders class MY:ORDER] new {x 2 y no}]
+} -body {
+    $o getdict
+} -cleanup {
+    cleanup
+} -result {x 2 y no}
 
 
 #-----------------------------------------------------------------------
-# Test Suite
-#
-# The tests run in a namespace so as not to interfere with other
-# test suites.
+# get
 
-#-------------------------------------------------------------------
-# Set up the test environment
-
-# Import tcltest(n)
-namespace import ::tcltest::*
-
-# Import the code to be tested
-namespace import ::marsutil::*
-
-#-------------------------------------------------------------------
-# Test Harness
-
-# acc -- Accumulator array; stores lists.
-#
-# log    - Log entries
-# orders - Traced orders
-# events - notifier(n) events
-
-variable acc
-
-# Enum type
-
-::marsutil::enum ::marsutil::test::goodness {
-    GOOD Good
-    BAD  Bad
-}
-
-# codecatch cmd....
-#
-# Catches result of calling the command, expecting an error,
-# and returns the error message prefixed with the errorcode.
-
-proc codecatch {args} {
-    if {![catch $args result]} {
-        error "Expected error, got ok"
-    }
-
-    return "$::errorCode $result"
-}
-
-# errcatch cmd....
-#
-# Catches result of calling the command, expecting an error,
-# and returns the error message.
-
-proc errcatch {args} {
-    if {![catch $args result]} {
-        error "Expected error, got ok"
-    }
-
-    return $result
-}
-
-# Setup ?options?
-#
-# -passthru flag - Defines PASS:THRU order
-#
-# Other options are passed to order init.
-#
-# Initializes the order module and prepares for tests.
-
-proc setup {args} {
-    variable acc
-    
-    sqldocument ::rdb -autotrans no -rollback yes
-    rdb open :memory:
-    rdb clear
-
-    rdb eval {
-        CREATE TABLE test_table(x PRIMARY KEY, y, z);
-        INSERT INTO test_table VALUES(1,2,3);
-    }
-
-    set passthru [optval args -passthru 0]
-
-    order init \
-        -rdb      ::rdb                 \
-        -logcmd   {::Accumulate log}    \
-        -ordercmd {::Accumulate orders} \
-        {*}$args
-
-    if {$passthru} {
-        order define PASS:THRU {
-            form {
-                text a
-                text b
-                text c
-            }
-        } {
-            array get parms
-        }
-    }
-
-    notifier trace \
-        {::Accumulate events}
-
-    array unset acc
-    array set acc {
-        log    ""
-        orders ""
-        events ""
-    }
-}
-
-# cleanup
-#
-# Reset the order(n) module.
-proc cleanup {} {
-    variable acc
-
-    order reset
-    array unset acc
-    rdb destroy
-}
-
-# Accumulate which args
-#
-# Add entry to accumulator.
-proc Accumulate {which args} {
-    variable acc
-    
-    lappend acc($which) $args
-}
-
-# getacc which
-#
-# Returns the pretty-printed data
-
-proc getacc {which} {
-    variable acc
-
-    bprintlist $acc($which)
-}
-
-# NarrativeCmd args
-#
-# Order narrative; just reflects arguments.
-proc NarrativeCmd {args} {
-    return $args
-}
-
-# AddStars text
-#
-# text - A text string
-#
-# Returns the text string with stars around it.
-
-proc AddStars {text} {
-    return "*$text*"
-}
-
-# LogErrorCmd name emessage einfo
-#
-# name     - The order name
-# emessage - The error message
-# einfo    - The errorInfo (stack trace)
-
-proc LogErrorCmd {name emessage einfo} {
-    Accumulate log "$name <$emessage>"
-}
-
-# bprint text
-#
-# text - A block of text
-#
-# Pretty prints the block of text, to make formatting tests easier.
-
-proc bprint {text} {
-    return "\n$text"
-}
-
-# pdict dict
-#
-# dict - A dictionary
-#
-# Block-prints the dict, or "*NULL*" if the list is empty.
-
-proc pdict {dict} {
-    set list [list]
-
-    set keywid [expr {[lmaxlen [dict keys $dict]] + 1}]
-
-    dict for {key value} $dict {
-        lappend list [format "%-*s <%s>" $keywid $key: $value]
-    }
-
-    return [bprintlist $list]
-}
-
-# bprintlist list
-#
-# list - A list of items
-#
-# Block-prints the list, or "*NULL*" if the list is empty.
-
-proc bprintlist {list} {
-    if {[llength $list] == 0} {
-        return *NULL*
-    }
-
-    foreach item $list {
-        append result "    $item\n"
-    }
-
-    return [bprint $result]
-}
-
-
-#-------------------------------------------------------------------
-# init
-
-# Default option values
-
-test init-1.1 {Default option values} -setup {
+test get-1.1 {can get a parameter's value} -setup {
     setup
-    order reset
 } -body {
-    order init -rdb NONESUCH
-
-    pdict [order cget]
-}  -cleanup {
+    ord get x
+} -cleanup {
     cleanup
-} -result {
-    -logcmd:    <>
-    -ordercmd:  <>
-    -rdb:       <NONESUCH>
-    -subject:   <::marsutil::order>
-    -usedtable: <>
-}
+} -result {1}
 
 
-test init-1.2 {Options are saved} -setup {
+#-----------------------------------------------------------------------
+# set
+
+test set-1.1 {can set a parameter's value} -setup {
     setup
-    order reset
 } -body {
-    order init \
-        -logcmd       {::Accumulate log} \
-        -ordercmd     C                                  \
-        -rdb          D                                  \
-        -subject      E                                  \
-        -usedtable    F
-
-    pdict [order cget]
-}  -cleanup {
+    ord set x 5
+    ord get x
+} -cleanup {
     cleanup
-} -result {
-    -logcmd:    <::Accumulate log>
-    -ordercmd:  <C>
-    -rdb:       <D>
-    -subject:   <E>
-    -usedtable: <F>
-}
+} -result {5}
 
-test init-1.3 {-rdb must be set} -setup {
+test set-1.2 {returns new value} -setup {
     setup
-    order reset
 } -body {
-    errcatch order init
-}  -cleanup {
+    ord set x 5
+} -cleanup {
     cleanup
-} -result {-rdb is ""}
+} -result {5}
 
-test init-1.4 {Orders can be predefined} -setup {
+test set-1.3 {trims input value} -setup {
     setup
-    order define MY:ORDER {} {}
 } -body {
-    order init
-    order names
-}  -cleanup {
+    ord set x "  HELLO  "
+} -cleanup {
     cleanup
-} -result {MY:ORDER}
+} -result {HELLO}
 
+test set-1.4 {unknown parameter} -setup {
+    setup
+} -body {
+    ord set nonesuch 1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown parameter: "nonesuch"}
 
-#-------------------------------------------------------------------
+#-----------------------------------------------------------------------
+# getdict
+
+test getdict-1.1 {retrieves parameter dictionary} -setup {
+    setup
+} -body {
+    ord getdict
+} -cleanup {
+    cleanup
+} -result {x 1 y yes}
+
+#-----------------------------------------------------------------------
+# setdict
+
+test setdict-1.1 {sets parameters} -setup {
+    setup
+} -body {
+    ord setdict [dict create x 5 y 10]
+    ord getdict
+} -cleanup {
+    cleanup
+} -result {x 5 y 10}
+
+test setdict-1.2 {sets parameters} -setup {
+    setup
+} -body {
+    ord setdict [dict create x 5 nonesuch 10]
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown parameter: "nonesuch"}
+
+#-----------------------------------------------------------------------
 # cget
-#
-# Note: that module options can be set and queried
-# is tested under "init".
 
-test cget-1.1 {Can't query unknown option} -setup {
+test cget-1.1 {can cget a parameter's value} -setup {
     setup
 } -body {
-    errcatch order cget -nonesuch
-}  -cleanup {
+    list [ord cget -x] [ord cget -y]
+} -cleanup {
     cleanup
-} -result {Unknown option: "-nonesuch"}
+} -result {1 yes}
 
-#-------------------------------------------------------------------
+#-----------------------------------------------------------------------
 # configure
-#
-# Note: that module options can be set and queried
-# is tested under "init".
 
-test configure-1.1 {Can't set unknown option} -setup {
+test configure-1.1 {can set parameter values} -setup {
     setup
 } -body {
-    errcatch order configure -nonesuch nonesuch
-}  -cleanup {
-    cleanup
-} -result {Unknown option: "-nonesuch"}
-
-test configure-1.2 {Option value is required} -setup {
-    setup
-} -body {
-    errcatch order configure -subject
-}  -cleanup {
-    cleanup
-} -result {Option -subject: no value given}
-
-test configure-1.4 {Can't configure -rdb} -setup {
-    setup
-} -body {
-    errcatch order configure -rdb nonesuch
-}  -cleanup {
-    cleanup
-} -result {Option -rdb is readonly after initialization}
-
-#-------------------------------------------------------------------
-# interface
-
-test interface-1.1 {Retrieve interface names} -setup {
-    setup
-} -body {
-    lsort [order interface names]
-}  -cleanup {
-    cleanup
-} -result {app gui}
-
-
-test interface-2.1 {Invalid -checkstate} -setup {
-    setup
-} -body {
-    errcatch order interface configure app -checkstate NONESUCH
-}  -cleanup {
-    cleanup
-} -result {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
-
-
-test interface-2.2 {Invalid -trace} -setup {
-    setup
-} -body {
-    errcatch order interface configure app -trace NONESUCH
-}  -cleanup {
-    cleanup
-} -result {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
-
-
-test interface-2.3 {Invalid -transaction} -setup {
-    setup
-} -body {
-    errcatch order interface configure app -transaction NONESUCH
-}  -cleanup {
-    cleanup
-} -result {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
-
-test interface-3.1 {Configure and get all options} -setup {
-    setup
-} -body {
-    order interface configure app \
-        -checkstate  yes \
-        -errorcmd    foo \
-        -rejectcmd   bar \
-        -trace       yes \
-        -transaction no
-
-    pdict [order interface cget app]
-}  -cleanup {
-    cleanup
-} -result {
-    -checkstate:  <yes>
-    -errorcmd:    <foo>
-    -rejectcmd:   <bar>
-    -trace:       <yes>
-    -transaction: <no>
-}
-
-test interface-3.2 {Get one option} -setup {
-    setup
-} -body {
-    order interface configure app \
-        -checkstate  yes
-
-    order interface cget app -checkstate
-}  -cleanup {
-    cleanup
-} -result {yes}
-
-test interface-4.1 {Add new interface} -setup {
-    setup
-} -body {
-    order interface add cli
-
-    lsort [order interface names]
-}  -cleanup {
-    cleanup
-} -result {app cli gui}
-
-test interface-4.2 {Add new interface with options} -setup {
-    setup
-} -body {
-    order interface add cli \
-        -checkstate  yes \
-        -errorcmd    foo \
-        -rejectcmd   bar \
-        -trace       yes \
-        -transaction no
-
-    pdict [order interface cget cli]
-}  -cleanup {
-    cleanup
-} -result {
-    -checkstate:  <yes>
-    -errorcmd:    <foo>
-    -rejectcmd:   <bar>
-    -trace:       <yes>
-    -transaction: <no>
-}
-
-
-#-------------------------------------------------------------------
-# define
-#
-# This section tests all of the things that can go wrong while
-# defining an order.  Later sections will use "order define"
-# and verify that queries, order handlers, etc., are all working
-# properly.
-
-
-test define-1.1 {options: unknown option} -setup {
-    setup
-} -body {
-    errcatch order define MY:ORDER { 
-        options -nonesuch foo
-    } {}
+    ord configure -x 3 -y 4
+    list [ord get x] [ord get y]
 } -cleanup {
     cleanup
-} -result {Metadata error for order MY:ORDER:
-Unknown option: -nonesuch}
+} -result {3 4}
 
-
-test define-1.2 {options: invalid -monitor} -setup {
-    setup
-} -body {
-    errcatch order define MY:ORDER { 
-        options -monitor NONESUCH
-    } { }
-} -cleanup {
-    cleanup
-} -result {Metadata error for order MY:ORDER:
-invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
-
-#-------------------------------------------------------------------
-# names
-
-test names-1.1 {No orders defined} -setup {
-    setup
-} -body {
-    order names
-} -cleanup {
-    cleanup
-} -result {}
-
-test names-1.2 {Orders defined} -setup {
-    setup
-} -body {
-    order define MY:FIRST  {} {}
-    order define MY:SECOND {} {}
-    lsort [order names]
-} -cleanup {
-    cleanup
-} -result {MY:FIRST MY:SECOND}
-
-#-------------------------------------------------------------------
-# validate
-
-test validate-1.1 {No orders defined} -setup {
-    setup
-} -body {
-    codecatch order validate MY:ORDER
-} -cleanup {
-    cleanup
-} -result {INVALID order does not exist: "MY:ORDER"}
-
-test validate-1.2 {Order validated} -setup {
-    setup
-} -body {
-    order define MY:ORDER {} {}
-    order validate MY:ORDER
-} -cleanup {
-    cleanup
-} -result {MY:ORDER}
-
-#-------------------------------------------------------------------
-# exists
-
-test exists-1.1 {No orders defined} -setup {
-    setup
-} -body {
-    order exists MY:ORDER
-} -cleanup {
-    cleanup
-} -result {0}
-
-test exists-1.2 {Order exists} -setup {
-    setup
-} -body {
-    order define MY:ORDER {} {}
-    order define MY:OTHER:ORDER {} {}
-    order exists MY:ORDER
-} -cleanup {
-    cleanup
-} -result {1}
-
-
-#-------------------------------------------------------------------
-# title
-
-test title-1.1 {Unknown order} -setup {
-    setup
-} -body {
-    errcatch order title MY:ORDER
-} -cleanup {
-    cleanup
-} -result {Order is undefined: "MY:ORDER"}
-
-
-test title-2.1 {Title defaults to order name} -setup {
-    setup
-} -body {
-    order define MY:ORDER {} {}
-
-    order title MY:ORDER
-} -cleanup {
-    cleanup
-} -result {MY:ORDER}
-
-test title-2.2 {Title can be set} -setup {
-    setup
-} -body {
-    order define MY:ORDER {
-        title "My Order"
-    } {}
-
-    order title MY:ORDER
-} -cleanup {
-    cleanup
-} -result {My Order}
-
-
-#-------------------------------------------------------------------
-# options
-#
-# Retrieves order options
-
-test options-1.1 {Unknown order} -setup {
-    setup
-} -body {
-    errcatch order options ORD
-} -cleanup {
-    cleanup
-} -result {Order is undefined: "ORD"}
-
-
-test options-1.2 {Unknown option} -setup {
-    setup
-    order define ORD {} {}
-} -body {
-    errcatch order options ORD -nonesuch
-} -cleanup {
-    cleanup
-} -result {key "-nonesuch" not known in dictionary}
-
-
-test options-2.1 {Default options} -setup {
-    setup
-} -body {
-    order define ORD {} {}
-
-    pdict [order options ORD]
-} -cleanup {
-    cleanup
-} -result {
-    -dynaform:     <>
-    -narrativecmd: <>
-    -sendstates:   <*>
-    -monitor:      <1>
-}
-
-
-test options-2.2 {Options can be set} -setup {
-    setup
-} -body {
-    order define ORD {
-        options \
-            -monitor        no      \
-            -narrativecmd   ncmd    \
-            -sendstates     "A B"
-    } {}
-
-    pdict [order options ORD]
-} -cleanup {
-    cleanup
-} -result {
-    -dynaform:     <>
-    -narrativecmd: <ncmd>
-    -sendstates:   <A B>
-    -monitor:      <no>
-}
-
-test options-2.3 {Can retrieve single options} -setup {
-    setup
-} -body {
-    order define ORD {} {}
-    order options ORD -monitor
-} -cleanup {
-    cleanup
-} -result {1}
-
-#-------------------------------------------------------------------
-# narrative
-
-test narrative-1.1 {Unknown order} -setup {
-    setup
-} -body {
-    errcatch order narrative MY:ORDER {}
-} -cleanup {
-    cleanup
-} -result {Order is undefined: "MY:ORDER"}
-
-
-test narrative-2.1 {Narrative defaults to order title} -setup {
-    setup
-} -body {
-    order define MY:ORDER { title "My Order"} {}
-
-    order narrative MY:ORDER {}
-} -cleanup {
-    cleanup
-} -result {My Order}
-
-test narrative-2.2 {-narrativecmd can be used} -setup {
-    setup
-} -body {
-    order define MY:ORDER {
-        options -narrativecmd ::NarrativeCmd
-    } {}
-
-    order narrative MY:ORDER {a 1 b 2 c 3}
-    
-    # Test command just reflects arguments
-} -cleanup {
-    cleanup
-} -result {MY:ORDER {a 1 b 2 c 3}}
-
-
-#-------------------------------------------------------------------
-# parms
-
-test parms-1.1 {Order not defined} -setup {
-    setup
-} -body {
-    errcatch order parms MY:ORDER
-} -cleanup {
-    cleanup
-} -result {Order is undefined: "MY:ORDER"}
-
-test parms-2.1 {Order exists} -setup {
-    setup
-} -body {
-    order define MY:ORDER {
-        form {
-            text a
-            text b
-            text c
-        }
-    } {}
-
-    order parms MY:ORDER
-} -cleanup {
-    cleanup
-} -result {a b c}
-
-
-#-------------------------------------------------------------------
-# tags
-
-test tags-1.1 {Order not defined} -setup {
-    setup
-} -body {
-    errcatch order tags MY:ORDER a
-} -cleanup {
-    cleanup
-} -result {Order is undefined: "MY:ORDER"}
-
-test tags-1.2 {parm not defined} -setup {
-    setup
-    order define MY:ORDER {} {}
-} -body {
-    errcatch order tags MY:ORDER a
-} -cleanup {
-    cleanup
-} -result {Parm is undefined: "a"}
-
-test tags-2.1 {Can retrieve tags} -setup {
-    setup
-} -body {
-    order define MY:ORDER {
-        form { text a }
-        parmtags a atype
-    } {}
-
-    order tags MY:ORDER a
-} -cleanup {
-    cleanup
-} -result {atype}
-
-#-------------------------------------------------------------------
+#-----------------------------------------------------------------------
 # state
 
-test state-1.1 {Default state is empty} -setup {
+# Tested under "Life-Cycle", below
+
+#-----------------------------------------------------------------------
+# title
+
+test title-1.1 {can get an order's title} -setup {
     setup
 } -body {
-    order state
+    ord title
+} -cleanup {
+    cleanup
+} -result {My Order}
+
+#-----------------------------------------------------------------------
+# sendstates
+
+test sendstates-1.1 {can get an order's sendstates} -setup {
+    setup
+} -body {
+    ord sendstates
+} -cleanup {
+    cleanup
+} -result {PREP}
+
+#-----------------------------------------------------------------------
+# dynaform
+
+test dynaform-1.1 {no form} -setup {
+    setup
+} -body {
+    ord dynaform
 } -cleanup {
     cleanup
 } -result {}
 
+test dynaform-1.2 {form} -setup {
+    setup
+    ::myorders::MY:FORM create frm
+} -body {
+    frm dynaform
+} -cleanup {
+    frm destroy
+    cleanup
+} -result {::myorders::MY:FORM}
 
-test state-1.2 {Can set and return state} -setup {
+#-----------------------------------------------------------------------
+# narrative
+
+test narrative-1.1 {default narrative} -setup {
     setup
 } -body {
-    order state MYSTATE
+    ord narrative
 } -cleanup {
     cleanup
-} -result {MYSTATE}
+} -result {My Order}
 
+#-----------------------------------------------------------------------
+# parms
 
-test state-1.3 {Can set and query state} -setup {
+test parms-1.1 {list of parm names} -setup {
     setup
 } -body {
-    order state MYSTATE
-    order state
+    ord parms
 } -cleanup {
     cleanup
-} -result {MYSTATE}
+} -result {x y}
 
+#-----------------------------------------------------------------------
+# prune
 
-test state-1.4 {Sends notification} -setup {
+test prune-1.1 {empty for all defaults} -setup {
     setup
 } -body {
-    order state MYSTATE
-    getacc events
-} -cleanup {
-    cleanup
-} -result {
-    ::marsutil::order <State> MYSTATE {}
-}
-
-#-------------------------------------------------------------------
-# cansend
-
-test cansend-1.1 {-sendstates *} -setup {
-    setup
-    order define MY:ORDER { options -sendstates * } {}
-} -body {
-    order state MYSTATE
-    order cansend MY:ORDER
-} -cleanup {
-    cleanup
-} -result {1}
-
-test cansend-1.2 {-sendstates ""} -setup {
-    setup
-    order define MY:ORDER { options -sendstates {}} {}
-} -body {
-    order state MYSTATE
-    order cansend MY:ORDER
-} -cleanup {
-    cleanup
-} -result {0}
-
-test cansend-1.3 {-sendstates set, state doesn't match} -setup {
-    setup
-    order define MY:ORDER { options -sendstates {A B C}} {}
-} -body {
-    order state MYSTATE
-    order cansend MY:ORDER
-} -cleanup {
-    cleanup
-} -result {0}
-
-test cansend-1.4 {-sendstates set, state matches} -setup {
-    setup
-    order define MY:ORDER { options -sendstates {A B C}} {}
-} -body {
-    order state B
-    order cansend MY:ORDER
-} -cleanup {
-    cleanup
-} -result {1}
-
-
-#-------------------------------------------------------------------
-# send
-
-test send-1.1 {interface unknown} -setup {
-    setup
-} -body {
-    errcatch order send nonesuch NONESUCH a b c d
-} -cleanup {
-    cleanup
-} -result {Interface is undefined: "nonesuch"}
-
-
-test send-1.2 {order unknown} -setup {
-    setup
-} -body {
-    errcatch order send app NONESUCH a b c d
-} -cleanup {
-    cleanup
-} -result {Order is undefined: "NONESUCH"}
-
-
-test send-1.3 {unknown parameter} -setup {
-    setup
-    order define MY:ORDER {} {}
-} -body {
-    codecatch order send app MY:ORDER d 1 e 2
-} -cleanup {
-    cleanup
-} -result {REJECT * {Unknown parameter: "d"}}
-
-test send-2.1 {parms passed through: syntax 1} -setup {
-    setup -passthru yes
-} -body {
-    order send app PASS:THRU a 1 b 2 c 3
-} -cleanup {
-    cleanup
-} -result {a 1 b 2 _order PASS:THRU c 3}
-
-
-test send-2.2 {parms passed through: syntax 2} -setup {
-    setup -passthru yes
-} -body {
-    order send app PASS:THRU [list a 1 b 2 c 3]
-} -cleanup {
-    cleanup
-} -result {a 1 b 2 _order PASS:THRU c 3}
-
-# send-3.*: Rejections
-
-test send-3.1 {REJECT error, no -rejectcmd} -setup {
-    setup 
-    order define MY:ORDER {} {
-        return -code error -errorcode REJECT "Simulated Rejection"
-    }
-} -body {
-    codecatch order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {REJECT Simulated Rejection}
-
-
-test send-3.2 {REJECT error, -rejectcmd} -setup {
-    setup 
-    order define MY:ORDER {} {
-        return -code error -errorcode REJECT "Simulated Rejection"
-    }
-    
-    order interface configure app \
-        -rejectcmd ::AddStars
-} -body {
-    codecatch order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {REJECT *Simulated Rejection*}
-
-# send-4.*: Cancellations
-
-test send-4.1 {CANCEL error} -setup {
-    setup
-    order define MY:ORDER {} {
-        return -code error -errorcode CANCEL "Simulated Cancellation"
-    }
-} -body {
-    order send app MY:ORDER
-    getacc log
-} -cleanup {
-    cleanup
-} -result {
-    detail order {define MY:ORDER}
-    normal order {MY:ORDER from 'app': {}}
-    warning order {Simulated Cancellation}
-}
-
-# send-5.*: Unexpected Errors
-
-test send-5.1 {Unexpected error, no -errorcmd} -setup {
-    setup
-    order define MY:ORDER {} {
-        return -code error "Simulated Error"
-    }
-} -body {
-    codecatch order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {NONE Unexpected error in MY:ORDER:
-Simulated Error}
-
-test send-5.2 {Unexpected error, -errorcmd} -setup {
-    setup
-    order define MY:ORDER {} {
-        return -code error "Simulated Error"
-    }
-    order interface configure app \
-        -errorcmd ::LogErrorCmd
-} -body {
-    # Error not propagated when -errorcmd is defined
-    order send app MY:ORDER
-    getacc log
-} -cleanup {
-    cleanup
-} -result {
-    detail order {define MY:ORDER}
-    normal order {MY:ORDER from 'app': {}}
-    {MY:ORDER <Simulated Error>}
-}
-
-# send-6.*: Effects of -checkstate
-
-test send-6.1 {interface -checkstate no: state doesn't matter} -setup {
-    setup
-    order define MY:ORDER { options -sendstates FOO} {
-        return OK
-    }
-    order state BAR
-    order interface configure app -checkstate no
-} -body {
-    order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {OK}
-
-test send-6.2 {interface -checkstate: can't send in this state} -setup {
-    setup
-    order define MY:ORDER { options -sendstates FOO} {}
-    order state BAR
-    order interface configure app -checkstate yes
-} -body {
-    codecatch order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {REJECT * {Order state is BAR, but order is valid only in these states: FOO}}
-
-test send-6.3 {interface -checkstate: can send in this state} -setup {
-    setup
-    order define MY:ORDER { options -sendstates FOO} {
-        return OK
-    }
-    order state FOO
-    order interface configure app -checkstate yes
-} -body {
-    order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {OK}
-
-# send-7.*: Effects of -trace
-
-test send-7.1 {interface -trace: no trace} -setup {
-    setup
-    order define MY:ORDER { } {
-        return OK
-    }
-    order interface configure app -trace no
-} -body {
-    order send app MY:ORDER
-    getacc orders
-} -cleanup {
-    cleanup
-} -result {*NULL*}
-
-test send-7.2 {interface -trace: trace} -setup {
-    setup
-    order define MY:ORDER {
-        form {
-            text a
-            text b
-        }
-    } {
-        return OK
-    }
-    order interface configure app -trace yes
-} -body {
-    order send app MY:ORDER a 1 b 2
-    getacc orders
-} -cleanup {
-    cleanup
-} -result {
-    app MY:ORDER {a 1 b 2} {} {}
-}
-
-test send-7.3 {interface -trace: no trace on error} -setup {
-    setup
-    order define MY:ORDER {} {
-        return -code error -errorcode REJECT \
-            "Simulated Rejection"
-    }
-    order interface configure app -trace yes
-} -body {
-    codecatch order send app MY:ORDER a 1 b 2
-    getacc orders
-} -cleanup {
-    cleanup
-} -result {*NULL*}
-
-# send-8.*: interface -transaction
-
-test send-8.1 {interface -transaction: rollback on error} -setup {
-    setup
-    order define MY:ORDER {} {
-        ::rdb eval {
-            UPDATE test_table
-            SET y=5;
-        }
-        error "Simulated Error"
-    }
-    order interface configure app -transaction yes
-} -body {
-    codecatch order send app MY:ORDER
-    ::rdb eval {SELECT * FROM test_table}
-} -cleanup {
-    cleanup
-} -result {1 2 3}
-
-test send-8.2 {interface -transaction no: no rollback on error} -setup {
-    setup
-    order define MY:ORDER {} {
-        ::rdb eval {
-            UPDATE test_table
-            SET y=5;
-        }
-
-        error "Simulated Error"
-    }
-    order interface configure app -transaction no
-} -body {
-    codecatch order send app MY:ORDER
-    rdb eval {SELECT * FROM test_table}
-} -cleanup {
-    cleanup
-} -result {1 5 3}
-
-# send-9.*: options -monitor
-
-test send-9.1 {options -monitor: RDB changes are monitored} -setup {
-    setup
-    order define MY:ORDER {
-        options -monitor yes
-    } {
-        ::rdb eval {
-            UPDATE test_table
-            SET y=5;
-        }
-    }
-
-    rdb monitor add test_table x
-} -body {
-    order send app MY:ORDER
-    getacc events
-} -cleanup {
-    cleanup
-} -result {
-    ::rdb <test_table> {update 1} {}
-    ::rdb <Monitor> {} {}
-    ::marsutil::order <Accepted> {MY:ORDER {}} {}
-}
-
-test send-9.2 {options -monitor no: no monitoring} -setup {
-    setup
-    order define MY:ORDER {
-        options -monitor no
-    } {
-        ::rdb eval {
-            UPDATE test_table
-            SET y=5;
-        }
-    }
-
-    rdb monitor add test_table x
-} -body {
-    order send app MY:ORDER
-    getacc events
-} -cleanup {
-    cleanup
-} -result {
-    ::marsutil::order <Accepted> {MY:ORDER {}} {}
-}
-
-#===================================================================
-# Commands for use in order bodies
-
-#-------------------------------------------------------------------
-# sender
-
-test sender-1.1 {Sender passed through} -setup {
-    setup
-    order define MY:ORDER {} {
-        sender
-    }
-} -body {
-    order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -result {app}
-
-#-------------------------------------------------------------------
-# prepare
-
-test prepare-1.1 {Adds missing parameter to parms array} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a
-    }
-} -body {
-    order send app MY:ORDER
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a {} _order MY:ORDER}
-
-# prepare-1.2 is obsolete; order send now trims parms automatically.
-
-test prepare-1.3 {prepare: unknown option} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -nonesuch
-    }
-} -body {
-    errcatch order send app MY:ORDER a "my value"
-} -cleanup {
-    cleanup
-} -result {Unexpected error in MY:ORDER:
-unknown option: "-nonesuch"}
-
-test prepare-2.1 {prepare -toupper} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -toupper
-    }
-} -body {
-    order send app MY:ORDER a value
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a VALUE _order MY:ORDER}
-
-test prepare-3.1 {prepare -tolower} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -tolower
-    }
-} -body {
-    order send app MY:ORDER a VALUE
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a value _order MY:ORDER}
-
-test prepare-4.1 {prepare -normalize} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -normalize
-    }
-} -body {
-    order send app MY:ORDER a "  my   value  "
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a {my value} _order MY:ORDER}
-
-test prepare-5.1 {prepare -required, absent} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -required
-        returnOnError
-    }
-} -body {
-    codecatch order send app MY:ORDER
-} -cleanup {
-    cleanup
-} -cleanup {
-    cleanup
-} -result {REJECT a {required value}}
-
-test prepare-5.2 {prepare -required, present} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -required
-        returnOnError
-
-        return OK
-    }
-} -body {
-    order send app MY:ORDER a value
-} -cleanup {
-    cleanup
-} -result {OK}
-
-
-test prepare-6.1 {prepare -oldvalue, match} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oldvalue "my value"
-    }
-} -body {
-    order send app MY:ORDER a "my value"
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a {} _order MY:ORDER}
-
-test prepare-6.2 {prepare -oldvalue, no match} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oldvalue "my value"
-    }
-} -body {
-    order send app MY:ORDER a "my new value"
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a {my new value} _order MY:ORDER}
-
-test prepare-7.1 {prepare -oldnum, no match} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oldnum 8
-    }
-} -body {
-    order send app MY:ORDER a 8
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a {} _order MY:ORDER}
-
-test prepare-7.2 {prepare -oldnum, no match} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oldnum 8
-    }
-} -body {
-    order send app MY:ORDER a 10
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a 10 _order MY:ORDER}
-
-test prepare-8.1 {prepare -unused, no -unusedtable} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -unused
-    }
-} -body {
-    errcatch order send app MY:ORDER a FOO
-} -cleanup {
-    cleanup
-} -result {Unexpected error in MY:ORDER:
-No -usedtable specified.}
-
-test prepare-8.2 {prepare -unused, used} -setup {
-    setup
-    rdb eval {
-        CREATE VIEW used_table AS
-        SELECT 'THIS' AS id
-        UNION
-        SELECT 'THAT' AS id;
-    }
-
-    order configure -usedtable used_table
-
-    order define MY:ORDER { form {text a} } {
-        prepare a -unused
-        returnOnError
-    }
-} -body {
-    codecatch order send app MY:ORDER a THIS
-} -cleanup {
-    cleanup
-} -result {REJECT a {An entity with this ID already exists}}
-
-test prepare-8.3 {prepare -unused, unused} -setup {
-    setup
-    rdb eval {
-        CREATE VIEW used_table AS
-        SELECT 'THIS' AS id
-        UNION
-        SELECT 'THAT' AS id;
-    }
-
-    order configure -usedtable used_table
-
-    order define MY:ORDER { form {text a} } {
-        prepare a -unused
-        returnOnError
-
-        return OK
-    }
-} -body {
-    order send app MY:ORDER a THEOTHER
-} -cleanup {
-    cleanup
-} -result {OK}
-
-test prepare-9.1 {prepare -type, valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -type ::marsutil::test::goodness
-        returnOnError
-        return OK
-    }
-} -body {
-    order send app MY:ORDER a GOOD
-} -cleanup {
-    cleanup
-} -result {OK}
-
-test prepare-9.2 {prepare -type, invalid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -type ::marsutil::test::goodness
-        returnOnError
-        return OK
-    }
-} -body {
-    codecatch order send app MY:ORDER a UGLY
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value "UGLY", should be one of: GOOD, BAD}}
-
-test prepare-10.1 {prepare -listof, valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -listof ::marsutil::test::goodness
-        returnOnError
-        return OK
-    }
-} -body {
-    order send app MY:ORDER a {GOOD BAD GOOD}
-} -cleanup {
-    cleanup
-} -result {OK}
-
-test prepare-10.2 {prepare -listof, invalid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -listof ::marsutil::test::goodness
-        returnOnError
-        return OK
-    }
-} -body {
-    codecatch order send app MY:ORDER a {GOOD BAD UGLY}
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value "UGLY", should be one of: GOOD, BAD}}
-
-test prepare-11.1 {prepare -xform} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -xform {string toupper}
-    }
-} -body {
-    order send app MY:ORDER a value
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a VALUE _order MY:ORDER}
-
-test prepare-12.1 {invalid: prepare -oneof short} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oneof {A B C}
-        returnOnError -final
-    }
-} -body {
-    codecatch order send app MY:ORDER a NONESUCH
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value "NONESUCH", should be one of: A, B, C}}
-
-test prepare-12.2 {invalid: prepare -oneof long} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oneof {
-            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-        }
-        returnOnError -final
-    }
-} -body {
-    codecatch order send app MY:ORDER a NONESUCH
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value: "NONESUCH"}}
-
-test prepare-12.3 {valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oneof {A B C}
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a B
+    ord prune
 } -cleanup {
     cleanup
 } -result {}
 
-test prepare-13.1 {invalid: prepare -someof short} -setup {
+test prune-1.2 {just non-defaults} -setup {
     setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -someof {A B C}
-        returnOnError -final
-    }
 } -body {
-    codecatch order send app MY:ORDER a {A NONESUCH C}
+    ord set x 5
+    ord prune
 } -cleanup {
     cleanup
-} -result {REJECT a {invalid value "NONESUCH", should be one of: A, B, C}}
+} -result {x 5}
 
-test prepare-13.2 {invalid: prepare -someof long} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -someof {
-            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-        }
-        returnOnError -final
-    }
-} -body {
-    codecatch order send app MY:ORDER a {A NONESUCH C}
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value: "NONESUCH"}}
-
-test prepare-13.3 {valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -someof {A B C}
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a {A B}
-} -cleanup {
-    cleanup
-} -result {}
-
-test prepare-14.1 {prepare -num with no zeroes} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -num
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a 100 
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a 100 _order MY:ORDER}
-
-test prepare-14.2 {prepare -num with zeroes} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -num
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a 0200 
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a 200 _order MY:ORDER}
-
-test prepare-14.3 {prepare -num with zero} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -num
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a 0 
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a 0 _order MY:ORDER}
-
-test prepare-14.4 {prepare -num with decimal} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -num
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a 0.1 
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a 0.1 _order MY:ORDER}
-
-test prepare-15.1 {prepare -oncheck allows tests on check} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oncheck -type ::snit::integer
-        returnOnError -final
-    }
-} -body {
-    codecatch order check MY:ORDER a 0.1
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value "0.1", expected integer}}
-
-test prepare-15.2 {prepare -oncheck disallows tests on send} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -oncheck -type ::snit::integer
-        returnOnError -final
-    }
-} -body {
-    order send app MY:ORDER a 0.1
-    order lastparms
-} -cleanup {
-    cleanup
-} -result {a 0.1 _order MY:ORDER}
-
-test prepare-16.1 {prepare -with, valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -with {::marsutil::test::goodness validate}
-        returnOnError
-        return OK
-    }
-} -body {
-    order send app MY:ORDER a GOOD
-} -cleanup {
-    cleanup
-} -result {OK}
-
-test prepare-16.2 {prepare -with, invalid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -with {::marsutil::test::goodness validate}
-        returnOnError
-        return OK
-    }
-} -body {
-    codecatch order send app MY:ORDER a UGLY
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value "UGLY", should be one of: GOOD, BAD}}
-
-test prepare-17.1 {prepare -listwith, valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -listwith {::marsutil::test::goodness validate}
-        returnOnError
-        return OK
-    }
-} -body {
-    order send app MY:ORDER a {GOOD BAD GOOD}
-} -cleanup {
-    cleanup
-} -result {OK}
-
-test prepare-17.2 {prepare -listwith, invalid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        prepare a -listwith {::marsutil::test::goodness validate}
-        returnOnError
-        return OK
-    }
-} -body {
-    codecatch order send app MY:ORDER a {GOOD BAD UGLY}
-} -cleanup {
-    cleanup
-} -result {REJECT a {invalid value "UGLY", should be one of: GOOD, BAD}}
-
-#-------------------------------------------------------------------
-# reject
-
-test reject-1.1 {Reject adds to messages} -setup {
-    setup
-    order define MY:ORDER {
-        form {
-            text a
-            text b
-        }
-    } {
-        reject a "Bad A"
-        reject b "Worse B"
-        returnOnError
-    }
-} -body {
-    codecatch order send app MY:ORDER a 1 b 2
-} -cleanup {
-    cleanup
-} -result {REJECT a {Bad A} b {Worse B}}
-
-
-#-------------------------------------------------------------------
-# cancel
-
-test cancel-1.1 {Cancel ends order} -setup {
-    setup
-    order define MY:ORDER {} {
-        cancel
-    }
-} -body {
-    order send app MY:ORDER
-    getacc log
-} -cleanup {
-    cleanup
-} -result {
-    detail order {define MY:ORDER}
-    normal order {MY:ORDER from 'app': {}}
-    warning order {The order was cancelled by the user.}
-}
-
-#-------------------------------------------------------------------
+#-----------------------------------------------------------------------
 # valid
 
-test valid-1.1 {Valid if not rejected and not ""} -setup {
+test valid-1.1 {returns 1 when all parms are valid} -setup {
     setup
-    order define MY:ORDER { form {text a} } {
-        valid a
-    }
 } -body {
-    order send app MY:ORDER a 1
+    ord valid
 } -cleanup {
     cleanup
 } -result {1}
 
-test valid-1.2 {Invalid if ""} -setup {
+test valid-1.2 {returns 0 when any parm is invalid} -setup {
     setup
-    order define MY:ORDER { form {text a} } {
-        valid a
-    }
 } -body {
-    order send app MY:ORDER a ""
+    ord set x NONESUCH
+    ord valid
 } -cleanup {
     cleanup
 } -result {0}
 
-test valid-1.3 {Invalid if rejected} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        reject a "Simulated Error"
-        valid a
-    }
-} -body {
-    order send app MY:ORDER a 1
-} -cleanup {
-    cleanup
-} -result {0}
+#-----------------------------------------------------------------------
+# errdict
 
-
-#-------------------------------------------------------------------
-# validate
-
-test validate-1.1 {Rejected if script throws INVALID} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        validate a {
-            return -code error -errorcode INVALID "Invalid a"
-        }
-
-        returnOnError
-
-        return
-    }
-} -body {
-    codecatch order send app MY:ORDER a 1
-} -cleanup {
-    cleanup
-} -result {REJECT a {Invalid a}}
-
-test validate-1.2 {Rejected if script rejects} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        validate a {
-            reject a "Rejected a"
-        }
-
-        returnOnError
-
-        return
-    }
-} -body {
-    codecatch order send app MY:ORDER a 1
-} -cleanup {
-    cleanup
-} -result {REJECT a {Rejected a}}
-
-test validate-1.3 {Unexpected error if throws anything else} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        validate a {
-            return -code error "Simulated Error"
-        }
-
-        returnOnError
-
-        return
-    }
-} -body {
-    codecatch order send app MY:ORDER a 1
-} -cleanup {
-    cleanup
-} -result {NONE Unexpected error in MY:ORDER:
-Simulated Error}
-
-test validate-1.4 {Otherwise, valid} -setup {
-    setup
-    order define MY:ORDER { form {text a} } {
-        validate a {
-            # Nothing
-        }
-
-        returnOnError
-
-        valid a
-    }
-} -body {
-    order send app MY:ORDER a 1
-} -cleanup {
-    cleanup
-} -result {1}
-
-
-#-------------------------------------------------------------------
-# returnOnError
-#
-# This command is tested by the other tests.
-
-#-------------------------------------------------------------------
-# setundo
-
-test setundo-1.1 {undo script is passed to -ordercmd} -setup {
-    setup
-    order define MY:ORDER {} {
-        setundo "undo order"
-    }
-    order interface configure app -trace yes
-} -body {
-    order send app MY:ORDER
-    getacc orders
-} -cleanup {
-    cleanup
-} -result {
-    app MY:ORDER {} {undo order} {}
-}
-
-#-------------------------------------------------------------------
-# setredo
-
-
-test setredo-1.1 {redo script is passed to -ordercmd} -setup {
-    setup
-    order define MY:ORDER {} {
-        setredo "redo helper"
-    }
-    order interface configure app -trace yes
-} -body {
-    order send app MY:ORDER
-    getacc orders
-} -cleanup {
-    cleanup
-} -result {
-    app MY:ORDER {} {} {redo helper}
-}
-
-
-#-------------------------------------------------------------------
-# check
-
-test check-1.1 {order is unknown} -setup {
+test errdict-1.1 {errdict is empty when items are valid} -setup {
     setup
 } -body {
-    errcatch order check MY:ORDER a NONESUCH
-} -cleanup {
-    cleanup
-} -result {Undefined order: MY:ORDER}
-
-
-test check-1.2 {order is invalid} -setup {
-    setup
-    order define MY:ORDER {} {
-        reject * "Simulated rejection"
-        returnOnError -final
-        
-        error "Shouldn't have gotten here"
-    }
-} -body {
-    codecatch order check MY:ORDER
-} -cleanup {
-    cleanup
-} -result {REJECT * {Simulated rejection}}
-
-test check-1.3 {order is valid} -setup {
-    setup
-    order define MY:ORDER {} {
-        returnOnError -final
-
-        error "Shouldn't have gotten here"
-    }
-} -body {
-    order check MY:ORDER
+    ord valid
+    ord errdict
 } -cleanup {
     cleanup
 } -result {}
 
+#-----------------------------------------------------------------------
+# execute
 
-#-------------------------------------------------------------------
-# nullmode
-
-test nullmode-1.1 {null mode works} -setup {
+test execute-1.1 {execute calls _execute} -setup {
     setup
-    order define MY:ORDER { form {text a} } {
-        error "Shouldn't have gotten here"
-    }
 } -body {
-    order nullmode yes
-    order send app MY:ORDER a NONESUCH
-    order lastparms
+    ord set x 5 
+    ord set y no
+    ord valid
+    ord execute
+    set ::orderResult
 } -cleanup {
     cleanup
-} -result {a NONESUCH _order MY:ORDER}
+} -result {5 no}
+
+#-----------------------------------------------------------------------
+# canundo
+
+test canundo-1.1 {before execution, can't undo} -setup {
+    setup
+} -body {
+    ord canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canundo-1.2 {after execution, can undo} -setup {
+    setup
+} -body {
+    ord set x 5 
+    ord valid
+    ord execute
+    ord canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-----------------------------------------------------------------------
+# undo
+
+test undo-1.1 {undo change} -setup {
+    setup
+    set orderResult [list 6 0]
+    ord set x 10
+    ord set y false
+    ord valid
+} -body {
+    ord execute
+    ord undo
+    set orderResult
+} -cleanup {
+    cleanup
+} -result {6 0}
 
 
-#-------------------------------------------------------------------
-# order_lastparms
+#-----------------------------------------------------------------------
+# Life-Cycle States
+
+test states-1.1 {start => CHANGED} -setup {
+    setup
+} -body {
+    ord state
+} -cleanup {
+    cleanup
+} -result {CHANGED}
+
+test states-1.2 {Can't execute while CHANGED} -setup {
+    setup
+} -body {
+    ord execute
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only validated orders can be executed.}
+
+test states-1.3 {Can't undo while CHANGED} -setup {
+    setup
+} -body {
+    ord undo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only executed orders can be undone.}
+
+
+test states-2.1 {CHANGED => INVALID} -setup {
+    setup
+} -body {
+    set a [ord state]
+    ord set x NONESUCH
+    ord valid
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {CHANGED INVALID}
+
+test states-2.2 {INVALID => CHANGED} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    set a [ord state]
+    ord set x 1
+    set b [ord state]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {INVALID CHANGED}
+
+test states-2.3 {INVALID => INVALID} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    set a [ord state]
+    ord set x [ord get x]
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {INVALID INVALID}
+
+test states-2.4 {Can't execute while INVALID} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    ord execute
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only validated orders can be executed.}
+
+test states-2.5 {Can't undo while INVALID} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    ord undo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only executed orders can be undone.}
+
+test states-3.1 {CHANGED => VALID} -setup {
+    setup
+} -body {
+    set a [ord state]
+    ord valid
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {CHANGED VALID}
+
+test states-3.2 {VALID => CHANGED} -setup {
+    setup
+} -body {
+    ord valid
+    set a [ord state]
+    ord set x 5
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {VALID CHANGED}
+
+test states-3.3 {VALID => VALID} -setup {
+    setup
+} -body {
+    ord valid
+    set a [ord state]
+    ord set x [ord get x]
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {VALID VALID}
+
+test states-3.4 {Can't undo while VALID} -setup {
+    setup
+} -body {
+    ord undo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only executed orders can be undone.}
+
+
+test states-4.1 {VALID => EXECUTED} -setup {
+    setup
+} -body {
+    ord valid
+    set a [ord state]
+    ord execute
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {VALID EXECUTED}
+
+test states-4.2 {EXECUTED => VALID} -setup {
+    setup
+} -body {
+    ord valid
+    ord execute
+    set a [ord state]
+    ord undo
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {EXECUTED VALID}
+
+test states-4.3 {Can't set while EXECUTED} -setup {
+    setup
+} -body {
+    ord valid
+    ord execute
+    ord set x 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Cannot modify an executed order.}
+
+#=======================================================================
+# Private methods for use in _validate methods
+
+#-----------------------------------------------------------------------
+# prepare
 #
-# This routine is checked in use by the other tests.
+# Because this method is private, we test it through the MY:VALIDATE
+# order's "preparex" method.
 
-#-------------------------------------------------------------------
+
+test prepare-1.1 {-toupper} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex lower -toupper
+} -cleanup {
+    cleanup
+} -result {LOWER}
+
+test prepare-2.1 {-tolower} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex UPPER -tolower
+} -cleanup {
+    cleanup
+} -result {upper}
+
+test prepare-3.1 {-normalize} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex " My    input   string " -normalize
+} -cleanup {
+    cleanup
+} -result {My input string}
+
+test prepare-4.1 {-num} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex 0089 -num
+} -cleanup {
+    cleanup
+} -result {89}
+
+test prepare-5.1 {-required, value present} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex 5 -required
+} -cleanup {
+    cleanup
+} -result {5}
+
+test prepare-5.2 {-required, no value present} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex "" -required
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {required value}
+
+test prepare-6.1 {-type, good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex 5 -type snit::integer
+} -cleanup {
+    cleanup
+} -result {5}
+
+test prepare-6.2 {-type, bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex NONESUCH -type snit::integer
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test prepare-7.1 {-listof, good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex {5 6 7} -listof snit::integer
+} -cleanup {
+    cleanup
+} -result {5 6 7}
+
+test prepare-7.2 {-listof, bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex {5 NONESUCH 7} -listof snit::integer
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test prepare-8.1 {-oneof, good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex 5 -oneof {4 5 6}
+} -cleanup {
+    cleanup
+} -result {5}
+
+test prepare-8.2 {-oneof, bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex NONESUCH -oneof {4 5 6}
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be one of: 4, 5, 6}
+
+test prepare-9.1 {-someof, good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex {4 6} -someof {4 5 6}
+} -cleanup {
+    cleanup
+} -result {4 6}
+
+test prepare-9.2 {-someof, bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex {4 NONESUCH} -someof {4 5 6}
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", should be one of: 4, 5, 6}
+
+
+test prepare-10.1 {-with, good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex 5 -with {snit::integer validate}
+} -cleanup {
+    cleanup
+} -result {5}
+
+test prepare-10.2 {-with, bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex NONESUCH -with {snit::integer validate}
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+test prepare-11.1 {-listwith, good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex {4 5 6} -listwith {snit::integer validate}
+} -cleanup {
+    cleanup
+} -result {4 5 6}
+
+test prepare-11.2 {-listwith, bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex {4 NONESUCH 6} -listwith {snit::integer validate}
+    dict get [ord errdict] x
+} -cleanup {
+    cleanup
+} -result {invalid value "NONESUCH", expected integer}
+
+# TBD: prepare -selector
+
+#-----------------------------------------------------------------------
+# badparm
+
+test badparm-1.1 {missing value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord set x ""
+    ord copyparms
+    ord mybadparm x
+} -cleanup {
+    cleanup
+} -result {1}
+
+test badparm-1.2 {bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex NONESUCH -type snit::integer
+    ord mybadparm x
+} -cleanup {
+    cleanup
+} -result {1}
+
+test badparm-1.3 {good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord preparex 5 -type snit::integer
+    ord mybadparm x
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# checkon
+
+test checkon-1.1 {missing value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord set x ""
+    ord valid ;# Calls [my checkon x]
+} -cleanup {
+    cleanup
+} -result {1}
+
+test checkon-1.2 {good value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord set x 5
+    ord valid ;# Calls [my checkon x]
+} -cleanup {
+    cleanup
+} -result {1}
+
+test checkon-1.3 {bad value} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord set x NONESUCH
+    ord valid ;# Calls [my checkon x]
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# reject
+
+# Tested by prepare-*.*, since [my prepare] uses [my reject].
+
+
+#-----------------------------------------------------------------------
+# returnOnError
+
+test return-1.1 {return normally} -setup {
+    setup MY:RETURN
+} -body {
+    ord set x 4
+
+    # value is valid, so returnOnError won't, so x will get reset to 0.
+    set a [ord valid]
+    set b [ord get x]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test return-1.2 {return on error} -setup {
+    setup MY:VALIDATE
+} -body {
+    ord set x NONESUCH
+    set a [ord valid]
+    set b [ord get x]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 NONESUCH}
+
+
+#=======================================================================
+# Private methods for use in _execute methods
+
+#-----------------------------------------------------------------------
+# mode
+
+test mode-1.1 {private when no flunky} -setup {
+    setup MY:MODE
+    ord valid
+} -body {
+    ord execute
+} -cleanup {
+    cleanup
+} -result {private}
+
+test mode-1.2 {flunky mode when flunky} -setup {
+    setup MY:MODE
+    ord valid
+} -body {
+    myflunky execute gui ::ord
+} -cleanup {
+    cleanup
+} -result {gui}
+
+test mode-1.3 {flunky's mode is retained} -setup {
+    setup MY:MODE
+    ord valid
+} -body {
+    myflunky execute gui ::ord
+
+    # myflunky copies ::ord before executing it; our copy is unchanged.
+    # So we have to access myflunky's copy.
+
+    set ns [info object namespace myflunky]
+    set o [ltop [set ${ns}::undoStack]]
+    list [myflunky mode] [$o mymode]
+} -cleanup {
+    cleanup
+} -result {normal gui}
+
+#-----------------------------------------------------------------------
+# cancel
+
+test cancel-1.1 {can cancel} -setup {
+    setup MY:CANCEL
+    ord valid
+} -body {
+    ord execute
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {The order was cancelled by the user.}
+
+
+#-----------------------------------------------------------------------
+# setundo
+
+# setundo is tested under lifecycle, above.
+
+
+#-----------------------------------------------------------------------
 # Cleanup
 
-tcltest::cleanupTests
-
+cleanupTests
