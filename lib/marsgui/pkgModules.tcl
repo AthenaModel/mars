@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide marsgui 3.0.8
+package provide marsgui 3.0.9
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -31,8 +31,8 @@ package require treectrl 2.4
 package require tablelist 5.11
 package require Tktable 2.11
 package require Tkhtml 3.0
-package require kiteutils 0.4.3
-package require -exact marsutil 3.0.8
+package require kiteutils 0.4.5
+package require -exact marsutil 3.0.9
 # -kite-require-end
 
 #-----------------------------------------------------------------------
@@ -87,7 +87,7 @@ source [file join $::marsgui::library rangefield.tcl     ]
 source [file join $::marsgui::library textfield.tcl      ]
 source [file join $::marsgui::library form.tcl           ]
 source [file join $::marsgui::library mapcanvas.tcl      ]
-source [file join $::marsgui::library orderdialog.tcl    ]
+source [file join $::marsgui::library order_dialog.tcl   ]
 source [file join $::marsgui::library zcurvefield.tcl    ]
 source [file join $::marsgui::library htmlviewer.tcl     ]
 source [file join $::marsgui::library htmlframe.tcl      ]

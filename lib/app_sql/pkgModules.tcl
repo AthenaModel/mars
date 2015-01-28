@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_sql 3.0.8
+package provide app_sql 3.0.9
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -28,9 +28,9 @@ package provide app_sql 3.0.8
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require sqlite3 3.8
 package require snit 2.3
-package require kiteutils 0.4.3
-package require -exact marsutil 3.0.8
-package require -exact marsgui 3.0.8
+package require kiteutils 0.4.5
+package require -exact marsutil 3.0.9
+package require -exact marsgui 3.0.9
 # -kite-require-end
 
 namespace import ::kiteutils::*

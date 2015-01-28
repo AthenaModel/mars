@@ -35,7 +35,7 @@ namespace eval ::kiteinfo:: {
         local-tablelist 0
         local-treectrl 0
         clean-libGeostars {make clean}
-        reqver-kiteutils 0.4.3
+        reqver-kiteutils 0.4.5
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         binary-marsgui 0
         distpat-install-%platform {
@@ -75,7 +75,7 @@ namespace eval ::kiteinfo:: {
         local-comm 0
         gui-mars 0
         local-kiteutils 1
-        version 3.0.8
+        version 3.0.9
         binary-Marsbin 1
         reqver-Img 1.4.1
     }
