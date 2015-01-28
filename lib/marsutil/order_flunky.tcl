@@ -233,7 +233,7 @@ oo::class create ::marsutil::order_flunky {
             set userParms [list]
 
             while {[llength $args] > 0} {
-                set opt [lshift args]
+                set opt [::kiteutils::lshift args]
 
                 set parm [string range $opt 1 end]
 
@@ -249,7 +249,7 @@ oo::class create ::marsutil::order_flunky {
                     error "Missing value for option $opt"
                 }
 
-                $order set $parm [lshift args]
+                $order set $parm [::kiteutils::lshift args]
                 lappend userParms $parm
             }
 
@@ -272,7 +272,7 @@ oo::class create ::marsutil::order_flunky {
     # Formats a nice, human-readable error message for the order.
 
     method SendError {order userParms} {
-        set wid [lmaxlen [$order parms]]
+        set wid [::kiteutils::lmaxlen [$order parms]]
         set text "[$order name] rejected:\n"
 
         # FIRST, add the parms in error.
@@ -517,7 +517,7 @@ oo::class create ::marsutil::order_flunky {
             return ""
         }
 
-        return [my ItemNarrative "Undo" [ltop $undoStack]]
+        return [my ItemNarrative "Undo" [::kiteutils::ltop $undoStack]]
 
     }
 
@@ -545,7 +545,7 @@ oo::class create ::marsutil::order_flunky {
             return ""
         }
 
-        return [my ItemNarrative "Redo" [ltop $redoStack]]
+        return [my ItemNarrative "Redo" [::kiteutils::ltop $redoStack]]
     }
 
     # undo
@@ -560,7 +560,7 @@ oo::class create ::marsutil::order_flunky {
             error "Nothing to undo; stack is empty."
         }
 
-        set item [lpop undoStack]
+        set item [::kiteutils::lpop undoStack]
 
         if {[my IsTrans $item]} {
             foreach order [lreverse [lrange $item 1 end]] {
@@ -599,7 +599,7 @@ oo::class create ::marsutil::order_flunky {
             error "Nothing to redo; stack is empty."
         }
 
-        set item [lpop redoStack]
+        set item [::kiteutils::lpop redoStack]
 
         if {[my IsTrans $item]} {
             foreach order [lrange $item 1 end] {
