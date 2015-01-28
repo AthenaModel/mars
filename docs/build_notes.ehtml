@@ -1,5 +1,16 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.9 -- 28 January 2015>
+
+This build contains significant changes to the order(n) infrastructure in
+support of having Athena run as a library in the cloud. Essentially, orders
+are now instances of TclOO objects and order processing is done by acting
+on those objects.<p>
+
+<ul>
+<li> Issue #27: New order stuff
+</ul><p>
+
 <h3 Mars v3.0.8 -- 13 January 2015>
 
 This build replaces the <tt -entity> support in dynaform(n)/dynaview(n)
