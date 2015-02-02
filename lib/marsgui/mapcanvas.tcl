@@ -101,6 +101,9 @@ snit::widgetadaptor ::marsgui::mapcanvas {
         # Track when the pointer enters and leaves the window.
         bind Mapcanvas <Enter>  {%W MapEnter}
         bind Mapcanvas <Leave>  {%W MapLeave}
+        
+        # Scroll region depends on window dimensions
+        bind Mapcanvas <Configure> {%W ScrollConfigure}
 
         # Support -locvariable
         bind Mapcanvas <Motion> {%W MaplocSet %x %y}
@@ -506,8 +509,7 @@ snit::widgetadaptor ::marsgui::mapcanvas {
 
             $self GetProjection
 
-            # NEXT, get and set the scroll region
-            $self GetScrollRegions
+            # Set the scroll region
             $self region normal
         } else {
             # NEXT, get the projection.
@@ -588,15 +590,21 @@ snit::widgetadaptor ::marsgui::mapcanvas {
 
     method GetScrollRegions {} {
         set bbox [$hull bbox map]
+        
+        set winw [winfo width $self]
+        set winh [winfo height $self]
 
         if {[llength $bbox] != 0} {
             # x1,y1 = 0,0
             lassign $bbox x1 y1 x2 y2
         } else {
-            let fact {$info(zoom)/100.0}
-            set x2 [expr {int($fact*[$proj cget -width ])}]
-            set y2 [expr {int($fact*[$proj cget -height])}]
+            set x2 [expr {$info(zoom)*[$proj cget -width]}]
+            set y2 [expr {$info(zoom)*[$proj cget -height]}]
         }
+
+        # Scroll region is larger of window size or canvas size
+        set x2 [expr {max($x2, $winw)}]
+        set y2 [expr {max($y2, $winh)}]
 
         set info(regionNormal) [list 0 0 $x2 $y2]
 
@@ -780,6 +788,15 @@ snit::widgetadaptor ::marsgui::mapcanvas {
         set info(gotPointer) 0
     }
 
+    # ScrollConfigure
+    #
+    # Reacts to window resizing events and updates the canvas
+    # scroll region
+
+    method ScrollConfigure {} {
+        $self GetScrollRegions
+        $self region $info(region)
+    }
 
     # MaplocSet wx wy
     #
