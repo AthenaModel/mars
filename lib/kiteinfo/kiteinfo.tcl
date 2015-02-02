@@ -75,7 +75,7 @@ namespace eval ::kiteinfo:: {
         local-comm 0
         gui-mars 0
         local-kiteutils 1
-        version 3.0.9
+        version 3.0.10
         binary-Marsbin 1
         reqver-Img 1.4.1
     }

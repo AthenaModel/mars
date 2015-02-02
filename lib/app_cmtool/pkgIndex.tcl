@@ -12,7 +12,7 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded app_cmtool 3.0.9 [list source [file join $dir pkgModules.tcl]]
+package ifneeded app_cmtool 3.0.10 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end
 
 

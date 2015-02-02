@@ -1,5 +1,13 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.10 -- 2 February 2015>
+
+This build adds automatic variable declaration to order_set(n).<p>
+
+<ul>
+<li> Issue #29: order_set: automatic variable declaration
+</ul><p>
+
 <h3 Mars v3.0.9 -- 28 January 2015>
 
 This build contains significant changes to the order(n) infrastructure in
