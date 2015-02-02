@@ -32,13 +32,21 @@ namespace import ::marsutil::*
 #------------------------------------------------------------------------
 # Set up the test environment
 
-oo::class create ::ordersub { superclass ::marsutil::order }
+oo::class create ::ordersub { 
+    superclass ::marsutil::order 
+    variable subvar
+
+    constructor {} {
+        next
+        set subvar "*value*"
+    }
+}
 
 proc setup {{bcls ""}} {
     if {$bcls eq ""} {
         ::marsutil::order_set create myorders
     } else {
-        ::marsutil::order_set create myorders $bcls
+        ::marsutil::order_set create myorders $bcls {subvar}
     }
 }
 
@@ -154,6 +162,24 @@ test define-1.7 {Can set superclass} -setup {
 } -cleanup {
     cleanup
 } -result {::ordersub}
+
+test define-1.8 {Can auto-declare variables} -setup {
+    setup ::ordersub
+} -body {
+    myorders define NEW:ORDER {
+        meta parmlist {x}
+        method _execute {{flunky {}}} {
+            return $subvar
+        }
+    }
+
+    set o [::myorders::NEW:ORDER new]
+    $o valid
+    $o execute
+} -cleanup {
+    cleanup
+} -result {*value*}
+
 
 #-----------------------------------------------------------------------
 # reset

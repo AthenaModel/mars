@@ -28,12 +28,20 @@ The following commands create instances of order_set(n):<p>
 
 <deflist>
 
-<defitem "order_set create" {::marsutil::order_set create <i name> ?<i baseClass>?}>
+<defitem "order_set create" {::marsutil::order_set create <i name> ?<i baseClass_>? ?<i autoVars_>?}>
 
 Creates a new instance of <tt ::marsutil::order_set>
 called <i name>.  By default, orders defined using this class will have 
-<tt ::marsutil::order> as their superclass; if <i baseClass> is given,
+<tt ::marsutil::order> as their superclass; if <i baseClass_> is given,
 it will be used instead.<p>
+
+It is common for to <i baseClass_> to define an instance variable or two
+that will be used by most or all orders.  Normally, each order class would
+have to declare this variable explicitly, which is tiresome.  If 
+<i autoVars_> is given, it should be a list of instance variable names;
+each name will be automatically declared as a variable for each defined
+order class, thus bringing the variable into scope in all of the order
+class's methods.<p>
 
 <defitem "order_set new" {::marsutil::order_set new ?<i baseClass>?}>
 

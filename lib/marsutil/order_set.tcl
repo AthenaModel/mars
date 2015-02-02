@@ -29,14 +29,29 @@ oo::class create ::marsutil::order_set {
     # Superclass for defined order classes.
     variable baseClass
 
+    # List of variable names to declare automatically in defined order
+    # classes.
+    variable autoVars
+
     # orders - dictionary, order name to order class
     variable orders
     
     #-------------------------------------------------------------------
     # Constructor/Destructor
+
+    # constructor ?baseClass_? ?autoVars_?
+    #
+    # baseClass_    - The default base class for defined orders.
+    #                 Defaults to marsutil::order.
+    # autoVars_     - A list of variable names to automatically
+    #                 declare in defined orders.  Empty by default.
+    #
+    # Creates a new order_set instance for collecting a library's or
+    # application's orders.
     
-    constructor {{baseClass_ ::marsutil::order}} {
+    constructor {{baseClass_ ::marsutil::order} {autoVars_ {}}} {
         set baseClass $baseClass_
+        set autoVars  $autoVars_
         set orders [dict create]
     }
 
@@ -70,6 +85,11 @@ oo::class create ::marsutil::order_set {
         oo::define $cls meta parmtags   ""
         oo::define $cls meta monitor    yes
         oo::define $cls variable parms
+
+        foreach varname $autoVars {
+            oo::define $cls variable $varname
+        } 
+        
         oo::define $cls $body
 
         # NEXT, create the form.
