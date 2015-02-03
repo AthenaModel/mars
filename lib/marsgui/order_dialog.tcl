@@ -369,9 +369,6 @@ snit::widget ::marsgui::order_dialog {
         wm deiconify  $win
         raise $win
         
-        # NEXT, refresh the dialog on events from the flunky.
-        notifier bind $flunky <Sync> $win [mymethod RefreshDialog]
-
         # NEXT, prepare to refresh the dialog on particular events from
         # the application.
         foreach {subject event} $options(-refreshon) {

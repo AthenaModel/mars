@@ -74,9 +74,6 @@ The state of an order dialog often depends on the state of the
 application.  As the application state changes, for example, the
 content of pulldowns might change, thus necessitating a refresh.<p>
 
-Note the dialog will automatically refresh on its <tt -flunky>'s 
-<b><tag Sync></b> event.<p>
-
 </deflist options>
 
 
