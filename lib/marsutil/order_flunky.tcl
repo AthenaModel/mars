@@ -173,7 +173,6 @@ oo::class create ::marsutil::order_flunky {
         try {
             set execMode $mode
             set result [$mycopy execute [self]]
-            my _onExecute $mycopy
         } trap CANCEL {result} {
             # The order was cancelled; destroy our copy.
             $mycopy destroy
@@ -188,6 +187,7 @@ oo::class create ::marsutil::order_flunky {
         } else {
             # pass our copy of the order along to the undo stack.
             my UndoPushNew $mycopy
+            my _onExecute $mycopy
         }
 
         return $result
@@ -348,7 +348,6 @@ oo::class create ::marsutil::order_flunky {
     method state {{newState ""}} {
         if {$newState ne ""} {
             set ostate $newState
-            notifier send [self] <Sync>
         }
 
         return $ostate
@@ -573,7 +572,6 @@ oo::class create ::marsutil::order_flunky {
         }
 
         ::kiteutils::lpush redoStack $item
-        notifier send [self] <Sync>
         return
     }
 
@@ -614,7 +612,6 @@ oo::class create ::marsutil::order_flunky {
         # We know it can undone, because it wouldn't be on the redo
         # stack otherwise.
         ::kiteutils::lpush undoStack $item
-        notifier send [self] <Sync>
         return
     }
 
@@ -644,7 +641,6 @@ oo::class create ::marsutil::order_flunky {
         # NEXT, transaction lists are always undoable.
         if {[my IsTrans $item]} {
             ::kiteutils::lpush undoStack $item
-            notifier send [self] <Sync>
             return
         }
 
@@ -665,7 +661,6 @@ oo::class create ::marsutil::order_flunky {
                 my UndoClear
             }
         }
-        notifier send [self] <Sync>
     }
 
     # UndoClear

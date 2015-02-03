@@ -256,13 +256,6 @@ is known, and throwing <b INVALID> with a suitable error message if not.<p>
 
 </deflist instance>
 
-<section "NOTIFIER EVENTS">
-
-Instances of order_flunky(n) send the <b><tag Sync></b> event with no
-arguments when the instance's internal state changes significantly, e.g.,
-when orders are successfully sent, undone, or redone, or when the 
-<iref state> method is used to change the order state.<p>
-
 <section "SEE ALSO">
 
 <xref order_set(n)>, <xref order(n)>, <xref order_dialog(n)>.<p>
