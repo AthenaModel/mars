@@ -77,11 +77,11 @@ snit::type ::marsutil::maprect {
         -type {snit::integer -min 1}  \
         -default 1000
 
-    # Min/max latitude and longitude defaults
-    option -minlon -type snit::double -default 0.0
-    option -maxlon -type snit::double -default 3.0
-    option -minlat -type snit::double -default 3.0
-    option -maxlat -type snit::double -default 0.0
+    # Min/max latitude and longitude defaults, Caspian Sea area
+    option -minlon -type snit::double -default 45.0
+    option -maxlon -type snit::double -default 51.0
+    option -minlat -type snit::double -default 38.0
+    option -maxlat -type snit::double -default 42.0
 
 
     #-------------------------------------------------------------------
