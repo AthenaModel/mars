@@ -32,29 +32,31 @@ namespace import ::simlib::*
 #-------------------------------------------------------------------
 # Set up the test environment
 
+mam mymam
+
 # cleanup
 
 proc cleanup {} {
-    mam clear
+    mymam clear
 }
 
 #-------------------------------------------------------------------
 # playbox get
 
 test playbox_get-1.1 {retrieve all values} -body {
-    mam playbox get
+    mymam playbox get
 } -cleanup {
     cleanup
 } -result {gamma 1.0}
 
 test playbox_get-1.2 {retrieve one attribute} -body {
-    mam playbox get gamma
+    mymam playbox get gamma
 } -cleanup {
     cleanup
 } -result {1.0}
 
 test playbox_get-1.3 {bad attribute gamma} -body {
-    catch {mam playbox get nonesuch}
+    catch {mymam playbox get nonesuch}
 } -cleanup {
     cleanup
 } -result {1}
@@ -63,21 +65,21 @@ test playbox_get-1.3 {bad attribute gamma} -body {
 # playbox set
 
 test playbox_set-1.1 {set one value} -body {
-    mam playbox set gamma 2.0
-    mam playbox get gamma
+    mymam playbox set gamma 2.0
+    mymam playbox get gamma
 } -cleanup {
     cleanup
 } -result {2.0}
 
 test playbox_set-1.2 {set with dict} -body {
-    mam playbox set [dict create gamma 2.0]
-    mam playbox get
+    mymam playbox set [dict create gamma 2.0]
+    mymam playbox get
 } -cleanup {
     cleanup
 } -result {gamma 2.0}
 
 test playbox_set-1.3 {bad attribute name} -body {
-    mam playbox set nonesuch 0
+    mymam playbox set nonesuch 0
 } -returnCodes {
     error
 } -cleanup {
@@ -85,11 +87,11 @@ test playbox_set-1.3 {bad attribute name} -body {
 } -result {Invalid playbox attribute: nonesuch}
 
 test playbox_set-1.4 {marks changed} -setup {
-    mam checkpoint -saved
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam playbox set gamma 2.0
-    set b [mam changed]
+    set a [mymam changed]
+    mymam playbox set gamma 2.0
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -101,8 +103,8 @@ test playbox_set-1.4 {marks changed} -setup {
 # playbox cget
 
 test playbox_cget-1.1 {retrieves attribute} -body {
-    set a [mam playbox get gamma]
-    set b [mam playbox cget -gamma]
+    set a [mymam playbox get gamma]
+    set b [mymam playbox cget -gamma]
 
     expr {$a eq $b}
 } -cleanup {
@@ -113,10 +115,10 @@ test playbox_cget-1.1 {retrieves attribute} -body {
 # playbox configure
 
 test playbox_configure-1.1 {sets attributes} -body {
-    mam playbox configure \
+    mymam playbox configure \
         -gamma  2.0
 
-    mam playbox get
+    mymam playbox get
 } -cleanup {
     cleanup
 } -result {gamma 2.0}
@@ -125,7 +127,7 @@ test playbox_configure-1.1 {sets attributes} -body {
 # playbox view
 
 test playbox_view-1.1 {returns formatted playbox dict} -body {
-    mam playbox view
+    mymam playbox view
 } -cleanup {
     cleanup
 } -result {gamma 1.00}
@@ -135,39 +137,39 @@ test playbox_view-1.1 {returns formatted playbox dict} -body {
 #-------------------------------------------------------------------
 # system ids
 
-# system ids is tested by the tests for [mam system add] and 
-# [mam system delete]
+# system ids is tested by the tests for [mymam system add] and 
+# [mymam system delete]
 
 #-------------------------------------------------------------------
 # system add
 
 test system_add-1.1 {initially no systems} -body {
-    mam system ids
+    mymam system ids
 } -cleanup {
     cleanup
 } -result {}
 
-test system_add-1.2 {added system is in mam system ids} -body {
-    mam system add 1
-    mam system add 2
-    mam system ids
+test system_add-1.2 {added system is in mymam system ids} -body {
+    mymam system add 1
+    mymam system add 2
+    mymam system ids
 } -cleanup {
     cleanup
 } -result {1 2}
 
 test system_add-1.3 {default settings} -body {
-    mam system add 1
-    mam system get 1
+    mymam system add 1
+    mymam system get 1
 } -cleanup {
     cleanup
 } -result {name {System 1} commonality 1.0}
 
 test system_add-1.4 {marks changed} -setup {
-    mam checkpoint -saved
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam system add 1
-    set b [mam changed]
+    set a [mymam changed]
+    mymam system add 1
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -178,15 +180,15 @@ test system_add-1.4 {marks changed} -setup {
 # system namedict
 
 test system_namedict-1.1 {initially no systems} -body {
-    mam system namedict
+    mymam system namedict
 } -cleanup {
     cleanup
 } -result {}
 
 test system_namedict-1.2 {existing systems} -body {
-    mam system add 1
-    mam system add 2
-    mam system namedict
+    mymam system add 1
+    mymam system add 2
+    mymam system namedict
 } -cleanup {
     cleanup
 } -result {1 {System 1} 2 {System 2}}
@@ -195,25 +197,25 @@ test system_namedict-1.2 {existing systems} -body {
 # system get
 
 test system_get-1.1 {retrieve all values} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system get 1
+    mymam system get 1
 } -cleanup {
     cleanup
 } -result {name {System 1} commonality 1.0}
 
 test system_get-1.2 {retrieve one attribute} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system get 1 name
+    mymam system get 1 name
 } -cleanup {
     cleanup
 } -result {System 1}
 
 test system_get-1.3 {bad attribute name} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    catch {mam system get 1 nonesuch}
+    catch {mymam system get 1 nonesuch}
 } -cleanup {
     cleanup
 } -result {1}
@@ -222,36 +224,36 @@ test system_get-1.3 {bad attribute name} -setup {
 # system set
 
 test system_set-1.1 {set one value} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system set 1 name "Fred"
-    mam system get 1 name
+    mymam system set 1 name "Fred"
+    mymam system get 1 name
 } -cleanup {
     cleanup
 } -result {Fred}
 
 test system_set-1.2 {set multiple attributes} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system set 1 name "Fred" commonality 0
-    mam system get 1
+    mymam system set 1 name "Fred" commonality 0
+    mymam system get 1
 } -cleanup {
     cleanup
 } -result {name Fred commonality 0}
 
 test system_set-1.3 {set with dict} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system set 1 [dict create name "Fred" commonality 0]
-    mam system get 1
+    mymam system set 1 [dict create name "Fred" commonality 0]
+    mymam system get 1
 } -cleanup {
     cleanup
 } -result {name Fred commonality 0}
 
 test system_set-1.4 {bad system} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system set nonesuch commonality 0
+    mymam system set nonesuch commonality 0
 } -returnCodes {
     error
 } -cleanup {
@@ -259,9 +261,9 @@ test system_set-1.4 {bad system} -setup {
 } -result {Invalid system}
 
 test system_set-1.4 {bad attribute name} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system set 1 nonesuch 0
+    mymam system set 1 nonesuch 0
 } -returnCodes {
     error
 } -cleanup {
@@ -269,12 +271,12 @@ test system_set-1.4 {bad attribute name} -setup {
 } -result {Invalid system attribute: nonesuch}
 
 test system_set-1.5 {marks changed} -setup {
-    mam system add 1
-    mam checkpoint -saved
+    mymam system add 1
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam system set 1 name "Fred"
-    set b [mam changed]
+    set a [mymam changed]
+    mymam system set 1 name "Fred"
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -285,22 +287,22 @@ test system_set-1.5 {marks changed} -setup {
 # system delete
 
 test system_delete-1.1 {sid removed from list of ids} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 } -body {
-    mam system delete 2
-    mam system ids
+    mymam system delete 2
+    mymam system ids
 } -cleanup {
     cleanup
 } -result {1}
 
 test system_delete-1.2 {sid no longer exists} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 } -body {
-    set a [mam system exists 2]
-    mam system delete 2
-    set b [mam system exists 2]
+    set a [mymam system exists 2]
+    mymam system delete 2
+    set b [mymam system exists 2]
 
     list $a $b
 } -cleanup {
@@ -308,12 +310,12 @@ test system_delete-1.2 {sid no longer exists} -setup {
 } -result {1 0}
 
 test system_delete-1.3 {marks changed} -setup {
-    mam system add 1
-    mam checkpoint -saved
+    mymam system add 1
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam system delete 1
-    set b [mam changed]
+    set a [mymam changed]
+    mymam system delete 1
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -325,18 +327,18 @@ test system_delete-1.3 {marks changed} -setup {
 # system undelete
 
 test system_undelete-1.1 {can undelete most recent system} -setup {
-    mam topic add 1
-    mam topic add 2
-    mam system add 1
-    mam system add 2
-    mam topic configure 2 -relevance 0.5
-    mam belief configure 1 2 -position 0.3
-    mam belief configure 2 2 -position 0.6
+    mymam topic add 1
+    mymam topic add 2
+    mymam system add 1
+    mymam system add 2
+    mymam topic configure 2 -relevance 0.5
+    mymam belief configure 1 2 -position 0.3
+    mymam belief configure 2 2 -position 0.6
 } -body {
-    set oldDump [mam dump]
-    set undoData [mam system delete 2]
-    set sid [mam system undelete $undoData]
-    set newDump [mam dump]
+    set oldDump [mymam dump]
+    set undoData [mymam system delete 2]
+    set sid [mymam system undelete $undoData]
+    set newDump [mymam dump]
 
     # TBD: Not working!  why not?
     expr {$newDump eq $oldDump}
@@ -345,31 +347,31 @@ test system_undelete-1.1 {can undelete most recent system} -setup {
 } -result {1}
 
 test system_undelete-1.2 {can undelete older system} -setup {
-    mam topic add 1
-    mam topic add 2
-    mam system add 1
-    mam system add 2
-    mam topic configure 2 -relevance 0.5
-    mam belief configure 1 2 -position 0.3
-    mam belief configure 2 2 -position 0.6
+    mymam topic add 1
+    mymam topic add 2
+    mymam system add 1
+    mymam system add 2
+    mymam topic configure 2 -relevance 0.5
+    mymam belief configure 1 2 -position 0.3
+    mymam belief configure 2 2 -position 0.6
 } -body {
-    set oldDump [mam dump]
-    set undoData [mam system delete 1]
-    set sid [mam system undelete $undoData]
-    set newDump [mam dump]
+    set oldDump [mymam dump]
+    set undoData [mymam system delete 1]
+    set sid [mymam system undelete $undoData]
+    set newDump [mymam dump]
     expr {1 == 1 && $newDump eq $oldDump}
 } -cleanup {
     cleanup
 } -result {1}
 
 test system_undelete-1.3 {marks changed} -setup {
-    mam system add 1
-    set undoData [mam system delete 1]
-    mam checkpoint -saved
+    mymam system add 1
+    set undoData [mymam system delete 1]
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam system undelete $undoData
-    set b [mam changed]
+    set a [mymam changed]
+    mymam system undelete $undoData
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -380,10 +382,10 @@ test system_undelete-1.3 {marks changed} -setup {
 # system cget
 
 test system_cget-1.1 {retrieves attribute} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    set a [mam system get 1 name]
-    set b [mam system cget 1 -name]
+    set a [mymam system get 1 name]
+    set b [mymam system cget 1 -name]
 
     expr {$a eq $b}
 } -cleanup {
@@ -394,13 +396,13 @@ test system_cget-1.1 {retrieves attribute} -setup {
 # system configure
 
 test system_configure-1.1 {sets attributes} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system configure 1 \
+    mymam system configure 1 \
         -name         Fred     \
         -commonality  0
 
-    mam system get 1
+    mymam system get 1
 } -cleanup {
     cleanup
 } -result {name Fred commonality 0}
@@ -409,19 +411,19 @@ test system_configure-1.1 {sets attributes} -setup {
 # system id
 
 test system_id-1.1 {retrieves ID} -setup {
-    mam system add 1
-    mam system configure 1 -name "John Doe" 
+    mymam system add 1
+    mymam system configure 1 -name "John Doe" 
 } -body {
-    mam system id "John Doe"
+    mymam system id "John Doe"
 } -cleanup {
     cleanup
 } -result {1}
 
 test system_id-1.2 {no such system} -setup {
-    mam system add 1
-    mam system configure 1 -name "John Doe" 
+    mymam system add 1
+    mymam system configure 1 -name "John Doe" 
 } -body {
-    mam system id "Jane Doe"
+    mymam system id "Jane Doe"
 } -cleanup {
     cleanup
 } -result {}
@@ -430,9 +432,9 @@ test system_id-1.2 {no such system} -setup {
 # system view
 
 test system_view-1.1 {retrieves the view dict} -setup {
-    mam system add 1
+    mymam system add 1
 } -body {
-    mam system view 1
+    mymam system view 1
 } -cleanup {
     cleanup
 } -result {name {System 1} commonality 1.00 sid 1}
@@ -441,40 +443,40 @@ test system_view-1.1 {retrieves the view dict} -setup {
 #-------------------------------------------------------------------
 # topic ids
 
-# topic ids is tested by the tests for [mam topic add] and 
-# [mam topic delete]
+# topic ids is tested by the tests for [mymam topic add] and 
+# [mymam topic delete]
 
 #-------------------------------------------------------------------
 # topic add
 
 
 test topic_add-1.1 {initially no topics} -body {
-    mam topic ids
+    mymam topic ids
 } -cleanup {
     cleanup
 } -result {}
 
-test topic_add-1.2 {added topic is in mam topic ids} -body {
-    mam topic add 1
-    mam topic add 2
-    mam topic ids
+test topic_add-1.2 {added topic is in mymam topic ids} -body {
+    mymam topic add 1
+    mymam topic add 2
+    mymam topic ids
 } -cleanup {
     cleanup
 } -result {1 2}
 
 test topic_add-1.3 {default settings} -body {
-    mam topic add 1
-    mam topic get 1
+    mymam topic add 1
+    mymam topic get 1
 } -cleanup {
     cleanup
 } -result {name {Topic 1} affinity 1 relevance 1.0}
 
 test topic_add-1.4 {marks changed} -setup {
-    mam checkpoint -saved
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam topic add 1
-    set b [mam changed]
+    set a [mymam changed]
+    mymam topic add 1
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -485,25 +487,25 @@ test topic_add-1.4 {marks changed} -setup {
 # topic get
 
 test topic_get-1.1 {retrieve all values} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic get 1
+    mymam topic get 1
 } -cleanup {
     cleanup
 } -result {name {Topic 1} affinity 1 relevance 1.0}
 
 test topic_get-1.2 {retrieve one attribute} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic get 1 name
+    mymam topic get 1 name
 } -cleanup {
     cleanup
 } -result {Topic 1}
 
 test topic_get-1.3 {bad attribute name} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    catch {mam topic get 1 nonesuch}
+    catch {mymam topic get 1 nonesuch}
 } -cleanup {
     cleanup
 } -result {1}
@@ -512,36 +514,36 @@ test topic_get-1.3 {bad attribute name} -setup {
 # topic set
 
 test topic_set-1.1 {set one value} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic set 1 name "Fred"
-    mam topic get 1 name
+    mymam topic set 1 name "Fred"
+    mymam topic get 1 name
 } -cleanup {
     cleanup
 } -result {Fred}
 
 test topic_set-1.2 {set multiple attributes} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic set 1 name "Fred" affinity 0
-    mam topic get 1
+    mymam topic set 1 name "Fred" affinity 0
+    mymam topic get 1
 } -cleanup {
     cleanup
 } -result {name Fred affinity 0 relevance 1.0}
 
 test topic_set-1.3 {set with dict} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic set 1 [dict create name "Fred" affinity 0]
-    mam topic get 1
+    mymam topic set 1 [dict create name "Fred" affinity 0]
+    mymam topic get 1
 } -cleanup {
     cleanup
 } -result {name Fred affinity 0 relevance 1.0}
 
 test topic_set-1.4 {bad topic} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic set nonesuch affinity 0
+    mymam topic set nonesuch affinity 0
 } -returnCodes {
     error
 } -cleanup {
@@ -549,9 +551,9 @@ test topic_set-1.4 {bad topic} -setup {
 } -result {Invalid topic}
 
 test topic_set-1.4 {bad attribute name} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic set 1 nonesuch 0
+    mymam topic set 1 nonesuch 0
 } -returnCodes {
     error
 } -cleanup {
@@ -559,12 +561,12 @@ test topic_set-1.4 {bad attribute name} -setup {
 } -result {Invalid topic attribute: nonesuch}
 
 test topic_set-1.5 {marks changed} -setup {
-    mam topic add 1
-    mam checkpoint -saved
+    mymam topic add 1
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam topic set 1 relevance 0.5
-    set b [mam changed]
+    set a [mymam changed]
+    mymam topic set 1 relevance 0.5
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -576,22 +578,22 @@ test topic_set-1.5 {marks changed} -setup {
 # topic delete
 
 test topic_delete-1.1 {tid removed from list of ids} -setup {
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 } -body {
-    mam topic delete 2
-    mam topic ids
+    mymam topic delete 2
+    mymam topic ids
 } -cleanup {
     cleanup
 } -result {1}
 
 test topic_delete-1.2 {tid no longer exists} -setup {
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 } -body {
-    set a [mam topic exists 2]
-    mam topic delete 2
-    set b [mam topic exists 2]
+    set a [mymam topic exists 2]
+    mymam topic delete 2
+    set b [mymam topic exists 2]
 
     list $a $b
 } -cleanup {
@@ -599,12 +601,12 @@ test topic_delete-1.2 {tid no longer exists} -setup {
 } -result {1 0}
 
 test topic_delete-1.3 {marks changed} -setup {
-    mam topic add 1
-    mam checkpoint -saved
+    mymam topic add 1
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam topic delete 1
-    set b [mam changed]
+    set a [mymam changed]
+    mymam topic delete 1
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -616,49 +618,49 @@ test topic_delete-1.3 {marks changed} -setup {
 # topic undelete
 
 test topic_undelete-1.1 {can undelete most recent topic} -setup {
-    mam system add 1
-    mam system add 2
-    mam topic add 1
-    mam topic add 2
-    mam topic configure 2 -relevance 0.5
-    mam belief configure 1 2 -position 0.3
-    mam belief configure 2 2 -position 0.6
+    mymam system add 1
+    mymam system add 2
+    mymam topic add 1
+    mymam topic add 2
+    mymam topic configure 2 -relevance 0.5
+    mymam belief configure 1 2 -position 0.3
+    mymam belief configure 2 2 -position 0.6
 } -body {
-    set oldDump [mam dump]
-    set undoData [mam topic delete 2]
-    set tid [mam topic undelete $undoData]
-    set newDump [mam dump]
+    set oldDump [mymam dump]
+    set undoData [mymam topic delete 2]
+    set tid [mymam topic undelete $undoData]
+    set newDump [mymam dump]
     expr {$newDump eq $oldDump}
 } -cleanup {
     cleanup
 } -result {1}
 
 test topic_undelete-1.2 {can undelete most older topic} -setup {
-    mam system add 1
-    mam system add 2
-    mam topic add 1
-    mam topic add 2
-    mam topic configure 2 -relevance 0.5
-    mam belief configure 1 2 -position 0.3
-    mam belief configure 2 2 -position 0.6
+    mymam system add 1
+    mymam system add 2
+    mymam topic add 1
+    mymam topic add 2
+    mymam topic configure 2 -relevance 0.5
+    mymam belief configure 1 2 -position 0.3
+    mymam belief configure 2 2 -position 0.6
 } -body {
-    set oldDump [mam dump]
-    set undoData [mam topic delete 1]
-    set tid [mam topic undelete $undoData]
-    set newDump [mam dump]
+    set oldDump [mymam dump]
+    set undoData [mymam topic delete 1]
+    set tid [mymam topic undelete $undoData]
+    set newDump [mymam dump]
     expr {$newDump eq $oldDump}
 } -cleanup {
     cleanup
 } -result {1}
 
 test topic_delete-1.3 {marks changed} -setup {
-    mam topic add 1
-    set undoData [mam topic delete 1]
-    mam checkpoint -saved
+    mymam topic add 1
+    set undoData [mymam topic delete 1]
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam topic undelete $undoData
-    set b [mam changed]
+    set a [mymam changed]
+    mymam topic undelete $undoData
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -670,10 +672,10 @@ test topic_delete-1.3 {marks changed} -setup {
 # topic cget
 
 test topic_cget-1.1 {retrieves attribute} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    set a [mam topic get 1 name]
-    set b [mam topic cget 1 -name]
+    set a [mymam topic get 1 name]
+    set b [mymam topic cget 1 -name]
 
     expr {$a eq $b}
 } -cleanup {
@@ -684,14 +686,14 @@ test topic_cget-1.1 {retrieves attribute} -setup {
 # topic configure
 
 test topic_configure-1.1 {sets attributes} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic configure 1 \
+    mymam topic configure 1 \
         -name      Fred       \
         -affinity  0          \
         -relevance 0.5
 
-    mam topic get 1
+    mymam topic get 1
 } -cleanup {
     cleanup
 } -result {name Fred affinity 0 relevance 0.5}
@@ -700,19 +702,19 @@ test topic_configure-1.1 {sets attributes} -setup {
 # topic id
 
 test topic_id-1.1 {retrieves ID} -setup {
-    mam topic add 1
-    mam topic configure 1 -name "John Doe" 
+    mymam topic add 1
+    mymam topic configure 1 -name "John Doe" 
 } -body {
-    mam topic id "John Doe"
+    mymam topic id "John Doe"
 } -cleanup {
     cleanup
 } -result {1}
 
 test topic_id-1.2 {no such topic} -setup {
-    mam topic add 1
-    mam topic configure 1 -name "John Doe" 
+    mymam topic add 1
+    mymam topic configure 1 -name "John Doe" 
 } -body {
-    mam topic id "Jane Doe"
+    mymam topic id "Jane Doe"
 } -cleanup {
     cleanup
 } -result {}
@@ -721,9 +723,9 @@ test topic_id-1.2 {no such topic} -setup {
 # topic view
 
 test topic_view-1.1 {retrieves the view dict} -setup {
-    mam topic add 1
+    mymam topic add 1
 } -body {
-    mam topic view 1
+    mymam topic view 1
 } -cleanup {
     cleanup
 } -result {name {Topic 1} affinity 1 relevance 1.00 tid 1 aflag Yes}
@@ -734,28 +736,28 @@ test topic_view-1.1 {retrieves the view dict} -setup {
 # belief get
 
 test belief_get-1.1 {retrieve all values} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief get 1 1
+    mymam belief get 1 1
 } -cleanup {
     cleanup
 } -result {position 0.0 emphasis 0.5}
 
 test belief_get-1.2 {retrieve one attribute} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief get 1 1 position
+    mymam belief get 1 1 position
 } -cleanup {
     cleanup
 } -result {0.0}
 
 test belief_get-1.3 {bad attribute name} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    catch {mam belief get 1 1 nonesuch}
+    catch {mymam belief get 1 1 nonesuch}
 } -cleanup {
     cleanup
 } -result {1}
@@ -764,40 +766,40 @@ test belief_get-1.3 {bad attribute name} -setup {
 # belief set
 
 test belief_set-1.1 {set one value} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief set 1 1 position 0.5
-    mam belief get 1 1 position
+    mymam belief set 1 1 position 0.5
+    mymam belief get 1 1 position
 } -cleanup {
     cleanup
 } -result {0.5}
 
 test belief_set-1.2 {set multiple attributes} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief set 1 1 position 0.1 emphasis 0.2
-    mam belief get 1 1
+    mymam belief set 1 1 position 0.1 emphasis 0.2
+    mymam belief get 1 1
 } -cleanup {
     cleanup
 } -result {position 0.1 emphasis 0.2}
 
 test belief_set-1.3 {set with dict} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief set 1 1 [dict create position 0.3 emphasis 0.4]
-    mam belief get 1 1
+    mymam belief set 1 1 [dict create position 0.3 emphasis 0.4]
+    mymam belief get 1 1
 } -cleanup {
     cleanup
 } -result {position 0.3 emphasis 0.4}
 
 test belief_set-1.4 {bad system} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief set nonesuch 1 position 0.1
+    mymam belief set nonesuch 1 position 0.1
 } -returnCodes {
     error
 } -cleanup {
@@ -805,10 +807,10 @@ test belief_set-1.4 {bad system} -setup {
 } -result {Invalid system}
 
 test belief_set-1.5 {bad topic} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief set 1 nonesuch position 0.1
+    mymam belief set 1 nonesuch position 0.1
 } -returnCodes {
     error
 } -cleanup {
@@ -816,10 +818,10 @@ test belief_set-1.5 {bad topic} -setup {
 } -result {Invalid topic}
 
 test belief_set-1.6 {bad attribute name} -setup {
-    mam topic add 1
-    mam system add 1
+    mymam topic add 1
+    mymam system add 1
 } -body {
-    mam belief set 1 1 nonesuch 0
+    mymam belief set 1 1 nonesuch 0
 } -returnCodes {
     error
 } -cleanup {
@@ -827,13 +829,13 @@ test belief_set-1.6 {bad attribute name} -setup {
 } -result {Invalid belief attribute: nonesuch}
 
 test belief_set-1.7 {marks changed} -setup {
-    mam system add 1
-    mam topic add 1
-    mam checkpoint -saved
+    mymam system add 1
+    mymam topic add 1
+    mymam checkpoint -saved
 } -body {
-    set a [mam changed]
-    mam belief set 1 1 position 0.5
-    set b [mam changed]
+    set a [mymam changed]
+    mymam belief set 1 1 position 0.5
+    set b [mymam changed]
 
     list $a $b
 } -cleanup {
@@ -845,12 +847,12 @@ test belief_set-1.7 {marks changed} -setup {
 # belief cget
 
 test belief_cget-1.1 {retrieves attribute} -setup {
-    mam topic add 1
-    mam system add 1
-    mam belief set 1 1 position 0.5
+    mymam topic add 1
+    mymam system add 1
+    mymam belief set 1 1 position 0.5
 } -body {
-    set a [mam belief get  1 1 position]
-    set b [mam belief cget 1 1 -position]
+    set a [mymam belief get  1 1 position]
+    set b [mymam belief cget 1 1 -position]
 
     expr {$a eq $b}
 } -cleanup {
@@ -861,15 +863,15 @@ test belief_cget-1.1 {retrieves attribute} -setup {
 # belief configure
 
 test belief_configure-1.1 {sets attributes} -setup {
-    mam topic add 1
-    mam system add 1
-    mam belief set 1 1 position 0.5
+    mymam topic add 1
+    mymam system add 1
+    mymam belief set 1 1 position 0.5
 } -body {
-    mam belief configure 1 1 \
+    mymam belief configure 1 1 \
         -position 0.1 \
         -emphasis 0.3
 
-    mam belief get 1 1
+    mymam belief get 1 1
 } -cleanup {
     cleanup
 } -result {position 0.1 emphasis 0.3}
@@ -879,10 +881,10 @@ test belief_configure-1.1 {sets attributes} -setup {
 # belief view
 
 test belief_view-1.1 {retrieves the view dict} -setup {
-    mam system add 1
-    mam topic add 1
+    mymam system add 1
+    mymam topic add 1
 } -body {
-    mam belief view 1 1
+    mymam belief view 1 1
 } -cleanup {
     cleanup
 } -result {position A emphasis NEITHER sid 1 tid 1 textpos Ambivalent textemph Neither numpos 0.0 numemph 0.5}
@@ -893,9 +895,9 @@ test belief_view-1.1 {retrieves the view dict} -setup {
 
 proc countAffinities {value} {
     set count 0
-    foreach s1 [mam system ids] {
-        foreach s2 [mam system ids] {
-            if {[mam affinity $s1 $s2] == $value} {
+    foreach s1 [mymam system ids] {
+        foreach s2 [mymam system ids] {
+            if {[mymam affinity $s1 $s2] == $value} {
                 incr count
             }
         }
@@ -906,34 +908,34 @@ proc countAffinities {value} {
 
 # 1.*: Defaults, general results
 test compute-1.1 {No topics; all affinities are 0.0} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 } -body {
-    mam compute
+    mymam compute
     countAffinities 0.0
 } -cleanup {
     cleanup
 } -result {4}
 
 test compute-1.2 {Default settings; all affinities are 1.0} -setup {
-    mam system add 1
-    mam system add 2
-    mam topic add 1
+    mymam system add 1
+    mymam system add 2
+    mymam topic add 1
 } -body {
-    mam compute
+    mymam compute
     countAffinities 1.0
 } -cleanup {
     cleanup
 } -result {4}
 
 test compute-1.3 {No affinity topics; all affinities are 0.0} -setup {
-    mam system add 1
-    mam system add 2
-    mam topic add 1
+    mymam system add 1
+    mymam system add 2
+    mymam topic add 1
 
-    mam topic configure 1 -affinity 0
+    mymam topic configure 1 -affinity 0
 } -body {
-    mam compute
+    mymam compute
     countAffinities 0.0
 } -cleanup {
     cleanup
@@ -944,91 +946,91 @@ test compute-1.3 {No affinity topics; all affinities are 0.0} -setup {
 # 2.*: Verify each special case in the computation
 
 test compute-2.1 {Case A: No zeal, gamma, or zero-emphasis} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
     
-    mam playbox configure -gamma 0.0
+    mymam playbox configure -gamma 0.0
 } -body {
-    mam compute
-    format %.2f [mam affinity 1 2]
+    mymam compute
+    format %.2f [mymam affinity 1 2]
 } -cleanup {
     cleanup
 } -result {0.00}
 
 test compute-2.2 {Case B: Zero emph., but no zeal or gamma} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
     
-    mam playbox configure -gamma 0.0
-    mam belief configure 1 1 -emphasis 0.0
+    mymam playbox configure -gamma 0.0
+    mymam belief configure 1 1 -emphasis 0.0
 } -body {
-    mam compute
-    format %.2f [mam affinity 1 2]
+    mymam compute
+    format %.2f [mymam affinity 1 2]
 } -cleanup {
     cleanup
 } -result {0.00}
 
 test compute-2.3 {Case C: Pathological disagreement} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 
     # sid1 and sid2 disagree on a topic for which sid1 has emphasis 0
-    mam belief configure 1 1 -position 0.1 -emphasis 0.0
+    mymam belief configure 1 1 -position 0.1 -emphasis 0.0
 } -body {
-    mam compute
-    format %.2f [mam affinity 1 2]
+    mymam compute
+    format %.2f [mymam affinity 1 2]
 } -cleanup {
     cleanup
 } -result {-1.00}
 
 test compute-2.4 {Case D: zero-emphasis with positive agreement} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 
     # sid1 and sid2 agree on all topics for which sid1 has emphasis 0,
     # and the zeals are positive
-    mam belief configure 1 1 -position 0.2 -emphasis 0.0
-    mam belief configure 2 1 -position 0.2
-    mam belief configure 1 2 -position 0.1
-    mam belief configure 2 2 -position -0.1
+    mymam belief configure 1 1 -position 0.2 -emphasis 0.0
+    mymam belief configure 2 1 -position 0.2
+    mymam belief configure 1 2 -position 0.1
+    mymam belief configure 2 2 -position -0.1
 
     # Assume no commonality.
-    mam playbox configure -gamma 0.0
+    mymam playbox configure -gamma 0.0
 } -body {
-    mam compute
-    format %.2f [mam affinity 1 2]
+    mymam compute
+    format %.2f [mymam affinity 1 2]
 } -cleanup {
     cleanup
 } -result {0.20}
 
 test compute-2.5 {Case E: The normal case} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 
     # sid1 has positions on some topics, and has zero emphasis on no
     # topics.  The normal equation is used.
-    mam belief configure 1 1 -position 0.2
+    mymam belief configure 1 1 -position 0.2
 
     # Assume no commonality.
-    mam playbox configure -gamma 0.0
+    mymam playbox configure -gamma 0.0
 } -body {
-    mam compute
-    format %.2f [mam affinity 1 2]
+    mymam compute
+    format %.2f [mymam affinity 1 2]
 } -cleanup {
     cleanup
 } -result {-0.09}
@@ -1036,37 +1038,37 @@ test compute-2.5 {Case E: The normal case} -setup {
 # 3.*: Relevance
 
 test compute-3.1 {No relevant topics; all affinities are 0} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1 
-    mam topic configure 1 -relevance 0.0
+    mymam topic add 1 
+    mymam topic configure 1 -relevance 0.0
 } -body {
-    mam compute
+    mymam compute
     countAffinities 0.0
 } -cleanup {
     cleanup
 } -result {4}
 
 test compute-3.2 {partial relevance} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 
     # sid1 has positions on some topics, and has zero emphasis on no
     # topics.  The normal equation is used.
-    mam belief configure 1 1 -position 1.0
+    mymam belief configure 1 1 -position 1.0
 } -body {
-    mam compute
-    set a [mam affinity 1 2]
+    mymam compute
+    set a [mymam affinity 1 2]
 
     # Now, reduce the relevance of T1
-    mam topic configure 1 -relevance 0.5
-    mam compute
+    mymam topic configure 1 -relevance 0.5
+    mymam compute
 
-    set b [mam affinity 1 2]
+    set b [mymam affinity 1 2]
 
     # With two topics, setting the relevance of T1 to 0.5 is equivalent
     # to cutting the positions on T1 in half, and reducing the 
@@ -1084,17 +1086,17 @@ test compute-3.2 {partial relevance} -setup {
 # affinity is mostly tested above, under compute. 
 
 test affinity-1.1 {caches results} -setup {
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
-    mam topic add 1
-    mam topic add 2
+    mymam topic add 1
+    mymam topic add 2
 
 } -body {
-    set a [mam affinity 1 2]
+    set a [mymam affinity 1 2]
 
     # There should only be one affinity in cache
-    set result "\n[mam dump]"
+    set result "\n[mymam dump]"
 } -cleanup {
     cleanup
 } -result {
@@ -1124,26 +1126,26 @@ affinity 1,2 = 1.0
 
 proc congruenceSetup {} {
     # Two entities, so we can be sure we're getting the right one.
-    mam system add 1
-    mam system add 2
+    mymam system add 1
+    mymam system add 2
 
     # Three topics
-    mam topic add 1
-    mam topic add 2
-    mam topic add 3
+    mymam topic add 1
+    mymam topic add 2
+    mymam topic add 3
    
     # 2's beliefs don't matter; set up 1's.
-    mam belief configure 1 1 -position 1.0
-    mam belief configure 1 2 -position 0.5
-    mam belief configure 1 3 -position -0.5
+    mymam belief configure 1 1 -position 1.0
+    mymam belief configure 1 2 -position 0.5
+    mymam belief configure 1 3 -position -0.5
 }
 
 test congruence-1.1 {single topics} -setup {
     congruenceSetup
 } -body {
-    set a [mam congruence 1 1.0 [list 1 0.5]]
-    set b [mam congruence 1 1.0 [list 2 0.5]]
-    set c [mam congruence 1 1.0 [list 3 0.5]]
+    set a [mymam congruence 1 1.0 [list 1 0.5]]
+    set b [mymam congruence 1 1.0 [list 2 0.5]]
+    set c [mymam congruence 1 1.0 [list 3 0.5]]
 
     format "%.2f %.2f %.2f" $a $b $c
 } -cleanup {
@@ -1153,9 +1155,9 @@ test congruence-1.1 {single topics} -setup {
 test congruence-1.2 {single topics, theta=0} -setup {
     congruenceSetup
 } -body {
-    set a [mam congruence 1 0.0 [list 1 0.5]]
-    set b [mam congruence 1 0.0 [list 2 0.5]]
-    set c [mam congruence 1 0.0 [list 3 0.5]]
+    set a [mymam congruence 1 0.0 [list 1 0.5]]
+    set b [mymam congruence 1 0.0 [list 2 0.5]]
+    set c [mymam congruence 1 0.0 [list 3 0.5]]
 
     format "%.2f %.2f %.2f" $a $b $c
 } -cleanup {
@@ -1164,13 +1166,13 @@ test congruence-1.2 {single topics, theta=0} -setup {
 
 test congruence-1.3 {single topics, relevance=0.5} -setup {
     congruenceSetup
-    mam topic configure 1 -relevance 0.5
-    mam topic configure 2 -relevance 0.5
-    mam topic configure 3 -relevance 0.5
+    mymam topic configure 1 -relevance 0.5
+    mymam topic configure 2 -relevance 0.5
+    mymam topic configure 3 -relevance 0.5
 } -body {
-    set a [mam congruence 1 1.0 [list 1 0.5]]
-    set b [mam congruence 1 1.0 [list 2 0.5]]
-    set c [mam congruence 1 1.0 [list 3 0.5]]
+    set a [mymam congruence 1 1.0 [list 1 0.5]]
+    set b [mymam congruence 1 1.0 [list 2 0.5]]
+    set c [mymam congruence 1 1.0 [list 3 0.5]]
 
     format "%.2f %.2f %.2f" $a $b $c
 } -cleanup {
@@ -1180,7 +1182,7 @@ test congruence-1.3 {single topics, relevance=0.5} -setup {
 test congruence-1.4 {multiple topics} -setup {
     congruenceSetup
 } -body {
-    set a [mam congruence 1 1.0 [list 1 0.5 3 0.5]]
+    set a [mymam congruence 1 1.0 [list 1 0.5 3 0.5]]
 
     format "%.2f" $a 
 } -cleanup {
@@ -1190,7 +1192,7 @@ test congruence-1.4 {multiple topics} -setup {
 test congruence-1.5 {multiple topics, theta=0} -setup {
     congruenceSetup
 } -body {
-    set a [mam congruence 1 0.0 [list 1 0.5 3 0.5]]
+    set a [mymam congruence 1 0.0 [list 1 0.5 3 0.5]]
 
     format "%.2f" $a 
 } -cleanup {
@@ -1199,9 +1201,9 @@ test congruence-1.5 {multiple topics, theta=0} -setup {
 
 test congruence-1.6 {multiple topics, relevance=0.5} -setup {
     congruenceSetup
-    mam topic configure 1 -relevance 0.5
+    mymam topic configure 1 -relevance 0.5
 } -body {
-    set a [mam congruence 1 1.0 [list 1 0.5 3 0.5]]
+    set a [mymam congruence 1 1.0 [list 1 0.5 3 0.5]]
 
     format "%.2f" $a 
 } -cleanup {
@@ -1212,38 +1214,40 @@ test congruence-1.6 {multiple topics, relevance=0.5} -setup {
 # checkpoint/restore
 
 test checkpoint-1.1 {can checkpoint and restore} -setup {
-    mam playbox configure -gamma 2.0
+    mymam playbox configure -gamma 2.0
 
-    mam system add 1
-    mam system configure 1 -name "Joe"
+    mymam system add 1
+    mymam system configure 1 -name "Joe"
 
-    mam system add 2
-    mam system configure 1 -name "Bob"
+    mymam system add 2
+    mymam system configure 1 -name "Bob"
 
-    mam topic add 1
-    mam topic configure 1 -name "Plain"
+    mymam topic add 1
+    mymam topic configure 1 -name "Plain"
 
-    mam topic add 2
-    mam topic configure 2 -name "Peanut"
+    mymam topic add 2
+    mymam topic configure 2 -name "Peanut"
 
-    mam belief configure 1 1 -position 0.1
-    mam belief configure 1 2 -position 0.2
-    mam belief configure 2 1 -position 0.3
-    mam belief configure 2 2 -position 0.4
+    mymam belief configure 1 1 -position 0.1
+    mymam belief configure 1 2 -position 0.2
+    mymam belief configure 2 1 -position 0.3
+    mymam belief configure 2 2 -position 0.4
 } -body {
-    set a [mam dump]
+    set a [mymam dump]
 
-    set checkpoint [mam checkpoint]
-    mam clear
-    mam restore $checkpoint
+    set checkpoint [mymam checkpoint]
+    mymam clear
+    mymam restore $checkpoint
 
-    set b [mam dump]
+    set b [mymam dump]
 
     expr {$a eq $b}
 } -result 1
 
 #-------------------------------------------------------------------
 # Cleanup
+
+mymam destroy
 
 tcltest::cleanupTests
 

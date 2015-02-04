@@ -40,10 +40,10 @@ entity.  For example,<p>
 
 <pre>
     # Add a new system
-    set sid [mam system add]
+    set sid [$mam system add]
 
     # Undo the addition
-    mam system delete $sid
+    $mam system delete $sid
 </pre>
 
 To undo a <tt>set</tt> or <tt>configure</tt>, save the old data before
@@ -51,13 +51,13 @@ the change, and then restore it.  For example,<p>
 
 <pre>
     # Save undo data:
-    set undoData [mam system get $sid]
+    set undoData [$mam system get $sid]
 
     # Make the change
-    mam system configure $sid -commonality 0.5
+    $mam system configure $sid -commonality 0.5
 
     # Undo the change
-    mam system set $sid $undoData
+    $mam system set $sid $undoData
 </pre>
 
 To undo a <tt>delete</tt> of a system or topic, use the related
@@ -65,31 +65,46 @@ To undo a <tt>delete</tt> of a system or topic, use the related
 
 <pre>
     # Delete a system
-    set undoData [mam system delete $sid]
+    set undoData [$mam system delete $sid]
 
     # Undo the deletion
-    mam system undelete $undoData
+    $mam system undelete $undoData
 </pre>
 
 Of course, these mechanisms are only guaranteed under normal "undo" 
 conditions, e.g., a belief system can be "undeleted" when that's the
 operation on the top of the undo stack.<p>
 
-<section "COMMANDS">
+<section COMMANDS>
 
-mam(n) provides the following commands for use by the
-application.<p>
+This module defines the following command:<p>
 
 <deflist commands>
 
-<defitem "affinity" {mam affinity <i>sid1 sid2</i>}>
+<defitem mam {mam <i>name</i>}>
+
+Creates a new mam(n) object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref mam> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMANDS">
+
+Each instance of mam(n) provides the following subcommands for use by the
+application.<p>
+
+<deflist instance>
+
+<defitem "affinity" {<i mam> affinity <i>sid1 sid2</i>}>
 
 Returns the affinity of the belief system with ID <i>sid1</i> with 
 the belief system with ID <i>sid2</i>, recomputing the affinities if
 necessary.  The affinity is a number from -1.0 to 1.0.<p>
 
 
-<defitem "belief" {mam belief <i>subcommand</i> ?<i>args...</i>?}>
+<defitem "belief" {<i mam> belief <i>subcommand</i> ?<i>args...</i>?}>
 
 This family of commands is used for setting and querying the value of 
 belief attributes.  A belief is a belief system's position with respect
@@ -123,24 +138,24 @@ The subcommands of <iref belief> are as follows:<p>
 
 <deflist belief>
 
-<defitem "belief cget" {mam belief cget <i>sid tid option</i>}>
+<defitem "belief cget" {<i mam> belief cget <i>sid tid option</i>}>
 
 Returns the value of the named <i>option</i> for the belief with the
 given <i>sid</i> and <i>tid</i>.<p>
 
-<defitem "belief configure" {mam belief configure <i>sid tid option value...</i>}>
+<defitem "belief configure" {<i mam> belief configure <i>sid tid option value...</i>}>
 
 Sets the values of the listed options for the belief with the given
 <i>sid</i> and <i>tid</i>.<p>
 
-<defitem "belief get" {mam belief get <i>sid tid</i> ?<i>attr</i>?}>
+<defitem "belief get" {<i mam> belief get <i>sid tid</i> ?<i>attr</i>?}>
 
 Returns the value of the named attribute for the belief with the given
 <i>sid</i> and <i>tid</i>, if <i>attr</i> is given; otherwise, returns a
 dictionary of all of the belief's attributes and their values.<p>
 
-<defitem "belief set" {mam belief set <i>sid tid attr value...</i>}>
-<defitem "belief set" {mam belief set <i>sid tid attrdict</i>}>
+<defitem "belief set" {<i mam> belief set <i>sid tid attr value...</i>}>
+<defitem "belief set" {<i mam> belief set <i>sid tid attrdict</i>}>
 
 Sets the values of the named attributes for the belief with the
 given <i>sid</i> and <i>tid</i>.  The attribute names and
@@ -149,25 +164,25 @@ individual names and values on the command line.<p>
 
 </deflist belief>
 
-<defitem "changed" {mam changed}>
+<defitem "changed" {<i mam> changed}>
 
 Returns 1 if the checkpointable data has changed since the last
 <iref checkpoint>, and 0 otherwise.<p>
 
-<defitem "checkpoint" {mam checkpoint ?-saved?}>
+<defitem "checkpoint" {<i mam> checkpoint ?-saved?}>
 
 Returns a checkpoint of this module's data.  If <b>-saved</b>
 is specified, the data is marked "unchanged".<p>
 
-<defitem "clear" {mam clear}>
+<defitem "clear" {<i mam> clear}>
 
 Clears all data and resets the module to its initial state.<p>
 
-<defitem "compute" {mam compute}>
+<defitem "compute" {<i mam> compute}>
 
 Computes all affinity values given current settings, and caches them.<p>
 
-<defitem "congruence" {mam congruence <i>sid theta hook</i>}>
+<defitem "congruence" {<i mam> congruence <i>sid theta hook</i>}>
 
 Computes and returns the congruence of a semantic <i>hook</i> with the
 belief system with ID <i>sid</i>.  The <i>hook</i> is a dictionary of topic
@@ -177,12 +192,12 @@ belief system's commonality fraction.<p>
 Congruence is essentially the affinity of the belief system for the
 hook, taking into account only the topics included in the hook.<p>
 
-<defitem "dump" {mam dump}>
+<defitem "dump" {<i mam> dump}>
 
 Returns a human-readable string containing all mam(n) data, for
 debugging.<p>
 
-<defitem "playbox" {mam playbox <i>subcommand</i> ?<i>args...</i>?}>
+<defitem "playbox" {<i mam> playbox <i>subcommand</i> ?<i>args...</i>?}>
 
 This family of commands is used for setting and querying the value of 
 playbox-wide attributes.<p>
@@ -208,22 +223,22 @@ The subcommands of <iref playbox> are as follows:<p>
 
 <deflist playbox>
 
-<defitem "playbox cget" {mam playbox cget <i>option</i>}>
+<defitem "playbox cget" {<i mam> playbox cget <i>option</i>}>
 
 Returns the value of the named option.<p>
 
-<defitem "playbox configure" {mam playbox configure <i>option value...</i>}>
+<defitem "playbox configure" {<i mam> playbox configure <i>option value...</i>}>
 
 Sets the values of the listed options.<p>
 
-<defitem "playbox get" {mam playbox get ?<i>attr</i>?}>
+<defitem "playbox get" {<i mam> playbox get ?<i>attr</i>?}>
 
 Returns the value of the named attribute, if given; otherwise,
 returns a dictionary of all of the playbox attributes and their
 values.<p>
 
-<defitem "playbox set" {mam playbox set <i>attr value...</i>}>
-<defitem "playbox set" {mam playbox set <i>attrdict</i>}>
+<defitem "playbox set" {<i mam> playbox set <i>attr value...</i>}>
+<defitem "playbox set" {<i mam> playbox set <i>attrdict</i>}>
 
 Sets the values of the named attributes.  The attribute names and
 values may be specified as single argument, a dictionary, or as 
@@ -231,14 +246,14 @@ individual names and values on the command line.<p>
 
 </deflist playbox>
 
-<defitem "restore" {mam restore <i>checkpoint</i> ?-saved?}>
+<defitem "restore" {<i mam> restore <i>checkpoint</i> ?-saved?}>
 
 Restores the state of the module given the <i>checkpoint</i>, 
 produced by a previous call to <iref checkpoint>.  If 
 the <b>-saved</b> option is given, the module's contents will be
 marked "unchanged".<p>
 
-<defitem "system" {mam system <i>subcommand</i> ?<i>args...</i>?}>
+<defitem "system" {<i mam> system <i>subcommand</i> ?<i>args...</i>?}>
 
 This family of commands is used for setting and querying the value of 
 belief system attributes.<p>
@@ -267,57 +282,57 @@ The subcommands of <iref system> are as follows:<p>
 
 <deflist system>
 
-<defitem "system add" {mam system add <i>sid</i>}>
+<defitem "system add" {<i mam> system add <i>sid</i>}>
 
 Creates a new belief system with default settings and the given
 ID, and returns the ID.  The <i>sid</i> must not already be in use.<p>
 
-<defitem "system cget" {mam system cget <i>sid option</i>}>
+<defitem "system cget" {<i mam> system cget <i>sid option</i>}>
 
 Returns the value of the named <i>option</i> for the system with the
 given <i>sid</i>.<p>
 
-<defitem "system configure" {mam system configure <i>sid option value...</i>}>
+<defitem "system configure" {<i mam> system configure <i>sid option value...</i>}>
 
 Sets the values of the listed options for the system with the given
 <i>sid</i>.<p>
 
-<defitem "system delete" {mam system delete <i>sid</i>}>
+<defitem "system delete" {<i mam> system delete <i>sid</i>}>
 
 Deletes the belief system with the given <i>sid</i>, and returns 
 a string of undo data that can be passed to <iref system undelete>.<p>
 
-<defitem "system exists" {mam system exists <i>sid</i>}>
+<defitem "system exists" {<i mam> system exists <i>sid</i>}>
 
 Returns 1 if there is a belief system with the given <i>sid</i>, and
 a 0 otherwise.<p>
 
-<defitem "system get" {mam system get <i>sid</i> ?<i>attr</i>?}>
+<defitem "system get" {<i mam> system get <i>sid</i> ?<i>attr</i>?}>
 
 Returns the value of the named attribute for the system
 with the given <i>sid</i>, if <i>attr</i> is given; otherwise,
 returns a dictionary of all of the system's attributes and their
 values.<p>
 
-<defitem "system id" {mam system id <i>name</i>}>
+<defitem "system id" {<i mam> system id <i>name</i>}>
 
 Returns a belief system's ID given its <i>name</i>, or "" if there
 is no such belief system.<p>
 
-<defitem "system ids" {mam system ids}>
+<defitem "system ids" {<i mam> system ids}>
 
 Returns a list of the IDs of all existing belief systems.<p>
 
 
-<defitem "system set" {mam system set <i>sid attr value...</i>}>
-<defitem "system set" {mam system set <i>sid attrdict</i>}>
+<defitem "system set" {<i mam> system set <i>sid attr value...</i>}>
+<defitem "system set" {<i mam> system set <i>sid attrdict</i>}>
 
 Sets the values of the named attributes for the system with the
 given <i>sid</i>.  The attribute names and
 values may be specified as single argument, a dictionary, or as 
 individual names and values on the command line.<p>
 
-<defitem "system undelete" {mam system undelete <i>undoData</i>}>
+<defitem "system undelete" {<i mam> system undelete <i>undoData</i>}>
 
 Given an <i>undoData</i> string from <iref system delete>, undoes
 the deletion and returns the unique ID of the recreated belief system.
@@ -327,7 +342,7 @@ i.e., when the deletion is the only change that's been made.
 
 </deflist system>
 
-<defitem "topic" {mam topic <i>subcommand</i> ?<i>args...</i>?}>
+<defitem "topic" {<i mam> topic <i>subcommand</i> ?<i>args...</i>?}>
 
 This family of commands is used for setting and querying the value of 
 belief topic attributes.<p>
@@ -360,56 +375,56 @@ The subcommands of <iref topic> are as follows:<p>
 
 <deflist topic>
 
-<defitem "topic add" {mam topic add <i>tid</i>}>
+<defitem "topic add" {<i mam> topic add <i>tid</i>}>
 
 Creates a new topic with default settings and the given
 ID, and returns the ID.  The <i>tid</i> must not already be in use.<p>
 
-<defitem "topic cget" {mam topic cget <i>tid option</i>}>
+<defitem "topic cget" {<i mam> topic cget <i>tid option</i>}>
 
 Returns the value of the named <i>option</i> for the topic with the
 given <i>tid</i>.<p>
 
-<defitem "topic configure" {mam topic configure <i>tid option value...</i>}>
+<defitem "topic configure" {<i mam> topic configure <i>tid option value...</i>}>
 
 Sets the values of the listed options for the topic with the given
 <i>tid</i>.<p>
 
-<defitem "topic delete" {mam topic delete <i>tid</i>}>
+<defitem "topic delete" {<i mam> topic delete <i>tid</i>}>
 
 Deletes the topic with the given <i>tid</i>, and returns 
 a string of undo data that can be passed to <iref topic undelete>.<p>
 
-<defitem "topic exists" {mam topic exists <i>tid</i>}>
+<defitem "topic exists" {<i mam> topic exists <i>tid</i>}>
 
 Returns 1 if there is a topic with the given <i>tid</i>, and
 a 0 otherwise.<p>
 
-<defitem "topic get" {mam topic get <i>tid</i> ?<i>attr</i>?}>
+<defitem "topic get" {<i mam> topic get <i>tid</i> ?<i>attr</i>?}>
 
 Returns the value of the named attribute for the topic
 with the given <i>tid</i>, if <i>attr</i> is given; otherwise,
 returns a dictionary of all of the topic's attributes and their
 values.<p>
 
-<defitem "topic id" {mam topic id <i>name</i>}>
+<defitem "topic id" {<i mam> topic id <i>name</i>}>
 
 Returns a topic's ID given its <i>name</i>, or "" if there
 is no such topic.<p>
 
-<defitem "topic ids" {mam topic ids}>
+<defitem "topic ids" {<i mam> topic ids}>
 
 Returns a list of the IDs of all existing topics.<p>
 
-<defitem "topic set" {mam topic set <i>tid attr value...</i>}>
-<defitem "topic set" {mam topic set <i>tid attrdict</i>}>
+<defitem "topic set" {<i mam> topic set <i>tid attr value...</i>}>
+<defitem "topic set" {<i mam> topic set <i>tid attrdict</i>}>
 
 Sets the values of the named attributes for the topic with the
 given <i>tid</i>.  The attribute names and
 values may be specified as single argument, a dictionary, or as 
 individual names and values on the command line.<p>
 
-<defitem "topic undelete" {mam topic undelete <i>undoData</i>}>
+<defitem "topic undelete" {<i mam> topic undelete <i>undoData</i>}>
 
 Given an <i>undoData</i> string from <iref topic delete>, undoes
 the deletion and returns the unique ID of the recreated topic.
@@ -419,7 +434,7 @@ i.e., when the deletion is the only change that's been made.
 
 </deflist topic>
 
-</deflist commands>
+</deflist instance>
 
 <section ENVIRONMENT>
 
