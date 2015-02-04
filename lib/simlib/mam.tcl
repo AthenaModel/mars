@@ -28,9 +28,6 @@ namespace eval ::simlib:: {
 # mam
 
 snit::type ::simlib::mam {
-    # Make it a singleton
-    pragma -hasinstances 0
-
     #-------------------------------------------------------------------
     # Lookup Tables
 
@@ -85,7 +82,7 @@ snit::type ::simlib::mam {
     #              -> relevance => Topic relevance fraction
     #     
 
-    typevariable db -array {
+    variable db -array {
         changed    0
         playbox    {gamma 1.0}
         sids       {}
@@ -107,7 +104,15 @@ snit::type ::simlib::mam {
     #
     # The cache is cleared when any data is changed.
 
-    typevariable cache {}
+    variable cache {}
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {} {
+        $self clear
+    }
+    
 
     #-------------------------------------------------------------------
     # General Typemethods
@@ -116,7 +121,7 @@ snit::type ::simlib::mam {
     #
     # Deletes all content, returning the module to its initial state.
 
-    typemethod clear {} {
+    method clear {} {
         array unset db
         array set db {
             changed    1
@@ -129,7 +134,7 @@ snit::type ::simlib::mam {
     }
 
     #-------------------------------------------------------------------
-    # Playbox typemethods
+    # Playbox methods
     
     # playbox set attr value ?attr value...?
     # playbox set attrdict
@@ -140,8 +145,8 @@ snit::type ::simlib::mam {
     #
     # Set playbox attributes.
 
-    typemethod {playbox set} {args} {
-        SaveAttributes playbox playbox {} [args2dict $args] 
+    method {playbox set} {args} {
+        $self SaveAttributes playbox playbox {} [args2dict $args] 
     }
 
     # playbox get ?attr?
@@ -151,8 +156,8 @@ snit::type ::simlib::mam {
     # Returns the value of the named attribute, or the whole dictionary
     # if $attr is omitted.
 
-    typemethod {playbox get} {{attr ""}} {
-        return [GetAttributes $db(playbox) $attr]
+    method {playbox get} {{attr ""}} {
+        return [$self GetAttributes $db(playbox) $attr]
     }
 
     # playbox cget opt
@@ -161,8 +166,8 @@ snit::type ::simlib::mam {
     #
     # Returns an attribute using option notation.
 
-    typemethod {playbox cget} {opt} {
-        return [$type playbox get [string range $opt 1 end]]
+    method {playbox cget} {opt} {
+        return [$self playbox get [string range $opt 1 end]]
     }
 
     # playbox configure opt val ?opt val...?
@@ -172,16 +177,16 @@ snit::type ::simlib::mam {
     #
     # Configures a playbox using option notation.
 
-    typemethod {playbox configure} {args} {
-        return [$type playbox set [optlist2dict $args]]
+    method {playbox configure} {args} {
+        return [$self playbox set [optlist2dict $args]]
     }
 
     # playbox view
     #
     # Returns a formatted [playbox get] dictionary.
 
-    typemethod {playbox view} {} {
-        set view [$type playbox get]
+    method {playbox view} {} {
+        set view [$self playbox get]
 
         dict with view {
             set gamma [format "%.2f" $gamma]
@@ -192,13 +197,13 @@ snit::type ::simlib::mam {
     
 
     #-------------------------------------------------------------------
-    # System typemethods
+    # System methods
 
     # system ids
     #
     # Returns a list of system IDs (sids)
 
-    typemethod {system ids} {} {
+    method {system ids} {} {
         return $db(sids)
     }
 
@@ -206,7 +211,7 @@ snit::type ::simlib::mam {
     #
     # Returns a dictionary $sid => $name for all belief systems.
 
-    typemethod {system namedict} {} {
+    method {system namedict} {} {
         set ndict [dict create]
         foreach sid $db(sids) {
             dict set ndict $sid [dict get $db(system-$sid) name]
@@ -221,8 +226,8 @@ snit::type ::simlib::mam {
     #
     # Adds a new system with the given ID; returns the ID.
 
-    typemethod {system add} {sid} {
-        assert {![$type system exists $sid]}
+    method {system add} {sid} {
+        assert {![$self system exists $sid]}
 
         lappend db(sids) $sid
 
@@ -231,7 +236,7 @@ snit::type ::simlib::mam {
         set db(beliefs-$sid) [dict create]
 
         # Mark data changed
-        MarkChanged
+        $self MarkChanged
 
         return $sid
     }
@@ -246,8 +251,8 @@ snit::type ::simlib::mam {
     #
     # Set system attributes.
 
-    typemethod {system set} {sid args} {
-        SaveAttributes system system-$sid {} [args2dict $args] 
+    method {system set} {sid args} {
+        $self SaveAttributes system system-$sid {} [args2dict $args] 
     }
 
     # system get sid ?attr?
@@ -258,8 +263,8 @@ snit::type ::simlib::mam {
     # Returns the value of the named attribute, or the whole dictionary
     # if $attr is omitted.
 
-    typemethod {system get} {sid {attr ""}} {
-        return [GetAttributes $db(system-$sid) $attr]
+    method {system get} {sid {attr ""}} {
+        return [$self GetAttributes $db(system-$sid) $attr]
     }
 
     # system delete sid
@@ -268,7 +273,7 @@ snit::type ::simlib::mam {
     #
     # Deletes the system ID. Returns the undo data for [system undelete].
 
-    typemethod {system delete} {sid} {
+    method {system delete} {sid} {
         # FIRST, save the undo data.
         set undoData \
             [list $sid $db(sids) $db(system-$sid) $db(beliefs-$sid)]
@@ -279,7 +284,7 @@ snit::type ::simlib::mam {
         unset -nocomplain db(beliefs-$sid)
 
         # Mark data changed
-        MarkChanged
+        $self MarkChanged
 
         # NEXT, return the undo data.
         return $undoData
@@ -293,7 +298,7 @@ snit::type ::simlib::mam {
     # all beliefs, under normal undo conditions, and returns the
     # system ID.
 
-    typemethod {system undelete} {undoData} {
+    method {system undelete} {undoData} {
         # FIRST, get the system ID.
         set sid [lindex $undoData 0]
 
@@ -303,7 +308,7 @@ snit::type ::simlib::mam {
         set db(beliefs-$sid) [lindex $undoData 3]
 
         # Mark data changed
-        MarkChanged
+        $self MarkChanged
 
         # NEXT, return the system ID.
         return $sid
@@ -316,7 +321,7 @@ snit::type ::simlib::mam {
     #
     # Returns 1 if there's a system with the given ID, and 0 otherwise.
 
-    typemethod {system exists} {sid} {
+    method {system exists} {sid} {
         return [info exists db(system-$sid)]
     }
 
@@ -327,8 +332,8 @@ snit::type ::simlib::mam {
     #
     # Returns an attribute using option notation.
 
-    typemethod {system cget} {sid opt} {
-        return [$type system get $sid [string range $opt 1 end]]
+    method {system cget} {sid opt} {
+        return [$self system get $sid [string range $opt 1 end]]
     }
 
     # system configure sid opt val ?opt val...?
@@ -339,8 +344,8 @@ snit::type ::simlib::mam {
     #
     # Configures a system using option notation.
 
-    typemethod {system configure} {sid args} {
-        return [$type system set $sid [optlist2dict $args]]
+    method {system configure} {sid args} {
+        return [$self system set $sid [optlist2dict $args]]
     }
 
     # system id name
@@ -350,7 +355,7 @@ snit::type ::simlib::mam {
     # Returns the system's id given its name, or "" if no such system is
     # found.
 
-    typemethod {system id} {name} {
+    method {system id} {name} {
         foreach sid $db(sids) {
             if {[dict get $db(system-$sid) name] eq $name} {
                 return $sid
@@ -369,8 +374,8 @@ snit::type ::simlib::mam {
     #
     #    sid - The system ID
 
-    typemethod {system view} {sid} {
-        set view [$type system get $sid]
+    method {system view} {sid} {
+        set view [$self system get $sid]
 
         dict set view sid $sid
 
@@ -384,13 +389,13 @@ snit::type ::simlib::mam {
 
     
     #-------------------------------------------------------------------
-    # Topic typemethods
+    # Topic methods
 
     # topic ids
     #
     # Returns a list of topic IDs (tids)
 
-    typemethod {topic ids} {} {
+    method {topic ids} {} {
         return $db(tids)
     }
 
@@ -398,7 +403,7 @@ snit::type ::simlib::mam {
     #
     # Returns a dictionary $tid => $name for all belief topics.
 
-    typemethod {topic namedict} {} {
+    method {topic namedict} {} {
         set ndict [dict create]
         foreach tid $db(tids) {
             dict set ndict $tid [dict get $db(topic-$tid) name]
@@ -413,8 +418,8 @@ snit::type ::simlib::mam {
     #
     # Adds a new topic, returning the ID.
 
-    typemethod {topic add} {tid} {
-        assert {![$type topic exists $tid]}
+    method {topic add} {tid} {
+        assert {![$self topic exists $tid]}
 
         lappend db(tids) $tid
 
@@ -422,7 +427,7 @@ snit::type ::simlib::mam {
             [dict create name "Topic $tid" {*}$defaultTopic]
 
         # Mark data changed
-        MarkChanged
+        $self MarkChanged
 
         return $tid
     }
@@ -437,8 +442,8 @@ snit::type ::simlib::mam {
     #
     # Set topic attributes.
 
-    typemethod {topic set} {tid args} {
-        SaveAttributes topic topic-$tid {} [args2dict $args] 
+    method {topic set} {tid args} {
+        $self SaveAttributes topic topic-$tid {} [args2dict $args] 
     }
 
     # topic get tid ?attr?
@@ -449,8 +454,8 @@ snit::type ::simlib::mam {
     # Returns the value of the named attribute, or the whole dictionary
     # if $attr is omitted.
 
-    typemethod {topic get} {tid {attr ""}} {
-        return [GetAttributes $db(topic-$tid) $attr]
+    method {topic get} {tid {attr ""}} {
+        return [$self GetAttributes $db(topic-$tid) $attr]
     }
 
     # topic delete tid
@@ -461,7 +466,7 @@ snit::type ::simlib::mam {
     # decrements the ID counter.  That way, [topic delete] can be used
     # to undo [topic add].  Returns the undo data for [topic undelete].
 
-    typemethod {topic delete} {tid} {
+    method {topic delete} {tid} {
         # FIRST, begin to accumulate the undo data.
         set undoData [list $tid $db(tids) $db(topic-$tid)]
 
@@ -478,7 +483,7 @@ snit::type ::simlib::mam {
         }
 
         # Mark data changed
-        MarkChanged
+        $self MarkChanged
 
         return $undoData
     }
@@ -491,7 +496,7 @@ snit::type ::simlib::mam {
     # all beliefs, under normal undo conditions, and returns the
     # topic ID.
 
-    typemethod {topic undelete} {undoData} {
+    method {topic undelete} {undoData} {
         # FIRST, get the topic ID.
         set tid [lindex $undoData 0]
 
@@ -507,7 +512,7 @@ snit::type ::simlib::mam {
         }
 
         # NEXT, mark changed
-        MarkChanged
+        $self MarkChanged
 
         # NEXT, return the topic ID.
         return $tid
@@ -519,7 +524,7 @@ snit::type ::simlib::mam {
     #
     # Returns 1 if there's a topic with the given ID, and 0 otherwise.
 
-    typemethod {topic exists} {tid} {
+    method {topic exists} {tid} {
         return [info exists db(topic-$tid)]
     }
 
@@ -530,8 +535,8 @@ snit::type ::simlib::mam {
     #
     # Returns an attribute using option notation.
 
-    typemethod {topic cget} {tid opt} {
-        return [$type topic get $tid [string range $opt 1 end]]
+    method {topic cget} {tid opt} {
+        return [$self topic get $tid [string range $opt 1 end]]
     }
 
     # topic configure tid opt val ?opt val...?
@@ -542,8 +547,8 @@ snit::type ::simlib::mam {
     #
     # Configures a topic using option notation.
 
-    typemethod {topic configure} {tid args} {
-        return [$type topic set $tid [optlist2dict $args]]
+    method {topic configure} {tid args} {
+        return [$self topic set $tid [optlist2dict $args]]
     }
 
     # topic id name
@@ -553,7 +558,7 @@ snit::type ::simlib::mam {
     # Returns the topic's id given its name, or "" if no such topic is
     # found.
 
-    typemethod {topic id} {name} {
+    method {topic id} {name} {
         foreach tid $db(tids) {
             if {[dict get $db(topic-$tid) name] eq $name} {
                 return $tid
@@ -573,8 +578,8 @@ snit::type ::simlib::mam {
     #    tid   - The topic ID
     #    aflag - The affinity flag as a human-readable string
 
-    typemethod {topic view} {tid} {
-        set view [$type topic get $tid]
+    method {topic view} {tid} {
+        set view [$self topic get $tid]
 
         dict with view {}
 
@@ -586,7 +591,7 @@ snit::type ::simlib::mam {
     }
 
     #-------------------------------------------------------------------
-    # Belief typemethods
+    # Belief methods
 
     # belief set sid tid attr value ?attr value...?
     # belief set sid tid attrdict
@@ -599,7 +604,7 @@ snit::type ::simlib::mam {
     #
     # Set belief attributes.
 
-    typemethod {belief set} {sid tid args} {
+    method {belief set} {sid tid args} {
         # FIRST, ensure sid and tid exist.
         if {![info exists db(system-$sid)]} {
             error "Invalid system"
@@ -616,7 +621,7 @@ snit::type ::simlib::mam {
         }
 
         # NEXT, save the new attributes.
-        SaveAttributes belief beliefs-$sid $tid [args2dict $args] 
+        $self SaveAttributes belief beliefs-$sid $tid [args2dict $args] 
     }
 
     # belief get sid tid ?attr?
@@ -628,14 +633,14 @@ snit::type ::simlib::mam {
     # Returns the value of the named attribute, or the whole dictionary
     # if $attr is omitted.
 
-    typemethod {belief get} {sid tid {attr ""}} {
+    method {belief get} {sid tid {attr ""}} {
         if {[dict exists $db(beliefs-$sid) $tid]} {
             set bdict [dict get $db(beliefs-$sid) $tid]
         } else {
             set bdict [dict create {*}$defaultBelief]
         }
 
-        return [GetAttributes $bdict $attr]
+        return [$self GetAttributes $bdict $attr]
     }
 
     # belief cget sid tid opt
@@ -646,8 +651,8 @@ snit::type ::simlib::mam {
     #
     # Returns an attribute using option notation.
 
-    typemethod {belief cget} {sid tid opt} {
-        return [$type belief get $sid $tid [string range $opt 1 end]]
+    method {belief cget} {sid tid opt} {
+        return [$self belief get $sid $tid [string range $opt 1 end]]
     }
 
     # belief configure sid tid opt val ?opt val...?
@@ -659,8 +664,8 @@ snit::type ::simlib::mam {
     #
     # Configures a belief using option notation.
 
-    typemethod {belief configure} {sid tid args} {
-        return [$type belief set $sid $tid [optlist2dict $args]]
+    method {belief configure} {sid tid args} {
+        return [$self belief set $sid $tid [optlist2dict $args]]
     }
 
     # belief view sid tid
@@ -674,8 +679,8 @@ snit::type ::simlib::mam {
     #    sid - The system ID
     #    tid - The belief ID
 
-    typemethod {belief view} {sid tid} {
-        set view [$type belief get $sid $tid]
+    method {belief view} {sid tid} {
+        set view [$self belief get $sid $tid]
 
         set p [dict get $view position]
         set e [dict get $view emphasis]
@@ -703,9 +708,9 @@ snit::type ::simlib::mam {
     #
     # Returns the affinity of sid1 for sid2, computing it if need be.
 
-    typemethod affinity {sid1 sid2} {
+    method affinity {sid1 sid2} {
         if {![dict exists $cache affinity $sid1 $sid2]} {
-            $type ComputeAffinity $sid1 $sid2
+            $self ComputeAffinity $sid1 $sid2
         }
 
         return [dict get $cache affinity $sid1 $sid2]
@@ -717,9 +722,9 @@ snit::type ::simlib::mam {
     # based on the topics for which the affinity flag is set.
     # Clears the cache before proceeding.
 
-    typemethod compute {} {
+    method compute {} {
         set cache [dict create]
-        $type ComputeAffinity $db(sids) $db(sids)
+        $self ComputeAffinity $db(sids) $db(sids)
     }
 
     # ComputeAffinity asids bsids
@@ -729,10 +734,10 @@ snit::type ::simlib::mam {
     #
     # Computes affinity.ab for all systems A and all systems B.
 
-    typemethod ComputeAffinity {asids bsids} {
+    method ComputeAffinity {asids bsids} {
         # FIRST, get the affinity topics and compute eta.playbox.
-        set atids      [$type Cache_atids]
-        set etaPlaybox [$type Cache_etaPlaybox]
+        set atids      [$self Cache_atids]
+        set etaPlaybox [$self Cache_etaPlaybox]
 
         # NEXT, if we have no affinity tactics we're done.  All affinities
         # are 1.0.
@@ -756,15 +761,15 @@ snit::type ::simlib::mam {
 
                 let eta {$etaPlaybox * min($theta1,$theta2)}
 
-                $type Cache_PTau $s1 $atids
-                $type Cache_PTau $s2 $atids
+                $self Cache_PTau $s1 $atids
+                $self Cache_PTau $s2 $atids
 
                 set P1  [dict get $cache P $s1]
                 set tau [dict get $cache tau $s1]
                 set P2  [dict get $cache P $s2]
 
                 dict set cache affinity $s1 $s2 \
-                   [Affinity $eta $P1 $tau $P2]
+                   [$self AffinityFunc $eta $P1 $tau $P2]
             }
         }
     }
@@ -773,7 +778,7 @@ snit::type ::simlib::mam {
     #
     # Returns the list of affinity topics, using the cache.
 
-    typemethod Cache_atids {} {
+    method Cache_atids {} {
         if {![dict exists $cache atids]} {
             set atids [list]
             foreach tid $db(tids) {
@@ -791,9 +796,9 @@ snit::type ::simlib::mam {
     #
     # Returns etaPlaybox for the affinity topics.
 
-    typemethod Cache_etaPlaybox {} {
+    method Cache_etaPlaybox {} {
         if {![dict exists $cache etaPlaybox]} {
-            dict set cache etaPlaybox [etaPlaybox [$type Cache_atids]]
+            dict set cache etaPlaybox [$self EtaPlaybox [$self Cache_atids]]
         }
 
         return [dict get $cache etaPlaybox]
@@ -807,7 +812,7 @@ snit::type ::simlib::mam {
     # Caches the list of P and tau values for the system, given the
     # affinity topics.  Does nothing if the data is already cached.
 
-    typemethod Cache_PTau {sid atids} {
+    method Cache_PTau {sid atids} {
         if {[dict exists $cache P $sid]} {
             return
         }
@@ -817,7 +822,7 @@ snit::type ::simlib::mam {
 
         foreach tid $atids {
             set rel [dict get $db(topic-$tid) relevance]
-            lassign [getBelief $sid $tid] pos emph
+            lassign [$self GetBelief $sid $tid] pos emph
 
             lappend pList   [expr {$pos*$rel}]
             lappend tauList $emph
@@ -841,14 +846,14 @@ snit::type ::simlib::mam {
     # implicit topics implied by the playbox commonality setting
     # and the system's and hook's system commonality.
 
-    typemethod congruence {sid theta hook} {
+    method congruence {sid theta hook} {
         # FIRST, if there are no topics in the hook, return 0.0.
         if {[dict size $hook] == 0} {
             return 0.0
         }
 
         # NEXT, compute eta.playbox for the topics in the topic set.
-        set etaPlaybox [etaPlaybox [dict keys $hook]]
+        set etaPlaybox [$self EtaPlaybox [dict keys $hook]]
 
         # NEXT, get sid's entity commonality, and compute eta.
 
@@ -862,7 +867,7 @@ snit::type ::simlib::mam {
 
         foreach tid [dict keys $hook] {
             set rel [dict get $db(topic-$tid) relevance]
-            lassign [getBelief $sid $tid] pos emph
+            lassign [$self GetBelief $sid $tid] pos emph
 
             lappend ePos [expr {$rel * $pos}]
             lappend hPos [expr {$rel * [dict get $hook $tid]}]
@@ -870,12 +875,12 @@ snit::type ::simlib::mam {
 
         }
 
-        return [Affinity $eta $ePos $tau $hPos]
+        return [$self AffinityFunc $eta $ePos $tau $hPos]
     }
 
 
 
-    # getBelief sid tid
+    # GetBelief sid tid
     #
     # sid  - A system ID
     # tid  - A topic ID
@@ -883,7 +888,7 @@ snit::type ::simlib::mam {
     # Returns a list of the position and emphasis for the belief, 
     # providing the default values if nothing's been set.
 
-    proc getBelief {sid tid} {
+    method GetBelief {sid tid} {
         if {[dict exists $db(beliefs-$sid) $tid]} {
             set bdict [dict get $db(beliefs-$sid) $tid]
         } else {
@@ -895,13 +900,13 @@ snit::type ::simlib::mam {
             [dict get $bdict emphasis]
     }
 
-    # etaPlaybox tlist
+    # EtaPlaybox tlist
     #
     # tlist   - A list of topics
     #
     # Computes the playbox commonality for the topics in the tlist.
 
-    proc etaPlaybox {tlist} {
+    method EtaPlaybox {tlist} {
         # FIRST, retrieve gamma and compute eta.playbox.
         set gamma [dict get $db(playbox) gamma]
 
@@ -917,7 +922,7 @@ snit::type ::simlib::mam {
     }
 
     
-    # Affinity $eta pfList eList pgList
+    # AffinityFunc eta pfList eList pgList
     #
     # eta     - A measure of the commonality between the entities
     # pfList  - A list of positions for entity f
@@ -931,7 +936,7 @@ snit::type ::simlib::mam {
     # NOTE: The eta and positions have already been modified by topic
     # relevance.
 
-    proc Affinity {eta pfList eList pgList} {
+    method AffinityFunc {eta pfList eList pgList} {
         # FIRST, set epsilon.  This could be a parmset parameter, but
         # there seems little need to adjust it.  Note that all of the 
         # numbers we're comparing have absolute values less than or 
@@ -1052,7 +1057,7 @@ snit::type ::simlib::mam {
     #
     # Debugging dump
 
-    typemethod dump {} {
+    method dump {} {
         set out ""
         append out "playbox:     $db(playbox)\n"
         append out "sids:        $db(sids)\n"
@@ -1067,7 +1072,7 @@ snit::type ::simlib::mam {
             append out "\n"
             append out "system-$sid: $db(system-$sid)\n"
             foreach tid $db(tids) {
-                append out "belief $tid: [getBelief $sid $tid]]\n"
+                append out "belief $tid: [$self GetBelief $sid $tid]]\n"
             }
         }
 
@@ -1102,7 +1107,7 @@ snit::type ::simlib::mam {
     # Saves the attributes in the db() dictionary.  Verifies
     # attribute names.
 
-    proc SaveAttributes {etype dictname keylist adict} {
+    method SaveAttributes {etype dictname keylist adict} {
         # FIRST, verify that the dictname exists
         if {![info exists db($dictname)]} {
             error "Invalid $etype"
@@ -1118,7 +1123,7 @@ snit::type ::simlib::mam {
         }
 
         # NEXT, clear the cache; any computation might be invalid.
-        MarkChanged
+        $self MarkChanged
     }
 
     # GetAttributes adict attr
@@ -1128,7 +1133,7 @@ snit::type ::simlib::mam {
     #
     # Retrieves the named attribute, or the whole dictionary if "".
 
-    proc GetAttributes {adict attr} {
+    method GetAttributes {adict attr} {
         if {$attr eq ""} {
             return $adict
         } else {
@@ -1189,7 +1194,7 @@ snit::type ::simlib::mam {
     # Returns a checkpoint of the non-RDB simulation data.  If 
     # -saved is specified, the data is marked unchanged.
 
-    typemethod checkpoint {{option ""}} {
+    method checkpoint {{option ""}} {
         if {$option eq "-saved"} {
             set db(changed) 0
         }
@@ -1199,15 +1204,15 @@ snit::type ::simlib::mam {
 
     # restore checkpoint ?-saved?
     #
-    # checkpoint - A string returned by the checkpoint typemethod
+    # checkpoint - A string returned by the checkpoint method
     #
     # Restores the non-RDB state of the module to that contained
     # in the checkpoint.  If -saved is specified, the data is marked
     # unchanged.
     
-    typemethod restore {checkpoint {option ""}} {
+    method restore {checkpoint {option ""}} {
         # FIRST, restore the checkpoint data
-        $type clear
+        $self clear
         array set db $checkpoint
 
         if {$option eq "-saved"} {
@@ -1222,7 +1227,7 @@ snit::type ::simlib::mam {
     # Syntax:
     #   changed
 
-    typemethod changed {} {
+    method changed {} {
         return $db(changed)
     }
 
@@ -1230,7 +1235,7 @@ snit::type ::simlib::mam {
     #
     # Sets the changed flag, and clears the cache.
 
-    proc MarkChanged {} {
+    method MarkChanged {} {
         set db(changed) 1
         set cache [dict create]
     }
