@@ -282,7 +282,7 @@ snit::widgetadaptor ::marsgui::mapcanvas {
 
     # -projection
     #
-    # A projection(i) object.  If not specified, a mapref(n) will be
+    # A projection(i) object.  If not specified, a maprect(n) will be
     # used.
 
     option -projection
@@ -418,7 +418,7 @@ snit::widgetadaptor ::marsgui::mapcanvas {
     #
     # Clears all content from the mapcanvas and reinitializes it to
     # display -map using -projection. If -projection
-    # is not defined, a mapref(n) instance will be used.
+    # is not defined, a maprect(n) instance will be used.
 
     method clear {} {
         # FIRST, delete all content
@@ -508,9 +508,6 @@ snit::widgetadaptor ::marsgui::mapcanvas {
             $self mode browse
 
             $self GetProjection
-
-            # Set the scroll region
-            $self region normal
         } else {
             # NEXT, get the projection.
             $self GetProjection
@@ -520,11 +517,10 @@ snit::widgetadaptor ::marsgui::mapcanvas {
                 -anchor nw                  \
                 -image  $zooms($info(zoom)) \
                 -tags   map
-            
-            # NEXT, get and set the scroll region
-            $self GetScrollRegions
-            $self region $info(region)
         }
+        
+        # NEXT, get and set the scroll region
+        $self ScrollConfigure
         
         # NEXT, add the layer marker, to separate nbhoods from
         # icons.  Nbhoods will be drawn below it, icons above it.
@@ -565,7 +561,7 @@ snit::widgetadaptor ::marsgui::mapcanvas {
 
             # FIRST, create one if we don't have one.
             if {[llength [info command $proj]] == 0} {
-                mapref $proj
+                maprect $proj
             }
 
             # NEXT, if we have a map use the map dimensions; otherwise
@@ -598,8 +594,8 @@ snit::widgetadaptor ::marsgui::mapcanvas {
             # x1,y1 = 0,0
             lassign $bbox x1 y1 x2 y2
         } else {
-            set x2 [expr {$info(zoom)*[$proj cget -width]}]
-            set y2 [expr {$info(zoom)*[$proj cget -height]}]
+            set x2 [expr {$info(zoom)/100.0*[$proj cget -width]}]
+            set y2 [expr {$info(zoom)/100.0*[$proj cget -height]}]
         }
 
         # Scroll region is larger of window size or canvas size
@@ -1298,8 +1294,8 @@ snit::widgetadaptor ::marsgui::mapcanvas {
     # Creates an icon at the specified location, with the specified
     # options.  The option types are icontype-specific.
     #
-    # The mappoint can be specified as a mapref or as "mx my"; the
-    # latter can be passed as one or two arguments.
+    # The mappoint can be specified as a map reference string or as 
+    # "mx my"; the latter can be passed as one or two arguments.
     #
     # Returns the new icon's ID, which will be the first tag on the icon.
 
@@ -1475,7 +1471,8 @@ snit::widgetadaptor ::marsgui::mapcanvas {
     # icon moveto id mappoint
     #
     # id          An icon id
-    # mappoint    A location in map units or mapref, as for icon create
+    # mappoint    A location in map units or a map reference string, 
+    #             as for icon create
 
     method {icon moveto} {id args} {
         require {[$self icon exists $id]} "no such icon: $id"
@@ -1523,8 +1520,8 @@ snit::widgetadaptor ::marsgui::mapcanvas {
     # Creates a neighborhood with the specified reference point and
     # polygon.
     #
-    # The refpoint can be specified as a mapref or as "mx my"; the
-    # latter can be passed as one or two arguments.
+    # The refpoint can be specified as a map reference string or as "mx my";
+    # the latter can be passed as one or two arguments.
     #
     # The polygon can be specified as a one argument, a list of 
     # map refs or map coordinates, or as individual map refs or map 
@@ -1772,8 +1769,8 @@ snit::widgetadaptor ::marsgui::mapcanvas {
     # argvar    Argument list variable
     #
     # Reads one map point from the specified list.  A map point can
-    # be specified as a mapref, or as a coordinate pair in map units
-    # passed as one or two arguments.
+    # be specified as a map referencd string, or as a coordinate pair in 
+    # map units passed as one or two arguments.
 
     method GetMapPoint {argvar} {
         upvar $argvar args
@@ -1849,7 +1846,12 @@ snit::widgetadaptor ::marsgui::mapcanvas {
     # * No cached image exists for this factor
 
     method ScaleMap {factor} {
-        # FIRST, update the GUI, and set the watch cursor
+        # FIRST, if the canvas has no map, nothing to do
+        if {$options(-map) eq ""} {
+            return
+        }
+
+        # NEXT, update the GUI, and set the watch cursor
         set oldCursor [$hull cget -cursor]
         $hull configure -cursor watch
         update idletasks
