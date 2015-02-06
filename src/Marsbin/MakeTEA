@@ -11,13 +11,23 @@
 #    all       Configure and build the TEA package.
 #    clean     Delete build products.
 #
+# BUILDING ON OSX:
+#    * autoconf can't find its files given the default Xcode installation.
+#      To fix it, do this:
+#
+#         sudo ln -s  /Developer/usr/share/autoconf /usr/share
+#
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 # Settings
 
 KITE_OS         = $(strip $(shell kite info -os))
-KITE_TCL_HOME   = $(strip $(shell kite info -tclhome))
+ifeq "$(KITE_OS)" "osx"
+    KITE_TCL_LIB = /Library/Frameworks/Tcl.framework
+else
+    KITE_TCL_LIB = $(strip $(shell kite info -tclhome))/lib
+endif
 KITE_ROOT       = $(strip $(shell kite info -root))
 KITE_VERSION    = $(strip $(shell kite info -version))
 
@@ -31,7 +41,8 @@ all:
 	sed 's/AC_INIT\(.*\)/AC_INIT([Marsbin],[$(KITE_VERSION)])/' configure.in.in >configure.in
 	autoconf
 	chmod +x configure
-	./configure --with-tcl=$(KITE_TCL_HOME)/lib --prefix $(PREFIX) --exec-prefix $(PREFIX)
+    # On OSX, Use --with-tcl=/Library/Frameworks/Tcl.framework
+	./configure --with-tcl=$(KITE_TCL_LIB) --prefix $(PREFIX) --exec-prefix $(PREFIX)
 	make clean ; make ; make install
 	mv $(VERSIONDIR) $(NORMALDIR)
 
