@@ -9,6 +9,7 @@
 *.a
 *.dll
 *.so
+*.dylib
 /docs/*.html
 /docs/*/*.html
 *.docx
