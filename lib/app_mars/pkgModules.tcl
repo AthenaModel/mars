@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_mars 3.0.11
+package provide app_mars 3.0.12
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
