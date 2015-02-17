@@ -65,6 +65,32 @@ oo::class create myclass {
 }
 </example>
 
+<defitem "metadict" {metadict <i name dict>}>
+
+Defines a class metadata variable whose value is a dictionary.  Such
+variables are just like normal <iref meta> variables, except that the
+automatically generated methods have an optional <i key> argument, allowing
+for dictionary look ups. For example,<p>
+
+<example>
+oo::class create myclass {
+    meta lookup { 
+        A 4.0
+        B 3.0
+        C 2.0
+        D 1.0
+        F 0.0
+    }
+}
+
+set dict [myclass lookup]
+set points [myclass lookup B]
+
+set obj [myclass new]
+set dict [$obj lookup]
+set points [$obj lookup B]
+</example>
+
 <defitem "typemethod" {typemethod <i>method arglist body</i>}>
 
 <b>Deprecated.</b> In class definitions, the syntax "<tt self method>" is

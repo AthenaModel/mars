@@ -92,6 +92,34 @@ proc ::oo::define::meta {name value} {
     uplevel 1 [list method $name {} [format {[self class] %s} $name]]
 }
 
+# metadict name value
+#
+# name     - A metadata variable name
+# value    - The value of the variable
+# 
+# Defines class and instance methods that return the value.
+
+proc ::oo::define::metadict {name value} {
+    # Class Method
+    uplevel 1 [list self method $name {{key ""}} [format {
+        set value [list %s]
+        if {$key eq ""} {
+            return $value
+        } else {
+            return [dict get $value $key]
+        }
+    } $value]]
+
+    # Instance Method
+    uplevel 1 [list method $name {{key ""}} [format {
+        if {$key eq ""} {
+            return [[self class] %s]
+        } else {
+            return [[self class] %s $key]
+        }
+    } $name $name]]
+}
+
 #-----------------------------------------------------------------------
 # Helper commands for use in method bodies
 #
