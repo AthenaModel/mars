@@ -1,5 +1,13 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.12 -- 17 February 2015>
+
+This build fixes a bug in oohelper(n)'s "metadict" command.<p>
+
+<ul>
+<li> Issue #38: metadict fails for multi-line dicts
+</ul><p>
+
 <h3 Mars v3.0.11 -- 17 February 2015>
 
 This build adds a number of unrelated changes:<p>
