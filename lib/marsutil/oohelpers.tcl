@@ -102,7 +102,8 @@ proc ::oo::define::meta {name value} {
 proc ::oo::define::metadict {name value} {
     # Class Method
     uplevel 1 [list self method $name {{key ""}} [format {
-        set value [list %s]
+        set value {%s}
+
         if {$key eq ""} {
             return $value
         } else {
