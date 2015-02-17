@@ -1,5 +1,18 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.11 -- 17 February 2015>
+
+This build adds a number of unrelated changes:<p>
+
+<ul>
+<li> Issue #30: order_flunky shouldn't send notifier(n) events
+<li> Issue #31: order_dialog(n): flunky <tag Sync>
+<li> Issue #32: Set defaults of maprect(n) object to Caspian Sea area.
+<li> Issue #33: Convert mam(n) to a type with instances.
+<li> Issue #37: metadict tclOO helper enhancement
+</ul><p>
+
+
 <h3 Mars v3.0.10 -- 2 February 2015>
 
 This build adds automatic variable declaration to order_set(n).<p>
