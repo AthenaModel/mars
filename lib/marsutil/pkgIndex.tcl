@@ -12,7 +12,7 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded marsutil 3.0.12 [list source [file join $dir pkgModules.tcl]]
+package ifneeded marsutil 3.0.13 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end
 
 
