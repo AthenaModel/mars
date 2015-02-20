@@ -58,13 +58,14 @@ snit::type ::marsgui::dynabox {
 
     # popup option value....
     #
-    # -formtype name         Dynaform name
-    # -helpcmd cmd           Help command
-    # -initvalue dict        Initial value for the form
-    # -oktext text           Text for the OK button.
-    # -parent window         The dialog box appears over the parent window
-    # -title string          Title of the dialog box
-    # -validatecmd cmd       Validation command
+    # -resources dict   - Resources dictionary
+    # -formtype name    - Dynaform name
+    # -helpcmd cmd      - Help command
+    # -initvalue dict   - Initial value for the form
+    # -oktext text      - Text for the OK button.
+    # -parent window    - The dialog box appears over the parent window
+    # -title string     - Title of the dialog box
+    # -validatecmd cmd  - Validation command
     #
     # Pops up the dialog box.  The OK and Cancel buttons will appear at 
     # the bottom, left to right, packed to the right.  The OK button will
@@ -178,7 +179,9 @@ snit::type ::marsgui::dynabox {
         set tinfo(errorText) ""
 
         # NEXT, set the -form, and add the -initvalue.
-        $dialog.form configure -formtype $opts(-formtype)
+        $dialog.form configure \
+            -resources $opts(-resources) \
+            -formtype  $opts(-formtype)
         
         if {$opts(-initvalue) ne ""} {
             $dialog.form set $opts(-initvalue)
@@ -209,6 +212,7 @@ snit::type ::marsgui::dynabox {
     typemethod ParseOptions {arglist} {
         # FIRST, set the option defaults
         array set opts {
+            -resources     {}
             -formtype      ""
             -helpcmd       ""
             -initvalue     {}
@@ -223,6 +227,7 @@ snit::type ::marsgui::dynabox {
             set opt [::marsutil::lshift arglist]
 
             switch -exact -- $opt {
+                -resources     -
                 -formtype      -
                 -helpcmd       -
                 -initvalue     -

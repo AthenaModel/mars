@@ -42,6 +42,11 @@ Pressing the window manager's close button
 is the same as pressing "Cancel".<p> 
 
 <deflist options>
+<defopt {-resources <i>rdict</i>}>
+
+Specifies a <tt -resources> dictionary to pass along to the 
+<xref dynaview(n)> widget, as required by the <tt -formtype>.<p>
+
 <defopt {-formtype <i>ftype</i>}>
 
 Names the <xref dynaform(n)> form type to display in the dialog.<p>
