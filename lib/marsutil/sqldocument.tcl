@@ -100,9 +100,7 @@ snit::type ::marsutil::sqldocument {
     typemethod {sqlsection functions} {} {
         set functions [list]
 
-        lappend functions dicteq              [list ::marsutil::dicteq]
         lappend functions dictget             [myproc dictget]
-        lappend functions dictglob            [list ::marsutil::dictglob]
         lappend functions error               [list ::error]
         lappend functions format              [list ::format]
         lappend functions joinlist            [list ::join]

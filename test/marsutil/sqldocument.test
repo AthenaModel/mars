@@ -214,7 +214,7 @@ test sqlsection_tempschema-1.1 {Base schema is defined} -body {
 
 test sqlsection_functions-1.1 {Standard functions are defined} -body {
     sqldocument sqlsection functions
-} -result {dicteq ::marsutil::dicteq dictget ::marsutil::sqldocument::dictget dictglob ::marsutil::dictglob error ::error format ::format joinlist ::join nonempty ::marsutil::sqldocument::NonEmpty percent ::marsutil::percent wallclock {::clock seconds} sqldocument_grab ::marsutil::sqldocument::GrabFunc sqldocument_monitor ::marsutil::sqldocument::RowMonitorFunc}
+} -result {dictget ::marsutil::sqldocument::dictget error ::error format ::format joinlist ::join nonempty ::marsutil::sqldocument::NonEmpty percent ::marsutil::percent wallclock {::clock seconds} sqldocument_grab ::marsutil::sqldocument::GrabFunc sqldocument_monitor ::marsutil::sqldocument::RowMonitorFunc}
 
 #-------------------------------------------------------------------
 # Constructor

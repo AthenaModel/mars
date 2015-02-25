@@ -64,22 +64,10 @@ may be used in addition to those defined by SQLite3:<p>
 
 <deflist sql_functions>
 
-<defitem dicteq {dicteq(<i>dict</i>,<i>key</i>,<i>value</i>,...)}>
-
-This function maps to the <xref marsmisc(n) dicteq> command.  It is
-useful for doing queries against a column whose value is a Tcl
-dictionary.<p>
-
 <defitem dictget {dictget(<i>dict</i>,<i>key</i>)}>
 
 This function retrieves the <i>key</i>'s value from the <i>dict</i>,
 or the empty string if the <i>key</i> is not found.  It is
-useful for doing queries against a column whose value is a Tcl
-dictionary.<p>
-
-<defitem dictglob {dictglob(<i>dict</i>,<i>key</i>,<i>pattern</i>,...)}>
-
-This function maps to the <xref marsmisc(n) dictglob> command.  It is
 useful for doing queries against a column whose value is a Tcl
 dictionary.<p>
 
