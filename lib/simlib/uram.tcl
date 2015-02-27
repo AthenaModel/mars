@@ -2691,7 +2691,11 @@ snit::type ::simlib::uram {
     method {saveable restore} {state {option ""}} {
         # FIRST, restore the state.
         array unset db
-        array set db $state
+        array set db $clearedDB
+
+        if {[llength $state] > 0} {
+            array set db $state
+        }
 
         # NEXT, set the changed flag
         if {$option eq "-saved"} {

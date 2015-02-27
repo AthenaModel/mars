@@ -35,6 +35,9 @@ which was originally returned by <iref checkpoint>.<p>
 By default, this command should set the object's unsaved changes flag;
 if <code>-saved</code> is given, then the flag should be cleared.<p>
 
+If the <i>checkpoint</i> is the empty string, the object should reset
+itself to its initial state.<p>
+
 <defitem changed {<i>saveable</i> changed}>
 
 Returns 1 if the <i>saveable</i> has data that must be saved, and 0
@@ -55,7 +58,8 @@ implements the interface as subcommands of the singleton.<p>
 <pre>
 snit::type sample {
     ...
-
+    typevariable initialData -array { ... }
+    ...
     typevariable info -array { ... }
 
     typemethod checkpoint {{option ""}} {
@@ -64,6 +68,7 @@ snit::type sample {
 
     typemethod restore {checkpoint {option ""}} {
         array unset info
+        array set info $initialData
         array set info $checkpoint
     }
 
