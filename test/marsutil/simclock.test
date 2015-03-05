@@ -132,7 +132,7 @@ proc setup {} {
     set logList [list]
 
     # NEXT, create the simclock
-    simclockType myclock \
+    ::marsutil::simclock myclock \
         -logger     [namespace current]::logger \
         -advancecmd [namespace current]::advance
 
@@ -178,7 +178,7 @@ proc cleanup {} {
 # Creation
 
 test creation-1.1 {Default T0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -t0
 } -cleanup {
@@ -186,7 +186,7 @@ test creation-1.1 {Default T0} -setup {
 } -result {010000ZJAN70}
 
 test creation-1.1 {Default -zuluvar0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -zuluvar
 } -cleanup {
@@ -194,7 +194,7 @@ test creation-1.1 {Default -zuluvar0} -setup {
 } -result {}
 
 test creation-1.3 {Time starts at zero} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock now
 } -cleanup {
@@ -202,7 +202,7 @@ test creation-1.3 {Time starts at zero} -setup {
 } -result {0}
 
 test creation-1.4 {Zulu-time starts at -t0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock asZulu
 } -cleanup {
@@ -210,7 +210,7 @@ test creation-1.4 {Zulu-time starts at -t0} -setup {
 } -result {010000ZJAN70}
 
 test creation-1.5 {Decimal days start at 0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock asDays
 } -cleanup {
@@ -218,7 +218,7 @@ test creation-1.5 {Decimal days start at 0} -setup {
 } -result {0.0}
 
 test creation-1.6 {Decimal hours start at 0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock asHours
 } -cleanup {
@@ -226,7 +226,7 @@ test creation-1.6 {Decimal hours start at 0} -setup {
 } -result {0.0}
 
 test creation-1.7 {Tick is initially 1 minute} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -tick
 } -cleanup {
@@ -234,7 +234,7 @@ test creation-1.7 {Tick is initially 1 minute} -setup {
 } -result {1 minute}
 
 test creation-1.8 {Advance command is initially empty} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -advancecmd
 } -cleanup {
@@ -242,7 +242,7 @@ test creation-1.8 {Advance command is initially empty} -setup {
 } -result {}
 
 test creation-1.9 {Request command is initially empty} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -requestcmd
 } -cleanup {
@@ -250,7 +250,7 @@ test creation-1.9 {Request command is initially empty} -setup {
 } -result {}
 
 test creation-1.10 {-ratiovar is initially empty} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -ratiovar
 } -cleanup {
@@ -258,7 +258,7 @@ test creation-1.10 {-ratiovar is initially empty} -setup {
 } -result {}
 
 test creation-1.11 {-actualratiovar is initially empty} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -actualratiovar
 } -cleanup {
@@ -266,7 +266,7 @@ test creation-1.11 {-actualratiovar is initially empty} -setup {
 } -result {}
 
 test creation-1.12 {-logger is initially empty} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -logger
 } -cleanup {
@@ -274,7 +274,7 @@ test creation-1.12 {-logger is initially empty} -setup {
 } -result {}
 
 test creation-1.13 {-logcomponent is initially "clock"} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock cget -logcomponent
 } -cleanup {
@@ -282,7 +282,7 @@ test creation-1.13 {-logcomponent is initially "clock"} -setup {
 } -result {clock}
 
 test creation-1.14 {ratio is initially 0.0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock ratio
 } -cleanup {
@@ -290,7 +290,7 @@ test creation-1.14 {ratio is initially 0.0} -setup {
 } -result {0.0}
 
 test creation-1.15 {actualratio is initially 0.0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock actualratio
 } -cleanup {
@@ -298,7 +298,7 @@ test creation-1.15 {actualratio is initially 0.0} -setup {
 } -result {0.0}
 
 test creation-1.16 {simclock is passive initially} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock isactive
 } -cleanup {
@@ -309,7 +309,7 @@ test creation-1.16 {simclock is passive initially} -setup {
 # advance
 
 test advance-1.1 {Time can advance by ticks.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set t1 [myclock advance 60]
     set t2 [myclock now]
@@ -320,7 +320,7 @@ test advance-1.1 {Time can advance by ticks.} -setup {
 } -result {60 60}
 
 test advance-1.2 {Time can advance to current time.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 0
 } -cleanup {
@@ -328,7 +328,7 @@ test advance-1.2 {Time can advance to current time.} -setup {
 } -result {0}
 
 test advance-2.1 {Can't manually advance while active} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     myclock start
 } -body {
     myclock advance 60
@@ -339,7 +339,7 @@ test advance-2.1 {Can't manually advance while active} -setup {
 } -result {Cannot advance simclock manually; simclock is active.}
 
 test advance-3.1 {Error on non-integer} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance now
 } -returnCodes {
@@ -352,7 +352,7 @@ test advance-3.1 {Error on non-integer} -setup {
 # step
 
 test step-1.1 {Time can step.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock step 60
     set t1 [myclock step 60]
@@ -364,7 +364,7 @@ test step-1.1 {Time can step.} -setup {
 } -result {120 120}
 
 test step-2.1 {Can't manually step while active} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     myclock start
 } -body {
     myclock step 60
@@ -375,7 +375,7 @@ test step-2.1 {Can't manually step while active} -setup {
 } -result {Cannot step simclock manually; simclock is active.}
 
 test step-3.1 {Error on non-integer} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock step now
 } -returnCodes {
@@ -385,7 +385,7 @@ test step-3.1 {Error on non-integer} -setup {
 } -result {expected integer ticks: "now"}
 
 test step-3.2 {Error on ticks greater than zero} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock step 0
 } -returnCodes {
@@ -399,7 +399,7 @@ test step-3.2 {Error on ticks greater than zero} -setup {
 # reset
 
 test reset-1.1 {Resetting sets time back to 0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set t1 [myclock now]
 
@@ -415,7 +415,7 @@ test reset-1.1 {Resetting sets time back to 0} -setup {
 } -result {0 60 0}
 
 test reset-2.1 {Resetting while active stops the clock}  -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     myclock start 20
 } -body {
     set list [list [myclock now] [myclock isactive]]
@@ -431,7 +431,7 @@ test reset-2.1 {Resetting while active stops the clock}  -setup {
 # tick
 
 test tick-1.1 {Advances time.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock tick
     myclock now
@@ -440,7 +440,7 @@ test tick-1.1 {Advances time.} -setup {
 } -result {1}
 
 test tick-1.2 {Calls the -advancecmd} -setup {
-    simclockType myclock \
+    ::marsutil::simclock myclock \
         -logger     [namespace current]::logger \
         -advancecmd [list [namespace current]::logger advance]
 } -body {
@@ -454,7 +454,7 @@ test tick-1.2 {Calls the -advancecmd} -setup {
 }
 
 test tick-2.1 {Can't tick while active} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     myclock start
 } -body {
     myclock tick
@@ -469,7 +469,7 @@ test tick-2.1 {Can't tick while active} -setup {
 # now
 
 test now-1.1 {now + offset} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock step 60
     list [myclock now] [myclock now 30] [myclock now -30]
@@ -484,7 +484,7 @@ test now-1.1 {now + offset} -setup {
 # tests.
 
 test tickspec-1.1 {Valid -ticks} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -tick {1 minute}
     myclock configure -tick {5 minutes}
@@ -499,7 +499,7 @@ test tickspec-1.1 {Valid -ticks} -setup {
 } -result {0}
 
 test tickspec-2.1 {Negative tick size} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -tick {-5 minutes}
 } -returnCodes {
@@ -509,7 +509,7 @@ test tickspec-2.1 {Negative tick size} -setup {
 } -result {invalid -tick value: Invalid value: "-5 minutes"}
 
 test tickspec-2.2 {Non-integer tick size} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -tick {nonesuch minutes}
 } -returnCodes {
@@ -519,7 +519,7 @@ test tickspec-2.2 {Non-integer tick size} -setup {
 } -result {invalid -tick value: Invalid value: "nonesuch minutes"}
 
 test tickspec-2.3 {Unknown units} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -tick {1 week}
 } -returnCodes {
@@ -529,7 +529,7 @@ test tickspec-2.3 {Unknown units} -setup {
 } -result {invalid -tick value: Invalid value: "1 week"}
 
 test tickspec-2.4 {value too long} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -tick {1 minute nonesuch}
 } -returnCodes {
@@ -539,7 +539,7 @@ test tickspec-2.4 {value too long} -setup {
 } -result {invalid -tick value: Invalid value: "1 minute nonesuch"}
 
 test tickspec-2.5 {time not 0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 5
     myclock configure -tick {1 minute}
@@ -574,7 +574,7 @@ test tickspec-2.5 {time not 0} -setup {
 # fromDays/toDays
 
 test days-1.1 {Days to ticks, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock fromDays 0.5
 } -cleanup {
@@ -582,7 +582,7 @@ test days-1.1 {Days to ticks, -tick 1 minute} -setup {
 } -result {720}
 
 test days-1.2 {Ticks to days. -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock toDays 720
 } -cleanup {
@@ -590,7 +590,7 @@ test days-1.2 {Ticks to days. -tick 1 minute} -setup {
 } -result {0.5}
 
 test days-1.3 {Invariance, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     invariant Days
 } -cleanup {
@@ -598,7 +598,7 @@ test days-1.3 {Invariance, -tick 1 minute} -setup {
 } -result {0}
 
 test days-2.1 {Days to ticks, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock fromDays 0.5
 } -cleanup {
@@ -606,7 +606,7 @@ test days-2.1 {Days to ticks, -tick 5 minutes} -setup {
 } -result {144}
 
 test days-2.2 {Ticks to days. -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock toDays 144
 } -cleanup {
@@ -614,7 +614,7 @@ test days-2.2 {Ticks to days. -tick 5 minutes} -setup {
 } -result {0.5}
 
 test days-2.3 {Invariance, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     invariant Days
 } -cleanup {
@@ -622,7 +622,7 @@ test days-2.3 {Invariance, -tick 5 minutes} -setup {
 } -result {0}
 
 test days-3.1 {Days to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock fromDays 0.5
 } -cleanup {
@@ -630,7 +630,7 @@ test days-3.1 {Days to ticks, -tick 1 hour} -setup {
 } -result {12}
 
 test days-3.2 {Ticks to days. -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock toDays 12
 } -cleanup {
@@ -638,7 +638,7 @@ test days-3.2 {Ticks to days. -tick 1 hour} -setup {
 } -result {0.5}
 
 test days-3.3 {Invariance, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hours}
+    ::marsutil::simclock myclock -tick {1 hours}
 } -body {
     invariant Days
 } -cleanup {
@@ -646,7 +646,7 @@ test days-3.3 {Invariance, -tick 1 hour} -setup {
 } -result {0}
 
 test days-4.1 {Days to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock fromDays 0.5
 } -cleanup {
@@ -654,7 +654,7 @@ test days-4.1 {Days to ticks, -tick 4 hours} -setup {
 } -result {3}
 
 test days-4.2 {Ticks to days. -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock toDays 3
 } -cleanup {
@@ -662,7 +662,7 @@ test days-4.2 {Ticks to days. -tick 4 hours} -setup {
 } -result {0.5}
 
 test days-4.3 {Invariance, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     invariant Days
 } -cleanup {
@@ -670,7 +670,7 @@ test days-4.3 {Invariance, -tick 4 hours} -setup {
 } -result {0}
 
 test days-5.1 {Whole days to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock fromDays 7
 } -cleanup {
@@ -678,7 +678,7 @@ test days-5.1 {Whole days to ticks, -tick 1 day} -setup {
 } -result {7}
 
 test days-5.2 {Fractional days to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     list [myclock fromDays 0.2] [myclock fromDays 0.7]
 } -cleanup {
@@ -686,7 +686,7 @@ test days-5.2 {Fractional days to ticks, -tick 1 day} -setup {
 } -result {0 1}
 
 test days-5.3 {Ticks to days. -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock toDays 7
 } -cleanup {
@@ -694,7 +694,7 @@ test days-5.3 {Ticks to days. -tick 1 day} -setup {
 } -result {7}
 
 test days-5.4 {Invariance, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     invariant Days
 } -cleanup {
@@ -702,7 +702,7 @@ test days-5.4 {Invariance, -tick 1 day} -setup {
 } -result {0}
 
 test days-6.1 {Whole days to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock fromDays 14
 } -cleanup {
@@ -710,7 +710,7 @@ test days-6.1 {Whole days to ticks, -tick 7 days} -setup {
 } -result {2}
 
 test days-6.2 {Fractional days to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     list [myclock fromDays 1] [myclock fromDays 6]
 } -cleanup {
@@ -718,7 +718,7 @@ test days-6.2 {Fractional days to ticks, -tick 7 days} -setup {
 } -result {0 1}
 
 test days-6.3 {Ticks to days. -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock toDays 3
 } -cleanup {
@@ -726,7 +726,7 @@ test days-6.3 {Ticks to days. -tick 7 days} -setup {
 } -result {21}
 
 test days-6.4 {Invariance, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     invariant Days
 } -cleanup {
@@ -737,7 +737,7 @@ test days-6.4 {Invariance, -tick 7 days} -setup {
 # fromHours/toHours
 
 test hours-1.1 {Hours to ticks, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock fromHours 0.5
 } -cleanup {
@@ -745,7 +745,7 @@ test hours-1.1 {Hours to ticks, -tick 1 minute} -setup {
 } -result {30}
 
 test hours-1.2 {Ticks to hours. -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock toHours 30
 } -cleanup {
@@ -753,7 +753,7 @@ test hours-1.2 {Ticks to hours. -tick 1 minute} -setup {
 } -result {0.5}
 
 test hours-1.3 {Invariance, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     invariant Hours
 } -cleanup {
@@ -761,7 +761,7 @@ test hours-1.3 {Invariance, -tick 1 minute} -setup {
 } -result {0}
 
 test hours-2.1 {Hours to ticks, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock fromHours 0.5
 } -cleanup {
@@ -769,7 +769,7 @@ test hours-2.1 {Hours to ticks, -tick 5 minutes} -setup {
 } -result {6}
 
 test hours-2.2 {Ticks to hours. -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock toHours 6
 } -cleanup {
@@ -777,7 +777,7 @@ test hours-2.2 {Ticks to hours. -tick 5 minutes} -setup {
 } -result {0.5}
 
 test hours-2.3 {Invariance, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     invariant Hours
 } -cleanup {
@@ -785,7 +785,7 @@ test hours-2.3 {Invariance, -tick 5 minutes} -setup {
 } -result {0}
 
 test hours-3.1 {Hours to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock fromHours 2
 } -cleanup {
@@ -793,7 +793,7 @@ test hours-3.1 {Hours to ticks, -tick 1 hour} -setup {
 } -result {2}
 
 test hours-3.2 {Fractional hours to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     list [myclock fromHours 0.2] [myclock fromHours 0.8]
 } -cleanup {
@@ -801,7 +801,7 @@ test hours-3.2 {Fractional hours to ticks, -tick 1 hour} -setup {
 } -result {0 1}
 
 test hours-3.3 {Ticks to hours. -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock toHours 12
 } -cleanup {
@@ -809,7 +809,7 @@ test hours-3.3 {Ticks to hours. -tick 1 hour} -setup {
 } -result {12}
 
 test hours-3.4 {Invariance, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hours}
+    ::marsutil::simclock myclock -tick {1 hours}
 } -body {
     invariant Hours
 } -cleanup {
@@ -817,7 +817,7 @@ test hours-3.4 {Invariance, -tick 1 hour} -setup {
 } -result {0}
 
 test hours-4.1 {Hours to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock fromHours 24
 } -cleanup {
@@ -825,7 +825,7 @@ test hours-4.1 {Hours to ticks, -tick 4 hours} -setup {
 } -result {6}
 
 test hours-4.2 {Hours to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     list [myclock fromHours 1] [myclock fromHours 3]
 } -cleanup {
@@ -833,7 +833,7 @@ test hours-4.2 {Hours to ticks, -tick 4 hours} -setup {
 } -result {0 1}
 
 test hours-4.3 {Ticks to hours. -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock toHours 3
 } -cleanup {
@@ -841,7 +841,7 @@ test hours-4.3 {Ticks to hours. -tick 4 hours} -setup {
 } -result {12}
 
 test hours-4.4 {Invariance, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     invariant Hours
 } -cleanup {
@@ -849,7 +849,7 @@ test hours-4.4 {Invariance, -tick 4 hours} -setup {
 } -result {0}
 
 test hours-5.1 {hours to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock fromHours 48
 } -cleanup {
@@ -857,7 +857,7 @@ test hours-5.1 {hours to ticks, -tick 1 day} -setup {
 } -result {2}
 
 test hours-5.2 {hours to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     list [myclock fromHours 4] [myclock fromHours 20]
 } -cleanup {
@@ -865,7 +865,7 @@ test hours-5.2 {hours to ticks, -tick 1 day} -setup {
 } -result {0 1}
 
 test hours-5.3 {Ticks to hours. -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock toHours 2
 } -cleanup {
@@ -873,7 +873,7 @@ test hours-5.3 {Ticks to hours. -tick 1 day} -setup {
 } -result {48}
 
 test hours-5.4 {Invariance, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     invariant Hours
 } -cleanup {
@@ -881,7 +881,7 @@ test hours-5.4 {Invariance, -tick 1 day} -setup {
 } -result {0}
 
 test hours-6.1 {hours to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock fromHours 336
 } -cleanup {
@@ -889,7 +889,7 @@ test hours-6.1 {hours to ticks, -tick 7 days} -setup {
 } -result {2}
 
 test hours-6.2 {hours to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     list [myclock fromHours 8] [myclock fromHours 160]
 } -cleanup {
@@ -897,7 +897,7 @@ test hours-6.2 {hours to ticks, -tick 7 days} -setup {
 } -result {0 1}
 
 test hours-6.3 {Ticks to hours. -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock toHours 2
 } -cleanup {
@@ -905,7 +905,7 @@ test hours-6.3 {Ticks to hours. -tick 7 days} -setup {
 } -result {336}
 
 test hours-6.4 {Invariance, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     invariant Hours
 } -cleanup {
@@ -916,7 +916,7 @@ test hours-6.4 {Invariance, -tick 7 days} -setup {
 # fromMinutes/toMinutes
 
 test minutes-1.1 {Minutes to ticks, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock fromMinutes 30
 } -cleanup {
@@ -924,7 +924,7 @@ test minutes-1.1 {Minutes to ticks, -tick 1 minute} -setup {
 } -result {30}
 
 test minutes-1.2 {Ticks to minutes. -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock toMinutes 30
 } -cleanup {
@@ -932,7 +932,7 @@ test minutes-1.2 {Ticks to minutes. -tick 1 minute} -setup {
 } -result {30}
 
 test minutes-1.3 {Invariance, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     invariant Minutes
 } -cleanup {
@@ -940,7 +940,7 @@ test minutes-1.3 {Invariance, -tick 1 minute} -setup {
 } -result {0}
 
 test minutes-2.1 {Minutes to ticks, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock fromMinutes 30
 } -cleanup {
@@ -948,7 +948,7 @@ test minutes-2.1 {Minutes to ticks, -tick 5 minutes} -setup {
 } -result {6}
 
 test minutes-2.2 {Ticks to minutes. -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock toMinutes 6
 } -cleanup {
@@ -956,7 +956,7 @@ test minutes-2.2 {Ticks to minutes. -tick 5 minutes} -setup {
 } -result {30}
 
 test minutes-2.3 {Invariance, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     invariant Minutes
 } -cleanup {
@@ -964,7 +964,7 @@ test minutes-2.3 {Invariance, -tick 5 minutes} -setup {
 } -result {0}
 
 test minutes-3.1 {Minutes to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock fromMinutes 120
 } -cleanup {
@@ -972,7 +972,7 @@ test minutes-3.1 {Minutes to ticks, -tick 1 hour} -setup {
 } -result {2}
 
 test minutes-3.2 {hours to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     list [myclock fromMinutes 5] [myclock fromMinutes 55]
 } -cleanup {
@@ -980,7 +980,7 @@ test minutes-3.2 {hours to ticks, -tick 1 hour} -setup {
 } -result {0 1}
 
 test minutes-3.3 {Ticks to minutes. -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock toMinutes 2
 } -cleanup {
@@ -988,7 +988,7 @@ test minutes-3.3 {Ticks to minutes. -tick 1 hour} -setup {
 } -result {120}
 
 test minutes-3.4 {Invariance, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hours}
+    ::marsutil::simclock myclock -tick {1 hours}
 } -body {
     invariant Minutes
 } -cleanup {
@@ -996,7 +996,7 @@ test minutes-3.4 {Invariance, -tick 1 hour} -setup {
 } -result {0}
 
 test minutes-4.1 {Minutes to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock fromMinutes 720
 } -cleanup {
@@ -1004,7 +1004,7 @@ test minutes-4.1 {Minutes to ticks, -tick 4 hours} -setup {
 } -result {3}
 
 test minutes-4.2 {Minutes to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     list [myclock fromMinutes 40] [myclock fromMinutes 200]
 } -cleanup {
@@ -1012,7 +1012,7 @@ test minutes-4.2 {Minutes to ticks, -tick 4 hours} -setup {
 } -result {0 1}
 
 test minutes-4.3 {Ticks to minutes. -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock toMinutes 2
 } -cleanup {
@@ -1020,7 +1020,7 @@ test minutes-4.3 {Ticks to minutes. -tick 4 hours} -setup {
 } -result {480}
 
 test minutes-4.4 {Invariance, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     invariant Minutes
 } -cleanup {
@@ -1028,7 +1028,7 @@ test minutes-4.4 {Invariance, -tick 4 hours} -setup {
 } -result {0}
 
 test minutes-5.1 {Minutes to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock fromMinutes 2880
 } -cleanup {
@@ -1036,7 +1036,7 @@ test minutes-5.1 {Minutes to ticks, -tick 1 day} -setup {
 } -result {2}
 
 test minutes-5.2 {Minutes to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     list [myclock fromMinutes 40] [myclock fromMinutes 1400]
 } -cleanup {
@@ -1044,7 +1044,7 @@ test minutes-5.2 {Minutes to ticks, -tick 1 day} -setup {
 } -result {0 1}
 
 test minutes-5.3 {Ticks to minutes. -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock toMinutes 2
 } -cleanup {
@@ -1052,7 +1052,7 @@ test minutes-5.3 {Ticks to minutes. -tick 1 day} -setup {
 } -result {2880}
 
 test minutes-5.4 {Invariance, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     invariant Minutes
 } -cleanup {
@@ -1060,7 +1060,7 @@ test minutes-5.4 {Invariance, -tick 1 day} -setup {
 } -result {0}
 
 test minutes-6.1 {hours to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock fromMinutes 20160
 } -cleanup {
@@ -1068,7 +1068,7 @@ test minutes-6.1 {hours to ticks, -tick 7 days} -setup {
 } -result {2}
 
 test minutes-6.2 {hours to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     list [myclock fromMinutes 80] [myclock fromMinutes 10080]
 } -cleanup {
@@ -1076,7 +1076,7 @@ test minutes-6.2 {hours to ticks, -tick 7 days} -setup {
 } -result {0 1}
 
 test minutes-6.3 {Ticks to minutes, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock toMinutes 2
 } -cleanup {
@@ -1084,7 +1084,7 @@ test minutes-6.3 {Ticks to minutes, -tick 7 days} -setup {
 } -result {20160}
 
 test minutes-6.4 {Invariance, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     invariant Minutes
 } -cleanup {
@@ -1098,7 +1098,7 @@ test minutes-6.4 {Invariance, -tick 7 days} -setup {
 # that's done in zulu.test.
 
 test zulu-1.1 {zulu to ticks, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock fromZulu 010101ZJAN70
 } -cleanup {
@@ -1106,7 +1106,7 @@ test zulu-1.1 {zulu to ticks, -tick 1 minute} -setup {
 } -result {61}
 
 test zulu-1.2 {ticks to zulu, -tick 1 minute} -setup {
-    simclockType myclock -tick {1 minute}
+    ::marsutil::simclock myclock -tick {1 minute}
 } -body {
     myclock toZulu 61
 } -cleanup {
@@ -1114,7 +1114,7 @@ test zulu-1.2 {ticks to zulu, -tick 1 minute} -setup {
 } -result {010101ZJAN70}
 
 test zulu-2.1 {zulu to ticks, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock fromZulu 010105ZJAN70
 } -cleanup {
@@ -1122,7 +1122,7 @@ test zulu-2.1 {zulu to ticks, -tick 5 minutes} -setup {
 } -result {13}
 
 test zulu-2.2 {zulu to ticks, -tick 5 minutes} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     list [myclock fromZulu 010101ZJAN70] [myclock fromZulu 010104ZJAN70]
 } -cleanup {
@@ -1130,7 +1130,7 @@ test zulu-2.2 {zulu to ticks, -tick 5 minutes} -setup {
 } -result {12 13}
 
 test zulu-2.3 {ticks to zulu, -tick 5 minute} -setup {
-    simclockType myclock -tick {5 minutes}
+    ::marsutil::simclock myclock -tick {5 minutes}
 } -body {
     myclock toZulu 12
 } -cleanup {
@@ -1138,7 +1138,7 @@ test zulu-2.3 {ticks to zulu, -tick 5 minute} -setup {
 } -result {010100ZJAN70}
 
 test zulu-3.1 {zulu to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock fromZulu 010400ZJAN70
 } -cleanup {
@@ -1146,7 +1146,7 @@ test zulu-3.1 {zulu to ticks, -tick 1 hour} -setup {
 } -result {4}
 
 test zulu-3.2 {zulu to ticks, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     list [myclock fromZulu 010010ZJAN70] [myclock fromZulu 010050ZJAN70]
 } -cleanup {
@@ -1154,7 +1154,7 @@ test zulu-3.2 {zulu to ticks, -tick 1 hour} -setup {
 } -result {0 1}
 
 test zulu-3.3 {ticks to zulu, -tick 1 hour} -setup {
-    simclockType myclock -tick {1 hour}
+    ::marsutil::simclock myclock -tick {1 hour}
 } -body {
     myclock toZulu 4
 } -cleanup {
@@ -1162,7 +1162,7 @@ test zulu-3.3 {ticks to zulu, -tick 1 hour} -setup {
 } -result {010400ZJAN70}
 
 test zulu-4.1 {zulu to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock fromZulu 010800ZJAN70
 } -cleanup {
@@ -1170,7 +1170,7 @@ test zulu-4.1 {zulu to ticks, -tick 4 hours} -setup {
 } -result {2}
 
 test zulu-4.2 {zulu to ticks, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     list [myclock fromZulu 010100ZJAN70] [myclock fromZulu 010300ZJAN70]
 } -cleanup {
@@ -1178,7 +1178,7 @@ test zulu-4.2 {zulu to ticks, -tick 4 hours} -setup {
 } -result {0 1}
 
 test zulu-4.3 {ticks to zulu, -tick 4 hours} -setup {
-    simclockType myclock -tick {4 hours}
+    ::marsutil::simclock myclock -tick {4 hours}
 } -body {
     myclock toZulu 2
 } -cleanup {
@@ -1186,7 +1186,7 @@ test zulu-4.3 {ticks to zulu, -tick 4 hours} -setup {
 } -result {010800ZJAN70}
 
 test zulu-5.1 {zulu to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock fromZulu 030000ZJAN70
 } -cleanup {
@@ -1194,7 +1194,7 @@ test zulu-5.1 {zulu to ticks, -tick 1 day} -setup {
 } -result {2}
 
 test zulu-5.2 {zulu to ticks, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     list [myclock fromZulu 010100ZJAN70] [myclock fromZulu 012300ZJAN70]
 } -cleanup {
@@ -1202,7 +1202,7 @@ test zulu-5.2 {zulu to ticks, -tick 1 day} -setup {
 } -result {0 1}
 
 test zulu-5.3 {ticks to zulu, -tick 1 day} -setup {
-    simclockType myclock -tick {1 day}
+    ::marsutil::simclock myclock -tick {1 day}
 } -body {
     myclock toZulu 2
 } -cleanup {
@@ -1210,7 +1210,7 @@ test zulu-5.3 {ticks to zulu, -tick 1 day} -setup {
 } -result {030000ZJAN70}
 
 test zulu-6.1 {zulu to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock fromZulu 150000ZJAN70
 } -cleanup {
@@ -1218,7 +1218,7 @@ test zulu-6.1 {zulu to ticks, -tick 7 days} -setup {
 } -result {2}
 
 test zulu-5.2 {zulu to ticks, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     list [myclock fromZulu 020000ZJAN70] [myclock fromZulu 070000ZJAN70]
 } -cleanup {
@@ -1226,7 +1226,7 @@ test zulu-5.2 {zulu to ticks, -tick 7 days} -setup {
 } -result {0 1}
 
 test zulu-5.3 {ticks to zulu, -tick 7 days} -setup {
-    simclockType myclock -tick {7 days}
+    ::marsutil::simclock myclock -tick {7 days}
 } -body {
     myclock toZulu 2
 } -cleanup {
@@ -1237,7 +1237,7 @@ test zulu-5.3 {ticks to zulu, -tick 7 days} -setup {
 # toString
 
 test toString-1.1 {toString equals toZulu} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set a [myclock toZulu 12]
     set b [myclock toString 12]
@@ -1250,7 +1250,7 @@ test toString-1.1 {toString equals toZulu} -setup {
 # fromTimeSpec
 
 test fromTimeSpec-1.1 {invalid spec 1} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock fromTimeSpec NONESUCH
 } -returnCodes {
@@ -1260,7 +1260,7 @@ test fromTimeSpec-1.1 {invalid spec 1} -setup {
 } -result {invalid time spec "NONESUCH", base time should be "NOW", "T0", an integer tick, or a zulu-time string}
 
 test fromTimeSpec-1.2 {invalid spec 2} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock fromTimeSpec NOW++10
 } -returnCodes {
@@ -1270,7 +1270,7 @@ test fromTimeSpec-1.2 {invalid spec 2} -setup {
 } -result {invalid time spec "NOW++10", should be <basetime><+/-><offset>}
 
 test fromTimeSpec-2.1 {valid specs} -setup {
-    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    ::marsutil::simclock myclock -t0 100000ZJAN09 -tick {1 day}
     myclock advance 31
 } -body {
     set result [list]
@@ -1299,7 +1299,7 @@ test fromTimeSpec-2.1 {valid specs} -setup {
 # timespec validate
 
 test timespec_validate-1.1 {invalid spec} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set code [catch {myclock timespec validate NONESUCH}]
     list $code $::errorCode
@@ -1308,7 +1308,7 @@ test timespec_validate-1.1 {invalid spec} -setup {
 } -result {1 INVALID}
 
 test timespec_validate-2.1 {valid specs} -setup {
-    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    ::marsutil::simclock myclock -t0 100000ZJAN09 -tick {1 day}
     myclock advance 31
 } -body {
     myclock timespec validate NOW
@@ -1321,7 +1321,7 @@ test timespec_validate-2.1 {valid specs} -setup {
 # past validate
 
 test past_validate-1.1 {invalid spec} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set code [catch {myclock past validate NONESUCH}]
     list $code $::errorCode
@@ -1330,7 +1330,7 @@ test past_validate-1.1 {invalid spec} -setup {
 } -result {1 INVALID}
 
 test past_validate-1.2 {spec in future} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set code [catch {myclock past validate NOW+5} result]
     list $code $::errorCode $result
@@ -1339,7 +1339,7 @@ test past_validate-1.2 {spec in future} -setup {
 } -result {1 INVALID {invalid time spec "NOW+5", expected time between T0 and NOW}}
 
 test past_validate-2.1 {valid specs} -setup {
-    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    ::marsutil::simclock myclock -t0 100000ZJAN09 -tick {1 day}
     myclock advance 31
 } -body {
     myclock past validate NOW
@@ -1352,7 +1352,7 @@ test past_validate-2.1 {valid specs} -setup {
 # future validate
 
 test future_validate-1.1 {invalid spec} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set code [catch {myclock future validate NONESUCH}]
     list $code $::errorCode
@@ -1361,7 +1361,7 @@ test future_validate-1.1 {invalid spec} -setup {
 } -result {1 INVALID}
 
 test future_validate-1.2 {spec in future} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set code [catch {myclock future validate NOW-5} result]
     list $code $::errorCode $result
@@ -1370,7 +1370,7 @@ test future_validate-1.2 {spec in future} -setup {
 } -result {1 INVALID {invalid time spec "NOW-5", expected time no earlier than NOW}}
 
 test future_validate-2.1 {valid specs} -setup {
-    simclockType myclock -t0 100000ZJAN09 -tick {1 day}
+    ::marsutil::simclock myclock -t0 100000ZJAN09 -tick {1 day}
     myclock advance 31
 } -body {
     myclock future validate NOW
@@ -1382,7 +1382,7 @@ test future_validate-2.1 {valid specs} -setup {
 # as*
 
 test as-1.1 {asZulu for non-zero t.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 60
     list [myclock asZulu] [myclock asZulu 30]
@@ -1391,7 +1391,7 @@ test as-1.1 {asZulu for non-zero t.} -setup {
 } -result {010100ZJAN70 010130ZJAN70}
 
 test as-1.2 {asDays for non-zero t.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 1440
     list [myclock asDays] [myclock asDays 1440]
@@ -1400,7 +1400,7 @@ test as-1.2 {asDays for non-zero t.} -setup {
 } -result {1.0 2.0}
 
 test as-1.3 {asHours for non-zero t.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 1440
     list [myclock asHours] [myclock asHours 1440]
@@ -1409,7 +1409,7 @@ test as-1.3 {asHours for non-zero t.} -setup {
 } -result {24.0 48.0}
 
 test as-1.3 {asMinutes for non-zero t.} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 1440
     list [myclock asMinutes] [myclock asMinutes 1440]
@@ -1418,7 +1418,7 @@ test as-1.3 {asMinutes for non-zero t.} -setup {
 } -result {1440 2880}
 
 test as-1.4 {asString equals asZulu} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock advance 60
     list [myclock asString] [myclock asString 30]
@@ -1430,7 +1430,7 @@ test as-1.4 {asString equals asZulu} -setup {
 # -t0
 
 test t0-1.1 {-t0 sets start time} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -t0 100000ZJAN05
     list [myclock now] [myclock asZulu]
@@ -1439,7 +1439,7 @@ test t0-1.1 {-t0 sets start time} -setup {
 } -result {0 100000ZJAN05}
 
 test t0-1.2 {-t0 plus advance} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock configure -t0 100000ZJAN05
     myclock advance [expr {1440 + 60 + 1}]
@@ -1452,7 +1452,7 @@ test t0-1.2 {-t0 plus advance} -setup {
 # -zuluvar
 
 test zuluvar-1.1 {zulu variable is initialized} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     set ::myvar ""
 } -body {
     myclock configure -zuluvar ::myvar
@@ -1464,7 +1464,7 @@ test zuluvar-1.1 {zulu variable is initialized} -setup {
 } -result {010000ZJAN70}
 
 test zuluvar-2.1 {zulu variable is advanced} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     set ::myvar ""
 } -body {
     myclock configure -zuluvar ::myvar
@@ -1477,7 +1477,7 @@ test zuluvar-2.1 {zulu variable is advanced} -setup {
 } -result {010100ZJAN70}
 
 test zuluvar-3.1 {zulu variable follows -t0} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     set ::myvar ""
 } -body {
     myclock configure -zuluvar ::myvar
@@ -1497,7 +1497,7 @@ test zuluvar-3.1 {zulu variable follows -t0} -setup {
 # of setting the ratio.
 
 test ratio-1.1 {returns set ratio} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock ratio 5
 } -cleanup {
@@ -1505,7 +1505,7 @@ test ratio-1.1 {returns set ratio} -setup {
 } -result {5.0}
 
 test ratio-1.2 {can retrieve set ratio} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock ratio 7
     myclock ratio
@@ -1514,7 +1514,7 @@ test ratio-1.2 {can retrieve set ratio} -setup {
 } -result {7.0}
 
 test ratio-1.3 {can set ratio to auto} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock ratio auto
 } -cleanup {
@@ -1522,7 +1522,7 @@ test ratio-1.3 {can set ratio to auto} -setup {
 } -result {auto}
 
 test ratio-1.4 {non-numeric yields error} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock ratio dummy
 } -returnCodes {
@@ -1532,7 +1532,7 @@ test ratio-1.4 {non-numeric yields error} -setup {
 } -result {Expected "auto" or number, got "dummy"}
 
 test ratio-1.5 {negative yields error} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock ratio -1
 } -returnCodes {
@@ -1547,7 +1547,7 @@ test ratio-1.5 {negative yields error} -setup {
 # This section verifies that setting the ratio sets the -ratiovar
 
 test ratiovar-1.1 {ratio sets ratiovar} -setup {
-    simclockType myclock -ratiovar [namespace current]::ratiovar
+    ::marsutil::simclock myclock -ratiovar [namespace current]::ratiovar
 } -body {
     myclock ratio 5
     set ratiovar
@@ -1562,7 +1562,7 @@ test ratiovar-1.1 {ratio sets ratiovar} -setup {
 # This section tests the simclock's active behavior.
 
 test start-1.1 {start clears actualratio} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     myclock ratio 5
 } -body {
     myclock start
@@ -1572,7 +1572,7 @@ test start-1.1 {start clears actualratio} -setup {
 } -result {5.0 ???}
 
 test start-1.2 {stop clears ratio, actualratio} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
     myclock start
     myclock ratio 5
 } -body {
@@ -1583,7 +1583,7 @@ test start-1.2 {stop clears ratio, actualratio} -setup {
 } -result {0.0 0.0}
 
 test start-1.3 {start can set time} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     myclock start 20
     myclock now
@@ -1592,7 +1592,7 @@ test start-1.3 {start can set time} -setup {
 } -result {20}
 
 test start-1.4 {isactive after start can set time} -setup {
-    simclockType myclock
+    ::marsutil::simclock myclock
 } -body {
     set a [myclock isactive]
     myclock start

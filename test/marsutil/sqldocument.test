@@ -246,12 +246,13 @@ test constructor-2.1 {Database object is initially null} -body {
 # -clock
 
 test clock-1.1 {-clock functions defines} -setup {
-    ::marsutil::simclock reset
+    ::marsutil::simclock myclock
 } -body {
-    sqldocument db -clock ::marsutil::simclock
+    sqldocument db -clock ::myclock
     db open :memory:
     db eval {SELECT now(), tozulu(0)}
 } -cleanup {
+    myclock destroy
     cleanup
 } -result {0 010000ZJAN70}
 

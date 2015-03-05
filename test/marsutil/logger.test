@@ -33,7 +33,7 @@ namespace import ::marsutil::*
 
 proc setup {} {
     logger log
-    simclockType myclock
+    ::marsutil::simclock myclock
 }
 
 proc cleanup {} {

@@ -14,10 +14,7 @@
 # DESCRIPTION:
 #   Simulation Clock Module
 #
-#   This module defines a generic Simulation Clock type,
-#   simclockType, and also an instance of that type, simclock.
-#   It's expected that most applications will use simclock, but
-#   multiple instances can be defined if needed.
+#   This module defines a generic Simulation Clock type.
 #
 #   Representation of Simulation Time
 #
@@ -44,7 +41,8 @@
 # Exported commands
 
 namespace eval ::marsutil:: {
-    namespace export simclockType simclock ticktype
+    namespace export \
+        ticktype
 }
 
 #-----------------------------------------------------------------------
@@ -95,7 +93,7 @@ snit::type ::marsutil::ticktype {
 #-----------------------------------------------------------------------
 # Simulation Clock Type
 
-snit::type ::marsutil::simclockType {
+snit::type ::marsutil::simclock {
     #-------------------------------------------------------------------
     # Type Variables
 
@@ -1004,10 +1002,5 @@ snit::type ::marsutil::simclockType {
     }
 
 }
-
-#-----------------------------------------------------------------------
-# Global simclock instance
-
-::marsutil::simclockType ::marsutil::simclock
 
 
