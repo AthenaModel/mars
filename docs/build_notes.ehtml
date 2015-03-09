@@ -1,5 +1,16 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.13 -- 9 March 2015>
+
+This build contains some changes in support of the Athena re-architecture.<p>
+
+<ul>
+<li> Issue #42: simclock(n): Rename type, no default instance
+<li> Issue #41: saveable(i) objects should reset on empty restore
+<li> Issue #40: Add -resources support to dynabox(n)
+<li> Issue #39: Remove obsolete sqldocument(n) SQL functions
+</ul>
+
 <h3 Mars v3.0.12 -- 17 February 2015>
 
 This build fixes a bug in oohelper(n)'s "metadict" command.<p>
