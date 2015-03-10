@@ -91,37 +91,44 @@ snit::type ::simlib::rmf {
     # Make all of the enum(n) methods available.
     delegate typemethod * to enum
 
-    # constant R
+    # constant R ?Rnom?
     #
-    # R    A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship (ignored)
     #
     # Returns a constant 1.0.  The relationship does not affect the result.
 
-    typemethod constant {R} {
+    typemethod constant {R {Rnom ""}} {
         return 1.0
     }
 
-    # linear R
+    # linear R ?Rnom?
     #
-    # R    A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship
     #
     # The effects match the relationship exactly.
 
-    typemethod linear {R} {
-        set Rnom [$parm get rmf.nominalRelationship]
+    typemethod linear {R {Rnom ""}} {
+        if {$Rnom eq ""} {
+            set Rnom [$parm get rmf.nominalRelationship]
+        }
 
         expr {$R/$Rnom}
     }
 
-    # quad R
+    # quad R ?Rnom  ?
     #
-    # R   A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship
     #
     # The effects match the relationship, but are weaker than with the
     # "linear" function where R < Rnom and stronger where R > Rnom.
 
-    typemethod quad {R} {
-        set Rnom [$parm get rmf.nominalRelationship]
+    typemethod quad {R {Rnom ""}} {
+        if {$Rnom eq ""} {
+            set Rnom [$parm get rmf.nominalRelationship]
+        }
 
         set root [expr {$R/$Rnom}]
 
@@ -135,16 +142,19 @@ snit::type ::simlib::rmf {
         }
     }
 
-    # frquad R
+    # frquad R ?Rnom  ?
     #
-    # R   A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship
     #
     # "Friends Quad".  Enemies are not affected.  Like "quad", but 0
     # if R <= 0.
 
-    typemethod frquad {R} {
+    typemethod frquad {R {Rnom ""}} {
         if {$R > 0} {
-            set Rnom [$parm get rmf.nominalRelationship]
+            if {$Rnom eq ""} {
+                set Rnom [$parm get rmf.nominalRelationship]
+            }
             set root [expr {$R/$Rnom}]
             return [expr {$root*$root}]
         } else {
@@ -152,31 +162,37 @@ snit::type ::simlib::rmf {
         }
     }
 
-    # frmore R
+    # frmore R ?Rnom  ?
     #
-    # R   A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship
     #
     # "Friends More".  Both friends and enemies are affected, but
     # friends are affected more than enemies.
 
-    typemethod frmore {R} {
-        set Rnom [$parm get rmf.nominalRelationship]
+    typemethod frmore {R {Rnom ""}} {
+        if {$Rnom eq ""} {
+            set Rnom [$parm get rmf.nominalRelationship]
+        }
 
         set root [expr {(1 + $R)/(1 + $Rnom)}]
 
         return [expr {$root*$root}]
     }
 
-    # enquad R
+    # enquad R ?Rnom  ?
     #
-    # R   A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship
     #
     # "Enemies Quad".  Friends are not affected.  Like "quad", but 0
     # if R >= 0, and always positive.
 
-    typemethod enquad {R} {
+    typemethod enquad {R {Rnom ""}} {
         if {$R < 0} {
-            set Rnom [$parm get rmf.nominalRelationship]
+            if {$Rnom eq ""} {
+                set Rnom [$parm get rmf.nominalRelationship]
+            }
             set root [expr {$R/$Rnom}]
             return [expr {$root*$root}]
         } else {
@@ -184,15 +200,18 @@ snit::type ::simlib::rmf {
         }
     }
 
-    # enmore R
+    # enmore R ?Rnom  ?
     #
-    # R   A relationship value
+    # R      - A relationship value
+    # Rnom   - Nominal relationship
     #
     # "Enemies More".  Both friends and enemies are affected, but enemies
     # are effected more than friends.
 
-    typemethod enmore {R} {
-        set Rnom [$parm get Rmf.nominalRelationship]
+    typemethod enmore {R {Rnom ""}} {
+        if {$Rnom eq ""} {
+            set Rnom [$parm get rmf.nominalRelationship]
+        }
         set root [expr {(1 - $R)/(1 + $Rnom)}]
 
         return [expr {$root*$root}]

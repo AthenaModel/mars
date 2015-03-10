@@ -16,9 +16,9 @@
 #
 #   A parameter set is a vector of typed parameters which may be
 #   loaded from a file, edited, and saved back to the file.  Parameter
-#   values are validated on load and edit, and jnem_man(1)-style
+#   values are validated on load and edit, and kite_manpage(1)-style
 #   documentation can be generated automatically for inclusion in a
-#   jnem_man(1) man page.
+#   man page.
 #
 #   Parameter names must begin with a letter, and may include
 #   letters, numbers, underscores, hyphens, and periods.  Embedded periods
@@ -41,12 +41,14 @@
 #   the define method.
 #
 # MASTERS AND SLAVES
-#   Parmsets can be linked in a master/slave relationship.  The slave's 
-#   parameters are grafted into the master, unchanged; note that they
-#   must not already exist there, and the slave must not already be
-#   a slave.  Then, changes to either parmset are communicated to the
-#   other transparently.  Neither clients of the slave nor clients
-#   of the master need be aware of the relationship.
+#   One parmset can easily include into itself all parameter definitions
+#   from another parmset.  This allows an application or master library
+#   to build up a parameter database from multiple sources.
+#
+#   A submodule (i.e., uram(n)) that defines its own parmset will usually
+#   define it as a global resources.  Instances of the module will use
+#   the globally-defined parmset unless an alternate is specified via
+#   a configuration option.
 #
 #-----------------------------------------------------------------------
 
@@ -59,14 +61,6 @@ namespace eval ::marsutil:: {
 
 snit::type ::marsutil::parmset {
     #-------------------------------------------------------------------
-    # Type Constructor
-
-    typeconstructor {
-        namespace import ::marsutil::* 
-        namespace import ::marsutil::*
-    }
-
-    #-------------------------------------------------------------------
     # Options
 
     # -notifycmd cmd
@@ -77,6 +71,14 @@ snit::type ::marsutil::parmset {
     # be the empty string.
 
     option -notifycmd -default ""
+
+    # -subject subject
+    #
+    # The subject for the <Update> notifier event.  Defaults to 
+    # $self.
+
+    option -subject \
+        -readonly yes
 
     #-------------------------------------------------------------------
     # Instance Variables
@@ -92,8 +94,6 @@ snit::type ::marsutil::parmset {
     # items            Item names, in order of definition
     # parms            Parameter id's, in order of definition
     # notify           Flag: if 1, call -notifycmd, otherwise don't.
-    # master           The master parmset(n)'s name, or "" if none.
-    # slaves           List of slave parmset(n)'s, or {} if none.
     # changed          saveable(i) changed flag
     #
     # children-$id     IDs of children of subset $id. info(children-) 
@@ -104,32 +104,24 @@ snit::type ::marsutil::parmset {
     # vtype-$id        Parameter's value type
     # defvalue-$id     Parameter's default value
     # locked-$id       1 if the parameter is locked, and 0 otherwise.
-    # slave-$id        The name of the slave parmset(n)'s name from which
-    #                  the parm was grafted, or "" if none.
 
     variable info -array {
         items   {}
         parms   {}
         notify  1
-        master  ""
-        slaves  {}
         changed 0
     }
 
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # No constructor needed
+    constructor {args} {
+        set options(-subject) $self
 
-    destructor {
-        # FIRST, free all slaves
-        foreach slave $info(slaves) {
-            $self slave free $slave
-        }
-
-        # NEXT, free self from master, if any
-        callwith $info(master) slave free $self
+        $self configurelist $args
     }
+
+    # No destructor needed
 
     #-------------------------------------------------------------------
     # Parameter Set Definition Methods
@@ -142,9 +134,6 @@ snit::type ::marsutil::parmset {
     # Defines a new subset.
 
     method subset {name docstring} {
-        require {$info(master) eq ""} \
-            "can't add subset, parmset is slave of \"$info(master)\""
-
         # FIRST, is the name valid?
         ::marsutil::parmname validate $name
 
@@ -170,7 +159,6 @@ snit::type ::marsutil::parmset {
         set info(canon-$id) $name
         set info(doc-$id) [Normalize $docstring]
         set info(itype-$id) subset
-        set info(slave-$id) ""
     }
 
     # define name vtype defvalue docstring
@@ -188,9 +176,6 @@ snit::type ::marsutil::parmset {
     # (i.e., removes excess whitespace and newlines).
 
     method define {name vtype defvalue docstring} {
-        require {$info(master) eq ""} \
-            "can't define parm, parmset is slave of \"$info(master)\""
-
         # FIRST, make sure that its parent exists and is a subset.
         # The "subset" command will do this, and will coincidentally save
         # its docstring.
@@ -291,71 +276,12 @@ snit::type ::marsutil::parmset {
         }
 
         # NEXT, do notifications.
-        if {$info(notify)} {
-            # FIRST, if there's a slave notify it.
-            callwith $info(slave-$id) NotifySlave $op $id $value
-            
-            # NEXT, if there's a master notify it.
-            callwith $info(master) NotifyMaster $op $id $value
-
-            # NEXT, notify client.
-            callwith $options(-notifycmd) $name
-        }
+        $self notify $name
 
         # NEXT, set the change flag
         set info(changed) 1
 
         return $value
-    }
-
-    # NotifySlave op id value
-    #
-    # op       set | setdefault
-    # id       A parameter ID
-    # value    Its value
-    #
-    # Notify this parmset that this parameter's value was changed
-    # in its master.
-
-    method NotifySlave {op id value} {
-        # FIRST, the value is guaranteed to be OK, since it was
-        # validated by the master.
-        set values($id) $value
-
-        if {$op eq "setdefault"} {
-            set info(defvalue-$id)  $value
-        }
-
-        # NEXT, notify this parmset's slave, if any.
-        callwith $info(slave-$id) NotifySlave $op $id $value
-            
-        # NEXT, notify client.
-        callwith $options(-notifycmd) $info(canon-$id)
-    }
-
-    # NotifyMaster op id value
-    #
-    # op       set | setdefault
-    # id       A parameter ID
-    # value    Its value
-    #
-    # Notify this parmset that this parameter's value was changed
-    # by a slave.
-
-    method NotifyMaster {op id value} {
-        # FIRST, the value is guaranteed to be OK, since it was
-        # validated by the slave.
-        set values($id) $value
-
-        if {$op eq "setdefault"} {
-            set info(defvalue-$id)  $value
-        }
-
-        # NEXT, notify this parmset's master, if any.
-        callwith $info(master) NotifyMaster $op $id $value
-            
-        # NEXT, notify client.
-        callwith $options(-notifycmd) $info(canon-$id)
     }
 
     # lock pattern
@@ -374,9 +300,6 @@ snit::type ::marsutil::parmset {
             incr count
 
             set info(locked-$id) 1
-
-            callwith $info(slave-$id) SlaveLocked  $id 1
-            callwith $info(master)    MasterLocked $id 1
         }
 
         if {$count == 0} {
@@ -400,40 +323,11 @@ snit::type ::marsutil::parmset {
             incr count
 
             set info(locked-$id) 0
-
-            callwith $info(slave-$id) SlaveLocked  $id 0
-            callwith $info(master)    MasterLocked $id 0
         }
 
         if {$count == 0} {
             error "Pattern matches no parameters: \"$pattern\""
         }
-    }
-
-    # SlaveLocked id state
-    #
-    # id     parameter id
-    # state  1 if locked, 0 otherwise
-    #
-    # Locks/unlocks the parameter and propagates to slaves.
-
-    method SlaveLocked {id state} {
-        set info(locked-$id) $state
-
-        callwith $info(slave-$id) SlaveLocked $id $state
-    }
-
-    # MasterLocked id state
-    #
-    # id     parameter id
-    # state  1 if locked, 0 otherwise
-    #
-    # Locks/unlocks the parameter and propagates to masters.
-
-    method MasterLocked {id state} {
-        set info(locked-$id) $state
-
-        callwith $info(master) MasterLocked $id $state
     }
 
     # islocked name
@@ -643,18 +537,7 @@ snit::type ::marsutil::parmset {
         set info(changed) 1
 
         # NEXT, do notifications
-        if {$info(notify)} {
-            # FIRST, notify the slaves, if any.
-            foreach slave $info(slaves) {
-                callwith $slave CopyFromMaster $self
-            }
-
-            # NEXT, notify the master, if any.
-            callwith $info(master) CopyFromSlave $self
-            
-            # NEXT, notify the client
-            callwith $options(-notifycmd) ""
-        }
+        $self notify
     }
 
     # load filename ?-safe?
@@ -699,17 +582,8 @@ snit::type ::marsutil::parmset {
             return -code error "Error in $filename: $result"
         }
 
-        # NEXT, notify the slaves, if any.
-        foreach slave $info(slaves) {
-            callwith $slave CopyFromMaster $self
-        }
-
-        # NEXT, notify the master, if any.
-        callwith $info(master) CopyFromSlave $self
-
-
         # NEXT, notify the client.
-        callwith $options(-notifycmd) ""
+        $self notify
 
         # NEXT, set changed flag
         set info(changed) 1
@@ -752,6 +626,31 @@ snit::type ::marsutil::parmset {
         
         return
     }
+
+    #-------------------------------------------------------------------
+    # Cloning Parameters into another parmset
+
+    # into ps
+    #
+    # ps   - Another parm set
+    #
+    # Clones all parameter definitions into the other parmset.
+
+    method into {ps} {
+        foreach {item ntype} [$self items] {
+            set id [string tolower $item]
+
+            if {$ntype eq "subset"} {
+                $ps subset $item $info(doc-$id)
+            } else {
+                $ps define $item        \
+                    $info(vtype-$id)    \
+                    $info(defvalue-$id) \
+                    $info(doc-$id)
+            }
+        }
+    }
+    
 
     #-------------------------------------------------------------------
     # Parameter Set Documentation Methods
@@ -867,153 +766,6 @@ snit::type ::marsutil::parmset {
         return $out
     }
 
-    #-------------------------------------------------------------------
-    # Master/Slave
-
-    # slave add slave
-    #
-    # slave    The name of another parmset(n)
-    #
-    # Places "slave" in a master/slave relationship with $self.  Note
-    # a parmset can be master to arbitrarily many slaves, but may have
-    # at most one master.
-
-    method {slave add} {slave} {
-        require {$info(master) eq ""} \
-            "can't add slave, parmset is slave of \"$info(master)\""
-        
-        # FIRST, tell the slave that it is a slave.  This will
-        # throw an error if the slave is *already* a slave.
-        callwith $slave SetMaster $self
-
-        # NEXT, remember that we have a slave
-        lappend info(slaves) $slave
-
-        # NEXT, graft each subset and parameter from slave into 
-        # master, remembering that it's a slave.
-        foreach {item itype} [callwith $slave items] {
-            if {$itype eq "subset"} {
-                $self subset $item [callwith $slave docstring $item]
-            } else {
-                # FIRST, define the parameter
-                $self define $item            \
-                    [callwith $slave type $item]       \
-                    [callwith $slave getdefault $item] \
-                    [callwith $slave docstring  $item]
-
-                # NEXT, copy its current value, avoiding notifications.
-                # Since we know that the types are the same, there should
-                # be no chance of error.
-                set info(notify) 0
-                $self set $item [callwith $slave get $item]
-                set info(notify) 1
-
-                # NEXT, remember that it's a slave, and copy its locked
-                # state.
-                set id [string tolower $item]
-                set info(slave-$id) $slave
-                set info(locked-$id) [callwith $slave islocked $id]
-            }
-        }
-    }
-
-    # slave free slave
-    #
-    # slave    The name of another parmset(n)
-    #
-    # Tells slave that it no longer has a master.
-
-    method {slave free} {slave} {
-        require {[lsearch -exact $info(slaves) $slave] != -1} \
-            "not a slave of $self: \"$slave\""
-
-        # FIRST, forget that we have this slave
-        ldelete info(slaves) $slave
-
-        # NEXT, we'll keep the parms but unlink them.
-        foreach name [callwith $slave names] {
-            set id [string tolower $name]
-
-            set info(slave-$id) ""
-        }
-
-        # NEXT, we'll tell the slave it has no master.
-        callwith $slave SetMaster ""
-    }
-
-
-    # SetMaster master
-    #
-    # master   The name of another parmset(n).
-    #
-    # Tells $self that it is the slave of parmset(n) master.  It's
-    # an error of $self is already a slave.
-
-    method SetMaster {master} {
-        # FIRST, are we already a slave?
-        require {$master eq "" || $info(master) eq ""} \
-            "parmset(n) $self already has a master: \"$info(master)\""
-
-        set info(master) $master
-    }
-
-    # CopyFromMaster master
-    #
-    # master    The name of another parmset(n)
-    #
-    # Copies the master's parameter values for all known parameters.
-    
-    method CopyFromMaster {master} {
-        assert {$master eq $info(master)}
-
-        # FIRST, set notification off.
-        set info(notify) 0
-
-        # NEXT, copy all of the values. There should be no errors,
-        # as the parameters were defined with the same types.
-        foreach parm [$self names] {
-            $self set $parm [callwith $master get $parm]
-        }
-
-        # NEXT, set notification on.
-        set info(notify) 0
-
-        # NEXT, notify any slaves
-        foreach slave $info(slaves) {
-            callwith $slave CopyFromMaster $self
-        }
-
-        # NEXT, notify the client.
-        callwith $options(-notifycmd) ""
-    }
-
-    # CopyFromSlave slave
-    #
-    # slave    The name of another parmset(n)
-    #
-    # Copies the slave's parameter values for all known parameters.
-    
-    method CopyFromSlave {slave} {
-        assert {[lsearch -exact $info(slaves) $slave] != -1}
-
-        # FIRST, set notification off.
-        set info(notify) 0
-
-        # NEXT, copy all of the values. There should be no errors,
-        # as the parameters were defined with the same types.
-        foreach parm [callwith $slave names] {
-            $self set $parm [callwith $slave get $parm]
-        }
-
-        # NEXT, set notification on.
-        set info(notify) 1
-
-        # NEXT, notify the master, if any
-        callwith $info(master) CopyFromSlave $self
-
-        # NEXT, notify the client.
-        callwith $options(-notifycmd) ""
-    }
 
     #-------------------------------------------------------------------
     # Saveable(i) Interface
@@ -1069,18 +821,7 @@ snit::type ::marsutil::parmset {
         array set values $checkpoint
 
         # NEXT, do notifications
-        if {$info(notify)} {
-            # FIRST, notify the slaves, if any.
-            foreach slave $info(slaves) {
-                callwith $slave CopyFromMaster $self
-            }
-
-            # NEXT, notify the master, if any.
-            callwith $info(master) CopyFromSlave $self
-            
-            # NEXT, notify the client
-            callwith $options(-notifycmd) ""
-        }
+        $self notify
 
         # NEXT, set or clear the changed flag
         if {$opt eq "-saved"} {
@@ -1089,6 +830,21 @@ snit::type ::marsutil::parmset {
             set info(changed) 1
         }
     }
+
+    #-------------------------------------------------------------------
+    # Notification
+
+    # notify ?name?
+    #
+    # Sends out notifications.
+
+    method notify {{name ""}} {
+        if {$info(notify)} {
+            callwith $options(-notifycmd) $name
+            notifier send $options(-subject) <Update> $name
+        }
+    }
+    
 
     #-------------------------------------------------------------------
     # Helper Procs

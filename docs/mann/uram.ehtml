@@ -160,7 +160,8 @@ cause ID.<p>
 
 uram(n) is a <xref parm(i)>, and defines the following configuration
 parameters.  The <iref uram parm> subcommand can be used to set and query
-their values.<p>
+their values.  Alternatively, the parameters can be included into
+another parmset specified using the <tt -parmset> creation option.<p>
 
 <expand [fromproject {::simlib::uram parm manpage}]>
 
@@ -205,6 +206,13 @@ this object.<p>
 
 The component name to pass to the <code>-logger</code> object when
 logging messages; defaults to "uram".<p>
+
+<defopt {-parmset <i parmset>}>
+
+Names an alternate <xref parmset(n)> object to be used instead of 
+<iref uram parm>.  The <iref uram parm> parameters must be copied into 
+the <i parmset> by the client using the <xref parmset(n)> "into" 
+subcommand.<p>
 
 <defopt {-rdb <i>name</i>}>
 

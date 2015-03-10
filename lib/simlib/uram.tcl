@@ -71,8 +71,7 @@ snit::type ::simlib::uram {
 
         # NEXT, define the module's configuration parameters.
         set parm ${type}::parm
-        parmset $parm \
-            -notifycmd [myproc ParmsNotify]
+        parmset $parm 
 
         $parm subset uram {
             uram(n) configuration parameters.
@@ -173,15 +172,6 @@ snit::type ::simlib::uram {
         }
     }
 
-    # ParmsNotify dummy
-    #
-    # Updates all instances with the latest parms.
-
-    proc ParmsNotify {dummy} {
-        foreach o [::simlib::uram info instances] {
-            $o ParmsNotifyCmd
-        }
-    }
 
     #-------------------------------------------------------------------
     # sqlsection(i) implementation
@@ -279,6 +269,14 @@ snit::type ::simlib::uram {
     # value will be stored in the rdb component.
 
     option -rdb \
+        -readonly 1
+
+    # -parmset ps
+    #
+    # Specifies the name of the parmset containing the uram(n) 
+    # model parameters.  Defaults to "uram parm".
+
+    option -parmset \
         -readonly 1
 
     #-------------------------------------------------------------------
@@ -398,6 +396,11 @@ snit::type ::simlib::uram {
         # explicitly once it has been created.
         set options(-undo) [from args -undo off]
 
+        # NEXT, get the parmset
+        set options(-parmset) [from args -parmset $parm]
+        notifier bind [$options(-parmset) cget -subject] <Update> \
+            $self [list $self ParmsNotifyCmd]
+
         # NEXT, get the creation arguments.
         $self configurelist $args
 
@@ -430,7 +433,7 @@ snit::type ::simlib::uram {
         install cm using ucurve ${selfns}::cm        \
             -rdb         $rdb                        \
             -undostack   $us                         \
-            -savehistory [$parm get uram.saveHistory]
+            -savehistory [$options(-parmset) get uram.saveHistory]
 
 
         # NEXT, initialize db
@@ -443,6 +446,7 @@ snit::type ::simlib::uram {
     # the instance's content from the relevant rdb tables.
 
     destructor {
+        notifier forget $self
         catch {
             unset -nocomplain rdbTracker($rdb)
 
@@ -575,7 +579,6 @@ snit::type ::simlib::uram {
         $self ClearTables
 
         # NEXT, create the curve types in ucurve(n)
-        # TBD: Get alphas and gammas from parms.
         $cm ctype add AUT  -100.0 100.0
         $cm ctype add CUL  -100.0 100.0 
         $cm ctype add QOL  -100.0 100.0 
@@ -636,12 +639,12 @@ snit::type ::simlib::uram {
     #
     # Updates the instance given changes to the model parameters.
 
-    method ParmsNotifyCmd {} {
+    method ParmsNotifyCmd {args} {
         $cm configure \
-            -savehistory [$parm get uram.saveHistory]
+            -savehistory [$options(-parmset) get uram.saveHistory]
 
         foreach ctype [$cm ctype names] {
-            lassign [$parm get uram.factors.$ctype] alpha gamma
+            lassign [$options(-parmset) get uram.factors.$ctype] alpha gamma
 
             $cm ctype configure $ctype \
                 -alpha $alpha \
@@ -1217,7 +1220,7 @@ snit::type ::simlib::uram {
         $self ComputeCoopRollups
 
         # NEXT, save historical data.
-        if {[$parm get uram.saveHistory]} {
+        if {[$options(-parmset) get uram.saveHistory]} {
             $self SaveHistory $t
         }
 
@@ -1837,8 +1840,8 @@ snit::type ::simlib::uram {
 
         # NEXT, get the proximity limit and RAFs
         set plimit [$self GetProxLimit $s $p $q]
-        set praf   [$parm get uram.raf.positive]
-        set nraf   [$parm get uram.raf.negative]
+        set praf   [$options(-parmset) get uram.raf.positive]
+        set nraf   [$options(-parmset) get uram.raf.negative]
         
         # NEXT, create the empty dictionary
         set spread [dict create]
@@ -2085,9 +2088,9 @@ snit::type ::simlib::uram {
         # within the proximity limit.
         set plimit [$self GetProxLimit $s $p $q]
 
-        set CRL  [$parm get uram.coopRelationshipLimit]
-        set praf [$parm get uram.raf.positive]
-        set nraf [$parm get uram.raf.negative]
+        set CRL  [$options(-parmset) get uram.coopRelationshipLimit]
+        set praf [$options(-parmset) get uram.raf.positive]
+        set nraf [$options(-parmset) get uram.raf.negative]
 
         # Schedule the effects
         set cmlist [list]

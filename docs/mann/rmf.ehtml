@@ -77,19 +77,24 @@ of <iref rmf parm> are exactly those of <xref parmset(n)>
 instances.<p>
 
 
-<defitem "rmf constant" {rmf constant <i>R</i>}>
+<defitem "rmf constant" {rmf constant <i>R</i> ?<i Rnom>?}>
 
 Returns a constant 1.0 regardless of <i>R</i>.
 The "Constant" function should be used when the
 relationship between the two groups should have no effect.<p>
 
-<defitem "rmf linear" {rmf linear <i>R</i>}>
+The <i Rnom> argument is ignored.<p>
+
+<defitem "rmf linear" {rmf linear <i>R</i> ?<i Rnom>?}>
 
 Returns <i>R/Rnom</i>.  The "Linear" function should be used when the
 effect of an input should be directly proportional to the strength of the
 relationship.<p>
 
-<defitem "rmf quad" {rmf quad <i>R</i>}>
+If given, the <i Rnom> argument overrides the
+<tt rmf.nominalRelationship> parameter.<p>
+
+<defitem "rmf quad" {rmf quad <i>R</i> ?<i Rnom>?}>
 
 Returns (<i>R/Rnom</i>)&sup2;&sdot;sign(<i>R</i>).  The "Quad" function
 is similar to <iref rmf linear> but has a weaker effect for <i>R</i> &lt;
@@ -99,13 +104,19 @@ Note that friends are affected with the same sign as
 the input's magnitude, and enemies with the opposite sign, i.e.,
 if friends are affected positively then enemies are affected negatively.<p>
 
-<defitem "rmf frquad" {rmf frquad <i>R</i>}>
+If given, the <i Rnom> argument overrides the
+<tt rmf.nominalRelationship> parameter.<p>
+
+<defitem "rmf frquad" {rmf frquad <i>R</i> ?<i Rnom>?}>
 
 Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &gt; 0, and 0 otherwise.  Friends
 are affected according to the strength of the relationship, but
 enemies are not affected at all.<p>
 
-<defitem "rmf frmore" {rmf frmore <i>R</i>}>
+If given, the <i Rnom> argument overrides the
+<tt rmf.nominalRelationship> parameter.<p>
+
+<defitem "rmf frmore" {rmf frmore <i>R</i> ?<i Rnom>?}>
 
 Returns ((1+<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and friends are
 affected, but enemies are affected much less than friends, and
@@ -115,13 +126,19 @@ Note that both friends and enemies are affected with the same sign
 as the input's magnitude; thus, if it is a positive input then
 both friends and enemies are affected positively.<p>
 
-<defitem "rmf enquad" {rmf enquad <i>R</i>}>
+If given, the <i Rnom> argument overrides the
+<tt rmf.nominalRelationship> parameter.<p>
+
+<defitem "rmf enquad" {rmf enquad <i>R</i> ?<i Rnom>?}>
 
 Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &lt; 0, and 0 otherwise.  Enemies
 are affected according to the strength of the relationship, but
 friends are not affected at all.<p>
 
-<defitem "rmf enmore" {rmf enmore <i>R</i>}>
+If given, the <i Rnom> argument overrides the
+<tt rmf.nominalRelationship> parameter.<p>
+
+<defitem "rmf enmore" {rmf enmore <i>R</i> ?<i Rnom>?}>
 
 Returns ((1&minus;<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and
 friends are affected, but friends are affected much less than enemies,

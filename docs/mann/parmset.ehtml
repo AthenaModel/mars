@@ -41,48 +41,41 @@ the <iref define> method.<p>
 
 parmset(n) is a <xref saveable(i)> object.<p>
 
-<subsection "Masters and Slaves">
+<section "MASTERS AND SLAVES">
 
-Parmsets may be linked in a master/slave relationship.  The master
-parmset acquires all of the slave's parameters; a change to one of
-these parameters in either the master or slave will update both
-parmsets and call both parmset's <code>-notifycmd</code> callbacks.
-This allows a library module to define its own parameters yet have
-its parameters included in a global parameter file.<p>
+Often a larger library or application which defines its own parmset
+database will include components that also define their own parmsets.
+In this case the application is called the master and the components
+are called the slaves.<p>
 
-Use the <iref slave add> subcommand to make parmset B a slave of
-parmset A:<p>
+Past versions of parmset(n) allowed each module to define a static 
+global parmset; these could then be linked into a master/slave relationship
+such that all changes to the master or the slave were echoed in the 
+other.  Thus, all instances of each module could reliably use the same
+data.  This model turned out to be a problem, however; if you have
+two instances of a library, you might reasonably want to set parameters
+differently in each instance.  Consequently, parmset(n) now supports
+a different model.
 
-<pre>
-    A slave add B
-</pre>
+<subsection "Defining a Master">
 
-Note that B must not define any parameters which are already defined
-in A or an error will result and A might be left in an anomalous state.<p>
+A master will define its own parmset(n) instance, and define the parameters
+it needs.  If a slave component has a parmset(n), the master can clone 
+the slave's parameter definitions into its own parmset(n) using the <iref into> 
+subcommand.  No permanent link is created between the two parmsets; but 
+the master has all of the definitions contained in the slave.<p>
 
-The two parmsets will remain linked as master and slave until either is
-destroyed or the link is broken explicitly using <iref slave free>:<p>
+<subsection "Defining a Slave">
 
-<pre>
-    A slave free B
-</pre>
+Each slave module should define a global parmset containing its default
+parameter definitions.
 
-Additional details:<p>
-
-<ul>
-  <li> A master parmset can have any number of slaves.
-  <li> A slave parmset can have only one master.
-  <li> A master parmset can be made a slave in turn, but
-       slaves cannot be added to a parmset which is already a slave.
-  <li> When <iref load>, <iref lock>, <iref reset>,
-       <iref restore>, <iref set>, <iref setdefault>,
-       and <iref unlock> are called, the changes propagate up the
-       line of master parmsets (if any) and down to all slaves, if any.
-  <li> A change that results in the parmset's <code>-notifycmd</code>
-       callback being called will also result in it being called in
-       the same way in each linked parmset that is also affected by
-       the change.<p>
-</ul>
+Each slave module should be a type-with-instances; and each instance should
+have a -parmset option.  By default, the value of the <tt -parmset> option
+is the module's own global parmset.  If the slave is included in a master,
+however, the master will clone the parameter definitions from the slave's
+global parmset into its own, and then configure an instance of the slave
+to use its own <tt -parmset>.<p>
 
 <section COMMANDS>
 
@@ -99,15 +92,19 @@ The <iref parmset> may be created with the following option:<p>
 
 <deflist options>
 
+<defopt {-subject <i subject>}>
+
+Specifies the subject for the <tag Update> notifier event.  The 
+subject defaults to the object's name.<p>
+
 <defopt {-notifycmd <i>command</i>}>
 
-Specifies a <i>command</i> to be called exactly once for each call to
-the <iref set>, <iref setdefault>, <iref load>, <iref reset> and
-<iref restore>, provided that the call doesn't return an error.
-The <i>command</i> will be called with one additional argument;
-for <iref set> and <iref setdefault> it will be the parameter
-name, and for <iref load>, <iref reset>, and <iref restore>
-it will be the empty string.<p>
+Specifies a <i>command</i> prefixed to be called exactly once for 
+each call to the <iref set>, <iref setdefault>, <iref load>, 
+<iref reset> and <iref restore>, provided that the call doesn't 
+return an error.  The command will be called with one additional
+argument, the name of the modified parameter for <iref set>
+and <iref setdefault>, and the empty string otherwise.<p>
 
 </deflist options>
 
@@ -120,17 +117,17 @@ subcommands:<p>
 
 <deflist instance>
 
-<defitem cget {$parmset cget <i>option</i>}>
+<defitem cget {<i obj> cget <i>option</i>}>
 
 Returns the value of the specified <i>option</i>.<p>
 
-<defitem changed {$parmset changed}>
+<defitem changed {<i obj> changed}>
 
 Returns 1 if the parmset's contents have been changed since the
 previous "<iref checkpoint> <code>-saved</code>" or
 "<iref restore> <code>-saved</code>".<p>
 
-<defitem checkpoint {$parmset checkpoint ?-saved?}>
+<defitem checkpoint {<i obj> checkpoint ?-saved?}>
 
 Returns a string which contains the parmset's current state; this
 string can be used to <iref restore> the parmset's state at a
@@ -140,11 +137,11 @@ the default values.<p>
 If <code>-saved</code> is given, clears the <iref changed> flag.<p>
 
 
-<defitem configure {$parmset configure <i>option value...</i>}>
+<defitem configure {<i obj> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's options.<p>
 
-<defitem define {$parmset define <i>name vtype defvalue docstring</i>}>
+<defitem define {<i obj> define <i>name vtype defvalue docstring</i>}>
 
 Defines a new parameter called <i>name</i>.  If <i>name</i> belongs to a
 a subset, i.e., if <i>name</i> contains one or more periods,
@@ -162,23 +159,28 @@ type-validation types.<p>
 
 <i>docstring</i> is a brief text string documenting the parameter.<p>
 
-<defitem docstring {$parmset docstring <i>name</i>}>
+<defitem docstring {<i obj> docstring <i>name</i>}>
 
 Returns the documentation string for the named parameter or subset.<p>
 
-<defitem get {$parmset get <i>name</i>}>
+<defitem get {<i obj> get <i>name</i>}>
 
 Retrieves the value of the named parameter.<p>
 
-<defitem getdefault {$parmset getdefault <i>name</i>}>
+<defitem getdefault {<i obj> getdefault <i>name</i>}>
 
 Retrieves the default value of the named parameter.<p>
 
-<defitem islocked {$parmset islocked <i>name</i>}>
+<defitem into {<i obj> into <i master>}>
+
+Copies all of the parmset's parameter definitions into <i master>, which
+must be another parmset.<p>
+
+<defitem islocked {<i obj> islocked <i>name</i>}>
 
 Returns 1 if the named parameter is locked, and 0 otherwise.<p>
 
-<defitem items {$parmset items}>
+<defitem items {<i obj> items}>
 
 Returns a list of the subsets and parameters, with their item types.
 For example, if the parmset contains
@@ -187,7 +189,7 @@ one subset, <b>a</b>, and one parameter, <b>a.b</b>, then
 order of the list is the same as for <iref names>, except that
 subset names are included.<p>
 
-<defitem list {$parmset list ?<i>pattern</i>?}>
+<defitem list {<i obj> list ?<i>pattern</i>?}>
 
 Returns a human-readable list of parameters whose names match
 the specified wildcard pattern, with their values.  The order
@@ -196,7 +198,7 @@ specified, all parameters will be returned.<p>
 
 Note that the return value is a valid Tcl dictionary.<p>
 
-<defitem load {$parmset load <i>filename</i> ?-safe?}>
+<defitem load {<i obj> load <i>filename</i> ?-safe?}>
 
 Loads the parameter set from the named file, and calls
 the <code>-notifycmd</code> on success.<p>
@@ -208,7 +210,7 @@ When -safe is specified, only valid parameter/value pairs will be
 loaded; Any unknown parameters or bad values will be ignored. Parameters not
 found in the file will be reset to their default values. <p>
 
-<defitem lock {$parmset lock <i>pattern</i>}>
+<defitem lock {<i obj> lock <i>pattern</i>}>
 
 Locks all parameters whose name matchs the glob <i>pattern</i>.  The
 value of a locked parameter may not be changed; attempts to do so will
@@ -218,14 +220,14 @@ they specify the parameter's current value, thus leaving it
 unchanged.  The <iref reset> command will reset all <b>unlocked</b>
 parameters to their default values, leaving locked parameters alone.<p>
 
-<defitem locked {$parmset locked ?<i>pattern</i>?}>
+<defitem locked {<i obj> locked ?<i>pattern</i>?}>
 
 Returns a list of locked parameter names, grouped by subset, in order of
 definition, which match the specified wildcard pattern; if no
 <i>pattern</i> is specified, the names of all locked parameters
 will be returned.<p>
 
-<defitem manpage {$parmset manpage}>
+<defitem manpage {<i obj> manpage}>
 
 Returns documentation for the parameter set in the form of a
 <xref jnem_man(5)> definition list.  It can be included in a man
@@ -235,7 +237,7 @@ page as follows:<p>
 
 (Where <b>myparmset</b> is the name of the parameter set object, of course.)<p>
 
-<defitem manlinks {$parmset manlinks}>
+<defitem manlinks {<i obj> manlinks}>
 
 Returns a table-of-contents list of links for the parameters defined
 in the parameter set.  When used with <iref manpage>, it creates a
@@ -251,13 +253,13 @@ It can be included in a man page as follows:<p>
 course.)  It should usually replace the <b>itemlist</b> macro in the
 synopsis section of the man page.<p>
 
-<defitem names {$parmset names ?<i>pattern</i>?}>
+<defitem names {<i obj> names ?<i>pattern</i>?}>
 
 Returns a list of the parameter names, grouped by subset, in order of
 definition, which match the specified wildcard pattern; if no
 <i>pattern</i> is specified, all names will be returned.<p>
 
-<defitem reset {$parmset reset}>
+<defitem reset {<i obj> reset}>
 
 Resets all parameter values to their defaults, and calls
 the <code>-notifycmd</code>.<p>
@@ -266,26 +268,26 @@ This command does not reset the values of locked parameters.  The
 <iref locked> command will return the names of all locked
 parameters, so that they can be unlocked and re-locked if need be.<p>
 
-<defitem restore {$parmset restore <i>checkpoint</i> ?-saved?}>
+<defitem restore {<i obj> restore <i>checkpoint</i> ?-saved?}>
 
 Restores the parmset's state back to the saved <i>checkpoint</i>, and calls
 the <code>-notifycmd</code>.  If <code>-saved</code> is specified,
 clears the <iref changed> flag; otherwise it sets it.<p>
 
-<defitem save {$parmset save <i>filename</i>}>
+<defitem save {<i obj> save <i>filename</i>}>
 
 Saves the parameter set to a file; if the file already exists, it
 is copied to "<i>filename</i>.bak".  Parameters whose current values
 are defaulted will not be saved<p>
 
-<defitem set {$parmset set <i>parm value</i>}>
+<defitem set {<i obj> set <i>parm value</i>}>
 
 Sets the value of the named parameter, which must be valid, and calls
 the <code>-notifycmd</code> on success.<p>
 
 Returns the new <i>value</i>.<p>
 
-<defitem setdefault {$parmset setdefault <i>parm value</i>}>
+<defitem setdefault {<i obj> setdefault <i>parm value</i>}>
 
 Sets both the default and current values of the parameter, and calls
 the <code>-notifycmd</code> on success.<p>
@@ -298,50 +300,29 @@ individually as needed.<p>
 
 Returns the new <i>value</i>.<p>
 
-<defitem slave {$parmset slave <i>subcommand</i> ?<i>args</i>?}>
-
-This subcommand is used to link parmsets together in master/slave
-relationships.<p>
-
-<deflist slave>
-
-<defitem "slave add" {$parmset slave add <i>slave</i>}>
-
-Links this parmset with parmset <i>slave</i> in a master/slave
-relationship.  See <xref "Masters and Slaves"> for details about
-master/slave relationships.<p>
-
-Usually the <i>slave</i> will the fully qualified command name of
-a parmset(n) object.  However, it may also be globally-visible
-command prefix which delegates to a real parmset(n) object.<p>
-
-<defitem "slave free" {$parmset slave free <i>slave</i>}>
-
-Breaks the link between this parmset and the named <i>slave</i>.
-This parmset retains the parameter definitions it acquired from
-<i>slave</i>, but changes will no longer propagate from one to the
-other.  (The link is also broken if either parmset(n) is destroyed.)
-See <xref "Masters and Slaves"> for details about master/slave
-relationships.<p>
-
-</deflist slave>
-
-<defitem subset {$parmset subset <i>name docstring</i>}>
+<defitem subset {<i obj> subset <i>name docstring</i>}>
 
 Defines and documents a new parameter subset.  If the new subset has a
 a parent subset, i.e., if <i>name</i> contains one or more periods,
 then the parent subset must already be defined.<p>
 
-<defitem type {$parmset type <i>name</i>}>
+<defitem type {<i obj> type <i>name</i>}>
 
 Returns the validation type for the named parameter.<p>
 
-<defitem unlock {$parmset unlock <i>pattern</i>}>
+<defitem unlock {<i obj> unlock <i>pattern</i>}>
 
 Unlocks all parameters whose name matches the glob <i>pattern</i>
 (if, indeed, they were locked).<p>
 
 </deflist instance>
+
+<section "NOTIFIER EVENTS">
+
+parmset(n) sends out the <tag Update> <xref notifier(n)> event each time
+the contents of the parmset changes, i.e., every time the 
+<tt -notifycmd> callback is called.  The event has the same argument
+as the <tt -notifycmd>.<p>
 
 <section ENVIRONMENT>
 
@@ -356,7 +337,10 @@ Will Duquette<p>
 
 <section HISTORY>
 
-Original package.
+<ul>
+<li>Original package from JNEM.<br>
+<li>3/10/2015: Replaced master/slave mechanism with <iref into>.
+</ul> 
 
 </manpage>
 
