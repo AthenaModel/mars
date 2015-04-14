@@ -182,6 +182,12 @@ Defaults to 1000 (i.e., one second).<p>
 If set, the logdisplay automatically scrolls to show new entries as they are
 appended.<p>
 
+<defopt {-autowidth <i>boolean</i>}>
+
+If true, column widths will be widened to match the text they contain
+(except for the final column, which is a special case).  Defaults to
+false.<p>
+
 <defopt {-foundcmd <i>cmd</i>}>
 
 This option is used to link a logdisplay(n) widget with a finder(n)

@@ -80,6 +80,7 @@ Determines how often the <iref scrollinglog> will perform automatic
 updates when auto-scroll is enabled. 
 Defaults to 1000 (i.e., one second).<p>
 
+<defopt {-autowidth <i>boolean</i>}>
 <defopt {-format <i>formatlist</i>}>
 <defopt {-parsecmd <i>cmd</i>}>
 <defopt {-tags <i>tagslist</i>}>

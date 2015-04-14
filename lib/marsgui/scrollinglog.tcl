@@ -51,6 +51,7 @@ snit::widget ::marsgui::scrollinglog {
     delegate option -background         to log
     delegate option -insertbackground   to log
     delegate option -insertwidth        to log
+    delegate option -autowidth          to log
 
     # Options we'd like to delegate to loglist but can't since loglist is
     # optional.  They'll be "propagated" instead.

@@ -102,6 +102,13 @@ snit::widget ::marsgui::logdisplay {
     #
     # Automatically scroll the log down to display new entries on update.
     option -autoscroll -default no
+
+    # -autowidth boolean
+    #
+    # If true, automatically widen columns to match data (except for
+    # final column).
+    option -autowidth -default no
+
     
     # Delegate the remaining options.
     delegate option -foundcmd       to rotext
@@ -476,7 +483,14 @@ snit::widget ::marsgui::logdisplay {
                 set fieldStr \
                     [string range $fieldStr 0 "end-[expr $newlineOffset+2]"]
             } elseif {$width} {
-                # Format the field to width.
+                if {$options(-autowidth)} {
+                    set fwid [string length $fieldStr]
+                    if {$fwid > $width} {
+                        set width $fwid
+                        lset fieldWidths $f $fwid
+                    }
+                }
+                # Format the field to width, expanding the width 
                 set fieldStr [format "%-${width}.${width}s" $fieldStr]
             }
             
