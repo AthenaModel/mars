@@ -1,5 +1,15 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.14 -- 15 April 2015>
+
+This build adds an enhancement to logdisplay(n) and fixes a problem with
+global parmsets.<p>
+
+<ul>
+<li> Issue #43: global parmsets are a problem
+<li> Issue #44: logdisplay(n): -autowidth option
+</ul>
+
 <h3 Mars v3.0.13 -- 9 March 2015>
 
 This build contains some changes in support of the Athena re-architecture.<p>

@@ -27,7 +27,7 @@ package provide app_cmtool 3.0.14
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require snit 2.3
-package require kiteutils 0.4.5
+package require kiteutils 0.4.6
 package require -exact marsutil 3.0.14
 # -kite-require-end
 
