@@ -12,7 +12,7 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded marsgui 3.0.14 [list source [file join $dir pkgModules.tcl]]
+package ifneeded marsgui 3.0.15 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end
 
 
