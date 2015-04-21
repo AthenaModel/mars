@@ -495,9 +495,6 @@ Queries the database and returns the results formatted for
 display.  The options are as for <xref sqlib(n)>'s
 <xref sqlib(n) query> method.<p>
 
-<b>Note:</b> use "eval", provided by the underlying SQLite object, for
-programmatic queries.<p>
-
 <defitem register {$db register <i>section</i>}>
 
 Registers an <xref sqlsection(i)> module with this instance, where
@@ -528,8 +525,7 @@ application.<p>
 <defitem safequery {$db safequery <i>args...</i>}>
 
 This subcommand is just like <iref query>, but is
-prevented from changing the contents of the database; also,
-the query cannot include variables.<p>
+prevented from changing the contents of the database.<p>
 
 <defitem saveas {$db saveas <i>filename</i>}>
 

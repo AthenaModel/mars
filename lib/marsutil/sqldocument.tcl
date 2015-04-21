@@ -889,7 +889,11 @@ snit::type ::marsutil::sqldocument {
         # Allow SELECTs only.
         $db authorizer [myproc RdbAuthorizer]
 
-        set code [catch {$self query {*}$args} result]
+        set command [list $self query {*}$args]
+
+        set code [catch {
+            uplevel 1 $command
+        } result]
         
         # Open it up again.
         $db authorizer ""
