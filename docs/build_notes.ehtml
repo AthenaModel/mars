@@ -1,5 +1,13 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.15 -- 23 April 2015>
+
+This build contains only a fix to a bug in sqlib(n) for a safequery.<p>
+
+<ul>
+<li> Issue #47: sqlib(n): safequery ignores variables in user's scope
+</ul>
+
 <h3 Mars v3.0.14 -- 15 April 2015>
 
 This build adds an enhancement to logdisplay(n) and fixes a problem with
