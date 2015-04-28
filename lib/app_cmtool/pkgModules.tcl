@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_cmtool 3.0.15
+package provide app_cmtool 3.0.16
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -28,7 +28,7 @@ package provide app_cmtool 3.0.15
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require snit 2.3
 package require kiteutils 0.4.7
-package require -exact marsutil 3.0.15
+package require -exact marsutil 3.0.16
 # -kite-require-end
 
 namespace import ::kiteutils::*

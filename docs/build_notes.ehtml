@@ -1,5 +1,15 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.16 -- 28 April 2015>
+
+This build contains an enhancement to the cmdinfo(n) object which exposes
+TclOO classes in the debugger via the getcode call.  This will make it easier
+to make a mod if it involves a TclOO object or class.<p>
+
+<ul>
+<li> Issue #48: cmdinfo(n): Support TclOO introspection, getcode
+</ul>
+
 <h3 Mars v3.0.15 -- 23 April 2015>
 
 This build contains only a fix to a bug in sqlib(n) for a safequery.<p>
