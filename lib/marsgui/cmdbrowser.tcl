@@ -32,6 +32,7 @@ namespace eval ::marsgui:: {
 #    * Might want to use a treectrl instead of Tree, so that we can 
 #      have multiple columns.
 #    * Would like better support for Snit types and instances.
+#    * Would like better support for TclOO types and instances.
 #
 
 snit::widget ::marsgui::cmdbrowser {
@@ -46,17 +47,17 @@ snit::widget ::marsgui::cmdbrowser {
     # Type Variables
 
     typevariable cmdcolors -array {
-        proc    \#000000
-        nse     \#0066FF
-        sub     \#00CCFF
-        alias   \#00CCFF
-        bin     \#FF0000
-        wproc   \#CC00FF
-        wnse    \#CC00FF
-        walias  \#CC00FF
-        wbin    \#CC00FF
-        bwid    \#6600FF
-        ns      \#009900
+        proc               #000000
+        snit-typemethod    #000000
+        snit-method        #000000
+        snit-type          #000000
+        snit-instance      #000000
+        oo-object          #000000
+        nse                #0066FF
+        sub                #00CCFF
+        alias              #00CCFF
+        unknown            #FF0000
+        ns                 #009900
     }
 
 
@@ -343,10 +344,10 @@ snit::widget ::marsgui::cmdbrowser {
             # TBD: Add this to cmdinfo?
             if {$ctype ne "ns"} {
                 if {(!$info(imports) && $name ne [namespace origin $name]) ||
-                    (!$info(wid)   && $ctype in {wbin walias wproc wnse})  ||
-                    (!$info(bwid)  && $ctype eq "bwid")                    ||
+                    (!$info(wid)   && [cmdinfo is window $name])           ||
+                    (!$info(bwid)  && [cmdinfo is dummyWindow $name])      ||
                     (!$info(alias) && $ctype in {alias walias})            ||
-                    (!$info(bin)   && $ctype in {bin wbin})
+                    (!$info(bin)   && $ctype eq "unknown")
                 } {
                     continue
                 }
@@ -363,7 +364,7 @@ snit::widget ::marsgui::cmdbrowser {
                 -font codefont            \
                 -padx 0
 
-            if {$ctype in {"ns" "nse"}} {
+            if {$ctype in {"ns" "nse" "snit-type" "snit-instance"}} {
                 # We'll get the child nodes on request.  
                 # Mark it unexpanded, and create a dummy child so that
                 # we get the open icon.
@@ -388,7 +389,7 @@ snit::widget ::marsgui::cmdbrowser {
     method GetNseNodes {parent nse} {
         $tree delete [$tree nodes $parent]
         
-        foreach {sub mapping} [cmdinfo submap $nse] {
+        foreach {sub mapping} [cmdinfo nsemap $nse] {
             set id cmd[incr info(counter)]
 
             set cmd [dict create           \
@@ -424,7 +425,7 @@ snit::widget ::marsgui::cmdbrowser {
 
             if {$ctype eq "ns"} {
                 $self GetNsNodes $id $name
-            } elseif {$ctype eq "nse"} {
+            } elseif {$ctype in {"nse" "snit-type" "snit-instance"}} {
                 $self GetNseNodes $id $name
             }
         }
@@ -461,17 +462,36 @@ snit::widget ::marsgui::cmdbrowser {
         
         $editbtn configure -state disabled
 
+        set ctype [dict get $cmd ctype]
+
+        if {$ctype eq "unknown" && [cmdinfo is window $cmd]} {
+            set ctype tkwin
+        } elseif {[cmdinfo is dummyWindow $cmd]} {
+            set ctype bwid
+        }
+
         switch -exact -- [dict get $cmd ctype] {
             proc {
-                set text [getcode $name]
+                set text [cmdinfo getcode $name]
                 
                 if {$options(-editcmd) ne ""} {
                     $editbtn configure -state normal
                 }
             }
 
-            nse  -
-            wnse {
+            oo-object {
+                set text "TclOO Object or Class"
+            }
+
+            snit-type {
+                set text "Snit Type"
+            }
+
+            snit-instance {
+                set text "Snit Instance"
+            }
+
+            nse {
                 set opts [namespace ensemble configure $name]
 
                 set text "namespace ensemble: $name\n\n"
@@ -484,16 +504,15 @@ snit::widget ::marsgui::cmdbrowser {
                 set text "maps to -> [dict get $cmds($node) mapping]"
             }
 
-            alias  -
-            walias {
+            alias {
                 set text "alias -> [interp alias {} [dict get $cmd name]]"
             }
 
-            bin  {
-                set text "Binary command"
+            unknown {
+                set text "Binary command, etc."
             }
 
-            wbin {
+            tkwin {
                 set text "Tk Widget"
             }
 
@@ -503,6 +522,10 @@ snit::widget ::marsgui::cmdbrowser {
 
             ns {
                 set text "namespace"
+            }
+
+            default {
+                set text "Unknown type: $ctype"
             }
         }
 

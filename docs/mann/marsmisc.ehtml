@@ -50,12 +50,6 @@ where 0 &le; n <lb> <i>N</i>, where <i>N</i> is the length of
 
 Given some arguments, echo them to stdout.<p>
 
-<defitem getcode {getcode <i>command</i> <i>subcommands...</i>}>
-
-When possible, returns the code that defines the <i>command</i>.
-If <i>subcommands</i> are specified, the command must be a Snit
-type or instance.<p>
-
 <defitem gettimeofday {gettimeofday}>
 
 Returns the current wall-clock time in decimal seconds as a

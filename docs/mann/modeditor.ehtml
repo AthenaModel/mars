@@ -73,7 +73,7 @@ Returns the value of the specified <i>option</i>.<p>
 <defitem grab {<i>win</i> grab <i>name</i>}>
 
 Grabs the definition of the named command using
-<xref marsmisc(n) getcode>, and appends it to the text in the editor
+<xref cmdinfo(n) getcode>, and appends it to the text in the editor
 pane.  If the named command has already been grabbed, the user is asked
 whether they really want to do that.<p>
 

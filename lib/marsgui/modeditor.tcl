@@ -347,21 +347,29 @@ snit::widget ::marsgui::modeditor {
         $codename insert 0 $name
         
         # NEXT, grab it.
-        if {[catch {
-            set text [getcode {*}$name]
-            lappend info(grabbed) $name
-        } result]} {
+        set deflist [cmdinfo getcode $name -related]
+
+        if {[llength $deflist] == 0} {
+            set msg [lindex [cmdinfo origin $name] 2]
             messagebox popup \
                 -buttons {ok "OK"}       \
                 -icon    warning         \
                 -title   "No Such Code"  \
                 -parent  $win            \
-                -message "Cannot grab \"$name\":\n\n$result"
+                -message "Cannot grab \"$name\":\n\n$msg"
 
             return
         }
-        
-        $editor insert end "\n\n# BEGIN $name\n$text\n# END $name\n"
+
+        lappend info(grabbed) $name
+        set text "#[string repeat - 65]\n# BEGIN: $name\n\n"
+        foreach def $deflist {
+            append text "$def\n"
+        }
+        append text "# END: $name\n#[string repeat - 65]\n\n"
+
+        $editor insert 1.0 "$text"
         $editor yview moveto 1.0
+        $editor see 1.0
     }
 }

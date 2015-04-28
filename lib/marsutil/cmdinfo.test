@@ -1,0 +1,641 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    cmdinfo.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for marsutil(n) cmdinfo(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/marsutil/pkgModules.tcl
+namespace import ::marsutil::*
+namespace import ::kiteutils::outdent
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+::tcltest::customMatch trim ::MatchTrim
+
+proc MatchTrim {exp act} {
+    expr {[string trim [outdent $exp]] eq [string trim $act]}
+}
+
+proc ::aproc {args} {
+    return "aproc <$args>"
+}
+
+namespace eval ::mytest:: {
+    namespace export nsproc1 nsproc2
+    namespace ensemble create
+}
+proc ::mytest::nsproc1 {args} {}
+proc ::mytest::nsproc2 {args} {}
+
+snit::type mytype {
+    typemethod simple {args} {
+        return "mytype typemethod simple <$args>"
+    }
+    typemethod {complex first} {args} {
+        return "mytype typemethod complex first <$args>"        
+    }
+    typemethod {complex second} {args} {
+        return "mytype typemethod complex second <$args>"                
+    }
+
+    delegate typemethod forwarded using {::aproc delegated typemethod}
+
+    method simple {args} {
+        return "mytype method simple <$args>"       
+    }
+    method {complex first} {args} {
+        return "mytype method complex first <$args>"        
+    }
+    method {complex second} {args} {
+        return "mytype method complex second <$args>"                
+    }
+    method unique {args} {}
+
+    delegate method forwarded using {::aproc delegated typemethod}
+}
+
+mytype create myinstance
+
+oo::class create myclass {
+    method organic {args} {
+        return "myclass instance method organic <$args>"
+    }
+    method iunique {args} {}
+
+    forward forwarded aproc 4 5 6
+}
+
+oo::objdefine myclass {
+    method organic {args} {
+        "myclass class method organic <$args>"
+    }
+    method unique {args} {}
+    forward forwarded aproc 7 8 9
+}
+
+myclass create myobj
+
+interp alias {} myalias  {} aproc 1 2 3
+interp alias {} badalias {} list 1 2 3
+
+#-------------------------------------------------------------------
+# exists
+
+test exists-1.1 {no such command} -body {
+    # nsproc is not defined in global namespace
+    cmdinfo exists nsproc1
+} -result {0}
+
+test exists-1.2 {command exists} -body {
+    cmdinfo exists aproc
+} -result {1}
+
+test exists-1.3 {looks in caller's context} -body {
+    namespace eval ::mytest:: {
+        cmdinfo exists nsproc1
+    }
+} -result {1}
+
+test exists-1.4 {handles fully-qualified names} -body {
+    cmdinfo exists ::mytest::nsproc1
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# is proc
+
+test is_proc-1.1 {isn't, doesn't exist} -body {
+    cmdinfo is proc ::nonesuch
+} -result {0}
+
+test is_proc-1.2 {isn't, exists but not a proc} -body {
+    cmdinfo is proc ::list
+} -result {0}
+
+test is_proc-2.1 {is} -body {
+    cmdinfo is proc ::aproc
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# is snit-typemethod
+
+test is_snit-typemethod-1.1 {doesn't exist} -body {
+    cmdinfo is snit-typemethod ::nonesuch
+} -result {0}
+
+test is_snit-typemethod-1.2 {exists, but not a typemethod} -body {
+    cmdinfo is snit-typemethod ::aproc
+} -result {0}
+
+test is_snit-typemethod-2.1 {typemethod, exists} -body {
+    cmdinfo is snit-typemethod ::mytype::Snit_typemethodsimple
+} -result {1}
+
+test is_snit-typemethod-2.2 {typemethod, exists, multi-token} -body {
+    cmdinfo is snit-typemethod ::mytype::Snit_htypemethodcomplex_first
+} -result {1}
+
+#-------------------------------------------------------------------
+# is snit-method
+
+test is_snit-method-1.1 {doesn't exist} -body {
+    cmdinfo is snit-method ::nonesuch
+} -result {0}
+
+test is_snit-method-1.2 {exists, but not a snit-method} -body {
+    cmdinfo is snit-method ::aproc
+} -result {0}
+
+test is_snit-method-2.1 {snit-method, exists} -body {
+    cmdinfo is snit-method ::mytype::Snit_methodsimple
+} -result {1}
+
+test is_snit-method-2.2 {snit-method, exists, multi-token} -body {
+    cmdinfo is snit-method ::mytype::Snit_hmethodcomplex_first
+} -result {1}
+
+#-------------------------------------------------------------------
+# is oo-object
+
+test is_oo-object-1.1 {doesn't exist} -body {
+    cmdinfo is oo-object ::nonesuch
+} -result {0}
+
+test is_oo-object-1.2 {exists, but not a oo-object} -body {
+    cmdinfo is oo-object ::aproc
+} -result {0}
+
+test is_oo-object-2.1 {oo-object, class} -body {
+    cmdinfo is oo-object ::myclass
+} -result {1}
+
+test is_oo-object-2.2 {oo-object, instance} -body {
+    cmdinfo is oo-object ::myobj
+} -result {1}
+
+#-------------------------------------------------------------------
+# is nse
+
+test is_nse-1.1 {doesn't exist} -body {
+    cmdinfo is nse ::nonesuch
+} -result {0}
+
+test is_nse-1.2 {exists, but not a nse} -body {
+    cmdinfo is nse ::aproc
+} -result {0}
+
+test is_nse-2.1 {nse, snit object} -body {
+    cmdinfo is nse ::mytype
+} -result {1}
+
+test is_nse-2.2 {nse, normal} -body {
+    cmdinfo is nse ::mytest
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# is snit-type
+
+test is_snit-type-1.1 {doesn't exist} -body {
+    cmdinfo is snit-type ::nonesuch
+} -result {0}
+
+test is_snit-type-1.2 {exists, but not a snit-type} -body {
+    cmdinfo is snit-type ::aproc
+} -result {0}
+
+test is_snit-type-2.1 {snit-type} -body {
+    cmdinfo is snit-type ::mytype
+} -result {1}
+
+#-------------------------------------------------------------------
+# is snit-instance
+
+test is_snit-instance-1.1 {doesn't exist} -body {
+    cmdinfo is snit-instance ::nonesuch
+} -result {0}
+
+test is_snit-instance-1.2 {exists, but not a snit-instance} -body {
+    cmdinfo is snit-instance ::aproc
+} -result {0}
+
+test is_snit-instance-2.1 {snit-instance} -body {
+    cmdinfo is snit-instance ::myinstance
+} -result {1}
+
+#-------------------------------------------------------------------
+# is alias
+
+test is_alias-1.1 {doesn't exist} -body {
+    cmdinfo is alias ::nonesuch
+} -result {0}
+
+test is_alias-1.2 {exists, but not a alias} -body {
+    cmdinfo is alias ::aproc
+} -result {0}
+
+test is_alias-2.1 {alias, qualified} -body {
+    cmdinfo is alias ::myalias
+} -result {1}
+
+#-------------------------------------------------------------------
+# is window
+#
+# This library doesn't load Tk, so we can't test the true case;
+# but winfo does the heavy-lifting in any case.
+
+test is_window-1.1 {doesn't exist} -body {
+    cmdinfo is window ::nonesuch
+} -result {0}
+
+test is_window-1.2 {exists, but not a window} -body {
+    cmdinfo is window ::aproc
+} -result {0}
+
+test is_window-1.3 {could be a qualified window, but no Tk} -body {
+    cmdinfo is window ::.a.b.c
+} -result {0}
+
+#-------------------------------------------------------------------
+# is dummyWindow
+#
+# Can't test here, no Tk.
+
+#-------------------------------------------------------------------
+# type
+
+test type-1.1 {Not defined} -body {
+    cmdinfo type nonesuch
+} -result {unknown}
+
+test type-1.2 {Exists, but no definition available} -body {
+    cmdinfo type list
+} -result {unknown}
+
+test type-1.3 {Exists, qualifies in caller's context} -body {
+    namespace eval ::mytest:: {
+        cmdinfo type nsproc1
+    }
+} -result {proc}
+
+test type-2.1 {snit-typemethod} -body {
+    cmdinfo type ::mytype::Snit_typemethodsimple
+} -result {snit-typemethod}
+
+test type-2.2 {snit-typemethod, multi-token} -body {
+    cmdinfo type ::mytype::Snit_htypemethodcomplex_first
+} -result {snit-typemethod}
+
+test type-3.1 {snit-method} -body {
+    cmdinfo type ::mytype::Snit_methodsimple
+} -result {snit-method}
+
+test type-3.2 {snit-method, multi-token} -body {
+    cmdinfo type ::mytype::Snit_hmethodcomplex_first
+} -result {snit-method}
+
+test type-4.1 {proc} -body {
+    cmdinfo type aproc
+} -result {proc}
+
+test type-5.1 {oo-object, TclOO class} -body {
+    cmdinfo type myclass
+} -result {oo-object}
+
+test type-5.2 {oo-object, TclOO instance} -body {
+    cmdinfo type myobj
+} -result {oo-object}
+
+test type-6.1 {snit-type} -body {
+    cmdinfo type mytype
+} -result {snit-type}
+
+test type-7.1 {snit-instance} -body {
+    cmdinfo type myinstance
+} -result {snit-instance}
+
+test type-8.1 {nse} -body {
+    cmdinfo type mytest
+} -result {nse}
+
+test type-9.1 {alias} -body {
+    cmdinfo type myalias
+} -result {alias}
+
+#-------------------------------------------------------------------
+# origin
+
+# basic behavior, proc
+test origin-1.1 {no such command} -body {
+    cmdinfo origin "nonesuch a b c"
+} -result {unknown nonesuch {invalid command name "nonesuch"}}
+
+test origin-1.2 {normal proc} -body {
+    cmdinfo origin "aproc a b c"
+} -result {proc ::aproc}
+
+# alias
+test origin-2.1 {alias, recurse to find actual command} -body {
+    cmdinfo origin "myalias a b c"
+} -result {proc ::aproc}
+
+test origin-2.2 {alias, recurse to find binary command} -body {
+    cmdinfo origin "badalias a b c"
+} -result {unknown ::list}
+
+# oo-object
+test origin-3.1 {oo-object, no method given} -body {
+    cmdinfo origin "myobj"
+} -result {unknown ::myobj {no method specified}}
+
+test origin-3.2 {oo-object, no such method} -body {
+    cmdinfo origin "myobj nonesuch"
+} -result {unknown ::myobj {no such method: "nonesuch"}}
+
+test origin-3.3 {oo-object, organic instance method} -body {
+    cmdinfo origin "myobj organic"
+} -result {oo-method ::myclass organic}
+
+test origin-3.4 {oo-object, organic class method} -body {
+    cmdinfo origin "myclass organic"
+} -result {oo-objmethod ::myclass organic}
+
+test origin-3.5 {oo-object, forwarded instance method} -body {
+    cmdinfo origin "myobj forwarded"
+} -result {proc ::aproc}
+
+test origin-3.6 {oo-object, forwarded class method} -body {
+    cmdinfo origin "myclass forwarded"
+} -result {proc ::aproc}
+
+test origin-3.7 {oo-object, unknown handler for instance method} -setup {
+    oo::define ::myclass method unknown {args} { 
+        return "myclass instance method unknown <$args>"
+    }
+} -body {
+    cmdinfo origin "myobj nonesuch"
+} -cleanup {
+    oo::define ::myclass deletemethod unknown
+} -result {oo-method ::myclass unknown}
+
+test origin-3.8 {oo-object, unknown handler for class method} -setup {
+    oo::objdefine ::myclass method unknown {args} { 
+        return "myclass class method unknown <$args>"
+    }
+} -body {
+    cmdinfo origin "myclass nonesuch"
+} -cleanup {
+    oo::objdefine ::myclass deletemethod unknown
+} -result {oo-objmethod ::myclass unknown}
+
+# snit-typemethod from proc
+test origin-4.1 {snit-typemethod} -body {
+    cmdinfo origin ::mytype::Snit_typemethodsimple
+} -result {snit-typemethod ::mytype simple}
+
+test origin-4.2 {snit-typemethod, multi-token} -body {
+    cmdinfo origin ::mytype::Snit_htypemethodcomplex_first
+} -result {snit-typemethod ::mytype {complex first}}
+
+# snit-method from proc
+test origin-5.1 {snit-method} -body {
+    cmdinfo origin ::mytype::Snit_methodsimple
+} -result {snit-method ::mytype simple}
+
+test origin-5.2 {snit-method, multi-token} -body {
+    cmdinfo origin ::mytype::Snit_hmethodcomplex_first
+} -result {snit-method ::mytype {complex first}}
+
+# snit-type, organic fallback
+test origin-6.1 {snit-type, simple} -body {
+    cmdinfo origin "mytype simple"
+} -result {snit-typemethod ::mytype simple}
+
+test origin-6.2 {snit-type, multi-token} -body {
+    cmdinfo origin "mytype complex first"
+} -result {snit-typemethod ::mytype {complex first}}
+
+# snit-instance, organic fallback
+test origin-7.1 {snit-instance, simple} -body {
+    cmdinfo origin "myinstance simple"
+} -result {snit-method ::mytype simple}
+
+test origin-7.2 {snit-instance, multi-token} -body {
+    cmdinfo origin "myinstance complex first"
+} -result {snit-method ::mytype {complex first}}
+
+# snit-type, nsemap lookup
+test origin-8.1 {snit-type, simple method, called} -body {
+    mytype simple
+    cmdinfo origin "mytype simple this that"
+} -result {snit-typemethod ::mytype simple}
+
+test origin-8.2 {snit-type, multi-token method, called} -body {
+    mytype complex first
+    cmdinfo origin "mytype complex first this that"
+} -result {snit-typemethod ::mytype {complex first}}
+
+test origin-8.3 {snit-type, delegated method, not yet called} -body {
+    cmdinfo origin "mytype forwarded this that"
+} -result {unknown ::mytype {no definition identified}}
+
+test origin-8.4 {snit-type, delegated method, called} -body {
+    mytype forwarded
+    cmdinfo origin "mytype forwarded this that"
+} -result {proc ::aproc}
+
+# snit-instance, delegated method
+test origin-8.1 {snit-instance, simple method, called} -body {
+    myinstance simple
+    cmdinfo origin "myinstance simple this that"
+} -result {snit-method ::mytype simple}
+
+test origin-8.2 {snit-instance, multi-token method, called} -body {
+    myinstance complex first
+    cmdinfo origin "myinstance complex first this that"
+} -result {snit-method ::mytype {complex first}}
+
+test origin-8.3 {snit-instance, delegated method, not yet called} -body {
+    cmdinfo origin "myinstance forwarded this that"
+} -result {unknown ::myinstance {no definition identified}}
+
+test origin-8.4 {snit-instance, delegated method, called} -body {
+    myinstance forwarded
+    cmdinfo origin "myinstance forwarded this that"
+} -result {proc ::aproc}
+
+# nse
+test origin-9.1 {namespace ensemble} -body {
+    cmdinfo origin "mytest nsproc1"
+} -result {proc ::mytest::nsproc1}
+
+#-------------------------------------------------------------------
+# getcode
+
+test getcode-1.1 {unknown} -body {
+    cmdinfo getcode "nonesuch"
+} -result {}
+
+test getcode-1.2 {proc} -body {
+    cmdinfo getcode "aproc"
+} -match trim -result {
+    # source: aproc => proc ::aproc
+    proc ::aproc args {
+        return "aproc <$args>"
+    }
+}
+
+test getcode-1.3 {proc} -body {
+    namespace eval ::mytest {
+        cmdinfo getcode "nsproc1"
+    }
+} -match trim -result {
+    # source: nsproc1 => proc ::mytest::nsproc1
+    proc ::mytest::nsproc1 args {}
+}
+
+test getcode-1.4 {proc} -body {
+    join [cmdinfo getcode "aproc" -related] \n
+} -match trim -result {
+    # source: aproc => proc ::aproc
+    proc ::aproc args {
+        return "aproc <$args>"
+    }
+}
+
+
+test getcode-2.1 {snit-typemethod, simple} -body {
+    cmdinfo getcode "mytype simple"
+} -match trim -result {
+    # source: mytype simple => snit-typemethod ::mytype simple
+    snit::typemethod ::mytype simple args {
+        return "mytype typemethod simple <$args>"
+    }
+}
+
+test getcode-2.2 {snit-typemethod, multi-token} -body {
+    cmdinfo getcode "mytype complex first"
+} -match trim -result {
+    # source: mytype complex first => snit-typemethod ::mytype {complex first}
+    snit::typemethod ::mytype {complex first} args {
+        return "mytype typemethod complex first <$args>"        
+    }
+}
+
+test getcode-2.3 {both snit-typemethod and snit-method} -body {
+    join [cmdinfo getcode "mytype complex first" -related] \n
+} -match trim -result {
+    # source: mytype complex first => snit-typemethod ::mytype {complex first}
+    snit::typemethod ::mytype {complex first} args {
+        return "mytype typemethod complex first <$args>"        
+    }
+
+    # source: mytype complex first, instance method => snit-method ::mytype {complex first}
+    snit::method ::mytype {complex first} args {
+        return "mytype method complex first <$args>"        
+    }
+}
+
+test getcode-2.4 {name snit-type, but retrieve instance method} -body {
+    join [cmdinfo getcode "mytype unique" -related] \n
+} -match trim -result {
+    # source: mytype unique, instance method => snit-method ::mytype unique
+    snit::method ::mytype unique args {
+
+    }
+}
+
+test getcode-3.1 {snit-method, simple} -body {
+    cmdinfo getcode "myinstance simple"
+} -match trim -result {
+    # source: myinstance simple => snit-method ::mytype simple
+    snit::method ::mytype simple args {
+        return "mytype method simple <$args>"       
+    }
+}
+
+test getcode-3.2 {snit-method, multi-token} -body {
+    cmdinfo getcode "myinstance complex first"
+} -match trim -result {
+    # source: myinstance complex first => snit-method ::mytype {complex first}
+    snit::method ::mytype {complex first} args {
+        return "mytype method complex first <$args>"        
+    }
+}
+
+test getcode-4.1 {oo-method} -body {
+    cmdinfo getcode "myobj organic"
+} -match trim -result {
+    # source: myobj organic => oo-method ::myclass organic
+    oo::define ::myclass organic args {
+        return "myclass instance method organic <$args>"
+    }
+}
+
+test getcode-5.1 {oo-objmethod} -body {
+    cmdinfo getcode "myclass organic"
+} -match trim -result {
+    # source: myclass organic => oo-objmethod ::myclass organic
+    oo::objdefine ::myclass organic args {
+        "myclass class method organic <$args>"
+    }
+}
+
+test getcode-5.2 {oo-objmethod and oo-method} -body {
+    join [cmdinfo getcode "myclass organic" -related] \n
+} -match trim -result {
+    # source: myclass organic => oo-objmethod ::myclass organic
+    oo::objdefine ::myclass organic args {
+        "myclass class method organic <$args>"
+    }
+
+    # source: myclass organic, instance method => oo-method ::myclass organic
+    oo::define ::myclass organic args {
+        return "myclass instance method organic <$args>"
+    }
+}
+
+test getcode-5.3 {class given, oo-method only} -body {
+    join [cmdinfo getcode "myclass iunique" -related] \n
+} -match trim -result {
+# source: myclass iunique, instance method => oo-method ::myclass iunique
+oo::define ::myclass iunique args {
+
+}
+}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests
+
+
+
+
+
+
+

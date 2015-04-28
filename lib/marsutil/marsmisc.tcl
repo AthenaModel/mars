@@ -20,8 +20,6 @@
 #
 # TODO:
 #
-#   * code
-#     * getcode
 #   * marsmisc
 #     * echo (define if undefined)
 #     * gettimeofday
@@ -59,7 +57,6 @@ namespace eval ::marsutil:: {
         count           \
         discrete        \
         echo            \
-        getcode         \
         gettimeofday    \
         hexcolor        \
         hexquote        \
@@ -670,169 +667,5 @@ snit::type ::marsutil::hexcolor {
     }
 }
 
-#-------------------------------------------------------------------
-# getcode
-
-# getcode name args
-#
-# name        A Tcl proc, type, or instance command name
-# args        Subcommands; name must be a type or instance
-#
-# Returns the code for the named command or method
-
-proc ::marsutil::getcode {name args} {
-    # FIRST, get the absolute name
-    set name [uplevel 1 [list namespace origin $name]]
-
-    # NEXT, Get the type of the command
-    set ctype [cmdinfo type $name]
-
-    # NEXT, handle it based on the type
-    if {$ctype in {proc wproc}} {
-        # Ignore any args
-        return [GetProc $name]
-    } elseif {$ctype in {nse wnse}} {
-        # Assume it's a Snit type or instance
-        return [GetMethod $name $args]
-    } else {
-        error "not a proc, snit type, or snit instance: \"$name\""
-    }
-}
-
-# GetProc name
-#
-# name          Name of a Tcl proc
-#
-# Returns a Tcl script that would recreate the proc.
-
-proc ::marsutil::GetProc {name} {
-    # FIRST, get the argument list
-    set arglist [GetArgList $name]
-
-    # NEXT, return the proc
-    return [list proc $name $arglist [info body $name]]
-    
-}
-
-# GetArgList name
-#
-# name       Absolute name of a Tcl proc
-#
-# Returns the arglist, with defaults (if any)
-
-proc ::marsutil::GetArgList {name} {
-    set result {}
-
-    foreach arg [info args $name] {
-        if {[info default $name $arg defvalue]} {
-            lappend result [list $arg $defvalue]
-        } else {
-            lappend result $arg
-        }
-    }
-
-    return $result
-}
-
-# GetMethod object subcmd
-#
-# object         Absolute name of a snit type or instance
-# subcmd         A subcommand of the type or instance
-#
-# Returns a snit::method or snit::typemethod definition
-
-proc ::marsutil::GetMethod {object subcmd} {
-    # FIRST, is it an instance or a type?
-    if {![catch {set objtype [$object info type]} result]} {
-        # Instance
-        return [GetInstanceMethod $objtype $subcmd]
-    } else {
-        # Is it a type?
-        if {[cmdinfo exists ${object}::Snit_typeconstructor]} {
-            return [GetTypeMethod $object $subcmd]
-        } else {
-            error "not a proc, snit type, or snit instance: \"$object\""
-        }
-    }
-}
-
-# GetTypeMethod objtype subcmd
-#
-# objtype     A snit type
-# subcmd      A typemethod name
-#
-# Retrieves the typemethod's definition
-
-proc ::marsutil::GetTypeMethod {objtype subcmd} {
-    if {[llength $subcmd] == 1} {
-        set procName "${objtype}::Snit_typemethod${subcmd}"
-    } else {
-        set procName "${objtype}::Snit_htypemethod[join $subcmd _]"
-    }
-
-    if {[llength [info commands $procName]] != 1} {
-        error "$objtype has no typemethod called \"$subcmd\""
-    }
-
-    # Get the argument list, skipping the implicit "type" argument
-    set arglist [lrange [GetArgList $procName] 1 end]
-
-    # Get the body of the typemethod
-    set body [info body $procName]
-
-    # Remove the Snit method prolog
-    regsub {^.*\# END snit method prolog\n} $body {} body
-
-    set body [ReindentBody $body]
-
-    return [list snit::typemethod $objtype $subcmd $arglist $body]
-}
-
-# GetInstanceMethod objtype subcmd
-#
-# objtype     A snit type
-# subcmd      A method name
-#
-# Retrieves the method's definition
-
-proc ::marsutil::GetInstanceMethod {objtype subcmd} {
-    if {[llength $subcmd] == 1} {
-        set procName "${objtype}::Snit_method${subcmd}"
-    } else {
-        set procName "${objtype}::Snit_hmethod[join $subcmd _]"
-    }
-
-    if {[llength [info commands $procName]] != 1} {
-        error "$objtype has no method called \"$subcmd\""
-    }
-
-    # Get the argument list, skipping the implicit "type" argument
-    set arglist [lrange [GetArgList $procName] 4 end]
-
-    # Get the body of the typemethod
-    set body [info body $procName]
-
-    # Remove the Snit method prolog
-    regsub {^.*\# END snit method prolog\n} $body {} body
-    
-    set body [ReindentBody $body]
-
-    return [list snit::method $objtype $subcmd $arglist $body]
-}
-
-# ReindentBody body
-#
-# body    The body of a proc or method
-#
-# Outdents the body, then re-indents it four spaces.
-
-proc ::marsutil::ReindentBody {body} {
-    set lines [list]
-    foreach line [split [outdent $body] \n] {
-        lappend lines "    $line"
-    }
-    
-    return "\n[join $lines \n]\n"
-}
 
 
