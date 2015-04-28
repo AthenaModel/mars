@@ -590,7 +590,7 @@ test getcode-4.1 {oo-method} -body {
     cmdinfo getcode "myobj organic"
 } -match trim -result {
     # source: myobj organic => oo-method ::myclass organic
-    oo::define ::myclass organic args {
+    oo::define ::myclass method organic args {
         return "myclass instance method organic <$args>"
     }
 }
@@ -599,7 +599,7 @@ test getcode-5.1 {oo-objmethod} -body {
     cmdinfo getcode "myclass organic"
 } -match trim -result {
     # source: myclass organic => oo-objmethod ::myclass organic
-    oo::objdefine ::myclass organic args {
+    oo::objdefine ::myclass method organic args {
         "myclass class method organic <$args>"
     }
 }
@@ -608,12 +608,12 @@ test getcode-5.2 {oo-objmethod and oo-method} -body {
     join [cmdinfo getcode "myclass organic" -related] \n
 } -match trim -result {
     # source: myclass organic => oo-objmethod ::myclass organic
-    oo::objdefine ::myclass organic args {
+    oo::objdefine ::myclass method organic args {
         "myclass class method organic <$args>"
     }
 
     # source: myclass organic, instance method => oo-method ::myclass organic
-    oo::define ::myclass organic args {
+    oo::define ::myclass method organic args {
         return "myclass instance method organic <$args>"
     }
 }
@@ -622,7 +622,7 @@ test getcode-5.3 {class given, oo-method only} -body {
     join [cmdinfo getcode "myclass iunique" -related] \n
 } -match trim -result {
 # source: myclass iunique, instance method => oo-method ::myclass iunique
-oo::define ::myclass iunique args {
+oo::define ::myclass method iunique args {
 
 }
 }

@@ -735,7 +735,7 @@ snit::type ::marsutil::cmdinfo {
         }
 
         set body [ReindentBody $body]
-        return [list oo::define $cls $method $arglist $body]
+        return [list oo::define $cls method $method $arglist $body]
     }
 
     # GetOoObjMethod obj method
@@ -753,7 +753,7 @@ snit::type ::marsutil::cmdinfo {
         }
 
         set body [ReindentBody $body]
-        return [list oo::objdefine $obj $method $arglist $body]
+        return [list oo::objdefine $obj method $method $arglist $body]
     }
 
     # GetArgList name
