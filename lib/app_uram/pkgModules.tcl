@@ -28,7 +28,7 @@ package provide app_uram 3.0.15
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require sqlite3 3.8
 package require snit 2.3
-package require kiteutils 0.4.6
+package require kiteutils 0.4.7
 package require -exact marsutil 3.0.15
 package require -exact marsgui 3.0.15
 package require -exact simlib 3.0.15
