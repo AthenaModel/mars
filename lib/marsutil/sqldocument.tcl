@@ -104,6 +104,8 @@ snit::type ::marsutil::sqldocument {
         lappend functions error               [list ::error]
         lappend functions format              [list ::format]
         lappend functions joinlist            [list ::join]
+        lappend functions mgrs                [myproc Mgrs]
+        lappend functions moneyfmt            [list ::marsutil::moneyfmt]
         lappend functions nonempty            [myproc NonEmpty]
         lappend functions percent             [list ::marsutil::percent]
         lappend functions wallclock           [list ::clock seconds]
@@ -1121,6 +1123,26 @@ snit::type ::marsutil::sqldocument {
         }
 
         return ""
+    }
+
+    # Mgrs args...
+    #
+    # args...   A list of one or more lat/long pairs
+    #
+    # Returns a list of MGRS strings corresponding to the lat/long pairs.
+
+    proc Mgrs {args} {
+        set result [list]
+
+        if {[llength $args] == 1} {
+            set args [lindex $args 0]
+        }
+
+        foreach {lat lon} $args {
+            lappend result [latlong tomgrs [list $lat $lon]]
+        }
+
+        return $result        
     }
 
     #-------------------------------------------------------------------

@@ -214,7 +214,7 @@ test sqlsection_tempschema-1.1 {Base schema is defined} -body {
 
 test sqlsection_functions-1.1 {Standard functions are defined} -body {
     sqldocument sqlsection functions
-} -result {dictget ::marsutil::sqldocument::dictget error ::error format ::format joinlist ::join nonempty ::marsutil::sqldocument::NonEmpty percent ::marsutil::percent wallclock {::clock seconds} sqldocument_grab ::marsutil::sqldocument::GrabFunc sqldocument_monitor ::marsutil::sqldocument::RowMonitorFunc}
+} -result {dictget ::marsutil::sqldocument::dictget error ::error format ::format joinlist ::join mgrs ::marsutil::sqldocument::Mgrs moneyfmt ::marsutil::moneyfmt nonempty ::marsutil::sqldocument::NonEmpty percent ::marsutil::percent wallclock {::clock seconds} sqldocument_grab ::marsutil::sqldocument::GrabFunc sqldocument_monitor ::marsutil::sqldocument::RowMonitorFunc}
 
 #-------------------------------------------------------------------
 # Constructor
@@ -379,6 +379,22 @@ test open-2.4 {Standard function: percent } -body {
 } -cleanup {
     cleanup
 } -result { 50%}
+
+test open-2.5 {Standard function: mgrs} -body {
+    sqldocument db
+    db open :memory:
+    db onecolumn {SELECT mgrs("34.0 -118.0")}
+} -cleanup {
+    cleanup
+} -match glob -result {11SMT076*626*}
+
+test open-2.6 {Standard function: moneyfmt} -body {
+    sqldocument db
+    db open :memory:
+    db onecolumn {SELECT moneyfmt(1234567890.00)}
+} -cleanup {
+    cleanup
+} -match glob -result {1.235B}
 
 # open-3.x: Temp Schema and Functions from other sections
 test open-3.1 {Temp schema defined} -body {
