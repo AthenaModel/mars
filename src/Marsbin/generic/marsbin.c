@@ -25,9 +25,9 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <sys/ioctl.h>
-#include <net/if.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <net/if.h>
 #endif
 
 
