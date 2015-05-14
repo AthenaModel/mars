@@ -111,6 +111,16 @@ parent class in the following ways:<p>
      directly.<p>
 </ul>
 
+<subsection "Parameters with Default Values">
+
+order(n) subclasses are to use the <iref parmlist> metadata value to define
+the list of its parameters and their default values.  <b Note:> If a
+parameter has a default value, it is assumed that it can never validly
+be the empty string, i.e., that it can never be NULL in the SQL sense.
+If this is an issue, the order should define a sentinel value for that
+parameter that indicates that it is empty, e.g., "NONE", thus providing
+the functionality while meeting the constraint.<p>
+
 See <xref "EXAMPLES">, below.<p>
 
 <section COMMANDS>
@@ -179,6 +189,9 @@ values using Tcl's <tt proc> argument list syntax: each element in the
 list defines the name of a parameter.  If the element is a pair, the second 
 item in the pair is the default value; otherwise the default value is the
 empty string.<p>
+
+If a parameter has a default value, then using <iref set> to set it to ""
+will actually set it to its default value.<p> 
 
 Every leaf class should define this metadata value.<p>
 
@@ -260,6 +273,9 @@ which they appear in the order's <iref defaults>.<p>
 Sets the <i value> of the named <i parm>, and changes the order's 
 <iref state> to <b CHANGED>.  This command cannot be used when the
 order is in the <b EXECUTED> state.<p>
+
+<b Note:> If the <i value> is the empty string, and the <i parm> has
+a default value, then it will be assigned its default value.<p>
 
 <defitem setdict {<i obj> setdict <i parmdict>}>
 

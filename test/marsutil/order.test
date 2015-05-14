@@ -38,9 +38,9 @@ namespace import ::marsutil::*
 myorders define MY:ORDER {
     meta title "My Order"
     meta sendstates "PREP"
-    meta defaults {
-        x 1
-        y yes
+    meta parmlist {
+        {x 1}
+        {y yes}
     }
 
     method _validate {} {
@@ -58,9 +58,9 @@ myorders define MY:ORDER {
 myorders define MY:FORM {
     meta title "My Form"
     meta sendstates "PREP"
-    meta defaults {
-        x 1
-        y 2
+    meta parmlist {
+        {x 1}
+        {y 2}
     }
     meta form {
         text x
@@ -70,9 +70,9 @@ myorders define MY:FORM {
 
 myorders define MY:MODE {
     meta title "My Mode"
-    meta defaults {
-        x 1
-        y 2
+    meta parmlist {
+        {x 1}
+        {y 2}
     }
 
     method _validate {} {
@@ -90,7 +90,7 @@ myorders define MY:MODE {
 }
 
 myorders define MY:VALIDATE {
-    meta defaults { x "" }
+    meta parmlist {x}
 
     method _validate {} { 
         my checkon x {
@@ -121,8 +121,8 @@ myorders define MY:VALIDATE {
 }
 
 myorders define MY:RETURN {
-    meta defaults { 
-        x "" 
+    meta parmlist { 
+        x
     }
 
     method _validate {} { 
@@ -137,7 +137,9 @@ myorders define MY:RETURN {
 }
 
 myorders define MY:CANCEL {
-    meta defaults { x 1 }
+    meta parmlist { 
+        {x 1} 
+    }
     method _validate {} {
         my variable parms
         my checkon x {
@@ -250,6 +252,18 @@ test set-1.4 {unknown parameter} -setup {
 } -cleanup {
     cleanup
 } -result {Unknown parameter: "nonesuch"}
+
+test set-1.5 {substitutes default for ""} -setup {
+    setup
+} -body {
+    set a [ord get y]
+    set b [ord set y DUMMY]
+    set c [ord set y ""]
+    set d [ord get y]
+    list $a $b $c $d
+} -cleanup {
+    cleanup
+} -result {yes DUMMY yes yes}
 
 #-----------------------------------------------------------------------
 # getdict

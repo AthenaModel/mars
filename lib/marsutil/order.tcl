@@ -108,6 +108,9 @@ oo::class create ::marsutil::order {
     #
     # Assigns the value to the variable; the variable must already
     # exist.
+    #
+    # If the new value is the empty string, replace it with the
+    # parameter's default value.
 
     method set {name value} {
         ::marsutil::require {$orderState ne "EXECUTED"} \
@@ -118,6 +121,10 @@ oo::class create ::marsutil::order {
         }
 
         set value [string trim $value]
+
+        if {$value eq ""} {
+            set value [dict get [my defaults] $name]
+        }
 
         if {[my get $name] ne $value} {
             dict set parmdict $name $value
