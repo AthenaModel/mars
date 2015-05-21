@@ -371,6 +371,71 @@ test query-4.1 {queries can reference variables in caller's scope} -setup {
 "Bill","Beta","B",20
 }
 
+test query-5.1 {queries can output to a file} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode list -filename "test.txt"
+    tcltest::viewFile "test.txt"
+} -cleanup {
+    query_cleanup
+    file delete -force "test.txt"
+} -result {first   Andrew
+last    Alpha
+middle  A
+age     10
+
+first   Bill
+last    Beta
+middle  B
+age     20
+
+first   George
+last    Gamma
+middle  G
+age     30}
+
+test query-5.2 {queries can output to a channel} -setup {
+    query_setup
+    set f [open "chan.txt" w]
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode list -channel $f
+    close $f
+    tcltest::viewFile "chan.txt"
+} -cleanup {
+    query_cleanup
+    file delete -force "chan.txt"
+} -result {first   Andrew
+last    Alpha
+middle  A
+age     10
+
+first   Bill
+last    Beta
+middle  B
+age     20
+
+first   George
+last    Gamma
+middle  G
+age     30}
+
+test query-5.3 {filename overrides channel in query} -setup {
+    query_setup
+    set f [open "chan.txt" w]
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode list \
+                                          -filename "test.txt" \
+                                          -channel $f
+    close $f
+    list \
+        [expr [file size "test.txt"] > 0] \
+        [expr [file size "chan.txt"] > 0]
+} -cleanup {
+    query_cleanup
+    file delete -force "test.txt"
+    file delete -force "chan.txt"
+} -result {1 0}
+
 #-------------------------------------------------------------------
 # mat
 

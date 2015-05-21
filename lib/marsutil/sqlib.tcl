@@ -55,6 +55,7 @@ snit::type ::marsutil::sqlib {
     #    out     - The output
     #    labels  - The label strings
     #    rows    - In MC mode, the actual rows of data as dicts
+    #    chan    - A channel for the output or ""
     typevariable qtrans -array {}
 
 
@@ -375,6 +376,8 @@ snit::type ::marsutil::sqlib {
             -maxcolwidth  30
             -labels       {}
             -headercols   0
+            -channel      {}
+            -filename     {}
         }
         array set qopts $args
 
@@ -384,6 +387,7 @@ snit::type ::marsutil::sqlib {
             names ""
             out   ""
             rows  {}
+            chan  ""
         }
 
         array unset qwidths
@@ -397,14 +401,34 @@ snit::type ::marsutil::sqlib {
             }
         }
 
+        # NEXT, deal with alternate output channels
+        set qtrans(chan) $qopts(-channel)
+
+        # NEXT, if a filename was provided set output channel possibly
+        # overriding qtrans(chan)
+        if {$qopts(-filename) ne ""} {
+            try {
+                set qtrans(chan) [open $qopts(-filename) w]
+            } on error {result eopts} {
+                catch {close $qtrans(chan)}
+                error "Could not open \"$qopts(-filename)\": $result"
+            }
+        } 
+
         # NEXT, do the query:
         uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
 
-        # NEXT, if the mode is not "mc" we're done.
+        set out ""
+
+        # NEXT, if the mode is not "mc" we're done.       
         if {$qopts(-mode) eq "mc"} {
             set out [FormatQueryMC]
-        } else {
+        } elseif {$qtrans(chan) eq ""} {
             set out $qtrans(out)
+        }
+
+        if {$qopts(-filename) ne ""} {
+            catch {close $qtrans(chan)}
         }
 
         array unset qtrans
@@ -544,7 +568,7 @@ snit::type ::marsutil::sqlib {
         incr qtrans(count)
 
         if {$qtrans(count) > 1} {
-            append qtrans(out) "\n"
+            WriteOutput "\n"
         }
 
         foreach label $qtrans(labels) name $qtrans(names) {
@@ -553,7 +577,7 @@ snit::type ::marsutil::sqlib {
             regsub -all {\n} [string trimright $qrow($name)] \
                 "\n$leader  " value
 
-            append qtrans(out) \
+            WriteOutput \
                 [format "%-*s  %s\n" $qtrans(labelWidth) $label $value]
         }
 
@@ -586,8 +610,7 @@ snit::type ::marsutil::sqlib {
             lappend record $qrow($col)
         }
 
-        append qtrans(out) [CsvRecord $record]
-
+        WriteOutput [CsvRecord $record]
     }
 
     # CsvRecord record
@@ -615,6 +638,19 @@ snit::type ::marsutil::sqlib {
         return "[join $cols {,}]\n"
     }
 
+    # WriteOutput data
+    #
+    # data   - Some data to be output 
+    #
+    # Directs data to a channel or appends it to the output string.
+
+    proc WriteOutput {data} {
+        if {$qtrans(chan) ne ""} {
+            puts -nonewline $qtrans(chan) $data
+        } else {
+            append qtrans(out) $data
+        }
+    }
 
     # mat db table iname jname ename ?options?
     #
