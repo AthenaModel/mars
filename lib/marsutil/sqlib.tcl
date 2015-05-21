@@ -58,8 +58,6 @@ snit::type ::marsutil::sqlib {
     #    chan    - A channel for the output or ""
     typevariable qtrans -array {}
 
-
-
     #-------------------------------------------------------------------
     # Ensemble subcommands
 
@@ -341,12 +339,12 @@ snit::type ::marsutil::sqlib {
     # sql           An SQL query.
     # options       Formatting options
     #
-    #   -mode mc|list|csv    Display mode: mc (multicolumn), record list,
-    #                        or CSV.
-    #   -maxcolwidth num     Maximum displayed column width, in 
-    #                        characters.
-    #   -labels list         List of column labels.
-    #   -headercols n        Number of header columns (default 0)
+    #   -mode mc|list|csv|json  Display mode: mc (multicolumn), record list,
+    #                           CSV, or JSON
+    #   -maxcolwidth num        Maximum displayed column width, in 
+    #                           characters.
+    #   -labels list            List of column labels.
+    #   -headercols n           Number of header columns (default 0)
     #
     # Executes the query and accumulates the results into a nice
     # formatted output.
@@ -388,6 +386,7 @@ snit::type ::marsutil::sqlib {
             out   ""
             rows  {}
             chan  ""
+            first 1
         }
 
         array unset qwidths
@@ -396,6 +395,7 @@ snit::type ::marsutil::sqlib {
             mc    { set rowproc ${type}::QueryMC   }
             list  { set rowproc ${type}::QueryList }
             csv   { set rowproc ${type}::QueryCSV  }
+            json  { set rowproc ${type}::QueryJSON }
             default { 
                 error "Unknown -mode: \"$qopts(-mode)\"" 
             }
@@ -420,6 +420,11 @@ snit::type ::marsutil::sqlib {
             }
 
             uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
+
+            # JSON mode needs a final close bracket
+            if {$qopts(-mode) eq "json"} {
+                WriteOutput "\n]\n"
+            }
 
             if {$qtrans(chan) eq ""} {
                 return $qtrans(out)
@@ -628,6 +633,43 @@ snit::type ::marsutil::sqlib {
         }
 
         return "[join $cols {,}]\n"
+    }
+
+    # QueryJSON 
+    #
+    # Handle individual rows for JSON output.  
+
+    proc QueryJSON {} {
+        # FIRST, get the column names
+        if {[llength $qtrans(names)] == 0} {
+            set qtrans(names) $qrow(*)
+            unset qrow(*)
+        }
+        
+        # NEXT, fill in the record array
+        foreach col $qtrans(names) {
+            set record($col) $qrow($col)
+        }
+
+        # NEXT, first time through, output open bracket
+        if {$qtrans(first)} {
+            set json "\[\n"
+        }
+
+        # NEXT, after the first time, insert a comma just before the
+        # next record
+        if {!$qtrans(first)} {
+            set json ",\n"
+        }
+
+        # NEXT, format up JSON
+        set datadict [huddle create {*}[array get record]]
+        append json [huddle jsondump $datadict]
+
+        # NEXT, set flag
+        set qtrans(first) 0
+
+        WriteOutput $json
     }
 
     # WriteOutput data

@@ -359,7 +359,35 @@ test query-3.2 {csv output, labels} -setup {
 "George","Gamma","G",30
 }
 
-test query-4.1 {queries can reference variables in caller's scope} -setup {
+test query-4.1 {json output} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode json -channel stdout   
+} -cleanup {
+    query_cleanup
+} -output {[
+{
+  "last": "Alpha",
+  "first": "Andrew",
+  "age": 10,
+  "middle": "A"
+},
+{
+  "last": "Beta",
+  "first": "Bill",
+  "age": 20,
+  "middle": "B"
+},
+{
+  "last": "Gamma",
+  "first": "George",
+  "age": 30,
+  "middle": "G"
+}
+]
+} -result {}
+
+test query-5.1 {queries can reference variables in caller's scope} -setup {
     query_setup
 } -body {
     set limit 25
@@ -371,7 +399,7 @@ test query-4.1 {queries can reference variables in caller's scope} -setup {
 "Bill","Beta","B",20
 }
 
-test query-5.1 {queries can output to a file; mode is 'list'} -setup {
+test query-6.1 {queries can output to a file; mode is 'list'} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list -filename "test.txt"
@@ -394,7 +422,7 @@ last    Gamma
 middle  G
 age     30}
 
-test query-5.2 {queries can output to a file; mode is 'mc'} -setup {
+test query-6.2 {queries can output to a file; mode is 'mc'} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -filename "test.txt"
@@ -408,7 +436,7 @@ Andrew Alpha A      10
 Bill   Beta  B      20  
 George Gamma G      30  }
 
-test query-5.3 {queries can output to a channel} -setup {
+test query-6.3 {queries can output to a channel} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list -channel stdout
@@ -430,7 +458,7 @@ middle  G
 age     30
 } -result {}
 
-test query-5.4 {filename overrides channel in query} -setup {
+test query-6.4 {filename overrides channel in query} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list \
