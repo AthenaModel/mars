@@ -412,37 +412,35 @@ snit::type ::marsutil::sqlib {
 
         # NEXT, do the query
         try {
-            uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
-
-            set out ""
-
-            # NEXT, if the mode is "mc" make a second pass formatting rows.
+            # MC mode requires two passes through the db
             if {$qopts(-mode) eq "mc"} {
-                FormatQueryMC
+                uplevel 1 \
+                    [list $db eval $sql ::marsutil::sqlib::qrow ${type}::FmtMC]
+                set qtrans(names) ""
             }
 
+            uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
+
             if {$qtrans(chan) eq ""} {
-                set out $qtrans(out)
+                return $qtrans(out)
             }
         } finally {
             if {$qopts(-filename) ne ""} {
                 catch {close $qtrans(chan)}
             }
+
+            array unset qtrans
+            array unset qrow
+            array unset qopts
+            array unset qwidths
         }
-
-        array unset qtrans
-        array unset qrow
-        array unset qopts
-        array unset qwidths
-
-        return $out
     }
 
-    # QueryMC
+    # FmtMC
     #
-    # Save individual rows for MC mode
+    # Format columns for MC mode
 
-    proc QueryMC {} {
+    proc FmtMC {} {
         # FIRST, The first time get the column names
         if {[llength $qtrans(names)] == 0} {
             # FIRST, get the column names
@@ -483,57 +481,52 @@ snit::type ::marsutil::sqlib {
             }
         }
 
-        # NEXT, save the row
-        lappend qtrans(rows) [array get qrow]
     }
 
-    # FormatQueryMC
+    # QueryMC
     #
-    # Formats the current query rows.
+    # Formats rows based on call to FmtMC
 
-    proc FormatQueryMC {} {
-        # FIRST, were there any rows?
-        if {[llength $qtrans(rows)] == 0} {
-            return ""
-        }
+    proc QueryMC {} {
+        # FIRST, first time in, output headers
+        if {[llength $qtrans(names)] == 0} {
+            set qtrans(names) $qrow(*)
+            unset qrow(*)
 
-        # NEXT, format the header lines.
-        set out ""
+            # NEXT, format the header lines.
+            set out ""
 
-        foreach label $qtrans(labels) name $qtrans(names) {
-            append out [format "%-*s " $qwidths($name) $label]
-        }
-        append out "\n"
-
-        foreach name $qtrans(names) {
-            append out [string repeat "-" $qwidths($name)]
-            append out " "
-
-            # Initialize the lastrow array
-            set lastrow($name) ""
-        }
-        append out "\n"
-        
-        # NEXT, format the rows
-        foreach entry $qtrans(rows) {
-            array set row $entry
-
-            set i 0
-            foreach name $qtrans(names) {
-                # Append either the column value or a blank, with the
-                # required width
-                if {$i < $qopts(-headercols) && 
-                    $row($name) eq $lastrow($name)} {
-                    append out [format "%-*s " $qwidths($name) "\""]
-                } else {
-                    append out [format "%-*s " $qwidths($name) $row($name)]
-                }
-                incr i
+            foreach label $qtrans(labels) name $qtrans(names) {
+                append out [format "%-*s " $qwidths($name) $label]
             }
             append out "\n"
 
-            array set lastrow $entry
+            foreach name $qtrans(names) {
+                append out [string repeat "-" $qwidths($name)]
+                append out " "
+
+                # Initialize the lastrow array
+                set lastrow($name) ""
+            }
+            append out "\n"
         }
+        
+        # NEXT, format the rows
+        set i 0
+        foreach name $qtrans(names) {
+            # Append either the column value or a blank, with the
+            # required width
+            if {$i < $qopts(-headercols) && 
+                $qrow($name) eq $lastrow($name)} {
+                append out [format "%-*s " $qwidths($name) "\""]
+            } else {
+                append out [format "%-*s " $qwidths($name) $qrow($name)]
+            }
+            incr i
+        }
+        append out "\n"
+
+        array set lastrow [array get qrow]
 
         WriteOutput $out
     }
