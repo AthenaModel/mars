@@ -407,28 +407,25 @@ snit::type ::marsutil::sqlib {
         # NEXT, if a filename was provided set output channel possibly
         # overriding qtrans(chan)
         if {$qopts(-filename) ne ""} {
-            try {
-                set qtrans(chan) [open $qopts(-filename) w]
-            } on error {result eopts} {
-                catch {close $qtrans(chan)}
-                error "Could not open \"$qopts(-filename)\": $result"
-            }
+            set qtrans(chan) [open $qopts(-filename) w]
         } 
 
-        # NEXT, do the query:
-        uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
+        # NEXT, do the query
+        try {
+            uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
 
-        set out ""
+            set out ""
 
-        # NEXT, if the mode is not "mc" we're done.       
-        if {$qopts(-mode) eq "mc"} {
-            set out [FormatQueryMC]
-        } elseif {$qtrans(chan) eq ""} {
-            set out $qtrans(out)
-        }
-
-        if {$qopts(-filename) ne ""} {
-            catch {close $qtrans(chan)}
+            # NEXT, if the mode is not "mc" we're done.       
+            if {$qopts(-mode) eq "mc"} {
+                set out [FormatQueryMC]
+            } elseif {$qtrans(chan) eq ""} {
+                set out $qtrans(out)
+            }
+        } finally {
+            if {$qopts(-filename) ne ""} {
+                catch {close $qtrans(chan)}
+            }
         }
 
         array unset qtrans

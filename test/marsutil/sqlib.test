@@ -378,7 +378,7 @@ test query-5.1 {queries can output to a file} -setup {
     tcltest::viewFile "test.txt"
 } -cleanup {
     query_cleanup
-    file delete -force "test.txt"
+    tcltest::removeFile "test.txt"
 } -result {first   Andrew
 last    Alpha
 middle  A
@@ -396,15 +396,11 @@ age     30}
 
 test query-5.2 {queries can output to a channel} -setup {
     query_setup
-    set f [open "chan.txt" w]
 } -body {
-    sqlib query $db {SELECT * FROM names} -mode list -channel $f
-    close $f
-    tcltest::viewFile "chan.txt"
+    sqlib query $db {SELECT * FROM names} -mode list -channel stdout
 } -cleanup {
     query_cleanup
-    file delete -force "chan.txt"
-} -result {first   Andrew
+} -output {first   Andrew
 last    Alpha
 middle  A
 age     10
@@ -417,24 +413,20 @@ age     20
 first   George
 last    Gamma
 middle  G
-age     30}
+age     30
+} -result {}
 
 test query-5.3 {filename overrides channel in query} -setup {
     query_setup
-    set f [open "chan.txt" w]
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list \
                                           -filename "test.txt" \
-                                          -channel $f
-    close $f
-    list \
-        [expr [file size "test.txt"] > 0] \
-        [expr [file size "chan.txt"] > 0]
+                                          -channel stdout
+    file exists "test.txt"
 } -cleanup {
     query_cleanup
-    file delete -force "test.txt"
-    file delete -force "chan.txt"
-} -result {1 0}
+    tcltest::removeFile "test.txt"
+} -result {1}
 
 #-------------------------------------------------------------------
 # mat
