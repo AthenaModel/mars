@@ -416,10 +416,12 @@ snit::type ::marsutil::sqlib {
 
             set out ""
 
-            # NEXT, if the mode is not "mc" we're done.       
+            # NEXT, if the mode is "mc" make a second pass formatting rows.
             if {$qopts(-mode) eq "mc"} {
-                set out [FormatQueryMC]
-            } elseif {$qtrans(chan) eq ""} {
+                FormatQueryMC
+            }
+
+            if {$qtrans(chan) eq ""} {
                 set out $qtrans(out)
             }
         } finally {
@@ -533,7 +535,7 @@ snit::type ::marsutil::sqlib {
             array set lastrow $entry
         }
 
-        return $out
+        WriteOutput $out
     }
 
     # QueryList

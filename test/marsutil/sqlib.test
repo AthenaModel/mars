@@ -371,7 +371,7 @@ test query-4.1 {queries can reference variables in caller's scope} -setup {
 "Bill","Beta","B",20
 }
 
-test query-5.1 {queries can output to a file} -setup {
+test query-5.1 {queries can output to a file; mode is 'list'} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list -filename "test.txt"
@@ -394,7 +394,21 @@ last    Gamma
 middle  G
 age     30}
 
-test query-5.2 {queries can output to a channel} -setup {
+test query-5.2 {queries can output to a file; mode is 'mc'} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -filename "test.txt"
+    tcltest::viewFile "test.txt"
+} -cleanup {
+    query_cleanup
+    tcltest::removeFile "test.txt"
+} -result {first  last  middle age 
+------ ----- ------ --- 
+Andrew Alpha A      10  
+Bill   Beta  B      20  
+George Gamma G      30  }
+
+test query-5.3 {queries can output to a channel} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list -channel stdout
@@ -416,7 +430,7 @@ middle  G
 age     30
 } -result {}
 
-test query-5.3 {filename overrides channel in query} -setup {
+test query-5.4 {filename overrides channel in query} -setup {
     query_setup
 } -body {
     sqlib query $db {SELECT * FROM names} -mode list \
