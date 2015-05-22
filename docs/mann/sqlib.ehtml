@@ -81,7 +81,7 @@ to <i>db</i> using the "DATABASE ATTACH" SQL statement are ignored.<p>
 <defitem "sqlib query" {sqlib query <i>db sql</i> ?<i>options...</i>?}>
 
 Performs an arbitrary <i>sql</i> query on database <i>db</i>,
-formatting any results in multiple columns for display.  Newlines
+formatting any results appropriately for display.  Newlines
 in data values are escaped, and long text strings are truncated.<p>
 
 <i>sql</i> can contain any SQL statements understood by SQLite, but in
@@ -96,7 +96,7 @@ The command supports the following options:<p>
 
 <deflist query>
 
-<defopt {-mode mc|list|csv}>
+<defopt {-mode mc|list|csv|json}>
 
 Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
 
@@ -113,11 +113,36 @@ When <b>-mode</b> is <b>csv</b>, the output is in CSV (comma-separated value)
 format, one record per line, beginning with a header record of column labels.
 Non-numeric values are enclosed in double-quotes.<p>
 
+When <b>-mode</b> is <b>json</b>, the output is a set of JSON objects,
+one per record. Each object contains the name/value pairs of a row
+from the database.  The output is properly formatted with commas
+between each object and the entirety of the output enclosed in 
+brackets (<b>[</b> and <b>]</b>).
+<p>
+
+<defopt {-channel <i>chan</i>}>
+
+When this option is supplied, the output is directed to the specified
+channel.  The channel can be a file, a socket or <b>stdout</b>.
+Note that if the -filename option is also supplied, it overrides this
+option.
+<p>
+
+<defopt {-filename <i>name</i>}>
+
+When this option is supplied, the output of the query is directed to
+the file specified.  It is an error if the file cannot be opened or
+written to.  This option will override the -channel option if it is 
+also specified.
+<p>
+
 <defopt {-labels <i>list</i>}>
 
 Normally <iref sqlib query> uses the column names found in the query to
 label the fields in the output.  If specified, the value of
-<b>-labels</b> is a list of labels to be used instead.<p>
+<b>-labels</b> is a list of labels to be used instead.  <b>Note:</b> 
+This option is ignored when <b>-mode</b> is <b>json</b>.
+<p>
 
 <defopt {-maxcolwidth <i>chars</i>}>
 
@@ -134,7 +159,8 @@ wide output.<p>
 Sets the number of header columns.  When <b>-mode</b> is <b>mc</b>,
 repeated values in a column are skipped.  That is, if a column
 contains identical values in consecutive rows, the column will be
-blank in all but the first of the rows.  Defaults to "0".<p>
+blank in all but the first of the rows.  Defaults to "0".  
+<p>
 
 </deflist query>
 
