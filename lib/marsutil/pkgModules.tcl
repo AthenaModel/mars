@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide marsutil 3.0.17
+package provide marsutil 3.0.18
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -24,12 +24,13 @@ package provide marsutil 3.0.17
 # -kite-require-start  REQUIRE EXTERNAL PACKAGES HERE
 package require snit 2.3
 package require sqlite3 3.8
+package require huddle 0.1.5
 package require comm 4.6
 package require kiteutils 0.4.7
 
 catch {
     # Marsbin isn't availble on all platforms.
-    package require -exact Marsbin 3.0.17
+    package require -exact Marsbin 3.0.18
 }
 # -kite-require-end
 

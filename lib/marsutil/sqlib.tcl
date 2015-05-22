@@ -55,9 +55,8 @@ snit::type ::marsutil::sqlib {
     #    out     - The output
     #    labels  - The label strings
     #    rows    - In MC mode, the actual rows of data as dicts
+    #    chan    - A channel for the output or ""
     typevariable qtrans -array {}
-
-
 
     #-------------------------------------------------------------------
     # Ensemble subcommands
@@ -340,12 +339,12 @@ snit::type ::marsutil::sqlib {
     # sql           An SQL query.
     # options       Formatting options
     #
-    #   -mode mc|list|csv    Display mode: mc (multicolumn), record list,
-    #                        or CSV.
-    #   -maxcolwidth num     Maximum displayed column width, in 
-    #                        characters.
-    #   -labels list         List of column labels.
-    #   -headercols n        Number of header columns (default 0)
+    #   -mode mc|list|csv|json  Display mode: mc (multicolumn), record list,
+    #                           CSV, or JSON
+    #   -maxcolwidth num        Maximum displayed column width, in 
+    #                           characters.
+    #   -labels list            List of column labels.
+    #   -headercols n           Number of header columns (default 0)
     #
     # Executes the query and accumulates the results into a nice
     # formatted output.
@@ -375,6 +374,8 @@ snit::type ::marsutil::sqlib {
             -maxcolwidth  30
             -labels       {}
             -headercols   0
+            -channel      {}
+            -filename     {}
         }
         array set qopts $args
 
@@ -384,6 +385,8 @@ snit::type ::marsutil::sqlib {
             names ""
             out   ""
             rows  {}
+            chan  ""
+            first 1
         }
 
         array unset qwidths
@@ -392,34 +395,56 @@ snit::type ::marsutil::sqlib {
             mc    { set rowproc ${type}::QueryMC   }
             list  { set rowproc ${type}::QueryList }
             csv   { set rowproc ${type}::QueryCSV  }
+            json  { set rowproc ${type}::QueryJSON }
             default { 
                 error "Unknown -mode: \"$qopts(-mode)\"" 
             }
         }
 
-        # NEXT, do the query:
-        uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
+        # NEXT, deal with alternate output channels
+        set qtrans(chan) $qopts(-channel)
 
-        # NEXT, if the mode is not "mc" we're done.
-        if {$qopts(-mode) eq "mc"} {
-            set out [FormatQueryMC]
-        } else {
-            set out $qtrans(out)
+        # NEXT, if a filename was provided set output channel possibly
+        # overriding qtrans(chan)
+        if {$qopts(-filename) ne ""} {
+            set qtrans(chan) [open $qopts(-filename) w]
+        } 
+
+        # NEXT, do the query
+        try {
+            # MC mode requires two passes through the db
+            if {$qopts(-mode) eq "mc"} {
+                uplevel 1 \
+                    [list $db eval $sql ::marsutil::sqlib::qrow ${type}::WidMC]
+            }
+
+            uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
+
+            # JSON mode needs a final close bracket
+            if {$qopts(-mode) eq "json"} {
+                WriteOutput "\n]\n"
+            }
+
+            if {$qtrans(chan) eq ""} {
+                return $qtrans(out)
+            }
+        } finally {
+            if {$qopts(-filename) ne ""} {
+                catch {close $qtrans(chan)}
+            }
+
+            array unset qtrans
+            array unset qrow
+            array unset qopts
+            array unset qwidths
         }
-
-        array unset qtrans
-        array unset qrow
-        array unset qopts
-        array unset qwidths
-
-        return $out
     }
 
-    # QueryMC
+    # WidMC
     #
-    # Save individual rows for MC mode
+    # Format column widths for MC mode
 
-    proc QueryMC {} {
+    proc WidMC {} {
         # FIRST, The first time get the column names
         if {[llength $qtrans(names)] == 0} {
             # FIRST, get the column names
@@ -439,20 +464,16 @@ snit::type ::marsutil::sqlib {
             }
         }
 
-        # NEXT, do translation on the data, and get the column widths.
+        # NEXT, get the column widths.
         foreach name $qtrans(names) {
             set qrow($name) [string map [list \n \\n] $qrow($name)]
 
             set len [string length $qrow($name)]
 
-            if {$qopts(-maxcolwidth) > 0} {
-                if {$len > $qopts(-maxcolwidth)} {
-                    # At least three characters
-                    set len [expr {max($qopts(-maxcolwidth), 3)}]
-                    set end [expr {$len - 4}]
-                    set qrow($name) \
-                        "[string range $qrow($name) 0 $end]..."
-                }
+            # NEXT, user specified max column width
+            if {$qopts(-maxcolwidth) > 0 && $len > $qopts(-maxcolwidth)} {
+                # At least three characters
+                set len [expr {max($qopts(-maxcolwidth), 3)}]
             }
 
             if {$len > $qwidths($name)} {
@@ -460,59 +481,66 @@ snit::type ::marsutil::sqlib {
             }
         }
 
-        # NEXT, save the row
-        lappend qtrans(rows) [array get qrow]
     }
 
-    # FormatQueryMC
+    # QueryMC
     #
-    # Formats the current query rows.
+    # Formats rows based on column widths determined by WidMC proc
 
-    proc FormatQueryMC {} {
-        # FIRST, were there any rows?
-        if {[llength $qtrans(rows)] == 0} {
-            return ""
-        }
+    proc QueryMC {} {
+        # FIRST, first time in, output headers
+        if {$qtrans(first)} {
+            unset qrow(*)
+            
+            set qtrans(first) 0
 
-        # NEXT, format the header lines.
-        set out ""
+            # NEXT, format the header lines.
+            set out ""
 
-        foreach label $qtrans(labels) name $qtrans(names) {
-            append out [format "%-*s " $qwidths($name) $label]
-        }
-        append out "\n"
-
-        foreach name $qtrans(names) {
-            append out [string repeat "-" $qwidths($name)]
-            append out " "
-
-            # Initialize the lastrow array
-            set lastrow($name) ""
-        }
-        append out "\n"
-        
-        # NEXT, format the rows
-        foreach entry $qtrans(rows) {
-            array set row $entry
-
-            set i 0
-            foreach name $qtrans(names) {
-                # Append either the column value or a blank, with the
-                # required width
-                if {$i < $qopts(-headercols) && 
-                    $row($name) eq $lastrow($name)} {
-                    append out [format "%-*s " $qwidths($name) "\""]
-                } else {
-                    append out [format "%-*s " $qwidths($name) $row($name)]
-                }
-                incr i
+            foreach label $qtrans(labels) name $qtrans(names) {
+                append out [format "%-*s " $qwidths($name) $label]
             }
             append out "\n"
 
-            array set lastrow $entry
-        }
+            foreach name $qtrans(names) {
+                append out [string repeat "-" $qwidths($name)]
+                append out " "
 
-        return $out
+                # Initialize the lastrow array
+                set lastrow($name) ""
+            }
+            append out "\n"
+        }
+        
+        # NEXT, format the rows
+        set i 0
+        foreach name $qtrans(names) {
+            if {$qopts(-maxcolwidth) > 0} {
+                set len [string length $qrow($name)]
+
+                if {$len > $qwidths($name)} {
+                    # At least three characters
+                    set end [expr {$qwidths($name) - 4}]
+                    set qrow($name) \
+                        "[string range $qrow($name) 0 $end]..."
+                }
+            }            
+
+            # Append either the column value or a blank, with the
+            # required width
+            if {$i < $qopts(-headercols) && 
+                $qrow($name) eq $lastrow($name)} {
+                append out [format "%-*s " $qwidths($name) "\""]
+            } else {
+                append out [format "%-*s " $qwidths($name) $qrow($name)]
+            }
+            incr i
+        }
+        append out "\n"
+
+        array set lastrow [array get qrow]
+
+        WriteOutput $out
     }
 
     # QueryList
@@ -544,7 +572,7 @@ snit::type ::marsutil::sqlib {
         incr qtrans(count)
 
         if {$qtrans(count) > 1} {
-            append qtrans(out) "\n"
+            WriteOutput "\n"
         }
 
         foreach label $qtrans(labels) name $qtrans(names) {
@@ -553,7 +581,7 @@ snit::type ::marsutil::sqlib {
             regsub -all {\n} [string trimright $qrow($name)] \
                 "\n$leader  " value
 
-            append qtrans(out) \
+            WriteOutput \
                 [format "%-*s  %s\n" $qtrans(labelWidth) $label $value]
         }
 
@@ -586,8 +614,7 @@ snit::type ::marsutil::sqlib {
             lappend record $qrow($col)
         }
 
-        append qtrans(out) [CsvRecord $record]
-
+        WriteOutput [CsvRecord $record]
     }
 
     # CsvRecord record
@@ -615,6 +642,47 @@ snit::type ::marsutil::sqlib {
         return "[join $cols {,}]\n"
     }
 
+    # QueryJSON 
+    #
+    # Handle individual rows for JSON output.  
+
+    proc QueryJSON {} {
+        # FIRST, get the column names
+        if {[llength $qtrans(names)] == 0} {
+            set qtrans(names) $qrow(*)
+            unset qrow(*)
+        }
+        
+        # NEXT, first time through, output open bracket, else a comma
+        if {$qtrans(first)} {
+            set json "\[\n"
+        } else {
+            set json ",\n"            
+        }
+
+        # NEXT, format up JSON
+        set datadict [huddle create {*}[array get qrow]]
+        append json [huddle jsondump $datadict]
+
+        # NEXT, set first flag to false
+        set qtrans(first) 0
+
+        WriteOutput $json
+    }
+
+    # WriteOutput data
+    #
+    # data   - Some data to be output 
+    #
+    # Directs data to a channel or appends it to the output string.
+
+    proc WriteOutput {data} {
+        if {$qtrans(chan) ne ""} {
+            puts -nonewline $qtrans(chan) $data
+        } else {
+            append qtrans(out) $data
+        }
+    }
 
     # mat db table iname jname ename ?options?
     #

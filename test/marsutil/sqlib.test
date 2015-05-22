@@ -289,6 +289,18 @@ Bill   Beta  B 20
 George Gamma G 30 
 }
 
+test query-1.3 {mc output, maxcolwidth} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode mc -maxcolwidth 5
+} -cleanup {
+    query_cleanup
+} -result {first last  middle age 
+----- ----- ------ --- 
+An... Alpha A      10  
+Bill  Beta  B      20  
+Ge... Gamma G      30  
+}
 
 test query-2.1 {list output, no labels} -setup {
     query_setup
@@ -359,7 +371,35 @@ test query-3.2 {csv output, labels} -setup {
 "George","Gamma","G",30
 }
 
-test query-4.1 {queries can reference variables in caller's scope} -setup {
+test query-4.1 {json output} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode json -channel stdout   
+} -cleanup {
+    query_cleanup
+} -output {[
+{
+  "last": "Alpha",
+  "first": "Andrew",
+  "age": 10,
+  "middle": "A"
+},
+{
+  "last": "Beta",
+  "first": "Bill",
+  "age": 20,
+  "middle": "B"
+},
+{
+  "last": "Gamma",
+  "first": "George",
+  "age": 30,
+  "middle": "G"
+}
+]
+} -result {}
+
+test query-5.1 {queries can reference variables in caller's scope} -setup {
     query_setup
 } -body {
     set limit 25
@@ -370,6 +410,77 @@ test query-4.1 {queries can reference variables in caller's scope} -setup {
 "Andrew","Alpha","A",10
 "Bill","Beta","B",20
 }
+
+test query-6.1 {queries can output to a file; mode is 'list'} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode list -filename "test.txt"
+    tcltest::viewFile "test.txt"
+} -cleanup {
+    query_cleanup
+    tcltest::removeFile "test.txt"
+} -result {first   Andrew
+last    Alpha
+middle  A
+age     10
+
+first   Bill
+last    Beta
+middle  B
+age     20
+
+first   George
+last    Gamma
+middle  G
+age     30}
+
+test query-6.2 {queries can output to a file; mode is 'mc'} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -filename "test.txt"
+    tcltest::viewFile "test.txt"
+} -cleanup {
+    query_cleanup
+    tcltest::removeFile "test.txt"
+} -result {first  last  middle age 
+------ ----- ------ --- 
+Andrew Alpha A      10  
+Bill   Beta  B      20  
+George Gamma G      30  }
+
+test query-6.3 {queries can output to a channel} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode list -channel stdout
+} -cleanup {
+    query_cleanup
+} -output {first   Andrew
+last    Alpha
+middle  A
+age     10
+
+first   Bill
+last    Beta
+middle  B
+age     20
+
+first   George
+last    Gamma
+middle  G
+age     30
+} -result {}
+
+test query-6.4 {filename overrides channel in query} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode list \
+                                          -filename "test.txt" \
+                                          -channel stdout
+    file exists "test.txt"
+} -cleanup {
+    query_cleanup
+    tcltest::removeFile "test.txt"
+} -result {1}
 
 #-------------------------------------------------------------------
 # mat
