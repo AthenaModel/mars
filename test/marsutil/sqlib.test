@@ -289,6 +289,18 @@ Bill   Beta  B 20
 George Gamma G 30 
 }
 
+test query-1.3 {mc output, maxcolwidth} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode mc -maxcolwidth 5
+} -cleanup {
+    query_cleanup
+} -result {first last  middle age 
+----- ----- ------ --- 
+An... Alpha A      10  
+Bill  Beta  B      20  
+Ge... Gamma G      30  
+}
 
 test query-2.1 {list output, no labels} -setup {
     query_setup

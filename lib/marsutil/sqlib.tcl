@@ -415,8 +415,7 @@ snit::type ::marsutil::sqlib {
             # MC mode requires two passes through the db
             if {$qopts(-mode) eq "mc"} {
                 uplevel 1 \
-                    [list $db eval $sql ::marsutil::sqlib::qrow ${type}::FmtMC]
-                set qtrans(names) ""
+                    [list $db eval $sql ::marsutil::sqlib::qrow ${type}::WidMC]
             }
 
             uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
@@ -441,11 +440,11 @@ snit::type ::marsutil::sqlib {
         }
     }
 
-    # FmtMC
+    # WidMC
     #
-    # Format columns for MC mode
+    # Format column widths for MC mode
 
-    proc FmtMC {} {
+    proc WidMC {} {
         # FIRST, The first time get the column names
         if {[llength $qtrans(names)] == 0} {
             # FIRST, get the column names
@@ -465,20 +464,16 @@ snit::type ::marsutil::sqlib {
             }
         }
 
-        # NEXT, do translation on the data, and get the column widths.
+        # NEXT, get the column widths.
         foreach name $qtrans(names) {
             set qrow($name) [string map [list \n \\n] $qrow($name)]
 
             set len [string length $qrow($name)]
 
-            if {$qopts(-maxcolwidth) > 0} {
-                if {$len > $qopts(-maxcolwidth)} {
-                    # At least three characters
-                    set len [expr {max($qopts(-maxcolwidth), 3)}]
-                    set end [expr {$len - 4}]
-                    set qrow($name) \
-                        "[string range $qrow($name) 0 $end]..."
-                }
+            # NEXT, user specified max column width
+            if {$qopts(-maxcolwidth) > 0 && $len > $qopts(-maxcolwidth)} {
+                # At least three characters
+                set len [expr {max($qopts(-maxcolwidth), 3)}]
             }
 
             if {$len > $qwidths($name)} {
@@ -490,13 +485,14 @@ snit::type ::marsutil::sqlib {
 
     # QueryMC
     #
-    # Formats rows based on call to FmtMC
+    # Formats rows based on column widths determined by WidMC proc
 
     proc QueryMC {} {
         # FIRST, first time in, output headers
-        if {[llength $qtrans(names)] == 0} {
-            set qtrans(names) $qrow(*)
+        if {$qtrans(first)} {
             unset qrow(*)
+            
+            set qtrans(first) 0
 
             # NEXT, format the header lines.
             set out ""
@@ -519,6 +515,17 @@ snit::type ::marsutil::sqlib {
         # NEXT, format the rows
         set i 0
         foreach name $qtrans(names) {
+            if {$qopts(-maxcolwidth) > 0} {
+                set len [string length $qrow($name)]
+
+                if {$len > $qwidths($name)} {
+                    # At least three characters
+                    set end [expr {$qwidths($name) - 4}]
+                    set qrow($name) \
+                        "[string range $qrow($name) 0 $end]..."
+                }
+            }            
+
             # Append either the column value or a blank, with the
             # required width
             if {$i < $qopts(-headercols) && 
@@ -646,27 +653,18 @@ snit::type ::marsutil::sqlib {
             unset qrow(*)
         }
         
-        # NEXT, fill in the record array
-        foreach col $qtrans(names) {
-            set record($col) $qrow($col)
-        }
-
-        # NEXT, first time through, output open bracket
+        # NEXT, first time through, output open bracket, else a comma
         if {$qtrans(first)} {
             set json "\[\n"
-        }
-
-        # NEXT, after the first time, insert a comma just before the
-        # next record
-        if {!$qtrans(first)} {
-            set json ",\n"
+        } else {
+            set json ",\n"            
         }
 
         # NEXT, format up JSON
-        set datadict [huddle create {*}[array get record]]
+        set datadict [huddle create {*}[array get qrow]]
         append json [huddle jsondump $datadict]
 
-        # NEXT, set flag
+        # NEXT, set first flag to false
         set qtrans(first) 0
 
         WriteOutput $json
