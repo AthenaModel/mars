@@ -399,6 +399,18 @@ test query-4.1 {json output} -setup {
 ]
 } -result {}
 
+test query-4.2 {Empty JSON output} -setup {
+    query_setup
+    $db eval {DELETE FROM names;}
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode json -channel stdout
+} -cleanup {
+    query_cleanup
+} -output {[
+
+]
+} -result {}
+
 test query-5.1 {queries can reference variables in caller's scope} -setup {
     query_setup
 } -body {

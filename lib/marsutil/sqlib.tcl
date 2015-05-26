@@ -418,6 +418,11 @@ snit::type ::marsutil::sqlib {
                     [list $db eval $sql ::marsutil::sqlib::qrow ${type}::WidMC]
             }
 
+            # JSON mode needs an open bracket
+            if {$qopts(-mode) eq "json"} {
+                WriteOutput "\[\n"
+            }
+
             uplevel 1 [list $db eval $sql ::marsutil::sqlib::qrow $rowproc]
 
             # JSON mode needs a final close bracket
@@ -653,10 +658,8 @@ snit::type ::marsutil::sqlib {
             unset qrow(*)
         }
         
-        # NEXT, first time through, output open bracket, else a comma
-        if {$qtrans(first)} {
-            set json "\[\n"
-        } else {
+        # NEXT, any time after the first, insert a comma
+        if {!$qtrans(first)} {
             set json ",\n"            
         }
 
