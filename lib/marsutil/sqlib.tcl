@@ -339,12 +339,14 @@ snit::type ::marsutil::sqlib {
     # sql           An SQL query.
     # options       Formatting options
     #
-    #   -mode mc|list|csv|json  Display mode: mc (multicolumn), record list,
-    #                           CSV, or JSON
-    #   -maxcolwidth num        Maximum displayed column width, in 
-    #                           characters.
-    #   -labels list            List of column labels.
-    #   -headercols n           Number of header columns (default 0)
+    #   -mode mc|list|csv|   Display mode: mc (multicolumn), record list,
+    #         json|jsonok    CSV, JSON or JSON with an "OK" key wrapped around
+    #                        the result
+    #                           
+    #   -maxcolwidth num     Maximum displayed column width, in 
+    #                        characters.
+    #   -labels list         List of column labels.
+    #   -headercols n        Number of header columns (default 0)
     #
     # Executes the query and accumulates the results into a nice
     # formatted output.
@@ -378,6 +380,12 @@ snit::type ::marsutil::sqlib {
             -filename     {}
         }
         array set qopts $args
+
+        set jsonok 0
+        if {$qopts(-mode) eq "jsonok"} {
+            set qopts(-mode) "json"
+            set jsonok 1
+        }
 
         # NEXT, prepare for the query.  Every mode uses names and out;
         # other array elements can be used as desired.
@@ -418,6 +426,11 @@ snit::type ::marsutil::sqlib {
                     [list $db eval $sql ::marsutil::sqlib::qrow ${type}::WidMC]
             }
 
+            # JSONOK mode needs "OK" key returned as its own element
+            if {$jsonok} {
+                WriteOutput "\[\"OK\",\n"
+            }
+
             # JSON mode needs an open bracket
             if {$qopts(-mode) eq "json"} {
                 WriteOutput "\[\n"
@@ -428,6 +441,11 @@ snit::type ::marsutil::sqlib {
             # JSON mode needs a final close bracket
             if {$qopts(-mode) eq "json"} {
                 WriteOutput "\n]\n"
+            }
+
+            # JSONOK mode needs another close bracket for the "OK" key.
+            if {$jsonok} {
+                WriteOutput "]\n"
             }
 
             if {$qtrans(chan) eq ""} {

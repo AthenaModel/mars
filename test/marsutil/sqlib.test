@@ -399,7 +399,37 @@ test query-4.1 {json output} -setup {
 ]
 } -result {}
 
-test query-4.2 {Empty JSON output} -setup {
+test query-4.2 {jsonok output} -setup {
+    query_setup
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode jsonok -channel stdout   
+} -cleanup {
+    query_cleanup
+} -output {["OK",
+[
+{
+  "last": "Alpha",
+  "first": "Andrew",
+  "age": 10,
+  "middle": "A"
+},
+{
+  "last": "Beta",
+  "first": "Bill",
+  "age": 20,
+  "middle": "B"
+},
+{
+  "last": "Gamma",
+  "first": "George",
+  "age": 30,
+  "middle": "G"
+}
+]
+]
+} -result {}
+
+test query-4.3 {Empty JSON output} -setup {
     query_setup
     $db eval {DELETE FROM names;}
 } -body {
@@ -408,6 +438,20 @@ test query-4.2 {Empty JSON output} -setup {
     query_cleanup
 } -output {[
 
+]
+} -result {}
+
+test query-4.4 {Empty JSON OK output} -setup {
+    query_setup
+    $db eval {DELETE FROM names;}
+} -body {
+    sqlib query $db {SELECT * FROM names} -mode jsonok -channel stdout
+} -cleanup {
+    query_cleanup
+} -output {["OK",
+[
+
+]
 ]
 } -result {}
 
