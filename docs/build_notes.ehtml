@@ -1,5 +1,22 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.17 -- 1 June 2015>
+
+This build includes the addition of a JSON mode to sqlib(n) for SQL query
+results to be formatted as a list of JSON objects.  Also, all query modes
+have been updated to direct one record at a time to a file (if it's been
+specified) rather than storing the entire result of the query in memory 
+and then outputting it at the end.  There's a couple of bug fixes as well.
+
+<ul>
+<li> Issue #55: sqlib(n) should have -jsonok mode for queries
+<li> Issue #54: sqlib(n): Empty table produces wrong JSON output
+<li> Issue #52: order(n): parms with default values can be assigned the empty string
+<li> Issue #51: Marsbin will not build on OSX 10.7.5
+<li> Issue #50: mgrs() SQL function should be in sqldocument(n)
+<li> Issue #49: cmdinfo(n): error in TclOO methods returned by getcode
+</ul>
+
 <h3 Mars v3.0.16 -- 28 April 2015>
 
 This build contains an enhancement to the cmdinfo(n) object which exposes
