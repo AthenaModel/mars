@@ -3,10 +3,9 @@
 # The next line is executed by /bin/sh, but not tcl \
 exec tclsh "$0" ${1+"$@"}
 
-lappend auto_path ~/mars/lib
-
 package require marsutil
 package require marsgui
+namespace import kiteutils::* marsutil::*
 
 # FIRST, create the database, and put some data into it.
 
@@ -71,7 +70,7 @@ marsgui::sqlbrowser .browser        \
     -displaycmd     ::displaycmd    \
     -titlecolumns   1               \
     -uid            u               \
-    -filterbox      off             \
+    -filterbox      on              \
     -columnsorting  on
 
 pack .browser -fill both -expand yes
