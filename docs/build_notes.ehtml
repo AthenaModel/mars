@@ -1,5 +1,14 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.18 -- 8 June 2015>
+
+This build contains one bug fix to sqlbrowser(n). Hidden rows are no longer
+selected when a SelectAll occurs.
+
+<ul>
+<li> Isssue #57: sqlbrowser(n): SelectAll selects hidden rows
+</ul>
+
 <h3 Mars v3.0.17 -- 1 June 2015>
 
 This build includes the addition of a JSON mode to sqlib(n) for SQL query
