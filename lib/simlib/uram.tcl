@@ -92,64 +92,64 @@ snit::type ::simlib::uram {
         }
 
         $parm subset uram.factors {
-            <i>alpha</i> and <i>gamma</i> parameters for the different 
+            Alpha and gamma parameters for the different 
             attitude curve types.  Changes made to these parameters
-            will take effect at the next time advance.  The <i>beta</i>
-            value will be 1.0 minus the sum of <i>alpha</i> and 
-            <i>gamma</i>.
+            will take effect at the next time advance.  The beta
+            value will be 1.0 minus the sum of alpha and 
+            gamma.
         }
 
         $parm define uram.factors.AUT ::simlib::rfracpair {0.05 0.0} {
-            <i>alpha</i> and <i>gamma</i> parameters for the Autonomy
+            Alpha and gamma parameters for the Autonomy
             (AUT) satisfaction curve type, specified as a 
             white-space-delimited pair of floating point numbers. 
-            <i>alpha</i> plus <i>gamma</i> must be less than or equal 
+            Alpha plus gamma must be less than or equal 
             to 1.0.
         }
 
         $parm define uram.factors.COOP ::simlib::rfracpair {0.05 0.02} {
-            <i>alpha</i> and <i>gamma</i> parameters for the 
+            Alpha and gamma parameters for the 
             cooperation curve type, specified as a white-space-delimited
-            pair of floating point numbers. <i>alpha</i> plus <i>gamma</i>
+            pair of floating point numbers. alpha plus gamma
             must be less than or equal to 1.0.
         }
 
         $parm define uram.factors.CUL ::simlib::rfracpair {0.05 0.0} {
-            <i>alpha</i> and <i>gamma</i> parameters for the Culture
+            Alpha and gamma parameters for the Culture
             (CUL) satisfaction curve type, specified as a 
             white-space-delimited pair of floating point numbers. 
-            <i>alpha</i> plus <i>gamma</i> must be less than or equal 
+            Alpha plus gamma must be less than or equal 
             to 1.0.
         }
 
         $parm define uram.factors.HREL ::simlib::rfracpair {0.05 0.02} {
-            <i>alpha</i> and <i>gamma</i> parameters for the horizontal
+            Alpha and gamma parameters for the horizontal
             relationship curve type, specified as a white-space-delimited
-            pair of floating point numbers. <i>alpha</i> plus <i>gamma</i>
+            pair of floating point numbers. alpha plus gamma
             must be less than or equal to 1.0.
         }
 
         $parm define uram.factors.QOL ::simlib::rfracpair {0.05 0.0} {
-            <i>alpha</i> and <i>gamma</i> parameters for the Quality of
+            Alpha and gamma parameters for the Quality of
             Life (QOL) satisfaction curve type, specified as a 
             white-space-delimited pair of floating point numbers. 
-            <i>alpha</i> plus <i>gamma</i> must be less than or equal
+            Alpha plus gamma must be less than or equal
             to 1.0.
         }
 
         $parm define uram.factors.SFT ::simlib::rfracpair {0.05 0.02} {
-            <i>alpha</i> and <i>gamma</i> parameters for the Safety
+            Alpha and gamma parameters for the Safety
             (SFT) satisfaction curve type, specified as a 
             white-space-delimited pair of floating point numbers. 
-            <i>alpha</i> plus <i>gamma</i> must be less than or equal
+            Alpha plus gamma must be less than or equal
             to 1.0.
         }
 
         $parm define uram.factors.VREL ::simlib::rfracpair {0.05 0.02} {
-            <i>alpha</i> and <i>gamma</i> parameters for the vertical
+            Alpha and gamma parameters for the vertical
             relationship curve type, specified as a 
             white-space-delimited pair of floating point numbers. 
-            <i>alpha</i> plus <i>gamma</i> must be less than or equal
+            Alpha plus gamma must be less than or equal
             to 1.0.
         }
 
