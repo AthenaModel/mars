@@ -598,7 +598,10 @@ snit::type ::marsutil::cmdinfo {
                 set origin [list snit-method $cls $arglist]
                 set memo "$cmdline, instance method"
                 set def [GetDefinition $memo $origin]
-            } elseif {[info object isa class $cls]} {
+            } elseif {
+                [info object is object $cls] &&
+                [info object isa class $cls]
+            } {
                 set origin [list oo-method $cls $arglist]
                 set memo "$cmdline, instance method"
                 set def [GetDefinition $memo $origin]

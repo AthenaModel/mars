@@ -517,7 +517,7 @@ test getcode-1.3 {proc} -body {
     proc ::mytest::nsproc1 args {}
 }
 
-test getcode-1.4 {proc} -body {
+test getcode-1.4 {proc, -related} -body {
     join [cmdinfo getcode "aproc" -related] \n
 } -match trim -result {
     # source: aproc => proc ::aproc
@@ -525,6 +525,10 @@ test getcode-1.4 {proc} -body {
         return "aproc <$args>"
     }
 }
+
+test getcode-1.5 {unknown proc, -related} -body {
+    cmdinfo getcode "nonesuch subcommand" -related
+} -result {}
 
 
 test getcode-2.1 {snit-typemethod, simple} -body {
