@@ -1,6 +1,6 @@
 <document "Mars Build Notes">
 
-<h3 Mars v3.0.18 -- 15 June 2015>
+<h3 Mars v3.0.19 -- 15 June 2015>
 
 This build contains two fixes: one to cmdinfo(n) which is mainly for 
 developers to use, but is critical and one to the documentation for URAM
