@@ -858,6 +858,76 @@ test parmset-12.9 {locked lists locked parameter names} -setup {
     CleanUp
 } -result {{thisOne theOther} thisOne}
 
+test parmset-13.1 {json dump} -setup {
+    Setup
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+
+    ps define Z1 snit::integer 0 "Parm Z1"
+
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
+
+
+    ps subset X "X Parms"
+
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
+
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"  
+} -body {
+    ps json
+} -cleanup {
+    CleanUp
+} -result {[
+  {
+    "id": "y",
+    "parent": "",
+    "docstr": "Y Parms",
+    "default": ""
+  },
+  {
+    "id": "y.p3",
+    "parent": "Y",
+    "docstr": "Parm Y.P3",
+    "default": 0
+  },
+  {
+    "id": "y.p2",
+    "parent": "Y",
+    "docstr": "Parm Y.P2",
+    "default": 0
+  },
+  {
+    "id": "y.p1",
+    "parent": "Y",
+    "docstr": "Parm Y.P1",
+    "default": 0
+  },
+  {
+    "id": "z1",
+    "parent": "",
+    "docstr": "Parm Z1",
+    "default": 0
+  },
+  {
+    "id": "x",
+    "parent": "",
+    "docstr": "X Parms",
+    "default": ""
+  },
+  {
+    "id": "x.q2",
+    "parent": "X",
+    "docstr": "Parm X.Q2",
+    "default": 0
+  },
+  {
+    "id": "x.q1",
+    "parent": "X",
+    "docstr": "Parm X.Q1",
+    "default": 0
+  }
+]}
 
 #-------------------------------------------------------------------
 # -notifycmd

@@ -655,6 +655,30 @@ snit::type ::marsutil::parmset {
     #-------------------------------------------------------------------
     # Parameter Set Documentation Methods
 
+    # json
+    #
+    # Returns a list of all parameters in JSON format
+
+    method json {} {
+        set hud [huddle list]
+
+        foreach {item ntype} [$self items] {
+            set pdict [dict create]
+            set id [string tolower $item]
+            dict set pdict id     $id
+            dict set pdict parent [ParentSubset $item]
+            dict set pdict docstr $info(doc-$id)
+            if {$ntype eq "parm"} {
+                dict set pdict default $info(defvalue-$id)
+            } else {
+                dict set pdict default ""
+            }
+            huddle append hud [huddle compile dict $pdict]
+        }
+
+        return [huddle jsondump $hud]
+    }
+
     # manpage
     #
     # Produces EHTML documentation as a deflist in jnem_man(1) format, 
