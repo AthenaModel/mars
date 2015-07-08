@@ -280,6 +280,16 @@ Saves the parameter set to a file; if the file already exists, it
 is copied to "<i>filename</i>.bak".  Parameters whose current values
 are defaulted will not be saved<p>
 
+<defitem serialize {<i obj> serialize <i>stype</i>}>
+
+Returns the contents of the parmset in one of two serialized formats 
+depending on <i>stype</i>. If <code>huddle</code> is passed in, raw
+huddle is returned, if <code>json</code> is passed in, an array of JSON
+objects is returned. Included in the output is the parameter name, id, 
+current value, default value and documentation string. Note that for
+parameter subsets, the empty string is returned for default and current
+values.<p>
+
 <defitem set {<i obj> set <i>parm value</i>}>
 
 Sets the value of the named parameter, which must be valid, and calls

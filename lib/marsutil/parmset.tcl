@@ -655,28 +655,46 @@ snit::type ::marsutil::parmset {
     #-------------------------------------------------------------------
     # Parameter Set Documentation Methods
 
-    # json
+    # serialize  stype
     #
-    # Returns a list of all parameters in JSON format
+    # Returns all parameters serialized in one of two formats
+    # based on stype:
+    #
+    #    json   - JSON format
+    #    huddle - Raw huddle format
 
-    method json {} {
+    method serialize {{stype "json"}} {
+        # FIRST, check stype 
+        require {$stype in {json huddle}} \
+            "Unknown stype: \"$stype\""
+
+        # NEXT, prepare huddle 
         set hud [huddle list]
 
+        # NEXT, traverse parameters and build huddle object
         foreach {item ntype} [$self items] {
             set pdict [dict create]
             set id [string tolower $item]
+            dict set pdict name   $item
             dict set pdict id     $id
             dict set pdict parent [ParentSubset $item]
             dict set pdict docstr $info(doc-$id)
             if {$ntype eq "parm"} {
+                dict set pdict value $values($id)
                 dict set pdict default $info(defvalue-$id)
             } else {
+                dict set pdict value ""
                 dict set pdict default ""
             }
             huddle append hud [huddle compile dict $pdict]
         }
 
-        return [huddle jsondump $hud]
+        # NEXT, return based on requested type
+        if {$stype eq "huddle"} {
+            return $hud
+        } elseif {$stype eq "json"} {
+            return [huddle jsondump $hud]
+        } 
     }
 
     # manpage

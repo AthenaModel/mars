@@ -447,10 +447,132 @@ test parmset-9.1 {items lists subsets and parms, with item type} -setup {
     CleanUp
 } -result {Y subset Y.P3 parm Y.P2 parm Y.P1 parm Z1 parm X subset X.Q2 parm X.Q1 parm}
 
+#--------------------------------------------------------------------
+# serialized output
+
+test parmset-10.1 {serialize error} -setup {
+    Setup
+} -body {
+    ps serialize FOO
+} -returnCodes {
+    error
+} -cleanup {
+    CleanUp
+} -result {Unknown stype: "FOO"}
+
+test parmset-10.2 {serialize huddle} -setup {
+    Setup
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+
+    ps define Z1 snit::integer 0 "Parm Z1"
+
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
+
+
+    ps subset X "X Parms"
+
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
+
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"  
+} -body {
+    ps serialize huddle
+} -cleanup {
+    CleanUp
+} -result {HUDDLE {L {{D {name {s Y} id {s y} parent {s {}} docstr {s {Y Parms}} value {s {}} default {s {}}}} {D {name {s Y.P3} id {s y.p3} parent {s Y} docstr {s {Parm Y.P3}} value {s 0} default {s 0}}} {D {name {s Y.P2} id {s y.p2} parent {s Y} docstr {s {Parm Y.P2}} value {s 0} default {s 0}}} {D {name {s Y.P1} id {s y.p1} parent {s Y} docstr {s {Parm Y.P1}} value {s 0} default {s 0}}} {D {name {s Z1} id {s z1} parent {s {}} docstr {s {Parm Z1}} value {s 0} default {s 0}}} {D {name {s X} id {s x} parent {s {}} docstr {s {X Parms}} value {s {}} default {s {}}}} {D {name {s X.Q2} id {s x.q2} parent {s X} docstr {s {Parm X.Q2}} value {s 0} default {s 0}}} {D {name {s X.Q1} id {s x.q1} parent {s X} docstr {s {Parm X.Q1}} value {s 0} default {s 0}}}}}}
+
+test parmset-10.3 {serialize json} -setup {
+    Setup
+    ps subset Y "Y Parms"
+    ps define Y.P3 snit::integer 0 "Parm Y.P3"
+
+    ps define Z1 snit::integer 0 "Parm Z1"
+
+    ps define Y.P2 snit::integer 0 "Parm Y.P2"
+
+
+    ps subset X "X Parms"
+
+    ps define X.Q2 snit::integer 0 "Parm X.Q2"
+    ps define X.Q1 snit::integer 0 "Parm X.Q1"
+
+    ps define Y.P1 snit::integer 0 "Parm Y.P1"  
+} -body {
+    ps serialize json
+} -cleanup {
+    CleanUp
+} -result {[
+  {
+    "name": "Y",
+    "id": "y",
+    "parent": "",
+    "docstr": "Y Parms",
+    "value": "",
+    "default": ""
+  },
+  {
+    "name": "Y.P3",
+    "id": "y.p3",
+    "parent": "Y",
+    "docstr": "Parm Y.P3",
+    "value": 0,
+    "default": 0
+  },
+  {
+    "name": "Y.P2",
+    "id": "y.p2",
+    "parent": "Y",
+    "docstr": "Parm Y.P2",
+    "value": 0,
+    "default": 0
+  },
+  {
+    "name": "Y.P1",
+    "id": "y.p1",
+    "parent": "Y",
+    "docstr": "Parm Y.P1",
+    "value": 0,
+    "default": 0
+  },
+  {
+    "name": "Z1",
+    "id": "z1",
+    "parent": "",
+    "docstr": "Parm Z1",
+    "value": 0,
+    "default": 0
+  },
+  {
+    "name": "X",
+    "id": "x",
+    "parent": "",
+    "docstr": "X Parms",
+    "value": "",
+    "default": ""
+  },
+  {
+    "name": "X.Q2",
+    "id": "x.q2",
+    "parent": "X",
+    "docstr": "Parm X.Q2",
+    "value": 0,
+    "default": 0
+  },
+  {
+    "name": "X.Q1",
+    "id": "x.q1",
+    "parent": "X",
+    "docstr": "Parm X.Q1",
+    "value": 0,
+    "default": 0
+  }
+]}
+
 #-------------------------------------------------------------------
 # save/load file operations
 
-test parmset-10.1 {save actually saves and creates a backup} -setup {
+test parmset-11.1 {save actually saves and creates a backup} -setup {
     Setup
 
     set fileBase parmset.test.10.1
@@ -497,7 +619,7 @@ test parmset-10.1 {save actually saves and creates a backup} -setup {
      CleanUp
 } -result {}
 
-test parmset-10.2 {save only saves non-default values} -setup {
+test parmset-11.2 {save only saves non-default values} -setup {
     Setup
 
     set fileBase parmset.test.10.2
@@ -527,7 +649,7 @@ parm pBool   true
 # End of file
 }
 
-test parmset-10.3 {save creates any empty file if all values defaulted} -setup {
+test parmset-11.3 {save creates any empty file if all values defaulted} -setup {
     Setup
 
     set fileBase parmset.test.10.3
@@ -552,7 +674,7 @@ test parmset-10.3 {save creates any empty file if all values defaulted} -setup {
 # End of file
 }
 
-test parmset-10.4 {load -safe does allows erroneous file content} -setup {
+test parmset-11.4 {load -safe does allows erroneous file content} -setup {
 
     parmset ps1
     parmset ps2
@@ -590,7 +712,7 @@ test parmset-10.4 {load -safe does allows erroneous file content} -setup {
 #-------------------------------------------------------------------
 # checkpoint/restore operations
 
-test parmset-11.1 {checkpoint/restore function properly} -setup {
+test parmset-12.1 {checkpoint/restore function properly} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -613,7 +735,7 @@ test parmset-11.1 {checkpoint/restore function properly} -setup {
 } -result {1}
 
 
-test parmset-11.2 {changed flag cleared by checkpoint -saved} -setup {
+test parmset-12.2 {changed flag cleared by checkpoint -saved} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -632,7 +754,7 @@ test parmset-11.2 {changed flag cleared by checkpoint -saved} -setup {
 } -result {1 0}
 
 
-test parmset-11.3 {changed flag not cleared by checkpoint} -setup {
+test parmset-12.3 {changed flag not cleared by checkpoint} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -651,7 +773,7 @@ test parmset-11.3 {changed flag not cleared by checkpoint} -setup {
 } -result {1 1}
 
 
-test parmset-11.4 {changed flag cleared by restore -saved} -setup {
+test parmset-12.4 {changed flag cleared by restore -saved} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -670,7 +792,7 @@ test parmset-11.4 {changed flag cleared by restore -saved} -setup {
 } -result {1 0}
 
 
-test parmset-11.5 {changed flag not cleared by restore} -setup {
+test parmset-12.5 {changed flag not cleared by restore} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -689,7 +811,7 @@ test parmset-11.5 {changed flag not cleared by restore} -setup {
 } -result {1 1}
 
 
-test parmset-11.6 {changed flag set by set} -setup {
+test parmset-12.6 {changed flag set by set} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -710,7 +832,7 @@ test parmset-11.6 {changed flag set by set} -setup {
 } -result {0 1}
 
 
-test parmset-11.7 {changed flag set by reset} -setup {
+test parmset-12.7 {changed flag set by reset} -setup {
     Setup
 } -body {
     ps define pInt    snit::integer 0   ""
@@ -733,7 +855,7 @@ test parmset-11.7 {changed flag set by reset} -setup {
 #-------------------------------------------------------------------
 # lock/unlock
 
-test parmset-12.1 {Can lock parameters} -setup {
+test parmset-13.1 {Can lock parameters} -setup {
     Setup
 } -body {
     ps subset this ""
@@ -754,7 +876,7 @@ test parmset-12.1 {Can lock parameters} -setup {
     CleanUp
 } -result {Parameter is locked: "this.two"}
 
-test parmset-12.2 {Can unlock parameters} -setup {
+test parmset-13.2 {Can unlock parameters} -setup {
     Setup
 } -body {
     ps subset this ""
@@ -773,7 +895,7 @@ test parmset-12.2 {Can unlock parameters} -setup {
     CleanUp
 } -result {yes}
 
-test parmset-12.3 {Can lock parameters with mixed case names} -setup {
+test parmset-13.3 {Can lock parameters with mixed case names} -setup {
     Setup
 } -body {
     ps define thisOne snit::integer 0   ""
@@ -787,7 +909,7 @@ test parmset-12.3 {Can lock parameters with mixed case names} -setup {
     CleanUp
 } -result {Parameter is locked: "thisOne"}
 
-test parmset-12.4 {Can unlock parameters with mixed case names} -setup {
+test parmset-13.4 {Can unlock parameters with mixed case names} -setup {
     Setup
 } -body {
     ps define thisOne snit::integer 0   ""
@@ -800,7 +922,7 @@ test parmset-12.4 {Can unlock parameters with mixed case names} -setup {
     CleanUp
 } -result {1}
 
-test parmset-12.5 {Error when locking unknown parm} -setup {
+test parmset-13.5 {Error when locking unknown parm} -setup {
     Setup
 } -body {
     ps lock NoneSuch
@@ -811,7 +933,7 @@ test parmset-12.5 {Error when locking unknown parm} -setup {
 } -result {Pattern matches no parameters: "NoneSuch"}
 
 
-test parmset-12.6 {Error when unlocking unknown parm} -setup {
+test parmset-13.6 {Error when unlocking unknown parm} -setup {
     Setup
 } -body {
     ps unlock NoneSuch
@@ -821,7 +943,7 @@ test parmset-12.6 {Error when unlocking unknown parm} -setup {
     CleanUp
 } -result {Pattern matches no parameters: "NoneSuch"}
 
-test parmset-12.7 {reset doesn't reset locked parameters} -setup {
+test parmset-13.7 {reset doesn't reset locked parameters} -setup {
     Setup
     ps define thisOne snit::integer 0   ""
 } -body {
@@ -833,7 +955,7 @@ test parmset-12.7 {reset doesn't reset locked parameters} -setup {
     CleanUp
 } -result {1}
 
-test parmset-12.8 {islocked shows whether parameter is locked} -setup {
+test parmset-13.8 {islocked shows whether parameter is locked} -setup {
     Setup
     ps define thisOne snit::integer 0   ""
     ps define thatOne snit::integer 0   ""
@@ -845,7 +967,7 @@ test parmset-12.8 {islocked shows whether parameter is locked} -setup {
 } -result {1 0}
 
 
-test parmset-12.9 {locked lists locked parameter names} -setup {
+test parmset-13.9 {locked lists locked parameter names} -setup {
     Setup
     ps define thisOne snit::integer 0   ""
     ps define thatOne snit::integer 0   ""
@@ -858,76 +980,6 @@ test parmset-12.9 {locked lists locked parameter names} -setup {
     CleanUp
 } -result {{thisOne theOther} thisOne}
 
-test parmset-13.1 {json dump} -setup {
-    Setup
-    ps subset Y "Y Parms"
-    ps define Y.P3 snit::integer 0 "Parm Y.P3"
-
-    ps define Z1 snit::integer 0 "Parm Z1"
-
-    ps define Y.P2 snit::integer 0 "Parm Y.P2"
-
-
-    ps subset X "X Parms"
-
-    ps define X.Q2 snit::integer 0 "Parm X.Q2"
-    ps define X.Q1 snit::integer 0 "Parm X.Q1"
-
-    ps define Y.P1 snit::integer 0 "Parm Y.P1"  
-} -body {
-    ps json
-} -cleanup {
-    CleanUp
-} -result {[
-  {
-    "id": "y",
-    "parent": "",
-    "docstr": "Y Parms",
-    "default": ""
-  },
-  {
-    "id": "y.p3",
-    "parent": "Y",
-    "docstr": "Parm Y.P3",
-    "default": 0
-  },
-  {
-    "id": "y.p2",
-    "parent": "Y",
-    "docstr": "Parm Y.P2",
-    "default": 0
-  },
-  {
-    "id": "y.p1",
-    "parent": "Y",
-    "docstr": "Parm Y.P1",
-    "default": 0
-  },
-  {
-    "id": "z1",
-    "parent": "",
-    "docstr": "Parm Z1",
-    "default": 0
-  },
-  {
-    "id": "x",
-    "parent": "",
-    "docstr": "X Parms",
-    "default": ""
-  },
-  {
-    "id": "x.q2",
-    "parent": "X",
-    "docstr": "Parm X.Q2",
-    "default": 0
-  },
-  {
-    "id": "x.q1",
-    "parent": "X",
-    "docstr": "Parm X.Q1",
-    "default": 0
-  }
-]}
 
 #-------------------------------------------------------------------
 # -notifycmd
