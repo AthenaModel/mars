@@ -44,6 +44,11 @@ namespace eval ::marsutil:: {
 }
 
 #-----------------------------------------------------------------------
+# Patches
+
+source [file join $::marsutil::library huddle-0.1.5-patch.tm]
+
+#-----------------------------------------------------------------------
 # Modules
 
 source [file join $::marsutil::library marsmisc.tcl       ]
