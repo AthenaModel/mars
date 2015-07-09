@@ -24,7 +24,7 @@ package provide marsutil 3.0.20
 # -kite-require-start  REQUIRE EXTERNAL PACKAGES HERE
 package require snit 2.3
 package require sqlite3 3.8
-package require huddle 0.1.5
+# package require huddle 0.1.5
 package require comm 4.6
 package require kiteutils 0.4.7
 
