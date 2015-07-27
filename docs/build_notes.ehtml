@@ -1,5 +1,16 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.20 -- 27 July 2015>
+
+This build contains an enhancement to parmset(n) that returns its contents
+in serialized form (eg. JSON) and a patch to huddle that fixes a problem 
+formatting certain numbers for JSON output.
+
+<ul>
+<li> Issue #61: huddle patch needed for jsondump command
+<li> Issue #60: parmset(n) instances can now return thier contents in serialized forms
+</ul>
+
 <h3 Mars v3.0.19 -- 15 June 2015>
 
 This build contains two fixes: one to cmdinfo(n) which is mainly for 
