@@ -9,7 +9,6 @@
 # Meta description     Create and manipulate huddle object
 # Meta license         BSD
 # Meta platform        tcl
-# Meta require         dict
 # Meta subject         parsing {exchange format} {data exchange}
 # Meta subject         {text processing} json huddle yaml
 # Meta summary         huddle
@@ -18,7 +17,6 @@
 
 # ACTIVESTATE TEAPOT-PKG BEGIN REQUIREMENTS
 
-package require dict
 
 # ACTIVESTATE TEAPOT-PKG END REQUIREMENTS
 
