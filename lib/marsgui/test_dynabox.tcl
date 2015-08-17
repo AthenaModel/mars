@@ -20,11 +20,10 @@ exec tclsh "$0" "$@"
 
 package require Tk
 
-lappend auto_path ~/mars/lib
 package require marsutil
 package require marsgui
 
-namespace import marsutil::* marsgui::*
+namespace import kiteutils::* marsutil::* marsgui::*
 
 
 #-----------------------------------------------------------------------
@@ -40,12 +39,18 @@ dynaform define TESTFORM {
     text last -width 50
 }
 
-proc ShowDialog {} {
+proc ShowDialog {flag} {
     .output delete 1.0 end
+
+    if {$flag} {
+        set validatecmd ""
+    } else {
+        set validatecmd ::Validate
+    }
 
     set dict [dynabox popup \
         -formtype TESTFORM \
-        -validatecmd ::Validate \
+        -validatecmd $validatecmd \
         -helpcmd ::ShowHelp \
         -initvalue {first Joe last Pro} \
         -oktext "Got Him!" \
@@ -82,9 +87,15 @@ proc main {argv} {
     # FIRST, pop up a debugger
     debugger new
 
+    if {[llength $argv] > 0} {
+        set flag 1
+    } else {
+        set flag 0
+    }
+
     ttk::button .show \
         -text     "Show Dialog" \
-        -command  ShowDialog
+        -command  [list ShowDialog $flag]
 
     text .output \
         -height 10 \

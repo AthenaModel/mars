@@ -342,6 +342,8 @@ snit::type ::marsgui::dynabox {
 
                 return 0
             }
+        } else {
+            set result ""
         }
 
         set tinfo(errorText) $result
