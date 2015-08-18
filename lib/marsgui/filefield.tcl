@@ -135,7 +135,13 @@ snit::widget ::marsgui::filefield {
     #-------------------------------------------------------------------
     # Public Methods
 
-    delegate method get to disp
+    # get
+    #
+    # Get the widget's value.
+
+    method get {} {
+        return $fullname
+    }
 
     # set value
     #
