@@ -418,6 +418,29 @@ e.g., "short: long".  If false (the default) it will display only the
 long names.<p>
 </deflist options>
 
+<defitem file {file <i>field</i> ?<i>options...</i>?}>
+
+Defines a field for selecting a file from the disk
+(i.e., a <xref filefield(n)> widget).  The field displays the selected
+file name as a read-only string, and includes a "Browse" button for 
+selecting a different file.  The field type defines the following 
+additional options:<p>
+
+<deflist options>
+<defopt {-width <i>columns</i>}>
+Specifies the width of the field in characters of the current
+font.<p>
+
+<defopt {-title <i>string</i>}>
+Specifies the title string for the file selection dialog.  Defaults
+to "Select File".<p>
+
+<defopt {-filetypes <i>list</i>}>
+Specifies the acceptable file type or types, in the same form as
+for <tt tk_getOpenFile>.  Defaults to any kind of file.<p>
+
+</deflist options>
+
 <defitem key {key <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for selecting a key value from a database table,

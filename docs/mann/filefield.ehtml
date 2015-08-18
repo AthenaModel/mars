@@ -1,0 +1,112 @@
+<manpage {marsgui(n) filefield(n)} "File Selection Data Entry Field">
+
+<section SYNOPSIS>
+
+<pre>
+package require marsgui <version>
+namespace import ::marsgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The filefield(n) widget is a <xref field(i)> data entry field used
+for selecting files from the disk using the standard Tk <tt tk_getOpenFile>
+dialog.  It provides a <xref dispfield(n)> to display the name of the 
+selected file, and a "Browse" button that pops up the file selection
+dialog.<p>
+
+The display shows the base name of the selected file; but the absolute 
+path of the file is shown in a tool tip.  The value of the field is
+the absolute path.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem filefield {filefield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref filefield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following options:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>command</i>}>
+
+From <xref field(i)>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The new value is appended
+to the <i>command</i> as an argument.<p>
+
+<defopt {-state <i>state</i>}>
+
+From <xref field(i)>.  filefield(i) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.<p>
+
+<defopt {-width <i>chars</i>}>
+
+Specifies the width in characters of the embedded display field.<p>
+
+<defopt {-title <i>string</i>}>
+Specifies the title string for the file selection dialog.  Defaults
+to "Select File".<p>
+
+<defopt {-filetypes <i>list</i>}>
+Specifies the acceptable file type or types, in the same form as
+for <tt tk_getOpenFile>.  Defaults to any kind of file.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+filefield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+From <xref field(i)>.  Sets the value of one or more of the object's
+options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+From <xref field(i)>.  Returns the field's current value.<p>
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+From <xref field(i)>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <iref set> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.<p>
+
+</deflist instance>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

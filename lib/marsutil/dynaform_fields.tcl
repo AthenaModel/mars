@@ -300,6 +300,17 @@
     }
 }
 
+# file
+::marsutil::dynaform fieldtype define file {
+    typemethod attributes {} {
+        return {width filetypes title}
+    }
+
+    typemethod create {w idict} {
+        filefield $w {*}[asoptions $idict width filetypes title]
+    }
+}
+
 # key
 ::marsutil::dynaform fieldtype define key {
     typemethod attributes {} {

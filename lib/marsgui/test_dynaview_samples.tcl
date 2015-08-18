@@ -433,4 +433,11 @@ dynaform define selectorTest {
 
 }
 
+dynaform define fileTest {
+    rcc "File:" -for filename
+    file filename -title "Select a text file" -filetypes {
+        { {Text File} {.txt} }
+    }
+}
+
 
