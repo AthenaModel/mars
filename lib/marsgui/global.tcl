@@ -10,6 +10,10 @@
 #
 #-----------------------------------------------------------------------
 
+namespace eval ::marsgui:: {
+    namespace export fontx
+}
+
 #-----------------------------------------------------------------------
 # Cut, Copy, and Paste; Undo and Redo
 #
@@ -40,25 +44,38 @@ bind Text <Control-v> ""
 #
 # Use pixel sizing; it's more general across machines.
 
-# Luxi Mono looks nice on RHEL 5; but if it isn't available,
-# make sure we get a fixed font.
-set baseMono {Luxi Mono}
+# fontx font options...
+#
+# font     - A font, specified in any valid way
+# options  - Font options and values
+#
+# Returns a font based on the given font with the additional options.
 
-if {![dict get [font metrics [list $baseMono -12]] -fixed]} {
-    set baseMono Courier
+proc ::marsgui::fontx {font args} {
+    return [list {*}[font actual $font] {*}$args]
 }
 
-font create codefont       -family $baseMono -size -12 -weight normal
-font create codefontitalic -family $baseMono -size -12 -weight normal \
-                           -slant italic
-font create codefontbold   -family $baseMono -size -12 -weight bold
-font create codefontstrike -family $baseMono -size -12 -weight normal \
-                           -overstrike yes
-font create tinyfont       -family $baseMono -size  -9 -weight normal
+font create codefont \
+    {*}[::marsgui::fontx TkFixedFont -weight normal]
 
-font create messagefont    -family Helvetica -size -12
-font create messagefontb   -family Helvetica -size -12 -weight bold
-font create reportfont     -family Helvetica -size -14 -weight bold
+font create codefontitalic \
+    {*}[::marsgui::fontx TkFixedFont -weight normal -slant italic]
+
+font create codefontbold \
+    {*}[::marsgui::fontx TkFixedFont -weight bold]
+
+font create codefontstrike \
+    {*}[::marsgui::fontx TkFixedFont -weight normal -overstrike yes]
+
+font create tinyfont \
+    {*}[::marsgui::fontx TkFixedFont -size -9 -weight normal]
+
+
+font create datafont       {*}[::marsgui::fontx TkTextFont]
+font create datafontstrike {*}[::marsgui::fontx TkTextFont -overstrike yes]
+
+font create messagefont  {*}[::marsgui::fontx TkTextFont]
+font create messagefontb {*}[::marsgui::fontx TkTextFont -weight bold]
 
 #-----------------------------------------------------------------------
 # Standard Icons
@@ -137,6 +154,7 @@ if {[tk windowingsystem] in {x11 aqua}} {
 
 set ::marsgui::defaultBackground [ttk::style configure . -background]
 set ::marsgui::activeBackground  [ttk::style lookup . -background active]
+set ::marsgui::stripeBackground  #EEF9FF
 
 # Entrybutton.Toolbutton: A style for buttons used in entries.
 ttk::style configure Entrybutton.Toolbutton -background white
