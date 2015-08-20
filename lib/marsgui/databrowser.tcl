@@ -292,11 +292,11 @@ snit::widget ::marsgui::databrowser {
         install tlist using tablelist::tablelist $win.tlist    \
             -background       white                            \
             -foreground       black                            \
-            -font             codefont                         \
+            -font             datafont                         \
             -width            80                               \
             -height           14                               \
             -state            normal                           \
-            -stripebackground #CCFFBB                          \
+            -stripebackground $::marsgui::stripeBackground     \
             -selectbackground black                            \
             -selectforeground white                            \
             -labelborderwidth 1                                \
