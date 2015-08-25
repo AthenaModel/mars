@@ -1,5 +1,17 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.21 -- 25 August 2015>
+
+This build introduces some new fonts and a file selection field. There is
+also a couple of bug fixes.
+
+<ul>
+<li> Issue #65: marsgui(n): Font changes
+<li> Issue #64: filefield(n): File Selection Field 
+<li> Issue #63: dynabox(n): Error in -validatecmd not defined.
+<li> Issue #62: huddle package requires dict package
+</ul>
+
 <h3 Mars v3.0.20 -- 27 July 2015>
 
 This build contains an enhancement to parmset(n) that returns its contents
