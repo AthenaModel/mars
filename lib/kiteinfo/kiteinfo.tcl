@@ -20,19 +20,20 @@ namespace eval ::kiteinfo:: {
 
     array set kiteInfo {
         reqver-Tktable 2.11
+        mansec-5 {File Formats}
         build-libTiff {make clean all}
         local-Img 0
         reqver-comm 4.6
-        clean-libGTiff {make clean}
         local-Tktable 0
+        clean-libGTiff {make clean}
         xfiles docs/mag.docx
+        local-Tkhtml 0
         apps mars
         build-libGTiff {make clean all}
-        local-Tkhtml 0
         dists install-%platform
         build-Marsbin {make -f MakeTEA clean all}
-        build-libGeostars {make clean all}
         local-tablelist 0
+        build-libGeostars {make clean all}
         local-treectrl 0
         clean-libGeostars {make clean}
         reqver-kiteutils 0.4.7
@@ -64,15 +65,19 @@ namespace eval ::kiteinfo:: {
         icon-mars {}
         local-sqlite3 0
         reqver-tablelist 5.11
+        mansecs {1 5 i n}
         exclude-mars {}
         binary-simlib 0
         apptype-mars kit
         clean-Marsbin {make -f MakeTEA clean}
+        mansec-i {Tcl Interfaces}
         reqver-Tkhtml 3.0
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
         poc William.H.Duquette@jpl.nasa.gov
+        mansec-n {Tcl Commands}
         srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
         local-comm 0
+        mansec-1 Executables
         gui-mars 0
         local-kiteutils 1
         version 3.0.21

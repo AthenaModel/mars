@@ -20,39 +20,39 @@ The <iref cmdinfo type> command determines the type of any given
 command.  <xref cmdinfo(n)> recognizes the following types:<p>
 
 <topiclist>
-<topic {<b proc>}>
+<topic [b proc]>
 A normal Tcl command procedure.<p>
 </topic>
 
-<topic {<b nse>}>
+<topic [b nse]>
 A "namespace ensemble" command.<p>
 </topic>
 
-<topic {<b alias>}>
+<topic [b alias]>
 An interpreter alias.<p>
 </topic>
 
-<topic {<b oo-object>}>
+<topic [b oo-object]>
 A TclOO object or class.<p>
 </topic>
 
-<topic {<b snit-type>}>
+<topic [b snit-type]>
 A Snit type (including Snit widget types).  Note that the command is
 also a namespace ensemble.<p>
 </topic>
 
-<topic {<b snit-instance>}>
+<topic [b snit-instance]>
 An instance of a Snit type (include widget instances).  Note that the
 command is also a namespace ensemble.<p>
 </topic>
 
-<topic {<b unknown>}>
+<topic [b unknown]>
 A command of unknown origin, i.e., a command
 implemented in a binary Tcl extension, an alias from a parent
 interpreter, or a command that is truly undefined.<p>
 
 </topic>
-<topic {<b ns>}>
+<topic [b ns]>
 A namespace. The <b ns> type is never actually returned by 
 <iref cmdinfo type>; however, <iref cmdinfo list> returns a list of both 
 the commands and namespaces within a given namespace, sorted in dictionary 
@@ -85,32 +85,32 @@ object methods.  The origin is returned in the form of a triple,
 following symbols:<p>
 
 <topiclist>
-<topic {<b unknown>}>
+<topic [b unknown]>
 The <i command> is the name of the command whose origin could not
 be determined, and the <i detail> is an explanatory message.<p> 
 </topic>
 
-<topic {<b proc>}>
+<topic [b proc]>
 The <i command> is the name of the procedure, and the <i detail> is
 absent.<p>
 </topic>
 
-<topic {<b oo-objmethod>}>
+<topic [b oo-objmethod]>
 The <i command> is the name of a TclOO object, and the <i detail> is the
 name of a method defined directly on the object.<p>
 </topic>
 
-<topic {<b oo-method>}>
+<topic [b oo-method]>
 The <i command> is the name of a TclOO class, and the <i detail> is the
 name of one of the class's instance methods.<p>
 </topic>
 
-<topic {<b snit-typemethod>}>
+<topic [b snit-typemethod]>
 The <i command> is the name of a Snit type or widget, and the <i detail> 
 is the name of a type method.<p>
 </topic>
 
-<topic {<b snit-method>}>
+<topic [b snit-method]>
 The <i command> is the name of a Snit type or widget, and the <i detail> 
 is the name of an instance method.<p>
 </topic>
@@ -171,48 +171,48 @@ This command groups together a number of predicates about commands, where
 if the predicate is true, and 0 otherwise.  The predicates are as follows:<p>
 
 <topiclist>
-<topic {<b alias>}>
+<topic [b alias]>
 The <i cmd> is an alias defined in the current interpreter.<p>
 </topic>
 
-<topic {<b dummyWindow>}>
+<topic [b dummyWindow]>
 The command is a BWidget dummy window, used internally.<p>
 
-<topic {<b nse>}>
+<topic [b nse]>
 The <i cmd> is a namespace ensemble.<p>
 </topic>
 
-<topic {<b oo-object>}>
+<topic [b oo-object]>
 The <i cmd> is a TclOO object or class.<p>
 </topic>
 
-<topic {<b proc>}>
+<topic [b proc]>
 The <i cmd> is a normal Tcl command procedure.<p>
 </topic>
 
-<topic {<b snit-instance>}>
+<topic [b snit-instance]>
 The <i cmd> is a namespace ensemble implementing an instance of a 
 Snit type (include widget instances).<p>
 </topic>
 
-<topic {<b snit-method>}>
+<topic [b snit-method]>
 The <i cmd> is a <b proc> defining a Snit instance method.<p>
 </topic>
 
-<topic {<b snit-type>}>
+<topic [b snit-type]>
 The <i cmd> is a namespace ensemble implementing a Snit type 
 (including Snit widget types).<p>
 </topic>
 
-<topic {<b snit-typemethod>}>
+<topic [b snit-typemethod]>
 The <i cmd> is a <b proc> defining a Snit type method.<p>
 </topic>
 
-<topic {<b window>}>
+<topic [b window]>
 The command has the same name as a Tk window.<p>
 
 </topic>
-<topic {<b ns>}>
+<topic [b ns]>
 A namespace. The <b ns> type is never actually returned by 
 <iref cmdinfo type>; however, <iref cmdinfo list> returns a list of both 
 the commands and namespaces within a given namespace, sorted in dictionary 
