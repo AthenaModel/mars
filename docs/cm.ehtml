@@ -132,7 +132,7 @@ accordance with the principles of
 The project directory tree is as follows:<p>
 
 <table tab.tree "Project Directory Tree">
-<th><td>Path</td> <td>Description</td></th>
+<tr><td>Path</td> <td>Description</td></tr>
 
 <treedir (root)/       > Root of project tree</treedir>
 <treedir +project.kite > <xref kite(1)> Project File </treedir>
