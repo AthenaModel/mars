@@ -3,10 +3,10 @@
 # The next line restarts using tclsh \
 exec wish "$0" "$@"
 
-lappend auto_path ~/mars/lib
+package require kiteutils
 package require marsutil
 package require marsgui
-namespace import marsutil::* marsgui::*
+namespace import kiteutils::* marsutil::* marsgui::*
 
 bind all <F1> {debugger new}
 
@@ -38,7 +38,7 @@ ttk::frame .html
 htmlviewer .html.content \
     -hyperlinkcmd {echo -hyperlinkcmd} \
     -hovercmd     {echo -hovercmd}     \
-    -width        500
+    -width        500 
 
 gridscroll .html.content
 

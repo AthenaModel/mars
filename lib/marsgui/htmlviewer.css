@@ -1,0 +1,154 @@
+/* Default CSS Styles for htmlviewer(n) */
+
+/* Links */
+A[href] {
+    color: black;
+    text-decoration: none;
+}
+
+A[href]:link {
+    color: blue;
+    text-decoration: none;
+}
+
+A[href]:visited {
+    color: purple;
+    text-decoration: none;
+}
+
+/* Image Padding. 
+** Left and right aligned images get no padding at the top because
+** they usually appear at the beginning of paragraphs. */
+
+IMG[align="center"] {
+    padding-top:    0.4em;
+    padding-bottom: 0.4em;
+    
+}
+
+IMG[align="left"] {
+    padding-top:    0em;
+    padding-right:  1em;
+    padding-bottom: 0.4em;
+}
+
+IMG[align="right"] {
+    padding-top:    0em;
+    padding-left:   1em;
+    padding-bottom: 0.4em;
+}
+
+/* Inline image */
+IMG[align="middle"] {
+    vertical-align: middle;
+}
+
+/* Form input elements */
+INPUT {
+    border: 0px;
+    vertical-align: middle;
+}
+
+INPUT[type="text"] {
+    border: 0px;
+    vertical-align: middle;
+}
+
+
+INPUT[type="submit"] {
+    border: 0px;
+    padding: 0px;
+}
+
+/* Object elements */
+OBJECT {
+    vertical-align: middle;
+}
+
+/* List indentation */
+OL, UL, DD {
+    padding-left: 1em;
+}
+
+/* Spans for different entity states */
+
+SPAN.disabled {
+    text-decoration: line-through;
+    color: #999999;
+}
+
+SPAN.invalid {
+    text-decoration: line-through;
+    color: #C7001B;
+}
+
+SPAN.error {
+    color: #C7001B;
+}
+
+/*--------------------------------------------------
+ * Table Formatting Classes
+ *
+ * Use class "table" for standard table formatting, 
+ * with "tr-odd" on odd body rows and "tr-even" on even 
+ * body rows.  The header is row 1 so the first body row
+ * is even.
+ */
+
+.table {  /* Replaces "pretty" */
+    border: 1px solid black;
+    border-spacing: 0;
+    color: black;
+    background-color: white;
+}
+
+.table tr:first-child {  /* Replaces "header" */
+    font-weight: bold;
+    color: white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {      /* Replaces "evenrow" */
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }   /* Replaces "oddrow" */
+
+.table th {
+    padding:    5px;
+    text-align: left;
+}
+
+.table td {
+    padding: 5px;
+    vertical-align: baseline;
+}
+
+/* DEPRECATED: Use "table", "tr-odd", "tr-even" instead.  Note that
+ * oddrow/evenrow count the first row as "0" and even; CSS and the new
+ * styles count the first row as "1" and odd.
+ * 
+ * Table Formatting Classes: "pretty" 
+ * Border around the outside, even/odd striping, no internal
+ * border lines.
+ */
+TABLE.pretty {
+    border: 1px solid black;
+    border-spacing: 0;
+}
+
+TABLE.pretty TR.header {
+    font-weight: bold;
+    color: white;
+    background-color: #000099;
+}
+
+TABLE.pretty TR.oddrow {
+    color: black;
+    background-color: white;
+}
+
+TABLE.pretty TR.evenrow {
+    color: black;
+    background-color: #EEEEEE;
+}

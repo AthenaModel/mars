@@ -19,119 +19,9 @@ snit::widgetadaptor ::marsgui::htmlviewer {
     # Lookup tables
 
     # default CSS styles; these are added to the Tkhtml 3 widget's own
-    # default styles.
-    typevariable defStyles {
-        /* Links */
-        A[href] {
-            color: black;
-            text-decoration: none;
-        }
-
-        A[href]:link {
-            color: blue;
-            text-decoration: none;
-        }
-
-        A[href]:visited {
-            color: purple;
-            text-decoration: none;
-        }
-
-        /* Image Padding. 
-        ** Left and right aligned images get no padding at the top because
-        ** they usually appear at the beginning of paragraphs. */
-
-        IMG[align="center"] {
-            padding-top:    0.4em;
-            padding-bottom: 0.4em;
-            
-        }
-
-        IMG[align="left"] {
-            padding-top:    0em;
-            padding-right:  1em;
-            padding-bottom: 0.4em;
-        }
-
-        IMG[align="right"] {
-            padding-top:    0em;
-            padding-left:   1em;
-            padding-bottom: 0.4em;
-        }
-
-        /* Inline image */
-        IMG[align="middle"] {
-            vertical-align: middle;
-        }
-
-        /* Form input elements */
-        INPUT {
-            border: 0px;
-            vertical-align: middle;
-        }
-        
-        INPUT[type="text"] {
-            border: 0px;
-            vertical-align: middle;
-        }
-        
-        
-        INPUT[type="submit"] {
-            border: 0px;
-            padding: 0px;
-        }
-
-        /* Object elements */
-        OBJECT {
-            vertical-align: middle;
-        }
-
-        /* List indentation */
-        OL, UL, DD {
-            padding-left: 1em;
-        }
-
-        /* Spans for different entity states */
-
-        SPAN.disabled {
-            text-decoration: line-through;
-            color: #999999;
-        }
-
-        SPAN.invalid {
-            text-decoration: line-through;
-            color: #C7001B;
-        }
-
-        SPAN.error {
-            color: #C7001B;
-        }
-
-        /* Table Formatting Classes: "pretty" 
-         * Border around the outside, even/odd striping, no internal
-         * border lines.
-         */
-        TABLE.pretty {
-            border: 1px solid black;
-            border-spacing: 0;
-        }
-
-        TABLE.pretty TR.header {
-            font-weight: bold;
-            color: white;
-            background-color: #000099;
-        }
-
-        TABLE.pretty TR.oddrow {
-            color: black;
-            background-color: white;
-        }
-
-        TABLE.pretty TR.evenrow {
-            color: black;
-            background-color: #EEEEEE;
-        }
-    }
+    # default styles, unless -defstyles is specified.  The styles
+    # are read in from htmlviewer.css by the typeconstructor.
+    typevariable defStyles ""
 
     #-------------------------------------------------------------------
     # Type Variables
@@ -157,7 +47,11 @@ snit::widgetadaptor ::marsgui::htmlviewer {
     # Type Constructor
 
     typeconstructor {
-        # FIRST, define the bindings needed by Tkhtml 3
+        # FIRST, read in the default styles.
+        set defStyles [::kiteutils::readfile \
+            [file join $::marsgui::library htmlviewer.css]]
+
+        # NEXT, define the bindings needed by Tkhtml 3
         bind Html <ButtonPress-1>   [myproc ButtonPress-1 %W %x %y]
         bind Html <Motion>          [myproc Motion %W %x %y]
         bind Html <ButtonRelease-1> [myproc ButtonRelease-1 %W %x %y]
@@ -400,7 +294,7 @@ snit::widgetadaptor ::marsgui::htmlviewer {
     # Options
 
     # Wraps tkhtml3
-    delegate option * to hull
+    delegate option * to hull except {-defaultstyle}
     delegate method * to hull
 
     # -hyperlinkcmd command
@@ -430,11 +324,20 @@ snit::widgetadaptor ::marsgui::htmlviewer {
     option -isvisitedcmd \
         -default {}
     
+    # -defstyles css
+    #
+    # Specifies a set of default styles that completely replaces those
+    # in htmlviewer.css.  Changes to this option take place on the next
+    # [$hv set].
+
+    option -defstyles \
+        -default {}
+
     # -styles css
     #
     # Specifies additional styles to be used as defaults by the widget, 
-    # overriding the widget defaults (but not an <style>...</style> 
-    # scripts in the input).  Changes to this option take places on
+    # overriding the widget defaults (but not any <style>...</style> 
+    # scripts in the input).  Changes to this option take place on
     # the next [$hv set].
 
     option -styles \
@@ -567,9 +470,13 @@ snit::widgetadaptor ::marsgui::htmlviewer {
 
         # NEXT, add the default styles we prefer, on top of the
         # widget's own defaults.
-        $hull style -id agent.0001.9999 $defStyles
+        if {$options(-defstyles) ne ""} {
+            $hull style -id agent.0001.9999 $options(-defstyles)
+        } else {
+            $hull style -id agent.0001.9999 $defStyles
+        }
 
-        # NEXT, add the client's default styles.
+        # NEXT, add the client's additional styles.
         if {$options(-styles) ne ""} {
             $hull style -id agent.0002.9999 $options(-styles)
         }
