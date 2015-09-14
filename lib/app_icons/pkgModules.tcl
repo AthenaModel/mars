@@ -27,7 +27,7 @@ package provide app_icons 3.0.21
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require snit 2.3
-package require kiteutils 0.4.7
+package require kiteutils 0.4.11
 package require -exact marsutil 3.0.21
 package require -exact marsgui 3.0.21
 # -kite-require-end
