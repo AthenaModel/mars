@@ -1,5 +1,5 @@
 # project.kite
-project mars 3.0.21 {Mars Simulation Support Library}
+project mars 3.0.22 {Mars Simulation Support Library}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
@@ -32,7 +32,7 @@ require Tkhtml 3.0
 require kiteutils 0.4.11 -local
 
 # External Files
-xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
+xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150917.docx
 
 # Distribution Targets
 
