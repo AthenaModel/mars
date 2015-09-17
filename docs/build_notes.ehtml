@@ -1,5 +1,13 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.22 -- 17 September 2015>
+
+This build contains one enhancement:
+
+<ul>
+<li> Issue #66: htmlviewer(n): -defstyles option
+</ul>
+
 <h3 Mars v3.0.21 -- 25 August 2015>
 
 This build introduces some new fonts and a file selection field. There is
