@@ -10,7 +10,7 @@
 modules which define a <xref parmset(n)> of configuration
 parameters.  It is not required that such modules use precisely this
 interface, but if they do it makes it easy to include their parameters
-in a larger project-wide or application-wide <xref parmset(n)> file.<p>
+in a larger project-wide or application-wide <xref parmset(n)> file.
 
 
 <subsection "Parameter Names">
@@ -20,12 +20,12 @@ from many modules to be pulled into a single <xref parmset(n)>.
 Therefore, in order to avoid naming collisions, the first element of
 every parameter name must be derived from the module's name.
 If the module's name is <code>fred(n)</code>, for example, then
-its parameter names must all match the pattern "<code>fred.*</code>".<p>
+its parameter names must all match the pattern "<code>fred.*</code>".
 
 <subsection "Subcommands">
 
 Every <xref parm(i)> module must be an ensemble command with
-at least the following subcommand:<p>
+at least the following subcommand:
 
 <deflist subcommands>
 
@@ -34,13 +34,13 @@ at least the following subcommand:<p>
 This subcommand provides access to the module's <xref parmset(n)>;
 the subcommands of <iref parm> must be exactly those of the
 module's <xref parmset(n)>.  See the <xref EXAMPLES> for a typical
-implementation.<p>
+implementation.
 
 </deflist subcommands>
 
 <section EXAMPLES>
 
-Here's an example of a minimal <xref parm(i)> module.<p>
+Here's an example of a minimal <xref parm(i)> module.
 
 <pre>
 snit::type sample {
@@ -84,7 +84,7 @@ snit::type sample {
 }
 </pre>
 
-The parameters can then be readily accessed by clients:<p>
+The parameters can then be readily accessed by clients:
 
 <pre>
     % sample parm set sample.number 5
@@ -95,7 +95,7 @@ The parameters can then be readily accessed by clients:<p>
 </pre>
 
 Further, the parameters can be linked into a larger <xref parmset(n)>
-quite easily:<p>
+quite easily:
 
 <pre>
     % parmset collection
@@ -109,11 +109,11 @@ quite easily:<p>
 </pre>
 
 See <xref parmset(n)> for a discussion of master and slave
-parameter sets.<p>
+parameter sets.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

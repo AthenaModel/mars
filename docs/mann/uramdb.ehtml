@@ -16,11 +16,11 @@ namespace import ::simlib::*
 uramdb(n) defines a parser for <xref uramdb(5)> files.  uramdb(n)
 loads <xref uramdb(5)> data into an <xref sqldocument(n)> or
 other SQLite3 database.  uramdb(n) adheres to the
-<xref sqlsection(i)> interface.<p>
+<xref sqlsection(i)> interface.
 
 <section "DATABASE SCHEMA">
 
-uramdb(n) registers the following schema definitions:<p>
+uramdb(n) registers the following schema definitions:
 
 <pre>
 <fromproject {::simlib::uramdb sqlsection schema}>
@@ -28,7 +28,7 @@ uramdb(n) registers the following schema definitions:<p>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
@@ -36,28 +36,28 @@ This module defines the following command:<p>
 
 Parses the content of the file named <i>dbfile</i>, and stores the
 data in the relevant tables in the <xref sqldocument(n)> called
-<i>db</i>.<p>
+<i>db</i>.
 
 If <i>db</i> is specified, the schema must already
 be initialized.  The relevant tables will be cleared prior to
-loading the data.<p>
+loading the data.
 
 If no <i>db</i> is specified, <iref loadfile> will create,
 initialize, and return an in-memory <xref sqldocument(n)> object.
 In this case, it is the caller's responsibility to destroy the
-database object when it is no longer needed.<p>
+database object when it is no longer needed.
 
 <defitem load {uramdb load <i>text</i> ?<i>db</i>?}>
 
 Identical to <iref loadfile>, but parses <xref uramdb(5)> text from
-string <i>text</i> rather than a file.<p>
+string <i>text</i> rather than a file.
 
 <defitem mkperfdb {uramdb mkperfdb <i>db</i> ?<i>options...</i>?}>
 
 Populates the <xref uramdb(5)> tables in the specified <i>db</i>
 with automatically-generated data for the purpose of measuring
 worst-case performance.  The options determine the size of the
-database:<p>
+database:
 
 <deflist options>
 <defopt {-actors <i>num</i>}>
@@ -77,7 +77,7 @@ The number of organization groups in the playbox.
 
 </deflist options>
 
-The generated data will have the following characteristics:<p>
+The generated data will have the following characteristics:
 
 <ul>
   <li> All neighborhood proximities are HERE or NEAR.
@@ -96,7 +96,7 @@ The generated data will have the following characteristics:<p>
 Loads the <xref uramdb(5)> data found in the
 <xref sqldocument(n)> object <i>db</i> into <i>uram</i>, an
 instance of <xref uram(n)>.  This command is to be used as a
-<xref uram2(n)> <b>-loadcmd</b>, like so:<p>
+<xref uram2(n)> <b>-loadcmd</b>, like so:
 
 <pre>
 uram ::myuram \
@@ -108,14 +108,14 @@ uram ::myuram \
 
 where <b>$db</b> is the name of the <xref sqldocument(n)> containing the
 data.  Note that calling it directly simply won't work, as
-<xref uram(n)> won't be expecting it.<p>
+<xref uram(n)> won't be expecting it.
 
 <defitem sqlsection {uramdb sqlsection <i>subcommand</i>}>
 
 uramdb(n) is an <xref sqlsection(i)>, as it defines
 schema entities (see <xref "DATABASE SCHEMA">).
 See <xref sqlsection(i)> for a description
-of this method's subcommands.<p>
+of this method's subcommands.
 
 </deflist commands>
 
@@ -125,16 +125,16 @@ This package requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package
-directory.<p>
+directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
 uramdb(n) is based on <xref gramdb2(n)>, tailored to the needs
-of <xref uram(n)>.<p>
+of <xref uram(n)>.
 
 </manpage>
 

@@ -16,7 +16,7 @@ the type defines an enumeration type: an ordered set of symbolic
 values.  An <iref enum> object allows enumerated symbols to be
 validated, translated to their numeric indices, and <i>vice versa</i>.
 In addition, each enumerated symbol has two forms: a short symbolic
-name and a longer descriptive name.<p>
+name and a longer descriptive name.
 
 <section COMMANDS>
 
@@ -26,13 +26,13 @@ name and a longer descriptive name.<p>
 
 <iref enum> defines a new enumeration definition type called
 <i>name</i>; the short and long names of the enumerated values are
-defined in the <i>deflist</i>, which has the form:<p>
+defined in the <i>deflist</i>, which has the form:
 
 <pre>
 short long short long....
 </pre>
 
-For example,<p>
+For example,
 
 <pre>
 enum MyEnum {
@@ -43,24 +43,24 @@ enum MyEnum {
 </pre>
 
 Alternatively, the <i>deflist</i> can be the empty string, "", and
-values can be added later using the <iref add> subcommand.<p>
+values can be added later using the <iref add> subcommand.
 
 The <i>name</i> becomes a Tcl command, defined in the current scope;
-<iref enum> returns the fully-qualified form of <i>name</i>.<p>
+<iref enum> returns the fully-qualified form of <i>name</i>.
 
 By default, a valid enumeration value is a short name, a long name, or the
 numeric index of the short name, where index numbers range from 
 0 to (<iref size> - 1).  Allowing index numbers is sometimes convenient,
 but means that short names and long names can't look like integers.  If the 
 <b>-noindex</b> option is included on creation, then numeric indices are no
-longer valid values; and consequently short names can be numeric.<p>
+longer valid values; and consequently short names can be numeric.
 
 </deflist>
 
 <section "INSTANCE COMMAND">
 
 Each instance of the <iref enum> object has the following
-subcommands:<p>
+subcommands:
 
 <deflist>
 
@@ -69,34 +69,34 @@ subcommands:<p>
 Validates that <i>input</i> belongs to the enumeration.  If it does,
 the input is translated to a short name, and returned.
 If it does not, an error is thrown with an <code>-errorcode</code>
-of <b>INVALID</b>.<p>
+of <b>INVALID</b>.
 
 <defitem size {$enum size}>
 
 Returns the number of symbols in the enumerated type.  Given <i>n</i>
-symbols, the symbols are indexed from 0 to <i>n</i>-1.<p>
+symbols, the symbols are indexed from 0 to <i>n</i>-1.
 
 <defitem names {$enum names}>
 <defitem shortnames {$enum shortnames}>
 
 Returns a list of the short symbolic names, in index order.  The form
-<iref shortnames> is deprecated.<p>
+<iref shortnames> is deprecated.
 
 <defitem longnames {$enum longnames}>
 
-Returns a list of the long descriptive names, in index order.<p>
+Returns a list of the long descriptive names, in index order.
 
 <defitem deflist {$enum deflist}>
 
 Returns the enum's current definition list, suitable for creating
-another enumeration.<p>
+another enumeration.
 
 <defitem index {$enum index <i>input</i>}>
 
 Given a short name, a long name, or (if <b>-noindex</b> is omitted) a 
 valid index, returns the index.
 Given any other <i>input</i>, returns -1.  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
 <defitem name {$enum name <i>input</i>}>
 <defitem shortname {$enum shortname <i>input</i>}>
@@ -105,9 +105,9 @@ Given a short name, a long name, or (if <b>-noindex</b> is omitted) a
 valid index, returns the
 corresponding short symbolic name.  Given any other <i>input</i>,
 returns "".  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
-The form <iref shortname> is deprecated.<p>
+The form <iref shortname> is deprecated.
 
 <defitem longname {$enum longname <i>input</i>}>
 
@@ -115,13 +115,13 @@ Given a short name, a long name, or (if <b>-noindex</b> is omitted) a
 valid index, returns the
 corresponding long descriptive name.  Given any other <i>input</i>,
 returns "".  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
 <defitem add {$enum add <i>deflist</i>}>
 
 Adds additional symbols to the enumeration; this allows the
 enumeration to be defined a little at a time.  The syntax of
-<i>deflist</i> is defined just as for <iref enum>.<p>
+<i>deflist</i> is defined just as for <iref enum>.
 
 <defitem eq {$enum eq <i>a b</i>}>
 <defitem lt {$enum lt <i>a b</i>}>
@@ -134,12 +134,12 @@ and return 1 if <i>a</i> is equal to, less than, greater than,
 less than or equal to, or greater than or equal to <i>b</i>,
 respectively.  The values <i>a</i> and <i>b</i> may be short names,
 long names, or indices; they are converted to indices and compared
-numerically.<p>
+numerically.
 
 <defitem html {$enum html}>
 
 Returns an HTML snippet which documents the enumeration's names and
-long names.<p>
+long names.
 
 </deflist>
 
@@ -157,7 +157,7 @@ library directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

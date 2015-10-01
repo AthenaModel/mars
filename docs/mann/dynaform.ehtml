@@ -15,7 +15,7 @@ The dynaform(n) module is used to specify the content and behavior
 of data entry forms with signficant dynamic behavior.  dynaform(n) forms 
 are displayed in the GUI using the <xref dynaview(n)> widget.  This
 man page explains how to define a dynaform(n) form, how to query the 
-existing forms, and how to define new field types.<p>
+existing forms, and how to define new field types.
 
 <subsection "Form Specification Script">
 
@@ -26,24 +26,24 @@ more rarely, data that provides context to the user and the rest of
 the form.  Hint items add text and affect how the form appears to the
 user, depending on the chosen <xref "Layout Algorithm">.  Selector
 items determine which items are visible to the user at any given
-time.<p>
+time.
 
 Consider a plot widget which can plot many different
 variables; each variable is subscripted by different indices.  The
 user can select the variable using a <iref selector> item, which
-will then make the relevant subscript fields visible.<p>
+will then make the relevant subscript fields visible.
 
 <xref marsutil(n)> defines a number of standard field types; it
-also possible to define <xref "Custom Field Types">.<p>
+also possible to define <xref "Custom Field Types">.
 
-The following commands can appear in the specification script:<p>
+The following commands can appear in the specification script:
 
 <deflist spec>
 <defitem field {<i>fieldType field</i> ?<i>options...</i>?}>
 
 Defines a field with name <i>field</i> of type <i>fieldType</i> with
 the given <i>options</i>.  Different field types have their own
-type-specific options; however, all accept the following options:<p>
+type-specific options; however, all accept the following options:
 
 <deflist options>
 <defopt {-context <i>flag</i>}>
@@ -52,18 +52,18 @@ If <i>flag</i> is true, the field will be a read-only context field.
 A context field is one that should be set by the application before
 the form is displayed; it determines the context for the data being
 edited.  Context fields cannot be edited by the user; and in
-addition, clearing the form should not clear the context fields.<p>
+addition, clearing the form should not clear the context fields.
 
 <defopt {-defvalue <i>value</i>}>
 Specifies a default value for the field.  When the form is cleared,
-this value will be placed in the field.<p>
+this value will be placed in the field.
 
 <defopt {-invisible <i>flag</i>}>
 
 If <i>flag</i> is true, the field will be invisible, that is, it will
 not be displayed to the user.  This is sometimes useful for context
 fields, e.g., a field used in an <iref enum> field's
-<code>-listcmd</code>.  By default, fields are visible.<p>
+<code>-listcmd</code>.  By default, fields are visible.
 
 <defopt {-loadcmd <i>command</i>}>
 
@@ -73,48 +73,48 @@ item definition dictionary and its current value.  The command should
 return a dictionary of field names and values to be loaded into the
 form.  For example, a <iref key> field might use a <code>-loadcmd</code>
 to load a database entity's attributes into the form when the key
-changes.<p>
+changes.
 
 The <i command> may reference upstream field values by name, as well
-as the <i entity_> variable (if defined).<p>
+as the <i entity_> variable (if defined).
 
 Note: It is OK if the returned dictionary contains keys
 that don't match any field in the form; they will simply be
-ignored.<p>
+ignored.
 
 <defopt {-tip <i>text</i>}>
 
 Specifies tool-tip text for the field.  How this text is used depends
-on the <iref layout> algorithm.<p>
+on the <iref layout> algorithm.
 
 </deflist options>
 
 <defitem br {br}>
 
-For <b>ncolumn</b> layouts, inserts a line break into the form.<p>
+For <b>ncolumn</b> layouts, inserts a line break into the form.
 
 
 <defitem c {c ?<i>label</i>? ?<i>options...</i>?}>
 
 For <b>ncolumn</b> layouts, begins a new column.  If <i>label</i> is
 given, it will be placed first in the column.  The command takes the
-following options:<p>
+following options:
 
 <deflist options>
 <defopt {-for <i>field</i>}>
 Associates the <i>label</i> with the named <i>field</i>, just as for 
-<iref label>.<p>
+<iref label>.
 
 <defopt {-span <i>n</i>}>
 
 This column's content will span <i>n</i> columns in the table
-layout.  The default, naturally, is one column.<p>
+layout.  The default, naturally, is one column.
 
 <defopt {-width <i>width</i>}>
 
 This column will be given the specified <i>width</i>, which is
 specified in HTML length units, e.g., "<code>3in</code>" or
-"<code>100pxi</code>".<p>
+"<code>100pxi</code>".
 
 </deflist options>
 
@@ -126,31 +126,31 @@ human-readable string used in the selector pulldown.  The
 <i>script</i> is a script of form specification items that will be
 visible when this case is selected.  Note that the case is
 <b>not</b> a subform with its own layout; when the form is layed out,
-all selected items are layed out together.<p>
+all selected items are layed out together.
 
 <defitem cc {cc <i>label</i> ?<i>options...</i>?}>
 
 For <b>ncolumn</b> layouts, begins two new columns on the current
 row.  The <i>label</i> is placed in the first of the two columns;
-subsequent items will appear in the second of the two columns.<p>
+subsequent items will appear in the second of the two columns.
 
-The command takes the following options:<p>
+The command takes the following options:
 
 <deflist options>
 <defopt {-for <i>field</i>}>
 Associates the <i>label</i> with the named <i>field</i>, just as for 
-<iref label>.<p>
+<iref label>.
 
 <defopt {-span <i>n</i>}>
 
 The second new column's content will span <i>n</i> columns in the table
-layout.  The default, naturally, is one column.<p>
+layout.  The default, naturally, is one column.
 
 <defopt {-width <i>width</i>}>
 
 The second new column will be given the specified <i>width</i>, which is
 specified in HTML length units, e.g., "<code>3in</code>" or
-"<code>100px</code>".<p>
+"<code>100px</code>".
 
 </deflist options>
 
@@ -158,117 +158,117 @@ specified in HTML length units, e.g., "<code>3in</code>" or
 
 Defines a checkbutton field, i.e., a field for editing boolean flags.
 In addition to the standard field options, 
-the field type defines the following:<p>
+the field type defines the following:
 
 <deflist options>
 <defopt {-text <i>text</i>}>
-Specifies the text to display as the checkbutton label.<p>
+Specifies the text to display as the checkbutton label.
 
 <defopt {-image <i>image</i>}>
 
-Specifies the Tk image to display as the checkbutton label.<p>
+Specifies the Tk image to display as the checkbutton label.
 </deflist options>
 
 <defitem color {color <i>field</i> ?<i>options...</i>?}>
 
 Defines a color field, based on the <xref colorfield(n)> widget.
-There are no field-type-specific options.<p>
+There are no field-type-specific options.
 
 <defitem dbkey {dbkey <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for selecting a key value from a database table,
 i.e., a <xref keyfield(n)> widget.  The field displays a labeled
-pulldown for each key column.<p>
+pulldown for each key column.
 
 This field type depends on an 
 <xref "Application Resources" "application resource"> called
 "<tt db_>", whose value must be the relevant SQLite3 database handle
-(or the equivalent).<p>
+(or the equivalent).
 
 In addition to the standard field options, the field type defines 
-the following:<p>
+the following:
 
 <deflist option>
 <defopt {-table <i>table</i>}>
 
-Specifies the name of the table or view in the database.<p>
+Specifies the name of the table or view in the database.
 
 <defopt {-keys <i>keys</i>}>
 
-Specifies a list of the names of the key column or columns in the table.<p>
+Specifies a list of the names of the key column or columns in the table.
 
 <defopt {-dispcols <i>names</i>}>
 
 Specifies the names of columns whose values are to be displayed in
 place of the <code>-keys</code> columns in the pulldowns. The values
 in the <code>-dispcols</code> columns need to be paired one-to-one
-with the matching values in the <code>-keys</code> columns.<p>
+with the matching values in the <code>-keys</code> columns.
 
 This is usually used when the <code>-table</code>'s key is a bare
 integer. The <code>-table</code> can be a view that provides a
 human-readable version of the key as a parallel column. The GUI then
 uses the human-readable text, while the underlying order uses the
-integer key.<p>
+integer key.
 
 <defopt {-widths <i>widths</i>}>
 
 Specifies a list of widths, in characters of the current font, for
 each key column.  The widths will determine the approximate width of
-each pulldown.<p>
+each pulldown.
 
 <defopt {-labels <i>strings</i>}>
 Specifies a list of label strings, one for each key column.  If a
 column's label string is not the empty string, it will appear to the
-left of the column's pulldown.<p>
+left of the column's pulldown.
 </deflist options>
 
 This design allows each invocation of the dynaform to serve a 
-different database.<p>
+different database.
 
 <defitem dbmulti {dbmulti <i>field</i> ?<i>options...</i>?}>
 
 Defines a context field containing multiple table keys for a given
 database and table.  The field (a <xref multifield(n)> widget) displays
 the number of selected items.  The field type defines the following
-additional options:<p>
+additional options:
 
 <deflist option>
 <defopt {-table <i>table</i>}>
 
-Specifies the name of the table or view in the database.<p>
+Specifies the name of the table or view in the database.
 
 <defopt {-key <i>key</i>}>
 
 Specifies a list of the name of the key column.  It is assumed that
 the table has a single key column; however, this can be simulated using
 a view that concatenates the values of the key columns in some
-way.<p>
+way.
 </deflist options>
 
 The field itself makes no use of these options; they are provided for
-use by the field's <tt -loadcmd>.<p>
+use by the field's <tt -loadcmd>.
 
 <defitem disp {disp <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for displaying an arbitrary, read-only text string.
 (i.e., a <xref dispfield(n)> widget).  This is useful for
 displaying ancillary data to the user that the user is not allowed to
-edit.  The field type defines the following additional options:<p>
+edit.  The field type defines the following additional options:
 
 <deflist options>
 <defopt {-textcmd <i>cmd</i>}>
 Specifies a command to be called to retrieve the field's value
 for display.  The command may contain references to the values of
-any upstream fields.  The return value is placed in the field.<p>
+any upstream fields.  The return value is placed in the field.
 
 This option is useful for translating numeric object IDs and other
 opaque references into human-readable values.  The true ID goes in
 an upstream field (and is quite possibly invisible); this one takes
-the true ID and produces the value for display.<p>
+the true ID and produces the value for display.
 
 <defopt {-width <i>columns</i>}>
 Specifies the width of the field in characters of the current
-font.<p>
+font.
 
 </deflist options>
 
@@ -276,17 +276,17 @@ font.<p>
 
 Defines an enumeration field, i.e., a pull-down menu for a specific
 set of values.  In addition to the standard field options, 
-the field type defines the following:<p>
+the field type defines the following:
 
 <deflist options>
 <defopt {-list <i>values</i>}>
-Specifies the list of values to display in the pull-down.<p>
+Specifies the list of values to display in the pull-down.
 
 <defopt {-listcmd <i>command</i>}>
 
 Specifies a command to call to retrieve the list of values.  This
 option overrides <code>-list</code>.  The command may contain
-references to the values of upstream fields.  For example:<p>
+references to the values of upstream fields.  For example:
 
 <pre>
     enum a -listcmd {::actor names}
@@ -295,7 +295,7 @@ references to the values of upstream fields.  For example:<p>
 
 The first field allows the user to select the name of an actor; the
 second allows the user to select the name of a group owned by the
-selected actor.<p>
+selected actor.
 </deflist options>
 
 <defitem enumlong {enumlong <i>field</i> ?<i>options...</i>?}>
@@ -305,42 +305,42 @@ set of values.  An <iref enumlong> is like an <iref enum>, but it
 is configured with a dictionary of short name/long name pairs instead
 of a simple list.  It displays the long names in the pull-down, but
 returns a short name as its value.  In addition to the standard field 
-options, the field type defines the following:<p>
+options, the field type defines the following:
 
 <deflist options>
 <defopt {-dict <i>dict</i>}>
-Specifies the dictionary of short names and long names.<p>
+Specifies the dictionary of short names and long names.
 
 <defopt {-dictcmd <i>command</i>}>
 
 Specifies a command to call to retrieve the short name/long name
 dictionary.  This option overrides <code>-dict</code>.  The command may contain
 references to the values of upstream fields; see <iref enum> for an
-example of the syntax.<p>
+example of the syntax.
 
 <defopt {-showkeys <i>flag</i>}>
 
 If true, the widget will display both short names and long names,
 e.g., "short: long".  If false (the default) it will display only the
-long names.<p>
+long names.
 </deflist options>
 
 <defitem enumlist {enumlist <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for selecting multiple items from an enumerated list
 (i.e., a <xref listfield(n)> widget). In addition to the standard 
-field options, the field type defines the following:<p>
+field options, the field type defines the following:
 
 <deflist options>
 <defopt {-list <i>values</i>}>
-Specifies the list of values from which the user can choose.<p>
+Specifies the list of values from which the user can choose.
 
 <defopt {-listcmd <i>command</i>}>
 
 Specifies a command to call to retrieve the list of values from 
 which the user can choose.  This
 option overrides <code>-list</code>.  The command may contain
-references to the values of upstream fields.  For example:<p>
+references to the values of upstream fields.  For example:
 
 <pre>
     enum     a     -listcmd {::actor names}
@@ -349,24 +349,24 @@ references to the values of upstream fields.  For example:<p>
 
 The first field allows the user to select the name of an actor; the
 second allows the user to select the names of one or more groups owned 
-by the selected actor.<p>
+by the selected actor.
 
 <defopt {-width <i>columns</i>}>
 
 This field displays two side-by-side list boxes, with buttons in between.
 Both list boxes will have this width in terms of the average-sized
-character of the current font.  Long items will wrap.<p>
+character of the current font.  Long items will wrap.
 
 <defopt {-height <i>rows</i>}>
 
 Specifies the number of visible items in the selection lists.
-Defaults to 5.<p>
+Defaults to 5.
 
 <defopt {-stripe <i>flag</i>}>
 
 If true (the default), then even-numbered items in the
 selection lists are displayed with a light green stripe.   If long
-items wrap, this makes it easier to distinguish the items.<p>
+items wrap, this makes it easier to distinguish the items.
 
 </deflist options>
 
@@ -376,15 +376,15 @@ Defines a field for selecting multiple items from an enumerated list
 (i.e., a <xref listfield(n)> widget), where the valid choices are
 specified as a short name/long name dictionary.  The user selects
 from the long names, and the field's value is a list of the matching
-short names.<p>
+short names.
 
 In addition to the standard field options, the field type defines 
-the following:<p>
+the following:
 
 <deflist options>
 <defopt {-dict <i>dict</i>}>
 Specifies the dictionary of short name/long name values from which the user 
-can choose.<p>
+can choose.
 
 <defopt {-dictcmd <i>command</i>}>
 
@@ -392,30 +392,30 @@ Specifies a command to call to retrieve the dictionary of
 short name/long name values from which the user can choose.  This
 option overrides <code>-dict</code>.  The command may contain
 references to the values of upstream fields; see 
-<iref enumlist> for an example of the syntax.<p>
+<iref enumlist> for an example of the syntax.
 
 <defopt {-width <i>columns</i>}>
 
 This field displays two side-by-side list boxes, with buttons in between.
 Both list boxes will have this width in terms of the average-sized
-character of the current font.  Long items will wrap.<p>
+character of the current font.  Long items will wrap.
 
 <defopt {-height <i>rows</i>}>
 
 Specifies the number of visible items in the selection lists.
-Defaults to 5.<p>
+Defaults to 5.
 
 <defopt {-stripe <i>flag</i>}>
 
 If true (the default), then even-numbered items in the
 selection lists are displayed with a light green stripe.   If long
-items wrap, this makes it easier to distinguish the items.<p>
+items wrap, this makes it easier to distinguish the items.
 
 <defopt {-showkeys <i>flag</i>}>
 
 If true, the widget will display both short names and long names,
 e.g., "short: long".  If false (the default) it will display only the
-long names.<p>
+long names.
 </deflist options>
 
 <defitem file {file <i>field</i> ?<i>options...</i>?}>
@@ -424,20 +424,20 @@ Defines a field for selecting a file from the disk
 (i.e., a <xref filefield(n)> widget).  The field displays the selected
 file name as a read-only string, and includes a "Browse" button for 
 selecting a different file.  The field type defines the following 
-additional options:<p>
+additional options:
 
 <deflist options>
 <defopt {-width <i>columns</i>}>
 Specifies the width of the field in characters of the current
-font.<p>
+font.
 
 <defopt {-title <i>string</i>}>
 Specifies the title string for the file selection dialog.  Defaults
-to "Select File".<p>
+to "Select File".
 
 <defopt {-filetypes <i>list</i>}>
 Specifies the acceptable file type or types, in the same form as
-for <tt tk_getOpenFile>.  Defaults to any kind of file.<p>
+for <tt tk_getOpenFile>.  Defaults to any kind of file.
 
 </deflist options>
 
@@ -446,57 +446,57 @@ for <tt tk_getOpenFile>.  Defaults to any kind of file.<p>
 Defines a field for selecting a key value from a database table,
 i.e., a <xref keyfield(n)> widget.  The field displays a labeled
 pulldown for each key column.  In addition to the standard
-field options, the field type defines the following:<p>
+field options, the field type defines the following:
 
 <deflist option>
 <defopt {-db <i>db</i>}>
 Specifies the name of an <xref sqldocument(n)> or the equivalent
-containing the relevant table.<p>
+containing the relevant table.
 
 <defopt {-table <i>table</i>}>
 
-Specifies the name of the table or view in the database.<p>
+Specifies the name of the table or view in the database.
 
 <defopt {-keys <i>keys</i>}>
 
-Specifies a list of the names of the key column or columns in the table.<p>
+Specifies a list of the names of the key column or columns in the table.
 
 <defopt {-dispcols <i>names</i>}>
 
 Specifies the names of columns whose values are to be displayed in
 place of the <code>-keys</code> columns in the pulldowns. The values
 in the <code>-dispcols</code> columns need to be paired one-to-one
-with the matching values in the <code>-keys</code> columns.<p>
+with the matching values in the <code>-keys</code> columns.
 
 This is usually used when the <code>-table</code>'s key is a bare
 integer. The <code>-table</code> can be a view that provides a
 human-readable version of the key as a parallel column. The GUI then
 uses the human-readable text, while the underlying order uses the
-integer key.<p>
+integer key.
 
 <defopt {-widths <i>widths</i>}>
 
 Specifies a list of widths, in characters of the current font, for
 each key column.  The widths will determine the approximate width of
-each pulldown.<p>
+each pulldown.
 
 <defopt {-labels <i>strings</i>}>
 Specifies a list of label strings, one for each key column.  If a
 column's label string is not the empty string, it will appear to the
-left of the column's pulldown.<p>
+left of the column's pulldown.
 
 </deflist options>
 
 This design allows different dynaforms to access databases via
 different handles.  If it is certain that the application will only 
 use one database handle, the application can define an alias like
-this:<p>
+this:
 
 <pre>
     dynaform fieldtype alias key key -db ::rdb
 </pre>
 
-All key fields will then use the same database handle.<p>
+All key fields will then use the same database handle.
 
 <defitem label {label <i>text</i> ?-for <i>field</i>?}>
 
@@ -504,23 +504,23 @@ For those layout algorithms that use labels (<b>ncolumn</b> and
 <b>ribbon</b>), specifies some <i>text</i> to display to the user.
 If a <i>field</i> name is given, the label will be associated with
 that field; if the application marks the field's value invalid, the
-label will be displayed in a way that reflects this.<p>
+label will be displayed in a way that reflects this.
 
 When the <b>-for</b> option is used (either here or in the 
 commands that define labels) for the <b>2column</b> and <b>ncolumn</b>
 layout algorithms, the label text is escaped with 
-<code>&amp;nbsp;</code> so that the text is rendered all on one line.<p>
+<code>&amp;nbsp;</code> so that the text is rendered all on one line.
 
 <defitem layout {layout <i>algorithm</i> ?<i>option value...</i>?}>
 
 Names the <xref "Layout Algorithm"> for this form type.  Defaults
-to <b>ncolumn</b>.<p>
+to <b>ncolumn</b>.
 
 This command can appear anywhere in the form; conventionally, if it
-appears it is the first command in the specification script.<p>
+appears it is the first command in the specification script.
 
 The command can also set the following options affecting the layout
-and size of the form:<p>
+and size of the form:
 
 <deflist options>
 
@@ -528,14 +528,14 @@ and size of the form:<p>
 Defaults to <b>true</b>.  By default, then, the form will have the smallest
 size that will contain the currently displayed content.  This is a problem
 for particularly dynamic forms; thus, the form can choose to set <i>flag</i>
-to <b>false</b>, and set the default width and height explicitly.<p>
+to <b>false</b>, and set the default width and height explicitly.
 
 <defopt {-height <i>height</i>}>
 <defopt {-width <i>width</i>}>
 Sets the default width and height of the form in pixels.  The form will be
 this size unless the content is larger, in which case it will expand to fit
 (at the cost of a visible jump).  These options are ignored if 
-<b>-shrink</b> is <b>true</b>.<p>
+<b>-shrink</b> is <b>true</b>.
 
 </deflist options>
 
@@ -544,40 +544,40 @@ this size unless the content is larger, in which case it will expand to fit
 Defines a context field containing multiple table keys for a given
 database and table.  The field (a <xref multifield(n)> widget) displays
 the number of selected items.  The field type defines the following
-additional options:<p>
+additional options:
 
 <deflist option>
 <defopt {-db <i>db</i>}>
 Specifies the name of an <xref sqldocument(n)> or the equivalent
-containing the relevant table.<p>
+containing the relevant table.
 
 <defopt {-table <i>table</i>}>
 
-Specifies the name of the table or view in the database.<p>
+Specifies the name of the table or view in the database.
 
 <defopt {-key <i>key</i>}>
 
 Specifies a list of the name of the key column.  It is assumed that
 the table has a single key column; however, this can simulated using
 a view that concatenates the values of the key columns in some
-way.<p>
+way.
 </deflist options>
 
 <defitem para {para}>
 
-For <b>ncolumn</b> layouts, inserts a paragraph break into the form.<p>
+For <b>ncolumn</b> layouts, inserts a paragraph break into the form.
 
 <defitem range {range <i>field</i> ?<i>options...</i>?}>
 
 Defines a field for selecting a number from a range using a slider
 (i.e., a <xref rangefield(n)> widget).  The field type defines the 
 following additional options, all of which are defined in the
-<xref rangefield(n)> man page:<p>
+<xref rangefield(n)> man page:
 
 <deflist options>
 <defopt {-datatype <i>object</i>}>
 This option is equivalent to the <xref rangefield(n)>
-<code>-type</code> option.<p>
+<code>-type</code> option.
 
 <defopt {-changemode <i>mode</i>}>
 <defopt {-min <i>value</i>}>
@@ -587,7 +587,7 @@ This option is equivalent to the <xref rangefield(n)>
 <defopt {-resolution <i>value</i>}>
 <defopt {-showreset <i>flag</i>}>
 <defopt {-showsymbols <i>flag</i>}>
-These options are defined just as for <xref rangefield(n)>.<p>
+These options are defined just as for <xref rangefield(n)>.
 
 </deflist options>
 
@@ -595,23 +595,23 @@ These options are defined just as for <xref rangefield(n)>.<p>
 
 For <b>ncolumn</b> layouts, begins a new row and column.  If <i>label</i> is
 given, it will be placed first in the column.  The command takes the
-following options:<p>
+following options:
 
 <deflist options>
 <defopt {-for <i>field</i>}>
 Associates the <i>label</i> with the named <i>field</i>, just as for 
-<iref label>.<p>
+<iref label>.
 
 <defopt {-span <i>n</i>}>
 
 This column's content will span <i>n</i> columns in the table
-layout.  The default, naturally, is one column.<p>
+layout.  The default, naturally, is one column.
 
 <defopt {-width <i>width</i>}>
 
 The column will be given the specified <i>width</i>, which is
 specified in HTML length units, e.g., "<code>3in</code>" or
-"<code>100px</code>".<p>
+"<code>100px</code>".
 
 </deflist options>
 
@@ -619,25 +619,25 @@ specified in HTML length units, e.g., "<code>3in</code>" or
 
 For <b>ncolumn</b> layouts, begins a new row with two new columns.
 The <i>label</i> is placed in the first of the two columns;
-subsequent items will appear in the second of the two columns.<p>
+subsequent items will appear in the second of the two columns.
 
-The command takes the following options:<p>
+The command takes the following options:
 
 <deflist options>
 <defopt {-for <i>field</i>}>
 Associates the <i>label</i> with the named <i>field</i>, just as for 
-<iref label>.<p>
+<iref label>.
 
 <defopt {-span <i>n</i>}>
 
 The second new column's content will span <i>n</i> columns in the table
-layout.  The default, naturally, is one column.<p>
+layout.  The default, naturally, is one column.
 
 <defopt {-width <i>width</i>}>
 
 The second new column will be given the specified <i>width</i>, which is
 specified in HTML length units, e.g., "<code>3in</code>" or
-"<code>100px</code>".<p>
+"<code>100px</code>".
 
 </deflist options>
 
@@ -650,11 +650,11 @@ them available to the form's callback commands.  In particular,
 field callback commands may refer to resource values by name, just
 as they may refer to upstream fields by name.  For example, a 
 <tt -loadcmd> might refer to the relevant order object as "<tt>$order_</tt>".
-<p>
+
 
 Resource names conventionally have a trailing underscore so that
 they won't collide with parameter names, e.g., "<tt db_>", 
-"<tt order_>".<p>
+"<tt order_>".
 
 <defitem selector {selector <i>field</i> ?<i>options...</i>? <i>selscript</i>}>
 
@@ -664,10 +664,10 @@ the items displayed in the form.  The selector script,
 zero or more items.  The selector displays a pulldown with a list of
 the cases; when the user selects a case, the relevant items are
 displayed.  As a field, the selector item's value is the selected
-case.<p>
+case.
 
 The selector command takes all of the standard field
-options, and also the following:<p>
+options, and also the following:
 
 <deflist options>
 <defopt {-listcmd command}>
@@ -675,11 +675,11 @@ The <i>selscript</i> defines all of the theoretically possible cases;
 however, which cases can actually be selected might depend on
 context, e.g., different activities might be assignable to different
 groups.  The dynaform can be written for all group types, and the
-list of cases to display can be determined by this command.<p>
+list of cases to display can be determined by this command.
 
 As with the <iref enum> item's <code>-listcmd</code>, the
 <i>command</i> may reference upstream fields, thus providing the
-necessary context.<p>
+necessary context.
 
 </deflist options>
 
@@ -687,12 +687,12 @@ necessary context.<p>
 
 Defines a field for entering an arbitrary text string.
 (i.e., a <xref textfield(n)> widget).  The field type defines the 
-following additional option:<p>
+following additional option:
 
 <deflist options>
 <defopt {-width <i>columns</i>}>
 Specifies the width of the field in characters of the current
-font.<p>
+font.
 
 </deflist options>
 
@@ -703,10 +703,10 @@ items that will be displayed; however, it is not a field.  Instead,
 <i>expr</i> is a boolean expression which can reference upstream
 fields by name.  If the expression is true, the items defined by 
 <i>tscript</i> will be visible; if not, the items defined by
-<i>fscript</i> (if any) will be visible.<p>
+<i>fscript</i> (if any) will be visible.
 
 For example, suppose field <code>b</code> should be visible only if
-field <code>a</code> has a non-empty value:<p>
+field <code>a</code> has a non-empty value:
 
 <pre>
     text a
@@ -723,27 +723,27 @@ As noted above, the various field callback commands (e.g., <tt -loadcmd>,
 <tt -listcmd>, and so forth) can refer to "upstream" field values. In 
 addition, they can also refer to "application resources": named values
 provided by the application when the form is invoked.  Certain field 
-types, notably <iref dbkey>, also require application resources.<p>
+types, notably <iref dbkey>, also require application resources.
 
 For example, a particular field's <tt -loadcmd> might need to access 
 a database.  We can't hardcode the database handle into the <tt -loadcmd>
 without limiting the form to being used with only that one database.
 Instead, we define an application resource, "<b><tt>db_</tt></b>", whose
 value must be set to the required database handle.  The form's field 
-callbacks can than refer freely to "<b><tt>$db_</tt></b>".<p>
+callbacks can than refer freely to "<b><tt>$db_</tt></b>".
 
 A dynaform(n) is displayed in a <xref dynaview(n)> widget; and the 
 application must provide the form's resource values to the 
 <xref dynaview(n)> widget via its <tt -resources> option.  If there's
 a mismatch between the given and required resources, the widget will
-throw an error.<p>
+throw an error.
 
 <subsection "Layout Algorithm">
 
 Each dynaform is associated with a specific layout algorithm; this
 algorithm, specified using the <iref layout> command, determines how 
 the form's items are displayed to the user.  At present, there are 
-three supported algorithms:<p>
+three supported algorithms:
 
 <deflist layout>
 <defitem ncolumn {ncolumn}>
@@ -753,21 +753,21 @@ three supported algorithms:<p>
 complex table-based forms.  Use the <iref label> item to label
 fields, and the <iref c>, <iref cc>, <iref rc>, and 
 <iref rcc> items to control the layout.  Fields can define tool
-tips using the <code>-tip</code> option.<p>
+tips using the <code>-tip</code> option.
 
 <defitem 2column {2column}>
 
 This layout is intended to emulate the classic <xref form(n)> 
 two-column layout with minimal changes.  Each field widget appears on
 its own row, labeled by its <code>-tip</code> text.  "Hint" items
-(e.g., <iref label>) are ignored.<p>
+(e.g., <iref label>) are ignored.
 
 <defitem ribbon {ribbon}>
 
 This layout puts all fields and labels on one line, which can wrap to
 subsequent lines if necessary.  Of the "Hint" items, only 
 <iref label> is used.  Fields can define tool tips using the
-<code>-tip</code> option.<p>
+<code>-tip</code> option.
 
 </deflist layout>
 
@@ -776,24 +776,24 @@ subsequent lines if necessary.  Of the "Hint" items, only
 There are two ways to define new field types for use with dynaform(n)
 and <xref dynaview(n)>.  The simpler of the two is define a
 <iref fieldtype alias>; this is useful when you find that you are using
-the same field type with the same options over and over again.<p>
+the same field type with the same options over and over again.
 
 To create a new field type based on a new <xref field(i)> widget,
 use <iref fieldtype define>.  See <xref dynaform_field(i)> for
-details.<p>
+details.
 
 <section COMMANDS>
 
 This module defines the following commands.  The <iref define> and
 <iref fieldtype define> commands are for use by the application;
-the remainder are primarily for use by <xref dynaview(n)>.<p>
+the remainder are primarily for use by <xref dynaview(n)>.
 
 <deflist commands>
 
 <defitem allitems {dynaform allitems <i>ftype</i>}>
 
 Returns a list of the IDs of all items defined by the named form
-type, in order of definition.<p>
+type, in order of definition.
 
 <defitem cases {dynaform cases <i>ftype field vdict</i>}>
 
@@ -801,31 +801,31 @@ Returns the symbolic names of the cases associated with form
 <i>ftype</i>'s <iref selector> field <i>field</i> given the context
 provided by the value dictionary <i>vdict</i>.  This command is 
 provided to make it easy for clients (e.g., orders) to validate the 
-value of selector fields.<p>
+value of selector fields.
 
 <defitem context {dynaform context <i>ftype</i>}>
 
 Returns a list of the names of any context fields for the named
-form type.<p>
+form type.
 
 <defitem define {dynaform define <i>ftype fscript</i>}>
 
 Defines a new form type called <i>ftype</i> (or redefines an existing
 one).  The form type is defined by a 
-<xref "Form Specification Script">.<p>
+<xref "Form Specification Script">.
 
 <defitem dump {dynaform dump <i>ftype</i>}>
 
 Dumps a pretty-printed item tree, in outline form, for the named 
 form type.  This command is primarily useful for debugging
-dynaform(n) itself.<p>
+dynaform(n) itself.
 
 <defitem fields {dynaform fields <i>ftype</i>}>
 
 Returns a list of the names of the fields contained in the named form
 type.  Note that field items on different branches of the tree can
 have the same name; however, the name will only appear once in the
-output.<p>
+output.
 
 <defitem {fieldtype define} {dynaform fieldtype define <i>name body</i>}> 
 
@@ -833,7 +833,7 @@ Defines a new field type called <i>name</i> for use in form
 specification scripts.  The <i>name</i> will become a command in the
 form specification language, parallel to the existing field commands.
 The <i>body</i> is a snit::type definition body matching the 
-<xref dynaform_fieldtype(i)> interface.<p>
+<xref dynaform_fieldtype(i)> interface.
 
 <defitem {fieldtype alias} {dynaform fieldtype alias <i>name fieldtype</i> ?<i>options...</i>}>
 
@@ -842,7 +842,7 @@ existing <i>fieldtype</i>.  The <i>options</i> can include any of the
 options provided by the <i>fieldtype</i>.  Once aliased, the
 <i>name</i> can be used a field command in form specification
 scripts.  For example, the following defines a new enumeration
-type called "character":<p>
+type called "character":
 
 <pre>
     dynaform fieldtype alias character enumlong -dict {
@@ -852,35 +852,35 @@ type called "character":<p>
     }
 </pre>
 
-You may not create an alias to an alias.<p>
+You may not create an alias to an alias.
 
 <defitem item {dynaform item <i>id</i> ?<i>attr</i>?}>
 
 Given a dynaform item ID and an item attribute name, returns the
 value of the attribute.  If the attribute name is omitted, returns
-the entire item definition dictionary.<p>
+the entire item definition dictionary.
 
 <defitem "dynaform layout" {dynaform layout <i>ftype</i>}>
 
 Returns the name of the <iref layout> algorithm for the named form
-type.<p>
+type.
 
 <defitem "dynaform resources" {dynaform resources <i>ftype</i>}>
 Returns the names of the <xref "Application Resources"> required by
 this form.  The returned list will include all resources 
 explicitly declared in the form specification using the 
 <iref resources> command along with all resources implicitly 
-required by the field types used in the specification.<p>
+required by the field types used in the specification.
 
 <defitem topitems {dynaform topitems <i>ftype</i>}>
 
 Because of <iref selector>s, the items in a form are arranged in a
 tree.  This command returns a list of the IDs of all items defined at
-the toplevel of the form's tree, in order of definition.<p>
+the toplevel of the form's tree, in order of definition.
 
 <defitem types {dynaform types}>
 
-Returns a list of names of the defined form types.<p>
+Returns a list of names of the defined form types.
 
 
 </deflist commands>
@@ -896,7 +896,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

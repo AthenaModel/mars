@@ -14,49 +14,49 @@ namespace import ::marsgui::*
 The mapcanvas(n) widget is a Tk <xref tk:canvas(n)> widget adapted
 for the display of asset and neighborhood polygons on top of a
 map background.  In addition, all standard <xref tk:canvas(n)>
-features are supported.<p>
+features are supported.
 
 <subsection "The Map">
 
 The map is a single image file, defining the map background for the
 entire playbox at 100% zoom.  The mapcanvas(n) has the ability to zoom
-in and out on this background for a variety of <iref zoomfactors>.<p>
+in and out on this background for a variety of <iref zoomfactors>.
 
 <subsection "Coordinate Systems">
 
 The mapcanvas(n) widget uses the following coordinate systems, and
-provides numerous subcommands that convert between them.<p>
+provides numerous subcommands that convert between them.
 
 <deflist systems>
   <def "Window Coordinates">
    Tk event bindings receive the (<i>wx,wy</i>) pixel coordinates of the
        event location within the visible area of the canvas.  The
        origin is at the upper-left corner of the canvas; values
-       increase to the left and down.<p>
+       increase to the left and down.
 
        The map location referenced by window coordinates varies as the
-       map is panned and zoomed.<p>
+       map is panned and zoomed.
 
   <def "Canvas Coordinates">
    The underlying Tk canvas represents locations using
        (<i>cx,cy</i>) canvas coordinates, which are measured in
        floating-point pixels.  The origin is at the upper-left corner
-       of the map image; values increase to the left and down.<p>
+       of the map image; values increase to the left and down.
 
        Note that the map location referenced by canvas coordinates
-       varies as the map is zoomed in and out.<p>
+       varies as the map is zoomed in and out.
 
   <def "Map Coordinates">
    The mapcanvas(n)-specific code represents locations using
        (<i>mx,my</i>) map coordinates.  The units and meaning of these
        coordinates depend on the map <xref projection(i)> in use.
-       See <xref Projections>, below, for more details.<p>
+       See <xref Projections>, below, for more details.
 
   <def "Map Reference Strings">
    A map reference string, or "ref", is a short string that is
        equivalent to some pair of (<i>mx,my</i>) map coordinates.  Map
        refs are generally more user-friendly than numeric map
-       coordinates.  See <xref Projections>, elow, for more details.<p>
+       coordinates.  See <xref Projections>, elow, for more details.
 </deflist systems>
 
 <subsection "Projections">
@@ -66,11 +66,11 @@ by the map projection in use.  By default mapcanvas(n) uses a
 pseudo-projection called <xref mapref(n)>.  This projection provides
 resolution-independent map coordinates and reference strings for any
 map image; however, the coordinates do not carry over from one map to
-another.<p>
+another.
 
 If a properly geo-referenced map and an appropriate
 map <xref projection(i)> are available, geographic coordinates
-(e.g., lat/lon and MGRS) may be used instead.<p>
+(e.g., lat/lon and MGRS) may be used instead.
 
 <subsection "Visible Region">
 
@@ -78,23 +78,23 @@ When given a map image, mapcanvas(n) normally sets its scroll region
 to the bounds of the map.  This typically means that some valid map
 coordinates are off of the map, and can't be seen.  When the extended
 region is selected, the points corresponding to all valid map
-reference strings are visible whether they are on the map or not.<p>
+reference strings are visible whether they are on the map or not.
 
 If no map is available, mapcanvas(n) bases the visible region on the
 current projection.  If no projection is available, either,
 mapcanvas(n) presumes a nominal 1000x1000 map, in which case the
-normal and extended regions are identical.<p>
+normal and extended regions are identical.
 
 <subsection "Neighborhoods">
 
 A neighborhood consists of a polygon and a reference point within it.
 The mapcanvas(n) draws neighborhoods and allows their display to be
 adjusted using the <iref nbhood> command.  In particular, Each
-neighborhood's background color can be changed.<p>
+neighborhood's background color can be changed.
 
 Neighborhoods are drawn using standard <xref tk:canvas(n)> items;
 however, the <iref nbhood create>, <iref nbhood cget>, and
-<iref nbhood configure> subcommands should be used to manipulate them.<p>
+<iref nbhood configure> subcommands should be used to manipulate them.
 
 <subsection "Icons">
 
@@ -103,48 +103,48 @@ infrastructure, and so forth, positioned using the chosen map
 coordinates.  The application defines icon types using the
 <xref mapicon(i)> interface, and registers them with the
 mapcanvas(n); then, the application can create icons of all registered
-types.<p>
+types.
 
 Icons are drawn using standard <xref tk:canvas(n)> items; however,
 the <iref icon create>, <iref icon cget>, and <iref icon configure>
-subcommands should be used to manipulate them.<p>
+subcommands should be used to manipulate them.
 
 <subsection "Interaction Modes">
 
-The mapcanvas(n) defines a number of user interaction modes:<p>
+The mapcanvas(n) defines a number of user interaction modes:
 
 <deflist modes>
   <def "null">
-  In this mode, no interaction is possible.<p>
+  In this mode, no interaction is possible.
 
   <def "browse">
   In this mode, the user can point at icons, neighborhoods, and
        so forth, generating events to be processed by the
        application.  This is the default mode when a map is
-       displayed.<p>
+       displayed.
 
   <def "point">
   In this mode, the user can puck points, which are reported to
-       the application via the <b>&lt;&lt;Point-1&gt;&gt;</b> event.<p>
+       the application via the <b>&lt;&lt;Point-1&gt;&gt;</b> event.
 
   <def "poly">
   In this mode, the user can draw polygons on the map.  Completed
        polygons are reported to the application via the
        <b>&lt;&lt;PolyComplete&gt;&gt;</b> virtual event.  It is up to
        the application to make the new polygon permanent in some way,
-       e.g., by creating a neighborhood.<p>
+       e.g., by creating a neighborhood.
 
   <def "pan">
   In this mode, the user can click-and-drag to pan the map from
-       side-to-side and up-and-down.<p>
+       side-to-side and up-and-down.
 </deflist modes>
 
-Other modes are TBD.<p>
+Other modes are TBD.
 
 <section OPTIONS>
 
 The mapcanvas(n) widget provides the following options in addition to
-the standard <xref tk:canvas(n)> options:<p>
+the standard <xref tk:canvas(n)> options:
 
 <deflist options>
 
@@ -152,12 +152,12 @@ the standard <xref tk:canvas(n)> options:<p>
 
 Specifies the map image to display, a standard Tk <xref tk:photo(n)>
 image.  If the map image is changed after the widget is created, the
-<iref clear> method must be called before the change will be visible.<p>
+<iref clear> method must be called before the change will be visible.
 
 <defopt {-modevariable <i>varname</i>}>
 
 A variable name.  The mapcanvas(n) will set this variable to the name
-of the current interaction mode.<p>
+of the current interaction mode.
 
 <defopt {-projection <i>proj</i>}>
 
@@ -165,52 +165,52 @@ Name of a <xref projection(i)> object.  If no projection is
 specified, the mapcanvas(n) will use the <xref mapref(n)>
 pseudo-projection.  If the projection is changed after the widget is
 created, the <iref clear> method must be called before the change
-will be visible.<p>
+will be visible.
 
 <defopt {-locvariable <i>varname</i>}>
 
 A variable name.  As the mouse pointer moves over the mapcanvas(n),
 the mapcanvas(n) will set this variable (if specified) to the map
-location string as determined by the projection in the mapcanvas(n).<p>
+location string as determined by the projection in the mapcanvas(n).
 
 <defopt {-snapmode <i>boolean</i>}>
 
 If true, then mapcanvas(n) will snap to existing points when drawing
-polygons.  If false, it won't.  Defaults to true.<p>
+polygons.  If false, it won't.  Defaults to true.
 
 <defopt {-snapradius <i>radius</i>}>
 
 Specifies the distance in pixels within which mapcanvas(n) will snap
-to existing points when drawing polygons.  Defaults to 5 pixels.<p>
+to existing points when drawing polygons.  Defaults to 5 pixels.
 
 </deflist options>
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
 <defitem mapcanvas {mapcanvas <i>pathName ?options...?</i>}>
 
-Creates a new <iref mapcanvas> widget named <i>pathName</i>.<p>
+Creates a new <iref mapcanvas> widget named <i>pathName</i>.
 
 <defitem "mapcanvas icon" {mapcanvas icon <i>subcommand</i> ?<i>args...</i>?}>
 
-This subcommand is used to manage the icon types available to the mapcanvas(n).<p>
+This subcommand is used to manage the icon types available to the mapcanvas(n).
 
 <deflist icon commands>
 
 <defitem "mapcanvas icon register" {mapcanvas icon register <i>iconType</i>}>
 
 Registers a <xref mapicon(i)> icon type for use with instances of
-mapcanvas(n).<p>
+mapcanvas(n).
 
 <defitem "mapcanvas icon types" {mapcanvas icon types}>
 
 Returns the list of registered icon type names.  Note that these are
 the names used with <iref icon create>, <i>not</i> the
-<xref mapicon(i)> command names.<p>
+<xref mapicon(i)> command names.
 
 </deflist icon commands>
 
@@ -219,71 +219,71 @@ the names used with <iref icon create>, <i>not</i> the
 <section "INSTANCE COMMAND">
 
 mapcanvas(n) widgets have the following subcommands, in addition to
-all of the standard canvas(n) subcommands.<p>
+all of the standard canvas(n) subcommands.
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem clear {<i>pathName</i> clear}>
 
 Deletes all icons and neighborhoods from the mapcanvas(n), and
 displays the current <code>-map</code> using the current
-<code>-projection</code> at 100% zoom.<p>
+<code>-projection</code> at 100% zoom.
 
 If no <code>-projection</code> has been selected, a
 <xref mapref(n)> will be used.  Finally, the interaction mode is set to
-<b>browse</b>.<p>
+<b>browse</b>.
 
 <defitem icon {<i>pathName</i> icon <i>subcommand</i> ?<i>args...</i>?}>
 
-This subcommand is used to create and manage icons on the map.<p>
+This subcommand is used to create and manage icons on the map.
 
 <deflist icon>
 
 <defitem "icon create" {<i>pathName</i> icon create <i>icontype mappoint</i> ?<i>option value...</i>?}>
 
 Creates an icon of type <i>icontype</i> at point <i>mappoint</i>.  The
-valid options vary by icon type.<p>
+valid options vary by icon type.
 
 The <i>mappoint</i> may be expressed as a map reference string, or as a
 pair of map coordinates.  In the latter case, the pair of coordinates can
 be passed as either two separate arguments, or as a single argument, a
-list of two coordinates.<p>
+list of two coordinates.
 
-Returns the new icon's ID.<p>
+Returns the new icon's ID.
 
 <defitem "icon cget" {<i>pathName</i> icon cget <i>id option</i>}>
 
 Returns the value of the specified
-<i>option</i> for the icon with ID <i>id</i>.<p>
+<i>option</i> for the icon with ID <i>id</i>.
 
 <defitem "icon configure" {<i>pathName</i> icon configure <i>id option value</i> ?<i>option value...</i>?}>
 
 Sets the value of one or more of the icon's options.  The precise set
 of options depends on the icon type; typical options include
-<code>-foreground</code> and <code>-background</code>.<p>
+<code>-foreground</code> and <code>-background</code>.
 
 <defitem "icon delete" {<i>pathName</i> icon delete <i>id</i>?}>
 
 Deletes the icon with the given icon <i>id</i>, or all icons if
 <i>id</i> has the value <b>all</b>, or all icons of a given type
-if <i>id</i> is an icon type.<p> 
+if <i>id</i> is an icon type. 
 
 <defitem "icon exists" {<i>pathName</i> icon exists <i>id</i>?}>
 
-Returns 1 if the icon exists, and 0 otherwise.<p>
+Returns 1 if the icon exists, and 0 otherwise.
 
 <defitem "icon list" {<i>pathName</i> icon list ?<i>iconType</i>?}>
 
 Returns a list of the IDs of all icons, or optionally
-all icons of a given <i>iconType</i>.<p>
+all icons of a given <i>iconType</i>.
 
 <defitem "icon moveto" {<i>pathName</i> icon moveto <i>id mappoint</i>}>
 
@@ -292,15 +292,15 @@ Moves the icon with ID <i>id</i> to the location specified as
 may be expressed as a map reference string, or as a pair of map
 coordinates.  In the latter case, the pair of coordinates can 
 be passed as either two separate arguments, or as a single argument, a
-list of two coordinates.<p>
+list of two coordinates.
 
 Note that no <b>&lt;&lt;IconMoved&gt;&gt;</b> event is generated by
-this call.<p>
+this call.
 
 <defitem "icon ref" {<i>pathName</i> icon ref <i>id</i>}>
 
 Returns a map reference string representing the location of the icon
-with ID <i>id</i>.<p>
+with ID <i>id</i>.
 
 </deflist>
 
@@ -308,38 +308,38 @@ with ID <i>id</i>.<p>
 
 If <i>mode</i> is specified, sets the current interaction mode to
 <i>mode</i>; see <xref "Interaction Modes">, above.  Returns the
-current interaction mode.<p>
+current interaction mode.
 
 <defitem nbhood {<i>pathName</i> nbhood <i>subcommand</i> ?<i>args...</i>?}>
 
-This subcommand is used to create and manage icons on the map.<p>
+This subcommand is used to create and manage icons on the map.
 
 <deflist nbhood>
 
 <defitem "nbhood cget" {<i>pathName</i> nbhood cget <i>id option</i>}>
 
 Returns the value of the specified
-<i>option</i> for the neighborhood with ID <i>id</i>.<p>
+<i>option</i> for the neighborhood with ID <i>id</i>.
 
 <defitem "nbhood configure" {<i>pathName</i> nbhood configure <i>id option value</i> ?<i>option value...</i>?}>
 
 Sets the value of one or more of the
-neighborhood options.<p>
+neighborhood options.
 
 <defitem "nbhood create" {<i>pathName</i> nbhood create <i>refpoint polygon</i> ?<i>option value...</i>?}>
 
 Creates a neighborhood with the specified <i>refpoint</i>, a map
-location, and <i>polygon</i>, a list of map locations.<p>
+location, and <i>polygon</i>, a list of map locations.
 
 The <i>refpoint</i> may be expressed as a map reference string, or as a
 pair of map coordinates, as either one argument or two separate
 arguments.  The <i>polygon</i> may be expressed as a list of map
 reference strings or map coordinates, and as one argument or as
-multiple arguments.<p>
+multiple arguments.
 
-Returns the new nbhood's ID.<p>
+Returns the new nbhood's ID.
 
-The neighborhood may be created with the following options:<p>
+The neighborhood may be created with the following options:
 
 <deflist options>
 
@@ -347,36 +347,36 @@ The neighborhood may be created with the following options:<p>
 
 Sets the fill color for the neighborhood's polygon.  If "", the
 default, the polygon is unfilled, allowing the underlying map to be
-seen.<p>
+seen.
 
 <defopt {-pointcolor <i>color</i>}>
 
-Sets the color of the reference point icon.  Defaults to "black".<p>
+Sets the color of the reference point icon.  Defaults to "black".
 
 <defopt {-linewidth <i>width</i>}>
 
-Sets the line width of the neighborhood's polygon in pixels. Defaults to 1.<p>
+Sets the line width of the neighborhood's polygon in pixels. Defaults to 1.
 
 <defopt {-polycolor <i>color</i>}>
 
-Sets the line color of the neighborhood's polygon. Defaults to "black".<p>
+Sets the line color of the neighborhood's polygon. Defaults to "black".
 
 </deflist options>
 
 <defitem "nbhood delete" {<i>pathName</i> nbhood delete <i>id</i>}>
 
-Deletes the specified neighborhood from the canvas.<p>
+Deletes the specified neighborhood from the canvas.
 
 <defitem "nbhood ids" {<i>pathName</i> nbhood ids}>
 
-Returns a list of the neighborhood IDs.<p>
+Returns a list of the neighborhood IDs.
 
 <defitem "nbhood point" {<i>pathName</i> nbhood point <i>id</i> ?<i>point</i>?}>
 
 Returns neighborhood <i>id</i>'s reference point as a pair of map
 coordinates.  If <i>point</i> is given, the neighborhood's reference point
 is updated accordingly; it may be expressed as a
-map reference string or in map coordinates, and as one argument or two.<p>
+map reference string or in map coordinates, and as one argument or two.
 
 <defitem "nbhood polygon" {<i>pathName</i> nbhood polygon <i>id</i> ?<i>polygon</i>?}>
 
@@ -384,18 +384,18 @@ Returns neighborhood <i>id</i>'s polygon as a list of map
 coordinates.  If <i>polygon</i> is given, the neighborhood's polygon
 is updated accordingly; it may be expressed as a
 list of map reference strings or map coordinates, and as one argument or as
-multiple arguments.<p>
+multiple arguments.
 
 </deflist nbhood>
 
 <defitem refresh {<i>pathName</i> refresh}>
 
-Completely redraws the display at the current zoom level.<p>
+Completely redraws the display at the current zoom level.
 
 <defitem region {<i>pathName</i> region ?<i>region</i>?}>
 
 Sets/queries the mapcanvas(n)'s visible region, which may be
-<b>normal</b> or <b>extended</b>.  See <xref "Visible Region">, above.<p>
+<b>normal</b> or <b>extended</b>.  See <xref "Visible Region">, above.
 
 <defitem see {<i>pathName</i> see <i>mappoint</i>}>
 
@@ -403,73 +403,73 @@ Scrolls the map so that the specified location is as close to the
 center as possible.  The <i>mappoint</i> may be expressed as a map
 reference string, or as a pair of map coordinates.  In the latter
 case, the pair of coordinates can be passed as either two separate
-arguments, or as a single argument, a list of two coordinates.<p>
+arguments, or as a single argument, a list of two coordinates.
 
 <defitem zoom {<i>pathName</i> zoom ?<i>factor</i>?}>
 
 Called with no argument, queries the current zoom factor.  Otherwise,
 the <i>factor</i> must be a valid zoom factor, an integer percentage
 from the list returned by <iref zoomfactors>.  For example,
-100 indicates a 100% zoom, i.e., full-size.<p>
+100 indicates a 100% zoom, i.e., full-size.
 
 If the zoom <i>factor</i> is changed, mapcanvas(n) scales the
-<code>-map</code> and caches and displays the result.<p>
+<code>-map</code> and caches and displays the result.
 
 <defitem zoomfactors {<i>pathName</i> zoomfactors}>
 
-Returns the list of valid zoom factors for use with <iref zoom>.<p>
+Returns the list of valid zoom factors for use with <iref zoom>.
 
 <defitem c2m {<i>pathName</i> c2m <i>cx cy</i>}>
 
 Given a canvas coordinate pair <i>cx</i> and <i>cy</i>, returns a map
-coordinate pair as a list of two coordinates <i>mx</i> and <i>my</i>.<p>
+coordinate pair as a list of two coordinates <i>mx</i> and <i>my</i>.
 
 <defitem c2ref {<i>pathName</i> c2ref <i>cx cy</i>}>
 
 Given a canvas coordinate pair <i>cx</i> and <i>cy</i>, returns a map
-reference string.<p>
+reference string.
 
 <defitem m2c {<i>pathName</i> m2c <i>mx my</i>}>
 
 Given a map coordinate pair <i>mx</i> and <i>my</i>, returns a canvas
-coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.<p>
+coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.
 
 <defitem m2ref {<i>pathName</i> m2ref <i>mx my</i>}>
 
 Given a map coordinate pair <i>mx</i> and <i>my</i>, returns a
-map reference string.<p>
+map reference string.
 
 <defitem ref2c {<i>pathName</i> ref2c <i>ref</i>}>
 
 Given a map reference string, returns a canvas
-coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.<p>
+coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.
 
 <defitem ref2m {<i>pathName</i> ref2m <i>ref</i>}>
 
 Given a map reference string, returns a map
 coordinate pair as a list of two coordinates <i>mx</i> and
-<i>my</i>.<p>
+<i>my</i>.
 
 <defitem w2c {<i>pathName</i> w2c <i>wx wy</i>}>
 
 Given a windows coordinate pair <i>wx</i> and <i>wy</i>, returns a canvas
-coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.<p>
+coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.
 
 <defitem w2m {<i>pathName</i> w2m <i>wx wy</i>}>
 
 Given a window coordinate pair <i>wx</i> and <i>wy</i>, returns a map
-coordinate pair as a list of two coordinates <i>mx</i> and <i>my</i>.<p>
+coordinate pair as a list of two coordinates <i>mx</i> and <i>my</i>.
 
 <defitem w2ref {<i>pathName</i> w2ref <i>wx wy</i>}>
 
 Given a window coordinate pair <i>wx</i> and <i>wy</i>, returns a map
-reference string.<p>
+reference string.
 
 </deflist instance>
 
 <section EVENTS>
 
-The mapcanvas(n) defines the following virtual events.<p>
+The mapcanvas(n) defines the following virtual events.
 
 <deflist virtual>
 
@@ -477,37 +477,37 @@ The mapcanvas(n) defines the following virtual events.<p>
 
 Sent when the user clicks button-1 on an icon in <b>browse</b> mode.
 The <b>%x</b> and <b>%y</b> conversions are the window coordinates of
-the event, as usual, and <b>%d</b> is the ID of the icon.<p>
+the event, as usual, and <b>%d</b> is the ID of the icon.
 
 <defitem Icon-3 {&lt;&lt;Icon-3&gt;&gt;}>
 
 Sent when the user clicks button-3 on an icon in <b>browse</b> mode.
 The <b>%x</b>, <b>%y</b>, <b>%X</b>, and <b>%Y</b> conversions are
-defined as usual, and <b>%d</b> is the ID of the icon.<p>
+defined as usual, and <b>%d</b> is the ID of the icon.
 
 <defitem IconMoved {&lt;&lt;IconMoved&gt;&gt;}>
 
 Sent when the user drags an icon to a new location in <b>browse</b> mode.
 The <b>%x</b> and <b>%y</b> conversions are the window coordinates of
-the event, as usual, and <b>%d</b> is the ID of the icon.<p>
+the event, as usual, and <b>%d</b> is the ID of the icon.
 
 <defitem Nbhood-1 {&lt;&lt;Nbhood-1&gt;&gt;}>
 
 Sent when the user clicks button-1 on a neighborhood in <b>browse</b> mode.
 The <b>%x</b>, <b>%y</b>, <b>%X</b>, and <b>%Y</b> conversions are
-defined as usual, and <b>%d</b> is the ID of the neighborhood.<p>
+defined as usual, and <b>%d</b> is the ID of the neighborhood.
 
 <defitem Nbhood-3 {&lt;&lt;Nbhood-3&gt;&gt;}>
 
 Sent when the user clicks button-3 on a neighborhood in <b>browse</b> mode.
 The <b>%x</b>, <b>%y</b>, <b>%X</b>, and <b>%Y</b> conversions are
-defined as usual, and <b>%d</b> is the ID of the neighborhood.<p>
+defined as usual, and <b>%d</b> is the ID of the neighborhood.
 
 <defitem Point-1 {&lt;&lt;Point-1&gt;&gt;}>
 
 Sent when the user clicks button-1 <b>point</b> mode.
 The <b>%x</b> and <b>%y</b> conversions are the window coordinates of
-the event, as usual, and <b>%d</b> is the corresponding map reference.<p>
+the event, as usual, and <b>%d</b> is the corresponding map reference.
 
 <defitem PolyComplete {&lt;&lt;PolyComplete&gt;&gt;}>
 
@@ -515,13 +515,13 @@ Sent when the user has completed a new polygon in <b>poly</b> mode.
 The <b>%d</b> conversion is replaced with the list of the new
 polygon's vertices as map reference strings.  The mapcanvas(n) does
 not automatically save the new polygon; it is up to the application to
-do that, e.g., by creating a neighborhood.<p>
+do that, e.g., by creating a neighborhood.
 
 </deflist virtual>
 
 <section BINDINGS>
 
-TBD.<p>
+TBD.
 
 <section ENVIRONMENT>
 
@@ -533,7 +533,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

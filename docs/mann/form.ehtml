@@ -13,55 +13,55 @@ namespace import ::marsgui::*
 
 The form(n) widget is a <xref tk:ttk_frame(n)> configured to display
 data entry forms: collections of labels, text strings, and
-<xref field(i)> data entry widgets.<p>
+<xref field(i)> data entry widgets.
 
 The first step in using the form(n) widget is to <iref form register> all
 application specific <xref field(i)> widget types.  (The
 <xref field(i)> widgets provided by <xref marsgui(n)> are
-registered automatically.<p>
+registered automatically.
 
 Next, the application using the <iref field create> method to
 create fields in the form.  Each field has a symbolic name, a
 text label, and a registered field type; the caller may also pass
-widget options directly to the field.<p>
+widget options directly to the field.
 
 Next, the application asks the form(n) to <iref layout> the fields.
 By default, labels and fields will be layed out in two parallel
 columns; however, the caller can also specify a
 <xref "LAYOUT SPECIFICATION" "layout spec"> for more
-complicated layouts.<p>
+complicated layouts.
 
 The fields in the form(n) are referenced by their symbolic names, not
 by their window names; and they are usually managed as a group.  For
 example, the form(n) has a value of its own, a dictionary of the field
 values keyed on the symbolic names, and sets of fields can be marked
-as being contextual, disabled or invalid.<p>
+as being contextual, disabled or invalid.
 
 <subsection "Field Sets">
 
 Every field in the form can be in any or all of three sets:
 <iref invalid>, <iref disabled>, and <iref context>.  How a
-field is displayed and how it behaves depend on the sets it is in.<p>
+field is displayed and how it behaves depend on the sets it is in.
 
 A field not in any of the sets behaves normally: the user can edit
-the value.<p>
+the value.
 
 When a field's value is known to be invalid, the client can move the
 field to the <iref invalid> set.  The field is still editable, but
-the field's label turns red to indicate that there's a problem.<p>
+the field's label turns red to indicate that there's a problem.
 
 A field can be <iref disabled> by the application.  A disabled field
 cannot be edited by the user, and its label is grayed out.  The field
-widget's <code>-state</code> is set to <b>disabled</b>.<p>
+widget's <code>-state</code> is set to <b>disabled</b>.
 
 The application can also mark a field as a <iref context> field.
 A context field cannot be edited, but the field's label remains black.
 This set is used for fields that display contextual data for other
-fields in the form: data that is for the user to see but not to edit.<p>
+fields in the form: data that is for the user to see but not to edit.
 
 <subsection "Standard Field Types">
 
-The following field types are defined as part of <xref marsgui(n)>:<p>
+The following field types are defined as part of <xref marsgui(n)>:
 
 <table>
 <tr>
@@ -116,17 +116,17 @@ The following field types are defined as part of <xref marsgui(n)>:<p>
 
 By default, the form is layed out in two parallel columns.  The left
 column contains a field label and the right column the field
-itself.<p>
+itself.
 
 For more complex layouts, the caller must specify a layout
 specification, or "layout spec".  The spec is a Tcl-formatted script
 that contains commands indicating how to lay out each label and field.
 (The <xref tk:grid(n)> geometry manager is used under the
-covers.)<p>
+covers.)
 
 <subsection "Layout Commands">
 
-The layout commands are as follows:<p>
+The layout commands are as follows:
 
 <deflist layout>
 
@@ -135,32 +135,32 @@ The layout commands are as follows:<p>
 Places the named <i>field</i> at row <i>r</i>, column <i>c</i>.
 The <i>options</i>, if given, are passed along to the
 <xref tk:grid(n)> command.  For example, one can make the field
-span two columns using "<code>-columnspan 2</code>".<p>
+span two columns using "<code>-columnspan 2</code>".
 
 <defitem "at label" {at <i>r,c</i> label <i>field</i> ?<i>options...</i>?}>
 
 Places the named <i>field</i>'s label at row <i>r</i>, column
 <i>c</i>, applying any <i>options</i> to the <xref tk:grid(n)>
-command.<p>
+command.
 
 <defitem "at labelfield" {at <i>r,c</i> labelfield <i>field</i> ?<i>options...</i>?}>
 
 Places the named <i>field</i>'s label at row <i>r</i>, column
 <i>c</i>, and the field itself at row <i>r</i>, column <i>c</i>+1,
 just as though <iref at label> and <iref at field> were called
-individually.  The <i>options</i> are applyed to the field.<p>
+individually.  The <i>options</i> are applyed to the field.
 
 <defitem "at text" {at <i>r,c</i> text <i>string</i> ?<i>options...</i>?}>
 
 Places the specified text <i>string</i> at row <i>r</i>, column
-<i>c</i>, and applies the <i>options</i> if any.<p>
+<i>c</i>, and applies the <i>options</i> if any.
 
 <defitem "at labelframe" {at <i>r,c</i> labelframe <i>label spec</i> ?<i>options...</i>?}>
 
 Places a <xref tk:ttk_labelframe(n)> widget at row <i>r</i>, column
 <i>c</i>.  The frame is labeled with the given <i>label</i>, and
 contains the elements indicated by the <i>spec</i>.  The
-<i>options</i> are applied when gridding the frame into its parent.<p>
+<i>options</i> are applied when gridding the frame into its parent.
 
 </deflist>
 
@@ -169,7 +169,7 @@ contains the elements indicated by the <i>spec</i>.  The
 
 Rows and columns are indexed starting at 0, as is usual for the
 <xref tk:grid(n)> geometry manager, and are specified in the layout
-commands as integers.  Thus, to layout a field at 0,0, enter:<p>
+commands as integers.  Thus, to layout a field at 0,0, enter:
 
 <pre>
     at 0,0 field myfield
@@ -178,7 +178,7 @@ commands as integers.  Thus, to layout a field at 0,0, enter:<p>
 In addition, the codes "<b>=</b>" and "<b>+</b>" can be used, where
 "<b>=</b>" means "use the same index as before", and "<b>+</b>" means
 "increment the previous index by one."  For example, the standard
-layout of two parallel columns can be specified as follows:<p>
+layout of two parallel columns can be specified as follows:
 
 <pre>
     at 0,0 labelfield <i>field1</i>
@@ -191,7 +191,7 @@ layout of two parallel columns can be specified as follows:<p>
 
 Note that the <iref at labelfield> command increments the column by
 one automatically; thus, if you wanted two sets of parallel columns
-you could do this:<p>
+you could do this:
 
 <pre>
     at 0,0 labelfield <i>field1</i>;  at =,+ labelfield <i>field2</i>
@@ -203,7 +203,7 @@ you could do this:<p>
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -211,7 +211,7 @@ This module defines the following commands.<p>
 
 Creates a new <iref form> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports the following
-options:<p>
+options:
 
 <deflist options>
 
@@ -220,13 +220,13 @@ options:<p>
 Specifies a <i>command</i> to be called whenever a field's value
 changes, for any reason whatsoever (including explicit calls
 to <iref set>).  A list of the names of the fields whose values
-actually changed is appended to the <i>command</i> as an argument.<p>
+actually changed is appended to the <i>command</i> as an argument.
 
 <defopt {-currentcmd <i>command</i>}>
 
 Specifies a <i>command</i> to be called whenever a new field receives the
 focus.  The name of the field receiving the focus is appended to the
-<i>command</i> as an argument.<p>
+<i>command</i> as an argument.
 
 <defopt {-state <i>state</i>}>
 
@@ -235,7 +235,7 @@ normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
 states are <b>normal</b> and <b>disabled</b>.  If the state is
 <b>disabled</b> then all fields in the form(n) are disabled; if the
 state <b>normal</b> then fields are enabled or disabled
-individually.<p>
+individually.
 
 </deflist options>
 
@@ -247,27 +247,27 @@ the <i>ftype</i> for the <xref enumfield(n)> widget is <b>enum</b>.
 The <i>widget</i> is the fully-qualified name of the widget type,
 e.g., <b>::marsgui::enumfield</b>.  Any number of widget
 <i>options</i> and values can be specified as well; this allows one
-<i>widget</i> type to provide two or more distinct field types.<p>
+<i>widget</i> type to provide two or more distinct field types.
 
 </deflist commands>
 
 <section "INSTANCE COMMAND">
 
-form(n) widgets have the following subcommands:<p>
+form(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem clear {<i>pathName</i> clear}>
 
-Deletes all fields from the form(n).<p>
+Deletes all fields from the form(n).
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem context {<i>pathName</i> context <i>fields...</i>}>
 
@@ -276,13 +276,13 @@ as context fields (i.e., <code>-state</code> is <b>disabled</b>, but
 the field label is not grayed out); all others should be marked as
 normal, non-context fields.
 The list of fields can be specified as a single argument, or as
-individual field names on the command line.<p>
+individual field names on the command line.
 
 If the first element in the list of <i>fields</i> is "<b>+</b>", then
 the named fields are marked in addition to any that were
 previously marked.  If the first element is "<b>-</b>", then the
 named fields will no longer be marked, leaving any other marked
-fields alone.<p>
+fields alone.
 
 <defitem disabled {<i>pathName</i> disabled <i>fields...</i>}>
 
@@ -290,20 +290,20 @@ Tells the form(n) that the named <i>fields</i> should be disabled
 (i.e., <code>-state</code> is <b>disabled</b>); all others should be
 enabled (i.e., <code>-state</code> is <b>normal</b>).
 The list of fields can be specified as a single argument, or as
-individual field names on the command line.<p>
+individual field names on the command line.
 
 If the first element in the list of <i>fields</i> is "<b>+</b>", then
 the named fields are disabled in addition to any that were
 previously disabled.  If the first element is "<b>-</b>", then the
 named fields will no longer be disabled, leaving any other disabled
-fields alone.<p>
+fields alone.
 
-When a field is disabled, its label appears grayed out.<p>
+When a field is disabled, its label appears grayed out.
 
 <defitem field {<i>pathName</i> field <i>subcommand</i> ?<i>args...</i>?}>
 
 The subcommands of the <iref field> method are used to deal with
-individual fields in the form(n).<p>
+individual fields in the form(n).
 
 <deflist field>
 
@@ -315,42 +315,42 @@ and text label <i>label</i>, and is of registered field type
 when it is registered, plus any additional <i>options</i> specified
 here.  Note that the caller should not set the field's
 <code>-changecmd</code> or <code>-state</code> options, as these are
-managed by the form(n) itself.<p>
+managed by the form(n) itself.
 
 Once all fields are created, the <iref layout> method is used to
-make them appear in the form(n).<p>
+make them appear in the form(n).
 
 <defitem "field names" {<i>pathName</i> field names}>
 
-Returns a list of the symbolic names of the fields in the order of creation.<p>
+Returns a list of the symbolic names of the fields in the order of creation.
 
 <defitem "field cget" {<i>pathName</i> field cget <i>field option</i>}>
 
-Returns the value of named <i>field</i> widget's <i>option</i>.<p>
+Returns the value of named <i>field</i> widget's <i>option</i>.
 
 <defitem "field configure" {<i>pathName</i> field configure <i>field option...</i>}>
 
 Configures the specified option values for the <i>field</i> widget.
 As noted above, the caller should not set the field's
 <code>-changecmd</code> or <code>-state</code> options, as these are
-managed by the form(n) itself.<p>
+managed by the form(n) itself.
 
 <defitem "field ftype" {<i>pathName</i> field ftype <i>field</i>}>
 
-Returns the named <i>field</i>'s field type.<p>
+Returns the named <i>field</i>'s field type.
 
 <defitem "field current" {<i>pathName</i> field current}>
 
-Returns the name of the field that has the input focus.<p>
+Returns the name of the field that has the input focus.
 
 <defitem "field win" {<i>pathName</i> field win <i>field</i>}>
 
 Returns the window name of the <i>field</i>'s actual widget. This
-command should be used sparingly.<p>
+command should be used sparingly.
 
 <defitem "field get" {<i>pathName</i> field get <i>field</i>}>
 
-Returns the value currently displayed in the named <i>field</i>.<p>
+Returns the value currently displayed in the named <i>field</i>.
 
 </deflist field>
 
@@ -359,7 +359,7 @@ Returns the value currently displayed in the named <i>field</i>.<p>
 
 Returns the form's current value, a dictionary of symbolic field
 names and field values. The dictionary will contain the fields in the
-order in which they were created.<p>
+order in which they were created.
 
 <defitem invalid {<i>pathName</i> invalid <i>fields...</i>}>
 
@@ -367,18 +367,18 @@ Tells the form(n) that the named <i>fields</i> contain invalid
 values; the remainder contain valid values.  Marking a field
 invalid causes the label associated with the field to turn
 red.  The list of fields can be specified as a single argument, or as
-individual field names on the command line.<p>
+individual field names on the command line.
 
 If the first element in the list of <i>fields</i> is "<b>+</b>", then
 the named fields are marked invalid in addition to any that were
 previously marked invalid.  If the first element is "<b>-</b>", then the
 named fields will no longer be marked invalid, leaving any other invalid
-fields alone.<p>
+fields alone.
 
 <defitem layout {<i>pathName</i> layout ?<i>spec</i>?}>
 
 Lays out out the currently defined fields so that they are visible.
-See <xref "LAYOUT SPECIFICATION"> for details on layout specs.<p>
+See <xref "LAYOUT SPECIFICATION"> for details on layout specs.
 
 
 <defitem set {<i>pathName</i> set <i>dict</i>}>
@@ -390,7 +390,7 @@ the <code>-changecmd</code> if at least one field's value has actually
 changed, i.e., successive calls to <iref set> with the same
 <i>dict</i> will result in at most one call to the
 <code>-changecmd</code>.  It isn't necessary for the <i>dict</i> to
-contain an entry for every field.<p>
+contain an entry for every field.
 
 </deflist instance>
 
@@ -405,7 +405,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

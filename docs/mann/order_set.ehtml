@@ -13,18 +13,18 @@ package require marsutil <version>
 The <tt ::marsutil::order_set> class is part of the Mars Order Processing
 framework, which includes <xref order(n)>, <xref order_set(n)>,
 <xref order_flunky(n)>, and <xref order_dialog(n)>.  See <xref order(n)> 
-for an overview of the framework.<p>
+for an overview of the framework.
 
 An order_set(n) instance is used to define a collection of related order
 classes, which will all be subclasses of <xref order(n)> or an equivalent.
 As part of defining the order classes, order_set(n) ensures that each
 class defines the required <xref oohelpers(n) meta>data and does some
-other load-time checks.<p>
+other load-time checks.
 
 
 <section COMMANDS>
 
-The following commands create instances of order_set(n):<p>
+The following commands create instances of order_set(n):
 
 <deflist>
 
@@ -33,7 +33,7 @@ The following commands create instances of order_set(n):<p>
 Creates a new instance of <tt ::marsutil::order_set>
 called <i name>.  By default, orders defined using this class will have 
 <tt ::marsutil::order> as their superclass; if <i baseClass_> is given,
-it will be used instead.<p>
+it will be used instead.
 
 It is common for to <i baseClass_> to define an instance variable or two
 that will be used by most or all orders.  Normally, each order class would
@@ -41,19 +41,19 @@ have to declare this variable explicitly, which is tiresome.  If
 <i autoVars_> is given, it should be a list of instance variable names;
 each name will be automatically declared as a variable for each defined
 order class, thus bringing the variable into scope in all of the order
-class's methods.<p>
+class's methods.
 
 <defitem "order_set new" {::marsutil::order_set new ?<i baseClass>?}>
 
 Creates a new instance of <tt ::marsutil::order> with an arbitrary
 name.  By default, orders defined using this class will have 
 <tt ::marsutil::order> as their superclass; if <i baseClass> is given,
-it will be used instead.<p>
+it will be used instead.
 </deflist>
 
 <section "INSTANCE COMMAND">
 
-Each instance of order_set(n) has the following subcommands.<p>
+Each instance of order_set(n) has the following subcommands.
 
 <deflist instance>
 
@@ -62,77 +62,77 @@ Each instance of order_set(n) has the following subcommands.<p>
 Defines a new order class for an order called <i order>.  The new class's
 fully qualified name will be "<i obj>::<i order>".  The <i body> is an 
 <tt oo::define> script for the new class; it will define the class's 
-<xref oohelpers(n) meta>data and methods.<p>
+<xref oohelpers(n) meta>data and methods.
 
 The new class will have the superclass specified when the order set was
-created.<p>
+created.
 
-In addition to defining the new class, <iref define> does the following:<p>
+In addition to defining the new class, <iref define> does the following:
 
 <ul>
 <li> Defines <xref oohelpers(n) meta> <tt name> to the be the unqualified
-    <i order> name.<p>
+    <i order> name.
 
-<li> Defaults <xref oohelpers(n) meta> <tt title> to the order name.<p>
+<li> Defaults <xref oohelpers(n) meta> <tt title> to the order name.
 
 <li> Defaults <xref oohelpers(n) meta> <tt sendstates> to the 
-    empty list.<p>
+    empty list.
 
-<li> Defaults <xref oohelpers(n) meta> <tt form> to the empty string.<p>
+<li> Defaults <xref oohelpers(n) meta> <tt form> to the empty string.
 
 <li> Defaults <xref oohelpers(n) meta> <tt parmtags> to the empty 
-     dictionary.<p>
+     dictionary.
 
-<li> Defaults <xref oohelpers(n) meta> <tt monitor> to "on".<p>
+<li> Defaults <xref oohelpers(n) meta> <tt monitor> to "on".
 
 <li> Declares the <xref order(n)> instance variable <tt parms()> 
     explicitly, so that it can be used without declaration in the 
-    class's methods.<p>
+    class's methods.
 
 <li> If the class defines a <tt form>, creates the related 
     <xref mars:dynaform(n)> and checks it against the order's parameter
-    list.<p>
+    list.
 
-<li> Remembers the order class for later introspection.<p>
+<li> Remembers the order class for later introspection.
 </ul>
 
 <defitem reset {<i obj> reset}>
 
 Resets the object, deleting all defined classes.  Note that created
 dynaforms are not destroyed, as <xref mars:dynaform(n)> doesn't support
-that.<p>
+that.
 
 <defitem names {<i obj> names}>
 
-Returns a list of the unqualified names of the defined orders.<p>
+Returns a list of the unqualified names of the defined orders.
 
 <defitem exists {<i obj> exists <i order>}>
 
 Returns 1 if there's an order called <i order> in the set, and 0 
-otherwise.<p>
+otherwise.
 
 <defitem validate {<i obj> validate <i order>}>
 
 Validates the <i order> name, converting it upper case and returning it,
-or throwing <b INVALID> if the order isn't in the set.<p>
+or throwing <b INVALID> if the order isn't in the set.
 
 <defitem class {<i obj> class <i order>}>
 
-Returns the order's full class name.<p>
+Returns the order's full class name.
 
 <defitem parms {<i obj> parms <i order>}>
 
-Returns a list of the names of the order's parameters.<p>
+Returns a list of the names of the order's parameters.
 
 <defitem title {<i obj> title <i order>}>
 
-Returns the order's title.<p>
+Returns the order's title.
 
 </deflist instance>
 
 <section "SEE ALSO">
 
-<xref order_flunky(n)>, <xref order(n)>, <xref order_dialog(n)>.<p>
+<xref order_flunky(n)>, <xref order(n)>, <xref order_dialog(n)>.
 
 <section ENVIRONMENT>
 
@@ -140,7 +140,7 @@ order(n) requires Tcl 8.6 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

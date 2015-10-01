@@ -13,18 +13,18 @@ namespace import ::marsgui::*
 
 The dispfield(n) widget is a <xref tk:ttk_entry(n)> configured as a
 readonly <xref field(i)> data entry field.  It is used for
-displaying non-editable table values in order dialogs.<p>
+displaying non-editable table values in order dialogs.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
 <defitem dispfield {dispfield <i>pathName</i> ?<i>options...</i>?}>
 
 Creates a new <iref dispfield> widget named <i>pathName</i>, and
-returns <i>pathName</i>.  The widget supports the following options:<p>
+returns <i>pathName</i>.  The widget supports the following options:
 
 <deflist options>
 
@@ -33,16 +33,16 @@ returns <i>pathName</i>.  The widget supports the following options:<p>
 From <xref field(i)>.  Specifies a <i>command</i> to be called
 whenever the field's value changes, for any reason whatsoever
 (including explicit calls to <iref set>.  The new value is appended
-to the <i>command</i> as an argument.<p>
+to the <i>command</i> as an argument.
 
 <b>Note:</b> since dispfield(n) is output-only, the
-<code>-changecmd</code> is never actually called.<p>
+<code>-changecmd</code> is never actually called.
 
 <defopt {-state <i>state</i>}>
 
 From <xref field(i)>.  dispfield(i) widgets have states, just as the
 normal <code>tk::</code> and <code>ttk::</code> widgets do.  The only valid
-state is <b>normal</b>; however, the value is ignored in any event.<p>
+state is <b>normal</b>; however, the value is ignored in any event.
 
 </deflist options>
 
@@ -50,28 +50,28 @@ state is <b>normal</b>; however, the value is ignored in any event.<p>
 
 <section "INSTANCE COMMAND">
 
-dispfield(n) widgets have the following subcommands:<p>
+dispfield(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 From <xref field(i)>.  Sets the value of one or more of the object's
-options.<p>
+options.
 
 <defitem get {<i>pathName</i> get}>
 
-From <xref field(i)>.  Returns the field's current value.<p>
+From <xref field(i)>.  Returns the field's current value.
 
 <defitem set {<i>pathName</i> set <i>value</i>}>
 
 From <xref field(i)>.  Explicitly sets the field's <i>value</i>.
 Since dispfield(n) is output-only, the <code>-changecmd</code> is
-<b>not</b> called.<p>
+<b>not</b> called.
 
 </deflist instance>
 
@@ -86,7 +86,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

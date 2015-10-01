@@ -17,7 +17,7 @@ individual points.  The collected figures are referred to as the
 items in the set.  Items may be tagged with arbitrary tag strings,
 and may be retrieved by name, tag, or type.  The geoset(n) will also
 compute bounding boxes, and determine which polygon (if any) contains an
-arbitrary point.<p>
+arbitrary point.
 
 <subsection "Stacking Order">
 
@@ -25,7 +25,7 @@ The items in the geoset(n) are related according to their stacking
 order from lowest to highest, which initially is identical to the
 order in which they were created: items created later stack on top of
 items created earlier.  (At present, it is not possible to change the
-stacking order.)<p>
+stacking order.)
 
 Whenever a list of items is retrieved from the geoset(n), the items
 will be returned in stacking order.  This has two effects.  First, if
@@ -34,15 +34,15 @@ with the later items on top of the earlier ones.  Second, the
 <iref find> method returns the topmost polygon which contains an
 arbitrary point.  In short, if an item contains a point when it is
 displayed on a canvas, then it will be the item returned by
-<iref find>.<p>
+<iref find>.
 
 <subsection "Tags">
 
 Items in a geoset(n) may be tagged with any number of user-defined
 tags, much like items in a Tk canvas widget.  A tag is an arbitrary
-string used to identify a set of one or more items for later retrieval.<p>
+string used to identify a set of one or more items for later retrieval.
 
-geoset(n) defines the following special tags:<p>
+geoset(n) defines the following special tags:
 
 <ul>
   <li> <b>line</b>: All polyline items
@@ -59,13 +59,13 @@ geoset(n) defines the following special tags:<p>
 Creates a new geoset object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref geoset> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
 </deflist commands>
 
 <section "INSTANCE COMMAND">
 
-Each instance of the <iref geoset> object has the following subcommands:<p>
+Each instance of the <iref geoset> object has the following subcommands:
 
 <deflist instance>
 
@@ -76,22 +76,22 @@ tag.  If it is an item ID, this method returns the item's bounding
 box; otherwise, if it is a known tag, it returns the 
 the bounding box of all items tagged with that tag.  If no
 <i>tagOrId</i> is specified, it returns the bounding box of
-all items in the geoset(n).<p>
+all items in the geoset(n).
 
 See <xref geometry(n) bbox> in <xref geometry(n)> for more on
-bounding boxes.<p>
+bounding boxes.
 
 <defitem clear {$gs clear}>
 
-Deletes all items from the geoset(n).<p>
+Deletes all items from the geoset(n).
 
 <defitem coords {$gs coords <i>id</i>}>
 
-Returns the list of coordinates associated with item <i>id</i>.<p>
+Returns the list of coordinates associated with item <i>id</i>.
 
 <defitem create {$gs create <i>itemType</i> <i>args...</i>}>
 
-Creates an item of the specified <i>itemType</i>:<p>
+Creates an item of the specified <i>itemType</i>:
 
 <deflist create>
 
@@ -99,18 +99,18 @@ Creates an item of the specified <i>itemType</i>:<p>
 
 Creates a polyline item with the specified list of X,Y coordinates,
 <i>coords</i>.  The <i>id</i> must be a string which uniquely
-identifies the item.<p>
+identifies the item.
 
 After creation, the item will be tagged with the special tag
-<b>line</b>, as well as any other tags specified by the <i>tagList</i>.<p>
+<b>line</b>, as well as any other tags specified by the <i>tagList</i>.
 
 <defitem {create point} {$gs create point <i>id point</i> ?<i>tagList</i>?}>
 
 Creates a point item at the specified X,Y <i>point</i>.  The <i>id</i>
-must be a string which uniquely identifies the item.<p>
+must be a string which uniquely identifies the item.
 
 After creation, the item will be tagged with the special tag
-<b>point</b>, as well as any other tags specified by the <i>tagList</i>.<p>
+<b>point</b>, as well as any other tags specified by the <i>tagList</i>.
 
 <defitem {create polygon} {$gs create polygon <i>id coords</i> ?<i>tagList</i>?}>
 
@@ -118,57 +118,57 @@ Creates a polygon item with the specified X,Y coordinates.
 <i>coords</i> should be a flat list of the X,Y coordinates of each
 vertex in counter-clockwise order; the first point should not be
 repeated at the end.  <i>id</i> must be a string which uniquely
-identifies the item.<p>
+identifies the item.
 
 After creation, the item will be tagged with the special tag
-<b>polygon</b>, as well as any other tags specified by the <i>tagList</i>.<p>
+<b>polygon</b>, as well as any other tags specified by the <i>tagList</i>.
 
 </deflist create>
 
 <defitem delete {$gs delete <i>id</i>}>
 
 Deletes the item with the specified <i>id</i>.  Does nothing if there
-is no such item.<p>
+is no such item.
 
 <defitem exists {$gs exists <i>id</i>}>
 
-Returns 1 if there is an item called <i>id</i>, and 0 otherwise.<p>
+Returns 1 if there is an item called <i>id</i>, and 0 otherwise.
 
 <defitem find {$gs find <i>point</i> ?<i>tag</i>?}>
 
 Returns the ID of the first item which contains the specified point
 when searching in reverse stacking order, that is, from <b>top</b> to
-<b>bottom</b>.  Returns "" if no known item contains the point.<p>
+<b>bottom</b>.  Returns "" if no known item contains the point.
 
 If <i>tag</i> is specified, the search is limited to items tagged with
-that <i>tag</i>.<p>
+that <i>tag</i>.
 
 <b>Note:</b> at present, the search is also limited to <b>polygon</b>
-items.<p>
+items.
 
 <defitem list {$gs list ?<i>tag</i>?}>
 
 Returns a list in stacking order of the IDs of all items in the
 geoset(n). If a <i>tag</i> is specified, the list includes only those
-items tagged with that <i>tag</i>.<p>
+items tagged with that <i>tag</i>.
 
 <defitem itemtype {$gs itemtype <i>id</i>}>
 
-Returns item <i>id</i>'s type, <b>line</b>, <b>point</b>, or <b>polygon</b>.<p>
+Returns item <i>id</i>'s type, <b>line</b>, <b>point</b>, or <b>polygon</b>.
 
 <defitem tag {$gs tag <i>id tag</i>}>
 
-Tags item <i>id</i> with an additional <i>tag</i>.<p>
+Tags item <i>id</i> with an additional <i>tag</i>.
 
 <defitem tags {$gs tags <i>id</i>}>
 
-Returns a list of the tags on item <i>id</i>, in the order of creation.<p>
+Returns a list of the tags on item <i>id</i>, in the order of creation.
 
 </deflist instance>
 
 <section "SEE ALSO">
 
-<xref geometry(n)>, <xref latlong(n)>.<p>
+<xref geometry(n)>, <xref latlong(n)>.
 
 <section ENVIRONMENT>
 
@@ -179,7 +179,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

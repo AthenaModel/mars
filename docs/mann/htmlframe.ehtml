@@ -14,12 +14,12 @@ namespace import ::marsgui::*
 The htmlframe(n) widget is an <xref htmlviewer(n)> widget configured 
 for use as a layout manager.  The client creates any number of widgets
 as children of the htmlframe(n), and then specifies the layout as an
-HTML string.<p>
+HTML string.
 
 The child widgets appear in the HTML string as
 <code>&lt;input&gt;</code> elements whose <code>name</code> attribute
 is the last component of the child widget's name.  If the widgets are
-created like this, for example,<p>
+created like this, for example,
 
 <pre>
     htmlframe $hf
@@ -27,7 +27,7 @@ created like this, for example,<p>
     ...
 </pre>
 
-then the "hello" widget is layed out like this:<p>
+then the "hello" widget is layed out like this:
 
 <pre>
     &lt;input name="hello"&gt;
@@ -36,10 +36,10 @@ then the "hello" widget is layed out like this:<p>
 The size of the widget can be set explicitly in the usual way, when
 the widget is created; alternatively, the widget's width in characters
 can be set using the <code>&lt;input&gt;</code>'s <code>size</code>
-attribute.<p>
+attribute.
 
 The client may also wish to set the <code>id</code>,
-<code>class</code>, and <code>style</code> attributes.<p>
+<code>class</code>, and <code>style</code> attributes.
 
 <subsection "Dynamic Layout">
 
@@ -49,7 +49,7 @@ can be changed dynamically by using the <iref set> method to set the
 <code>class</code> or <code>style</code> of particular elements.
 Elements are identified by an ID string defined as an element
 attribute.  The widget's <iref set> and <iref get> method look
-for an <i>id</i> as follows:<p>
+for an <i>id</i> as follows:
 
 <ul>
 <li> A <code>&lt;label&gt;</code> element with <code>for="<i>id</i>"</code> 
@@ -61,9 +61,9 @@ In this regard, it is often useful to define new CSS classes using the
 <code>-styles</code> option.  For example, suppose certain element
 contains an error, and so should be rendered with red text; or suppose
 that a certain element should sometimes be hidden.  These can easily
-be handled, as follows.<p>
+be handled, as follows.
 
-First, add the relevant CSS classes:<p>
+First, add the relevant CSS classes:
 
 <pre>
     $hf configure -styles {
@@ -73,7 +73,7 @@ First, add the relevant CSS classes:<p>
 </pre>
 
 Second, write an HTML layout that includes <code>id</code> attributes
-for the elements you want to affect dynamically.<p>
+for the elements you want to affect dynamically.
 
 <pre>
     &lt;span id="element1"&gt;
@@ -83,7 +83,7 @@ for the elements you want to affect dynamically.<p>
 </pre>
 
 Then, setting the class of the <code>element1</code> element will make
-the text change color or the whole element disappear:<p>
+the text change color or the whole element disappear:
 
 <pre>
     $hf set element1 class hidden     ;# Hide it
@@ -93,7 +93,7 @@ the text change color or the whole element disappear:<p>
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -102,33 +102,33 @@ This module defines the following commands.<p>
 Creates a new <iref htmlframe> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports all of the 
 <xref htmlviewer(n)> options; however, the ones most likely to be
-of interest are the following:<p>
+of interest are the following:
 
 <deflist options>
 
 <defopt {-background <i>color</i>}>
 
 Sets the background <i>color</i> of the widget; the background
-defaults to the default GUI background color.<p>
+defaults to the default GUI background color.
 
 <defopt {-hyperlinkcmd <i>command</i>}>
 
 Specifies a <i>command</i> to be called if the user clicks on a
 hyperlink. The command will be called with one additional argument,
 the link's URL.  It is up to the client to handle the link in some
-way.<p>
+way.
 
 <defopt {-shrink <i>flag</i>}>
 
 The widget is configured with <code>-shrink</code> set to <b>yes</b>
-by default; it will be just big enough to hold its contents.<p>
+by default; it will be just big enough to hold its contents.
 
 <defopt {-styles <i>css</i>}>
 
 Specifies a CSS style sheet to add to the widget's default styles.
 This style sheet overrides the built-in defaults, and can be
 overridden by <code>&lt;style&gt;...&lt;/style&gt;</code> sheets and
-<code>style</code> attributes in the input.<p>
+<code>style</code> attributes in the input.
 
 </deflist options>
 
@@ -137,29 +137,29 @@ overridden by <code>&lt;style&gt;...&lt;/style&gt;</code> sheets and
 <section "INSTANCE COMMAND">
 
 The htmlframe(n) widget has all of the subcommands of the 
-<xref htmlviewer(n)> widget, and adds the following:<p>
+<xref htmlviewer(n)> widget, and adds the following:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's
-options.<p>
+options.
 
 <defitem layout {<i>pathName</i> layout <i>html</i>}>
 
 Lays out the children of the widget using the HTML layout.  Any 
-<code>&lt;input&gt;</code>'s without matching child widgets are ignored.<p>
+<code>&lt;input&gt;</code>'s without matching child widgets are ignored.
 
 <defitem set {<i>pathName</i> set <i>id attribute value</i>}>
 
 Sets the <i>value</i> of the named <i>attribute</i> for the first HTML
 element found with the given <i>id</i>, where the element is found
-as follows:<p>
+as follows:
 
 <ul>
 <li> Any element with <code>id="<i>id</i>"</code>
@@ -168,17 +168,17 @@ as follows:<p>
 
 If no such element is found, no change is made.
 This is convenience wrapper around <xref htmlviewer(n)>'s 
-<code>search</code> and <code>attribute</code> subcommands.<p>
+<code>search</code> and <code>attribute</code> subcommands.
 
 <defitem get {<i>pathName</i> get <i>id attribute</i>}>
 
 Gets the <i>value</i> of the named <i>attribute</i> for the HTML
 element with the given <i>id</i>, where the element is found as for
 the <iref set> command.  If no element is found, the command
-returns the empty string.<p>
+returns the empty string.
 
 This is convenience wrapper around <xref htmlviewer(n)>'s 
-<code>search</code> and <code>attribute</code> subcommands.<p>
+<code>search</code> and <code>attribute</code> subcommands.
 
 
 </deflist instance>
@@ -193,7 +193,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

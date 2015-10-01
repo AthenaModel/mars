@@ -15,7 +15,7 @@ marsutil(n) is a package of low-level infrastructure code of various
 kinds. Most commands are implemented in Tcl; some are also implemented
 in the libMarsutil.so extension, which is loaded automatically.  A
 few exist only in the extension.  The entry for commands with fast
-versions will so indicate.<p>
+versions will so indicate.
 
 <section COMMANDS>
 
@@ -24,7 +24,7 @@ versions will so indicate.<p>
 <defitem commafmt {commafmt <i>value ?options...?</i> }>
 
 Formats numbers as integers with commas inserted every three digits. This
-command has the following option:<p>
+command has the following option:
 
 <deflist options>
 
@@ -33,7 +33,7 @@ command has the following option:<p>
 Specifies the number of decimal places to be displayed. If there are fewer
 decimal places than in <i>num</i> then zeroes are padded to the end. If 
 there are more then rounding takes place. If not supplied, the default for 
-<i>num</i> is zero.<p>
+<i>num</i> is zero.
 
 </deflist>
 
@@ -44,11 +44,11 @@ Does a random draw from a discrete probability distribution given a
 vector which defines the distribution, i.e., a vector of numbers
 between 0.0 and 1.0, summing to 1.0.  Returns a number <i>n</i>
 where 0 &le; n <lb> <i>N</i>, where <i>N</i> is the length of
-<i>vec</i>.<p>
+<i>vec</i>.
 
 <defitem echo {echo <i>args</i>}>
 
-Given some arguments, echo them to stdout.<p>
+Given some arguments, echo them to stdout.
 
 <defitem gettimeofday {gettimeofday}>
 
@@ -56,7 +56,7 @@ Returns the current wall-clock time in decimal seconds as a
 double-precision floating point value.  If the binary extension is
 available, the fraction part will have microsecond resolution;
 otherwise it will always be ".0".  <b>NOTE:</b> microsecond resolution
-is now available from the "clock" command; we should begin to use it.<p>
+is now available from the "clock" command; we should begin to use it.
 
 <defitem hexquote {hexquote <i>text</i>}>
 
@@ -64,13 +64,13 @@ Returns a string in which all characters in <i>text</i> have been
 replaced with their hex escape sequences, e.g., nulls are replaced
 with "\x00".  This allows strings containing binary data to be
 printed normally.  The original string can be retrieved using
-the standard Tcl <code>subst</code> command.<p>
+the standard Tcl <code>subst</code> command.
 
 <defitem let {let <i>varname expression</i>}>
 
 Evaluates <i>expression</i> in the caller's context, and assigns the
 result to the variable named <i>varname</i>.  That is to say, the
-following two commands are equivalent:<p>
+following two commands are equivalent:
 
 <pre>
   set x [expr {$x + 1}]
@@ -78,53 +78,53 @@ following two commands are equivalent:<p>
 </pre>
 
 The <i>let</i> command adds a runtime penalty, but increases the
-clarity of the code remarkably.<p>
+clarity of the code remarkably.
 
 The binary extension includes a fast version of this command, which is
-used by preference; in this case the runtime penalty is negligible.<p>
+used by preference; in this case the runtime penalty is negligible.
 
 <defitem moneyfmt {moneyfmt <i>value</i>}>
 
 Formats numbers for display in minimal space; it is especially useful
 for outputs that can span a wide range, e.g., from pennies to
-trillions of dollars.  In particular:<p>
+trillions of dollars.  In particular:
 
 <ul>
   <li> Numbers with an absolute value less than 10,000 are formatted
        with two decimal places and a comma (if needed), e.g.,
-       "1,234.56", "99.95", "100.00".<p>
+       "1,234.56", "99.95", "100.00".
 
   <li> Numbers greater than 10,000 but less than a million are
        formatted as integers with a comma, e.g., "12,345",
-       "999,999".<p>
+       "999,999".
 
   <li> Numbers in the millions, billions, and trillions are formatted
        with three decimal places and a suffix, e.g., "1.234M",
-       "12.345B", "123.456T".<p>
+       "12.345B", "123.456T".
 
   <li> Numbers in the quadrillions and up are formatted as some large,
        uncomma'd number of trillions, e.g., "1234.567T".  We can
-       address this again if ever seriously becomes an issue.<p>
+       address this again if ever seriously becomes an issue.
 </ul>
 
 <defitem moneyscan {moneyscan <i>value</i>}>
 
 Converts numbers as formatted by <iref moneyfmt> back into standard
 real values: commas are stripped, and if the value ends in "M", "B",
-or "T" it is multiplied by the appropriate factor.<p>
+or "T" it is multiplied by the appropriate factor.
 
 <defitem moneysort {moneysort <i>a b</i>}>
 
 Compares two values <i>a</i> and <i>b</i> formatted by <iref moneyfmt>
 and returns -1 if <i>a</i> <lb> <i>b</i>, 0 if <i>a</i> == <i>b</i>,
-and +1 if <i>a</i> <rb> <i>b</i>.<p>
+and +1 if <i>a</i> <rb> <i>b</i>.
 
 <defitem optval {optval <i>varname option</i> ?<i>defvalue</i>?}>
 
 Extracts an <i>option</i> and its value from a list stored in a
 variable called <i>varname</i>, returning the value.  If the
 <i>option</i> is not found in the list, returns <i>defvalue</i>, or
-the empty string if <i>defvalue</i> is not specified.<p>
+the empty string if <i>defvalue</i> is not specified.
 
 <defitem percent {percent <i>frac</i>}>
 
@@ -132,12 +132,12 @@ Displays the fraction as a percentage.  If the fraction
 is at least 0.005, displays it as an integer percentage, e.g.,
 1%, 10%, 25%.  If the fraction is <lb>= 0.005 but greater than
 0.0, displays it as "~0%".
-<p>
+
 
 <defitem pickfrom {pickfrom <i>list</i>}>
 
 Chooses an item randomly from the list, and returns it.  All
-choices are equally likely.<p>
+choices are equally likely.
 
 <defitem poisson {poisson <i>rate</i>}>
 
@@ -145,7 +145,7 @@ Does a random draw from a Poisson distribution, returning a random number
 of events seen in a unit of time, where <i>rate</i> is the expected
 number of events in a unit of time.  Thus, the following command
 samples the number of events during a particular minute of time given
-a rate in events/day:<p>
+a rate in events/day:
 
 <pre>
    set num [poisson [expr {$eventsPerDay / 1440.0}]]
@@ -158,17 +158,17 @@ valid value of validation type <i>vtype</i>.  If the variable's value
 is empty, or if it isn't valid, the variable's value is set to the
 default value <i>defval</i>.  Otherwise, the variable's value is set
 to the canonicalized value returned by the validation type's 
-<code>validate</code> method.<p>
+<code>validate</code> method.
 
 This command is useful in contexts where input errors must be
-silently tolerated (i.e., in URL processing).<p>
+silently tolerated (i.e., in URL processing).
 
 <defitem roundrange {roundrange <i>min max</i>}>
 
 Given a range of numbers (<i>min, max</i>), rounds <i>min</i> down and
 <i>max</i> up by a power of ten appropriate for the size of the
 interval.  This command is useful when generating min and max bounds
-for a data plot based on the data to be plotted.<p>
+for a data plot based on the data to be plotted.
 
 <defitem wildToRegexp {wildToRegexp <i>pattern</i>}>
 
@@ -186,50 +186,50 @@ for use in input validation; most of these are based on the
 Snit type-validation types (e.g., snit::integer).  Each
 type has a <b>validate</b> method which throws an error if
 the value is not of the desired type.  Where appropriate,
-the Snit base type is given.<p>
+the Snit base type is given.
 
 
 <deflist>
 
 <defitem "count" {count validate <i>value</i>}>
 
-A count is a non-negative integer.  (snit::integer)<p>
+A count is a non-negative integer.  (snit::integer)
 
 <defitem hexcolor {hexcolor validate <i>value</i>}>
 
 Validates the <i>value</i> as an acceptable Tk color in 24-bit or 48-bit
 hex notation, and returns it in the form
 "<code>#<i>RRGGBB</i></code>" or 
-"<code>#<i>RRRRGGGGBBBB</i></code>".<p>
+"<code>#<i>RRRRGGGGBBBB</i></code>".
 
 <defitem "identifier" {identifier validate <i>value</i>}>
 
 An identifier is any non-empty string consisting only of ASCII
-letters, numbers, and underscores. (snit::stringtype)<p>
+letters, numbers, and underscores. (snit::stringtype)
 
 <defitem "ipaddress" {ipaddress validate <i>value</i>}>
 
 An ipaddress is an IP address of the form <i>x.y.z.w</i>, where
-each component is an integer ranging from 0 to 255.<p>
+each component is an integer ranging from 0 to 255.
 
 </deflist>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.6 or later.<p>
+Requires Tcl 8.6 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package
-directory.<p>
+directory.
 
 <section AUTHORS>
 
-Will Duquette, Dave Jaffe, Jon Stinzel, Dave Hanks<p>
+Will Duquette, Dave Jaffe, Jon Stinzel, Dave Hanks
 
 <section HISTORY>
 
 Originally implemented for JNEM as util(n).  Migrated to Mars in
-September, 2008.<p>
+September, 2008.
 
 </manpage>
 

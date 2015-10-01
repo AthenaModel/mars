@@ -14,7 +14,7 @@
 
 mars_sql(1) is a browser for SQLite database files.  It allows the
 user to view the database schema and enter arbitrary queries,
-including updates and deletes.<p>
+including updates and deletes.
 
 When invoked with the name of an SQLite database file,
 mars_sql(1) opens the file using an
@@ -23,18 +23,18 @@ Any SQL statement may be entered
 and executed.  Statements can extend onto multiple lines, and
 must end with a semi-colon.  The dialect of SQL is SQL-92 as
 implemented by <link http://sqlite.org/docs.html SQLite>;
-<xref sqldocument(n)> adds a number of new SQL functions.<p>
+<xref sqldocument(n)> adds a number of new SQL functions.
 
 If the -create option is specified, the named SQLite database file will
 be created.  If -create is used with a filename that already exists,
-the command will be rejected.<p>
+the command will be rejected.
 
 If the name of the database is the special name ":memory:"
 then a new database is created in memory.  In this case the -create
-option has no meaning.<p>
+option has no meaning.
 
 In addition to SQL statements, mars_sql(1) also accepts a number of
-special commands; see <xref COMMANDS> for details.<p>
+special commands; see <xref COMMANDS> for details.
 
 The result of SELECT queries will be displayed in either Multicolumn
 or List mode.  Multicolumn mode displays the results in tabular form,
@@ -42,70 +42,70 @@ with one line of text per record and field names at the top of each
 column; long values are truncated.  List mode displays each record
 individually, with field labels and values in two parallel columns.
 The default is Multicolumn mode; the mode may be changed from the
-<b>View</b> menu or via the <iref .mode> command.<p>
+<b>View</b> menu or via the <iref .mode> command.
 
 By default, all entered queries are executed.  If "explain" mode is
 enabled from the <b>View</b> menu or the toolbar, SQLite's "EXPLAIN
 QUERY PLAN" statement will be used to retrieve information about the
-tables and indexes used.<p>
+tables and indexes used.
 
 <section MENUS>
 
-mars_sql(1) provides the following menus:<p>
+mars_sql(1) provides the following menus:
 
 <subsection "File Menu">
 
 <deflist>
   <def "Exit">
-   Terminates the application.<p>
+   Terminates the application.
 </deflist>
 
 <subsection "Edit Menu">
 
 <deflist>
   <def "Cut">
-   Cuts selected text to the clipboard.<p>
+   Cuts selected text to the clipboard.
 
   <def "Copy">
-   Copies selected text to the clipboard.<p>
+   Copies selected text to the clipboard.
 
   <def "Paste">
-   Pastes the text from the clipboard.<p>
+   Pastes the text from the clipboard.
 
   <def "Select All">
-   Selects all text in the current widget.<p>
+   Selects all text in the current widget.
 </deflist>
 
 <subsection "View Menu">
 
 <deflist>
   <def "Multicolumn Mode">
-   Selects multicolumn output mode (<b>.mode mc</b>).<p>
+   Selects multicolumn output mode (<b>.mode mc</b>).
 
   <def "List Mode">
-   Selects list output mode (<b>.mode list</b>).<p>
+   Selects list output mode (<b>.mode list</b>).
 
   <def "Execute Mode">
-   Executes SQL queries as usual.<p>
+   Executes SQL queries as usual.
 
   <def "Explain Mode">
    Outputs a description of the tables and indices used by
        a query without actually executing it.  (This is equivalent to
-       beginning the query with the words "EXPLAIN QUERY PLAN".)<p>
+       beginning the query with the words "EXPLAIN QUERY PLAN".)
 </deflist>
 
 <section COMMANDS>
 
 By default, all command input is assumed to be SQL.  mars_sql(1) also
 supports a number of special commands, all of which begin with
-".".  Special commands have Tcl syntax.<p>
+".".  Special commands have Tcl syntax.
 
 <deflist commands>
 
 <defitem ".mode" {.mode ?newMode?}>
 
 By default, returns the current output mode, <b>mc</b> (multicolumn)
-or <b>list</b>.  If <i>newMode</i> is given, sets the mode accordingly.<p>
+or <b>list</b>.  If <i>newMode</i> is given, sets the mode accordingly.
 
 <defitem ".schema" {.schema ?<i>table</i>?}>
 
@@ -113,21 +113,21 @@ By default, returns the SQL CREATE statements used to define all
 tables, views, and indices in the database.  If given, <i>table</i>
 may the name of a specific table, view, or index; or a glob pattern.
 Either way, the output will include only the matching tables, views,
-and indices.<p>
+and indices.
 
 <defitem ".tables" {.tables}>
 
-Returns a list of the names of the tables defined in the database.<p>
+Returns a list of the names of the tables defined in the database.
 
 </deflist commands>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-Imported from JNEM's jnem_sql(1), and then modified.<p>
+Imported from JNEM's jnem_sql(1), and then modified.
 
 </manpage>
 

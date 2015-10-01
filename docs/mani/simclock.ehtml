@@ -19,17 +19,17 @@ also provides for the conversion between integer ticks and some
 human-readable string value.  For <xref simclock(n)>, for example,
 the integer ticks can correspond to a wide range of wallclock time
 intervals, and are converted to and from <xref zulu(n)> time
-strings.<p>
+strings.
 
 Many library modules (<xref sqldocument(n)>, <xref logger(n)>)
 know how to make use of a simclock(i) if one is available.  The
 purpose of this man page is to document the features such an object
-needs to have for this purposes.<p>
+needs to have for this purposes.
 
 <section COMMANDS>
 
 Every simclock(i) object provides at least the following
-subcommands.<p>
+subcommands.
 
 <deflist commands>
 
@@ -38,22 +38,22 @@ subcommands.<p>
 Returns the current simulation time as a human-readable time
 string.  If given, <i>offset</i> should be an offset in ticks; it is
 added to the returned time.  The string format returned is up to the
-implementation.<p>
+implementation.
 
 <defitem cget {<i>obj</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>obj</i> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's options.  The object
-will have at least this option:<p>
+will have at least this option:
 
 <deflist options>
 
 <defopt {-t0 <i>string</i>}>
 
-Sets the simulation start date ("T-zero") to <i>string</i>.<p>
+Sets the simulation start date ("T-zero") to <i>string</i>.
 
 </deflist options>
 
@@ -61,14 +61,14 @@ Sets the simulation start date ("T-zero") to <i>string</i>.<p>
 
 Returns the current simulation time in ticks.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the returned time.<p>
+the returned time.
 
 <defitem toString {$simclock toString <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in integer <i>ticks</i> into a
 human-readable time string.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the specified time.<p>
+the specified time.
 </deflist commands>
 
 <section "SEE ALSO">
@@ -77,12 +77,12 @@ the specified time.<p>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
 Interface derived from the <xref simclock(n)> API, modified to
-be agnostic about the implemented string format.<p>
+be agnostic about the implemented string format.
 
 </manpage>
 

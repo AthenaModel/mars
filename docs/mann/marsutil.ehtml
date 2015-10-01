@@ -14,21 +14,21 @@ namespace import ::marsutil::*
 marsutil(n) is a package of low-level infrastructure code of various
 kinds.  A binary extension provides fast versions of some of the
 commands.  The entry for commands with fast versions will so
-indicate.<p>
+indicate.
 
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.6 or later.<p>
+Requires Tcl 8.6 or later.
 
 <section AUTHORS>
 
-Will Duquette, Dave Jaffe, Dave Hanks, Jon Stinzel<p>
+Will Duquette, Dave Jaffe, Dave Hanks, Jon Stinzel
 
 <section HISTORY>
 
 Originally written for JNEM as util(n); migrated to Mars in
-September 2008, and extended considerably since.<p>
+September 2008, and extended considerably since.
 
 </manpage>
 

@@ -333,28 +333,34 @@ snit::type ::marsutil::quality {
     # Returns a snippet of HTML suitable for inclusion in a man page.
 
     method html {} {
-        append out "<table>\n"
+        append out "<table class=\"table\">\n"
 
         append out "<tr>\n"
-        append out "<th align=\"left\">Name&nbsp;</th>\n"
-        append out "<th align=\"left\">Long Name</th>\n"
-        append out "<th align=\"right\">Value</th>\n"
+        append out "<th>Name&nbsp;</th>\n"
+        append out "<th>Long Name</th>\n"
+        append out "<th>Value</th>\n"
 
         if {$options(-bounds)} {
-            append out "<th align=\"right\">Bounds</th>\n"
+            append out "<th>Bounds</th>\n"
         }
         append out "</tr>\n"
 
         set len [llength $values]
 
         for {set i 0} {$i < $len} {incr i} {
-            append out "<tr>\n"
+            if {$i % 2 == 0} {
+                set cls tr-even
+            } else {
+                set cls tr-odd
+            }
+
+            append out "<tr class=\"$cls\">\n"
             append out \
-                "<td valign=\"baseline\" align=\"left\"><tt>[lindex $shortnames $i]</tt>&nbsp;</td>\n"
-            append out "<td valign=\"baseline\" align=\"left\">[lindex $longnames $i]</td>\n"
-            append out "<td valign=\"baseline\" align=\"right\">&nbsp;[lindex $values $i]</td>\n"
+                "<td><tt>[lindex $shortnames $i]</tt>&nbsp;</td>\n"
+            append out "<td>[lindex $longnames $i]</td>\n"
+            append out "<td>&nbsp;[lindex $values $i]</td>\n"
             if {$options(-bounds)} {
-                append out "<td valign=\"baseline\" align=\"right\">&nbsp;"
+                append out "<td>&nbsp;"
                 append out [lindex $mins $i]
                 append out " &lt; <i>value</i> &lt;= "
                 append out [lindex $maxs $i]

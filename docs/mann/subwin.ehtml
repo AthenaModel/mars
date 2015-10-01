@@ -15,25 +15,25 @@ namespace import ::marsgui::*
 non-application-specific) GUI code for use in Mars.
 This module defines the ::marsgui::subwin widget, a base for subordinate
 application windows.  Subordinate windows have the following
-features:<p>
+features:
 
 <ul>
   <li> The existence of a subwindow doesn't keep the application from
        terminating when the main window is closed--contrast this with
-       the behavior of an application with multiple main windows.<p>
+       the behavior of an application with multiple main windows.
 
   <li> Clicking the WM's close button pops the window down, but doesn't
-       destroy it.<p>
+       destroy it.
 
   <li> Subwindows can be popped up or down using their <iref show>
-       and <iref hide> methods.<p>
+       and <iref hide> methods.
 
   <li> If popped down and then popped up again, subwindows remember
        their location--even if the window manager likes to put htem
-       somewhere else.<p>
+       somewhere else.
 
   <li> Subwindows can be popped up or down <i>en masse</i>, using
-       <iref subwin show> and <iref subwin hide>.<p>
+       <iref subwin show> and <iref subwin hide>.
 
   <li> The structure of a subwindow often depends on data that can't
        be known when the window is created, and which might change
@@ -41,42 +41,42 @@ features:<p>
        <iref subwin reconfigure> command calls the
        <iref reconfigure> method for each existing subwindow.
        This is defined as a no-op by subwin(n) but can be redefined
-       by the client.<p>
+       by the client.
 </ul>
 
 See <xref EXAMPLE> for an example of how to base an application
-window on subwin(n).<p>
+window on subwin(n).
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem subwin {subwin <i>pathName ?options...?</i>}>
 
-Creates a new <iref subwin> widget named <i>pathName</i>.<p>
+Creates a new <iref subwin> widget named <i>pathName</i>.
 
 The <iref subwin> widget inherits its options from toplevel(n);
-it defines no new options of its own.<p>
+it defines no new options of its own.
 
 <defitem "subwin hide" {subwin hide}>
 
-Hides all existing subwindows.<p>
+Hides all existing subwindows.
 
 <defitem "subwin reconfigure" {subwin reconfigure}>
 
-Calls <iref reconfigure> on all existing subwindows.<p>
+Calls <iref reconfigure> on all existing subwindows.
 
 <defitem "subwin show" {subwin show}>
 
 Pops up all existing subwindows; subwindows which are already
 popped up but which are obscured by other windows will be
-raised.<p>
+raised.
 
 <defitem "subwin windows" {subwin windows}>
 
-Returns a list of the names of the existing subwindows.<p>
+Returns a list of the names of the existing subwindows.
 
 </deflist commands>
 
@@ -86,32 +86,32 @@ Returns a list of the names of the existing subwindows.<p>
 
 <defitem configure {$subwin configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {$subwin cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem hide {$subwin hide}>
 
-Pops down the subwindow.<p>
+Pops down the subwindow.
 
 <defitem reconfigure {$subwin reconfigure}>
 
 By default, this is a no-op; the client may redefine it as desired.
-See <xref EXAMPLE>.<p>
+See <xref EXAMPLE>.
 
 <defitem show {$subwin show}>
 
 Pops up the subwindow if it's hidden; it's already up but is
-obscured by other windows, raises it to the top.<p>
+obscured by other windows, raises it to the top.
 
 </deflist>
 
 <section EXAMPLE>
 
 The following snippet is a skeleton to use when defining
-subordinate application windows using subwin(n).<p>
+subordinate application windows using subwin(n).
 
 <pre>
 snit::widgetadaptor myWindow {
@@ -159,7 +159,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

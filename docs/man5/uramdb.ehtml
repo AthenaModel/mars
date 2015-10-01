@@ -11,22 +11,22 @@
 uramdb(5) defines a database format used for initializing
 instances of <xref uram(n)>.  Note that <xref uram(n)> does not
 require that uramdb(5) be used; it is a convenience for testing and
-development.<p>
+development.
 
 <xref uramdb(n)> parses uramdb(5) files into SQL tables in
 an <xref sqldocument(n)> database.
 run-time database.  The syntax of the file mirrors the SQL
-<xref "DATABASE SCHEMA">.<p> 
+<xref "DATABASE SCHEMA">. 
 
 <section "BASIC SYNTAX">
 
 A uramdb(5) file is a text file which defines the contents of a number
 of SQL tables.  This section describes the file's syntax; see
-<xref TABLES> for an example of each uramdb(5) table.<p>
+<xref TABLES> for an example of each uramdb(5) table.
 
 The uramdb(5) file may contain comments and <b>table</b>
 statements. A comment is a line of text beginning with the "#"
-character:<p>
+character:
 
 <pre>
 # This is a comment.
@@ -36,7 +36,7 @@ character:<p>
 
 A <b>table</b> statement defines the content of a single
 database table; each table consists of zero or more records.  The
-<b>table</b> statement has this syntax:<p>
+<b>table</b> statement has this syntax:
 
 <pre>
 <b>table</b> <i>tableName</i> {
@@ -46,7 +46,7 @@ database table; each table consists of zero or more records.  The
         .
         .
 }
-</pre><p>
+</pre>
 
 <subsection "Records and Keys">
 
@@ -57,9 +57,9 @@ name must be unique for each record in the table.  Some tables
 have two or even three key fields.  The <b>uramdb_hrel</b> table, for
 example, contains the horizontal relationship values; it has
 two keys, <b>f</b> and <b>g</b>, each of which is the name of a
-group.<p>
+group.
 
-Each record is defined by a <b>record</b> statement, which has this syntax:<p>
+Each record is defined by a <b>record</b> statement, which has this syntax:
 
 <pre>
 <b>table</b> <i>tableName</i> {
@@ -74,13 +74,13 @@ Each record is defined by a <b>record</b> statement, which has this syntax:<p>
     .
     .
 }
-</pre><p>
+</pre>
 
 <subsection Fields>
 
 In addition to its key field or fields, most tables also have one or
 more data fields.  Field values are defined using the <b>field</b>
-statement, which has this syntax:<p>
+statement, which has this syntax:
 
 <pre>
 <b>table</b> <i>tableName</i> {
@@ -102,36 +102,36 @@ quotes or curly brackets.  By convention, double quotes are used
 for short strings and curly brackets for structured values
 (e.g., lists) and for text which spills onto more than one line.
 See the example for each of the uramdb(5) <xref TABLES> to see what
-each form looks like in practice.<p>
+each form looks like in practice.
 
 <section CONCERNS>
 
 One of the tables (<b>uramdb_sat</b>) depend on the
 following sets of concerns; the symbolic name of each concern is
-shown in parentheses.<p>
+shown in parentheses.
 
 <deflist>
   <def "Autonomy (AUT)">
    Does the group feel it can maintain order and govern itself 
-       with a stable government and a viable economy?<p>
+       with a stable government and a viable economy?
 
   <def "Quality of Life (QOL)">
    QOL includes the physical plants that provide services, 
        including water, power, public transportation, commercial 
        markets, hospitals, etc. and those things associated with 
        these services such as sanitation, health, education, 
-       employment, food, clothing, and shelter.<p>
+       employment, food, clothing, and shelter.
 
   <def "Culture (CUL)">
    Does the group feel that its culture and religion, 
        including cultural and religious sites and artifacts, 
-       are respected or denigrated? <p>
+       are respected or denigrated? 
 
   <def "Physical Safety (SFT)">
    Do members of the group fear for their lives, both from 
        hostile attack and from collateral damage from CF activities?
        This fear includes environmental concerns such as life 
-       threatening disease, starvation, and dying of thirst.<p>
+       threatening disease, starvation, and dying of thirst.
 </deflist>
 
 <section TABLES>
@@ -139,13 +139,13 @@ shown in parentheses.<p>
 <subsection uramdb_a>
 
 This table defines actors within the playbox.  URAM tracks
-vertical relationships of groups with actors.<p>
+vertical relationships of groups with actors.
 
-<b>Constraints:</b><p>
+<b>Constraints:</b>
 
 <ul>
   <li> The table must define at least one actor.
-</ul><p>
+</ul>
 
 
 <table>
@@ -163,9 +163,9 @@ space or other punctuation.
 </td>
 </tr>
 
-</table><p>
+</table>
 
-For example,<p>
+For example,
 
 <pre>
 table uramdb_a {
@@ -180,13 +180,13 @@ table uramdb_a {
 This table defines neighborhoods within the playbox.  URAM tracks
 civilian satisfaction within each neighborhood for the groups who
 live there.  Table <b>uramdb_mn</b> describes the relationships between
-the different neighborhoods.<p>
+the different neighborhoods.
 
-<b>Constraints:</b><p>
+<b>Constraints:</b>
 
 <ul>
   <li> The table must define at least one neighborhood.
-</ul><p>
+</ul>
 
 
 <table>
@@ -204,9 +204,9 @@ space or other punctuation.
 </td>
 </tr>
 
-</table><p>
+</table>
 
-For example,<p>
+For example,
 
 <pre>
 table uramdb_n {
@@ -217,13 +217,13 @@ table uramdb_n {
 
 <subsection uramdb_mn>
 
-This table contains neighborhood proximities.<p>
+This table contains neighborhood proximities.
 
 This table has two keys, <b>m</b> (the name of the first
 neighborhood) and <b>n</b> (the name of the second
 neighborhood). If the table is omitted from the uramdb(5) input,
 the <xref sqldocument(n)> table will be populated with default
-values for all pairs of neighborhoods.<p> 
+values for all pairs of neighborhoods. 
 
 <table>
 <tr>
@@ -267,11 +267,11 @@ Note that proximity need not be symmetric.
 </tr>
 
 
-</table><p>
+</table>
 
 The following example states that all neighborhoods are <b>REMOTE</b>
 from each other, except for those explicitly mentioned as being
-<b>NEAR</b>.<p>
+<b>NEAR</b>.
 
 <pre>
 table uramdb_mn {
@@ -289,14 +289,14 @@ table uramdb_mn {
 <subsection uramdb_civ_g>
 
 The <b>uramdb_civ_g</b> table defines the complete set of civilian groups.
-The table has a single key field, the group name, <b>g</b>.<p>
+The table has a single key field, the group name, <b>g</b>.
 
-<b>Constraints:</b><p>
+<b>Constraints:</b>
 
 <ul>
   <li> The table must contain at least one group.
   <li> Group names must be unique across all group types.
-</ul><p>
+</ul>
 
 <table>
 <tr>
@@ -331,9 +331,9 @@ The population of the group.
 </td>
 </tr>
 
-</table><p>
+</table>
 
-The following example defines a CIV group.<p>
+The following example defines a CIV group.
 
 <pre>
 table uramdb_civ_g {
@@ -351,14 +351,14 @@ table uramdb_civ_g {
 <subsection uramdb_frc_g>
 
 The <b>uramdb_frc_g</b> table defines the complete set of force groups.
-The table has a single key field, the group name, <b>g</b>.<p>
+The table has a single key field, the group name, <b>g</b>.
 
-<b>Constraints:</b><p>
+<b>Constraints:</b>
 
 <ul>
   <li> The table must contain at least one group.
   <li> Group names must be unique across all group types.
-</ul><p>
+</ul>
 
 <table>
 <tr>
@@ -374,9 +374,9 @@ consist of uppercase letters, digits, and underscores only--no white
 space or other punctuation.
 </td>
 </tr>
-</table><p>
+</table>
 
-The following example defines a FRC group.<p>
+The following example defines a FRC group.
 
 <pre>
 table uramdb_frc_g {
@@ -392,13 +392,13 @@ table uramdb_frc_g {
 <subsection uramdb_org_g>
 
 The <b>uramdb_org_g</b> table defines the complete set of force groups.
-The table has a single key field, the group name, <b>g</b>.<p>
+The table has a single key field, the group name, <b>g</b>.
 
-<b>Constraints:</b><p>
+<b>Constraints:</b>
 
 <ul>
   <li> Group names must be unique across all group types.
-</ul><p>
+</ul>
 
 <table>
 <tr>
@@ -414,9 +414,9 @@ consist of uppercase letters, digits, and underscores only--no white
 space or other punctuation.
 </td>
 </tr>
-</table><p>
+</table>
 
-The following example defines an ORG group.<p>
+The following example defines an ORG group.
 
 <pre>
 table uramdb_org_g {
@@ -432,13 +432,13 @@ table uramdb_org_g {
 <subsection uramdb_hrel>
 
 This table contains the horizontal relationship data for all pairs of
-groups.<p>
+groups.
 
 This table has two keys, <b>f</b> (the name of the first
 group) and <b>g</b> (the name of the second group).  If the
 table is omitted from the uramdb(5) input, the <xref sqldocument(n)>
 table will be populated with default values for all pairs
-of groups.<p>
+of groups.
 
 <table>
 <tr>
@@ -473,15 +473,15 @@ The relationship between the two groups from group <b>f</b>'s point
 of view (the relationship need not be symmetric).  The value is a
 <xref simtypes(n) qaffinity> value and may range from
 -1.0 to +1.0. The
-following symbolic constants may be used during data entry:<p>
+following symbolic constants may be used during data entry:
 
 <fromproject {::simlib::qaffinity html}>
 </td>
 </tr>
 
-</table><p>
+</table>
 
-For example,<p>
+For example,
 
 <pre>
 table uramdb_hrel {
@@ -497,13 +497,13 @@ table uramdb_hrel {
 <subsection uramdb_vrel>
 
 This table contains the vertical relationship data for all groups
-with all actors.<p>
+with all actors.
 
 This table has two keys, <b>g</b> (the name of the
 group) and <b>a</b> (the name of the actor).  If the
 table is omitted from the uramdb(5) input, the <xref sqldocument(n)>
 table will be populated with default values for all pairs
-of groups.<p>
+of groups.
 
 <table>
 <tr>
@@ -536,15 +536,15 @@ The relationship between the group and actor from the group's point
 of view.  The value is a
 <xref simtypes(n) qaffinity> value and may range from
 -1.0 to +1.0. The
-following symbolic constants may be used during data entry:<p>
+following symbolic constants may be used during data entry:
 
 <fromproject {::simlib::qaffinity html}>
 </td>
 </tr>
 
-</table><p>
+</table>
 
-For example,<p>
+For example,
 
 <pre>
 table uramdb_vrel {
@@ -561,13 +561,13 @@ table uramdb_vrel {
 <subsection uramdb_sat>
 
 This table contains the initial satisfaction data for all civilian
-groups and all concerns.<p>
+groups and all concerns.
 
 This table has two keys, <b>g</b> (the group name) and
 <b>c</b> (the concern name, see <xref CONCERNS>).  If the table is
 omitted from the uramdb(5) input, the <xref sqldocument(n)> table
 will be populated with default values for all valid combinations of
-group and concern.<p>
+group and concern.
 
 <table>
 <tr>
@@ -614,9 +614,9 @@ symbolic <xref simtypes(n) qsaliency> value:
 </td>
 </tr>
 
-</table><p>
+</table>
 
-For example,<p>
+For example,
 
 <pre>
 table uramdb_sat {
@@ -640,13 +640,13 @@ table uramdb_sat {
 <subsection uramdb_coop>
 
 This table contains the initial cooperation data for each CIV
-group/FRC group pair.<p>
+group/FRC group pair.
 
 This table has two keys, <b>f</b> (the name of the civilian
 group) and <b>g</b> (the name of the force group).  If the
 table is omitted from the uramdb(5) input, the <xref sqldocument(n)>
 table will be populated with default values for all pairs
-of groups.<p>
+of groups.
 
 <table>
 <tr>
@@ -680,15 +680,15 @@ The probability that group <b>f</b> will cooperate with (provide
 information to) group <b>g</b>.  The value is a
 <xref simtypes(n) qcooperation> value and may range from
 -100.0 to +100.0.  The
-following symbolic constants may be used during data entry:<p>
+following symbolic constants may be used during data entry:
 
 <fromproject {::simlib::qcooperation html}>
 </td>
 </tr>
 
-</table><p>
+</table>
 
-For example,<p>
+For example,
 
 <pre>
 table uramdb_coop {
@@ -709,20 +709,20 @@ table uramdb_coop {
 <section "DATABASE SCHEMA">
 
 The <xref uramdb(n)> parser defines the following SQL schema which
-will receive the <xref uramdb(5)> data:<p>
+will receive the <xref uramdb(5)> data:
 
-<pre>
+<listing>
 <fromproject {::simlib::uramdb sqlsection schema}>
-</pre>
+</listing>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
 uramdb(5) is a descendent of a number of database formats for
-<xref uram(n)> and its ancestors.<p>
+<xref uram(n)> and its ancestors.
 
 </manpage>
 

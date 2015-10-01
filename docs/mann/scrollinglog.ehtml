@@ -16,35 +16,35 @@ widget, which is used to browse periodically updated text files in the
 manner of <code>tail -f</code>.  By default, the widget is configured
 to browse <xref logger(n)> debugging logs; however, the columns,
 file parsing, and highlight colors can be configured to support many
-different formats of text file.<p>
+different formats of text file.
 
 scrollinglog(n) combines the display capabilities of the
 <xref logdisplay(n)> widget with the search and filtering
 capabilities of the <xref finder(n)> and <xref filter(n)> widgets
 in one convenient package.  A <xref loglist(n)> widget can be
-optionally included. <p>
+optionally included. 
 
 A combobox is provided to filter based on log level.  The select log
 level and higher levels will be displayed.  The levels provided are in
-accordance with those supported by <xref logger(n)>.<p>
+accordance with those supported by <xref logger(n)>.
 
 An auto-scroll/scroll-lock selection button is provided in
 the upper right-hand corner.  In the scroll-lock position, the
 contents will remain fixed and under the user's control.  In addition,
 an enabled scroll-lock will prohibit <iref load> from loading
-the file contents.<p>
+the file contents.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem scrollinglog {scrollinglog <i>pathName ?options...?</i>}>
 
-Creates a new <iref scrollinglog> widget named <i>pathName</i>.<p>
+Creates a new <iref scrollinglog> widget named <i>pathName</i>.
 
-The <iref scrollinglog> widget may be created with the following options:<p>
+The <iref scrollinglog> widget may be created with the following options:
 
 <deflist scrollinglog options>
 
@@ -55,30 +55,30 @@ of the <xref logdisplau(n)> widget.  When enabled the
 <xref loglist(n)> will be configured according to these options:
 <code>-defaultappdir</code>, <code>-formattext</code>,
 <code>-logpattern</code>, <code>-rootdir</code>, 
-<code>-parsecmd</code> and <code>-updateinterval</code>. <p>
+<code>-parsecmd</code> and <code>-updateinterval</code>. 
 
 <defopt {-logcmd <i>command</i>}>
 
 Defines a command the <iref scrollinglog> can call if it needs to
 output a message.  One argument will be appended to the command, the
-message to be output.<p>
+message to be output.
 
 <defopt {-loglevel <i>level</i>}>
 
 Defines the maximum log verbosity level to display.  The value of
 <i>level</i> must be one of fatal, warning, normal, detail or debug.
 See <xref logger(n)> of marsutil for more information on log
-levels.<p>
+levels.
 
 <defopt {-title <i>title</i>}>
 
-<b>Obsolete.</b>  This option no longer has any effect.<p>
+<b>Obsolete.</b>  This option no longer has any effect.
 
 <defopt {-updateinterval <i>milliseconds</i>}>
 
 Determines how often the <iref scrollinglog> will perform automatic
 updates when auto-scroll is enabled. 
-Defaults to 1000 (i.e., one second).<p>
+Defaults to 1000 (i.e., one second).
 
 <defopt {-autowidth <i>boolean</i>}>
 <defopt {-format <i>formatlist</i>}>
@@ -92,7 +92,7 @@ log files.  See the <xref logdisplay(n)> man page and the
 scrollinglog(n) code to see how to customize them for other formats.
 If <code>-showloglist</code> is true, the <code>-parsecmd</code> and
 <code>-showtitle</code> options will also be used to configure the
-loglist according to <xref loglist(n)>.<p>
+loglist according to <xref loglist(n)>.
 
 <defopt {-font <i>font</i>}>
 <defopt {-height <i>height</i>}>
@@ -103,7 +103,7 @@ loglist according to <xref loglist(n)>.<p>
 <defopt {-insertwidth <i>color</i>}>
 
 These options are all identical to the Tk text widget options of the
-same names.<p>
+same names.
 
 <defopt {-borderwidth <i>width</i>}>
 <defopt {-relief <i>relief</i>}>
@@ -129,17 +129,17 @@ scrollinglog(n) code to see how to customize them for other formats.
 
 <defitem configure {$scrollinglog configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {$scrollinglog cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem load {$scrollinglog load <i>filename</i>}>
 
 Tells <iref scrollinglog> to display the named file unless
 scroll-lock is currently enabled.  In this case, the file name is
-cached for later use.<p>
+cached for later use.
 
 </deflist>
 
@@ -154,7 +154,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

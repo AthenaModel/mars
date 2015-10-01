@@ -17,18 +17,18 @@ palette of commonly used colors, a color swatch showing the selected
 color, a text field in which the selected color's hex color
 specification is displayed and in which color names and specifications
 can be entered, and a "Pick" button that pops up a color picker
-dialog.<p>
+dialog.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
 <defitem colorfield {colorfield <i>pathName</i> ?<i>options...</i>?}>
 
 Creates a new <iref colorfield> widget named <i>pathName</i>, and
-returns <i>pathName</i>.  The widget supports the following options:<p>
+returns <i>pathName</i>.  The widget supports the following options:
 
 <deflist options>
 
@@ -37,18 +37,18 @@ returns <i>pathName</i>.  The widget supports the following options:<p>
 From <xref field(i)>.  Specifies a <i>command</i> to be called
 whenever the field's value changes, for any reason whatsoever
 (including explicit calls to <iref set>.  The new value is appended
-to the <i>command</i> as an argument.<p>
+to the <i>command</i> as an argument.
 
 <defopt {-state <i>state</i>}>
 
 From <xref field(i)>.  colorfield(i) widgets have states, just as the
 normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
-states are <b>normal</b> and <b>disabled</b>.<p>
+states are <b>normal</b> and <b>disabled</b>.
 
 <defopt {-palette <i>colors</i>}>
 
 Specifies a list of Tk colors to display in the pulldown palette.  The
-palette will contain one color swatch for each color.<p>
+palette will contain one color swatch for each color.
 
 <defopt {-rows <i>rows</i>}>
 
@@ -56,11 +56,11 @@ The pulldown palette arranges the swatches in rows and columns; this
 option determines the number of rows.  Note that the algorithm fills
 in columns first; if you specify <i>n</i> rows, the first <i>n</i>
 colors from <code>-palette</code> go in the first column, the second
-<i>n</i> in the second column, and so on.<p>
+<i>n</i> in the second column, and so on.
 
 <defopt {-width <i>chars</i>}>
 
-Specifies the width in characters of the embedded entry field.<p>
+Specifies the width in characters of the embedded entry field.
 
 </deflist options>
 
@@ -68,29 +68,29 @@ Specifies the width in characters of the embedded entry field.<p>
 
 <section "INSTANCE COMMAND">
 
-colorfield(n) widgets have the following subcommands:<p>
+colorfield(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 From <xref field(i)>.  Sets the value of one or more of the object's
-options.<p>
+options.
 
 <defitem get {<i>pathName</i> get}>
 
-From <xref field(i)>.  Returns the field's current value.<p>
+From <xref field(i)>.  Returns the field's current value.
 
 <defitem set {<i>pathName</i> set <i>value</i>}>
 
 From <xref field(i)>.  Explicitly sets the field's <i>value</i>, and
 calls the <code>-changecmd</code> if the value has really changed,
 i.e., successive calls to <iref set> with the same <i>value</i> will
-result in at most one call to the <code>-changecmd</code>.<p>
+result in at most one call to the <code>-changecmd</code>.
 
 </deflist instance>
 
@@ -105,7 +105,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

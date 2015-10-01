@@ -14,34 +14,34 @@ namespace import ::marsgui::*
 <xref osgui(n)> provides platform-independent GUI routines for
 features that must be implemented differently on different windowing
 systems.  Ideally, all windowing system code should reside here or
-in global.tcl, the global appearance module.<p>
+in global.tcl, the global appearance module.
 
 <section COMMANDS>
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
 <defitem "osgui mktoolwindow" {osgui mktoolwindow <i>w parent</i>}>
 
 Makes window <i>w</i> a toolwindow over its <i>parent</i> window.
-That is:<p>
+That is:
 
 <ul>
   <li> Window <i>w</i> is declared transient over <i>parent</i>.  In
-       most cases, this is sufficient.<p>
+       most cases, this is sufficient.
   <li> On MS Windows, special handling is required:
        <ul>
          <li> Window <i>w</i> is given the <code>-toolwindow</code>
               <xref tk:wm(n) "wm attribute">.
          <li> Window <i>w</i> is positioned near the upper left of the
               parent window.
-       </ul><p>
+       </ul>
 </ul>
 
 Windows <i>w</i> and <i>parent</i> will usually be toplevels, but
 <iref osgui mktoolwindow> accepts children of the respective
-toplevels as well.<p>
+toplevels as well.
 
 </deflist commands>
 
@@ -55,7 +55,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

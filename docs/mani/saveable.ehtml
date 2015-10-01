@@ -6,14 +6,14 @@
 
 <section DESCRIPTION>
 
-A saveable(i) object is one whose state can be saved and restored.<p>
+A saveable(i) object is one whose state can be saved and restored.
 
 <section SUBCOMMANDS>
 
 Every saveable(i) is represented as a command or command prefix with
 at least the following subcommands.  Note that it is common
 practice for an object to group them under a "<code>saveable</code>"
-subcommand.<p>
+subcommand.
 
 <deflist subcommands>
 
@@ -22,21 +22,21 @@ subcommand.<p>
 This subcommand returns the <i>saveable</i>'s state as a single
 string, which can be saved in any desired manner and later can be
 <iref restore>ed.  Note that the returned value need not be the
-the object's entire state; this is not a serialization interface.<p>
+the object's entire state; this is not a serialization interface.
 
 If <code>-saved</code> is given, then the object's unsaved changes
-flag is cleared.<p>
+flag is cleared.
 
 <defitem restore {<i>saveable</i> restore <i>checkpoint</i> ?-saved?}>
 
 Restores the <i>saveable</i>'s state to the saved <i>checkpoint</i>,
-which was originally returned by <iref checkpoint>.<p>
+which was originally returned by <iref checkpoint>.
 
 By default, this command should set the object's unsaved changes flag;
-if <code>-saved</code> is given, then the flag should be cleared.<p>
+if <code>-saved</code> is given, then the flag should be cleared.
 
 If the <i>checkpoint</i> is the empty string, the object should reset
-itself to its initial state.<p>
+itself to its initial state.
 
 <defitem changed {<i>saveable</i> changed}>
 
@@ -44,7 +44,7 @@ Returns 1 if the <i>saveable</i> has data that must be saved, and 0
 otherwise.  This is intended to be used by code that checks whether
 the application's state has changed, e.g., before exiting the program.
 It's expected that the application will call <iref checkpoint> for
-all saveables every time it saves its state.<p>
+all saveables every time it saves its state.
 
 </deflist subcommands>
 
@@ -53,7 +53,7 @@ all saveables every time it saves its state.<p>
 Here's an example of a minimal saveable(i) that saves its checkpointed
 data in a single array and always considers itself saved.
 The saveable(i) is a singleton module that
-implements the interface as subcommands of the singleton.<p>
+implements the interface as subcommands of the singleton.
 
 <pre>
 snit::type sample {
@@ -81,7 +81,7 @@ snit::type sample {
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

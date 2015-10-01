@@ -72,7 +72,7 @@ and then outputting it at the end.  There's a couple of bug fixes as well.
 
 This build contains an enhancement to the cmdinfo(n) object which exposes
 TclOO classes in the debugger via the getcode call.  This will make it easier
-to make a mod if it involves a TclOO object or class.<p>
+to make a mod if it involves a TclOO object or class.
 
 <ul>
 <li> Issue #48: cmdinfo(n): Support TclOO introspection, getcode
@@ -80,7 +80,7 @@ to make a mod if it involves a TclOO object or class.<p>
 
 <h3 Mars v3.0.15 -- 23 April 2015>
 
-This build contains only a fix to a bug in sqlib(n) for a safequery.<p>
+This build contains only a fix to a bug in sqlib(n) for a safequery.
 
 <ul>
 <li> Issue #47: sqlib(n): safequery ignores variables in user's scope
@@ -89,7 +89,7 @@ This build contains only a fix to a bug in sqlib(n) for a safequery.<p>
 <h3 Mars v3.0.14 -- 15 April 2015>
 
 This build adds an enhancement to logdisplay(n) and fixes a problem with
-global parmsets.<p>
+global parmsets.
 
 <ul>
 <li> Issue #43: global parmsets are a problem
@@ -98,7 +98,7 @@ global parmsets.<p>
 
 <h3 Mars v3.0.13 -- 9 March 2015>
 
-This build contains some changes in support of the Athena re-architecture.<p>
+This build contains some changes in support of the Athena re-architecture.
 
 <ul>
 <li> Issue #42: simclock(n): Rename type, no default instance
@@ -109,15 +109,15 @@ This build contains some changes in support of the Athena re-architecture.<p>
 
 <h3 Mars v3.0.12 -- 17 February 2015>
 
-This build fixes a bug in oohelper(n)'s "metadict" command.<p>
+This build fixes a bug in oohelper(n)'s "metadict" command.
 
 <ul>
 <li> Issue #38: metadict fails for multi-line dicts
-</ul><p>
+</ul>
 
 <h3 Mars v3.0.11 -- 17 February 2015>
 
-This build adds a number of unrelated changes:<p>
+This build adds a number of unrelated changes:
 
 <ul>
 <li> Issue #30: order_flunky shouldn't send notifier(n) events
@@ -125,42 +125,42 @@ This build adds a number of unrelated changes:<p>
 <li> Issue #32: Set defaults of maprect(n) object to Caspian Sea area.
 <li> Issue #33: Convert mam(n) to a type with instances.
 <li> Issue #37: metadict tclOO helper enhancement
-</ul><p>
+</ul>
 
 
 <h3 Mars v3.0.10 -- 2 February 2015>
 
-This build adds automatic variable declaration to order_set(n).<p>
+This build adds automatic variable declaration to order_set(n).
 
 <ul>
 <li> Issue #29: order_set: automatic variable declaration
-</ul><p>
+</ul>
 
 <h3 Mars v3.0.9 -- 28 January 2015>
 
 This build contains significant changes to the order(n) infrastructure in
 support of having Athena run as a library in the cloud. Essentially, orders
 are now instances of TclOO objects and order processing is done by acting
-on those objects.<p>
+on those objects.
 
 <ul>
 <li> Issue #27: New order stuff
-</ul><p>
+</ul>
 
 <h3 Mars v3.0.8 -- 13 January 2015>
 
 This build replaces the <tt -entity> support in dynaform(n)/dynaview(n)
 with <tt -resources> support.  The difference is that the client can
-specify an entire dictionary of resources.<p>
+specify an entire dictionary of resources.
 
 <ul>
 <li> Issue #25: dynaform: contextkey is obsolete
 <li> Issue #26: dynaform(n): Application Resources
-</ul><p>
+</ul>
 
 <h3 Mars v3.0.7 -- 30 December 2014>
 
-This build adds <tt -entity> support to dynaform(n)/dynaview(n).<p>
+This build adds <tt -entity> support to dynaform(n)/dynaview(n).
 
 <ul>
 <li> #24: Dynaview Entity Changes
@@ -178,18 +178,18 @@ This build extends the order(n) <tt prepare> command.
 
 This build contains a bug fix to the mapcanvas(n). If there's no map image
 the scroll regions are incorrectly computed.  With this fix, they are 
-correct.<p>
+correct.
 
 <ul>
 <li> Issue #21: Scroll regions are incorrect in mapcanvas(n) when no map image is present
-</ul><p>
+</ul>
 
 
 <h3 Mars v3.0.4 -- 19 November 2014>
 
 This build fixes a bug found in Athena 6.1 related to saliencies being zero for
 all concerns.  A database query in the civilian group detail browser page 
-was failing.<p>
+was failing.
 
 <ul>
 <li> Issue #19: uram(n): contribs mood, contribs nbmood
@@ -198,7 +198,7 @@ was failing.<p>
 <h3 Mars v3.0.3 -- 5 November 2014>
 
 This build contains some documentation updates and a change to the project
-name from athena-mars to just mars.<p>
+name from athena-mars to just mars.
 
 <ul>
 <li> Issue #17: Update CM Plan
@@ -210,7 +210,7 @@ name from athena-mars to just mars.<p>
 
 Mars v3.0.2 is the first complete build of Mars 3.x with all of the i's
 dotted and the t's crossed.  The changes in moving from Mars 2.x to Mars
-3.x are too numerous to list but include:<p>
+3.x are too numerous to list but include:
 
 <ul>
 <li> Using Kite as the Mars project's automation tool.
@@ -220,6 +220,6 @@ dotted and the t's crossed.  The changes in moving from Mars 2.x to Mars
      packages (with appropriate changes).
 <li> Moving Mars CM from Subversion to 
      <link https:github.jpl.nasa.gov/Athena/mars "GitHub@JPL">.
-</ul><p>
+</ul>
 
 </document>

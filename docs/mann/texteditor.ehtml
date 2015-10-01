@@ -15,19 +15,19 @@ namespace import ::marsgui::*
 non-application-specific) GUI code for use in Mars.
 This module defines the ::marsgui::texteditor, a tailored
 <xref tk:text(n)> widget.  texteditor(n) is a drop in replacement for
-the Tk text widget, with these behaviors added:<p>
+the Tk text widget, with these behaviors added:
 
 <ul>
     <li> The widget responds to the &lt;&lt;Undo&gt;&gt; and
          &lt;&lt;SelectAll&gt;&gt; virtual events.  <xref marsgui(n)>
-         binds these to Ctrl+Z and Ctrl+Shift+A, respectively.<p>
+         binds these to Ctrl+Z and Ctrl+Shift+A, respectively.
          
     <li> The Tab key inserts spaces rather than tab characters, and
-         tab stops are every four spaces.<p>
+         tab stops are every four spaces.
 </ul>
 
 The options and subcommands are simply those of the
-<xref tk:text(n)> widget, and so won't be documented here.<p>
+<xref tk:text(n)> widget, and so won't be documented here.
 
 <section ENVIRONMENT>
 
@@ -39,7 +39,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

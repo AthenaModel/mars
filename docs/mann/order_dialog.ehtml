@@ -12,17 +12,17 @@ namespace import ::marsgui::*
 <section DESCRIPTION>
 
 order_dialog(n) is responsible for creating and managing dialog boxes
-for orders defined using <xref order(n)>.<p>
+for orders defined using <xref order(n)>.
 
 order_dialog(n)'s dialogs are built around the <xref dynaview(n)> 
 widget, which is based on turn on the <xref dynaform(n)> form
 specification included in the order's metadata.  See the 
 <xref dynaform(n)> man page for information on the standard field
-types and on how to define custom field types.<p>
+types and on how to define custom field types.
 
 <section "COMMANDS">
 
-order_dialog(n) provides the following commands:<p>
+order_dialog(n) provides the following commands:
 
 <deflist commands>
 
@@ -30,49 +30,49 @@ order_dialog(n) provides the following commands:<p>
 
 Pops up an order dialog given the options.  This is the standard way to
 pop up an order dialog.  The options are the same as for the dialog 
-widget, with the addition of <tt -parmdict>.<p>
+widget, with the addition of <tt -parmdict>.
 
 <deflist options>
 
 <defopt {-appname <i>string</i>}>
 
 Specifies the name of the application, to be used in the title bar of
-the order dialog.<p>
+the order dialog.
 
 <defopt {-flunky <i flunky>}>
 
 The instance of <xref order_flunky(n)> (or a subclass) that is responsible
-for managing order execution for the dialog.<p>
+for managing order execution for the dialog.
 
 <defopt {-helpcmd <i>cmd</i>}>
 
 If given, the dialog will have a context-sensitive help button.  The
 <i>cmd</i> should be a command prefix taking one additional argument,
 the name of the order.  The command should then make help available for
-that order.<p>
+that order.
 
 <defopt {-master <i>master</i>}>
 
 Specifies the master window for the dialog, i.e., the application window
-with which it is associated.<p>
+with which it is associated.
 
 <defopt {-order <i name>}>
 
 The name of the order, e.g., "MY:ORDER".  The order must be known to the
-<tt -flunky> and must have non-empty <tt form> metadata.<p>
+<tt -flunky> and must have non-empty <tt form> metadata.
 
 <defopt {-parmdict <i parmdict>}>
 
-The initial parameter dictionary.  It will be used to populate the dialog.<p>
+The initial parameter dictionary.  It will be used to populate the dialog.
 
 <defopt {-refreshon <i>events</i>}>
 
 The value of this option is a list of <xref notifier(n)>
-subjects and events that should cause the dialog to refresh its contents.<p>
+subjects and events that should cause the dialog to refresh its contents.
 
 The state of an order dialog often depends on the state of the
 application.  As the application state changes, for example, the
-content of pulldowns might change, thus necessitating a refresh.<p>
+content of pulldowns might change, thus necessitating a refresh.
 
 </deflist options>
 
@@ -84,10 +84,10 @@ order dialog by clicking on elements of the GUI.  The <i>tagdict</i>
 is a dictionary of tag names and values that reflects the entity on
 which the user clicked.  If the current field in the topmost order dialog 
 is tagged with one of the tags in the <i>tagdict</i>, the field will be
-set to the tag's value.<p>
+set to the tag's value.
 
 Field tags are set using the <xref order(n)>
-<tt parmtag> metadata value.<p>
+<tt parmtag> metadata value.
 
 </deflist commands>
 
@@ -95,35 +95,35 @@ Field tags are set using the <xref order(n)>
 
 Each instance of order_dialog(n) provides the following public
 methods; however, there should rarely be any need for other modules to
-use them.<p>
+use them.
 
 <deflist instance>
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
-Sets the value of the specified options.<p>
+Sets the value of the specified options.
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem get {<i>pathName</i> get}>
 
 Returns a dictionary of the values of the dialog's fields, by
-parameter name.<p>
+parameter name.
 
 <defitem enter {<i>pathName</i> enter <i>parmdict</i>}>
 
 Sets the values of one or more of the dialog's fields given a
 dictionary of the parameter names and values.  Downstream fields are
-refreshed as appropriate.<p>
+refreshed as appropriate.
 
 </deflist instance>
 
 <section "NOTIFIER EVENTS">
 
 Each instance of order_dialog(n) sends the following events from 
-subject <tt ::marsgui::order_dialog>:<p>
+subject <tt ::marsgui::order_dialog>:
 
 <deflist events>
 
@@ -134,22 +134,22 @@ given field receives the focus, this event is sent with
 <i>tags</i> set to the parameter's <tt parmtags> as defined in the
 order's metadata, or "<tt null>" if none.  When no field has the focus, or the
 dialog is closed, this event is sent with <i>tags</i> set to the
-empty string.<p>
+empty string.
 
 This allows GUI components to configure themselves so that the
 appropriate kind of object can be selected by clicking on the
 component, e.g., a neighborhood can be selected by clicking on the
-map.<p>
+map.
 
 </deflist events>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

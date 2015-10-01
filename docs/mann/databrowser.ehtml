@@ -14,49 +14,49 @@ namespace import ::marsgui::*
 This module defines the <code>::marsgui::databrowser</code> widget, which
 displays a tabular list of records. 
 It allows sorting and filtering of the data, and provides a
-<b>-selectioncmd</b> callback.<p>
+<b>-selectioncmd</b> callback.
 
 See the file <code>test_databrowser.tcl</code> in the <xref marsgui(n)>
-source directory for an example of how to use databrowser(n).<p>
+source directory for an example of how to use databrowser(n).
 
-databrowser(n) is based on the tablelist(n) widget.<p>
+databrowser(n) is based on the tablelist(n) widget.
 
 <subsection "Configuration">
 
 A databrowser(n) is configured with three primary options: 
-<b>-sourcecmd</b>, <b>-dictcmd</b>, and <b>-layout</b>.<p>
+<b>-sourcecmd</b>, <b>-dictcmd</b>, and <b>-layout</b>.
 
 The value of the <b>-sourcecmd</b> is a Tcl command that returns a list
 of unique record IDs (UIDs).  These IDs can be numeric IDs, object names,
 or arbitrary strings.  The browser will display the records with the
 listed IDs  To make the browser display a different list of records,
-reset the <b>-sourcecmd</b> and call <iref reload>.<p>
+reset the <b>-sourcecmd</b> and call <iref reload>.
 
 The widget retrieves each record using the <b>-dictcmd</b>, a prefix that
 takes one additional argument, the UID.  The record is returned as
 a dictionary of attribute names and values.  The UID need not appear
-in this dictionary.<p>
+in this dictionary.
 
 <b>Note:</b> The attribute name "_uid" is used by
-the widget and may not appear in the record data.<p>
+the widget and may not appear in the record data.
 
 The <b>-layout</b> option explains how to map attributes to browser
 columns.  Its value is a list of lists, one list for each
 column to be displayed in the browser.  Each list will have the
-following syntax:<p>
+following syntax:
 
-<i>cname label</i> ?<i>option value...</i>?<p>
+<i>cname label</i> ?<i>option value...</i>?
 
 where <i>cname</i> is the name of the attribute associated with
 the column, and <i>label</i> is the column title.  If <i>label</i> is a 
 single hyphen, "<code>-</code>", then the attribute name will be used 
-as the label.<p>
+as the label.
 
 The remaining options are tablelist(n) <iref columnconfigure>
 options, and are passed through to the tablelist(n).  In theory,
 any tablelist(n) column option can be used; be aware that many do not
 make sense in this context.  Of those that do, these are the most likely
-to be useful:<p>
+to be useful:
 
 <ul>
 <li> <b>-align left|center|right</b>
@@ -64,34 +64,34 @@ to be useful:<p>
 <li> <b>-foreground <i>color</i></b>
 <li> <b>-maxwidth <i>width</i></b>
 <li> <b>-sortmode ascii|dictionary|integer|real</b>
-</ul><p>
+</ul>
 
 databrowser(n) specifies the following options by default; they can
-be overridden by the user:<p>
+be overridden by the user:
 
 <ul>
 <li> The default <b>-sortmode</b> is <b>dictionary</b>.
 <li> If the caller specifies a numeric <b>-sortmode</b>, then the
      default <b>-align</b> is <b>right</b>.
-</ul><p>
+</ul>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem databrowser {databrowser <i>win ?options...?</i>}>
 
-Creates a new <iref databrowser> widget named <i>win</i>.<p>
+Creates a new <iref databrowser> widget named <i>win</i>.
 
-The <iref databrowser> widget may be created with the following options:<p>
+The <iref databrowser> widget may be created with the following options:
 
 <deflist databrowser options>
 
 <defopt {-borderwidth <i>width</i>}>
 <defopt {-relief <i>relief</i>}>
-These options are delegated to the hull ttk::frame widget.<p>
+These options are delegated to the hull ttk::frame widget.
 
 <defopt {-autoscan <i>flag</i>}>
 <defopt {-editendcommand <i>command</i>}>
@@ -107,7 +107,7 @@ These options are delegated to the hull ttk::frame widget.<p>
 <defopt {-titlecolumns <i>number</i>}>
 <defopt {-width <i>width</i>}>
 
-These options are delegated to the underlying tablelist(n) widget.<p>
+These options are delegated to the underlying tablelist(n) widget.
 
 <defopt {-sourcecmd <i>cmd</i>}>
 
@@ -126,7 +126,7 @@ dictionary.
 
 <b>Required.</b>  Defines the layout
 specification.  See <xref "Configuration"> for the syntax for
-layout specifications.<p>
+layout specifications.
 
 <defopt {-columnsorting <i>flag</i>}>
 
@@ -136,7 +136,7 @@ a particular column, in ascending or descending order, by clicking on
 the column label.  If <b>off</b>, the sort order is determined by the
 table or view being displayed, and cannot be changed.  (This is
 appropriate when the order of the items in the table is meaningful,
-e.g., priority ordering.)<p>
+e.g., priority ordering.)
 
 <defopt {-cutcopycmd <i>cmd</i>}>
 
@@ -144,33 +144,33 @@ Specifies a command that is called when the widget receives the
 &lt;&lt;Cut&gt;&gt; or &lt;&lt;Copy&gt;&gt; virtual events.  The
 command is called with one additional argument, the mode, which is
 either <b>cut</b> or <b>copy</b>.  The command is called only if 
-there is a selection.<p>
+there is a selection.
 
 <defopt {-displaycmd <i>cmd</i>}>
 
 Specifies a command that is called for each row inserted or updated in the
 browser.  The <i>cmd</i> is a command prefix that will be called with two
 additional arguments, the row index and a list of the data values to be
-displayed in the row's cells, in order from left to right.<p>
+displayed in the row's cells, in order from left to right.
 
 This command can be used to set the color or font of particular rows
-or cells based on the data they contain.<p>
+or cells based on the data they contain.
 
 <defopt {-filterbox <i>flag</i>}>
 
 If the flag is true (the default) the browser's toolbar will include
 a <xref filter(n)> widget for filtering the content.  If false,
-it will not.<p>
+it will not.
 
 <defopt {-pastecmd <i>cmd</i>}>
 
 Specifies a command that is called when the widget receives the
-&lt;&lt;Paste&gt;&gt; virtual event.<p>
+&lt;&lt;Paste&gt;&gt; virtual event.
 
 <defopt {-reloadbtn <i>flag</i>}>
 
 If <i>flag</i> is true, then a "reload" button will appear in the toolbar,
-to the right of the filter box.  Defaults to false.<p>
+to the right of the filter box.  Defaults to false.
 
 <defopt {-reloadon <i>eventList</i>}>
 
@@ -179,7 +179,7 @@ events, and reload its contents when any of them are received.  The
 <i>eventList</i> must be a list of <xref notifier(n)> subjects and
 events.  For example, the following option causes the browser to
 reload whenever the <b>&lt;Reset&gt;</b> event is received from
-the <b>::sim</b> object.<p>
+the <b>::sim</b> object.
 
 <pre>
     databrowser .browser             \
@@ -188,12 +188,12 @@ the <b>::sim</b> object.<p>
 </pre>
 
 If the value of <b>-reloadon</b> is changed, the previous bindings will be
-unbound; and all bindings will be unbound when the browser is destroyed.<p>
+unbound; and all bindings will be unbound when the browser is destroyed.
 
 <defopt {-selectioncmd <i>cmd</i>}>
 
 Specifies a command that is called whenever the databrowser(n)'s
-selection has changed (or might have changed).<p>
+selection has changed (or might have changed).
 
 </deflist databrowser options>
 
@@ -205,11 +205,11 @@ selection has changed (or might have changed).<p>
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cellcget {<i>win</i> cellcget <i>cellindex option</i>}>
 <defitem cellconfigure {<i>win</i> cellconfigure <i>cellindex</i> ?<i>option value...</i>?}>
@@ -221,38 +221,38 @@ Sets the values of the specified <i>options</i>.<p>
 
 These methods are delegated to the underlying tablelist(n), and query
 the tablelist(n) row, column and cell options.  See the tablelist(n)
-documentation for details.<p>
+documentation for details.
 
 <defitem cindex2cname {<i>win</i> cindex2cname <i>cindex</i>}>
 
 Given a tablelist column index,  returns the column's attribute
-name (or "" if none).<p>
+name (or "" if none).
 
 <defitem cname2cindex {<i>win</i> cname2cindex <i>cname</i>}>
 
 Given a column's attribute name, returns the matching tablelist column
-index (or "" if none).<p>
+index (or "" if none).
 
 <defitem clear {<i>win</i> clear ?-silent?}>
 
 Deletes all rows from the browser.  By default, the <b>-selectioncmd</b>
-is called; if <b>-silent</b> is given, however, it is not.<p>
+is called; if <b>-silent</b> is given, however, it is not.
 
 <defitem curselection {<i>win</i> curselection}>
 
 Returns a list of the row indices of the selected rows, or the empty list
-if no rows are selected.  See also <iref uid curselection>.<p>
+if no rows are selected.  See also <iref uid curselection>.
 
 <defitem editwinpath {<i>win</i> editwinpath}>
 
 This method is delegated to the underlying tablelist(n), and retrieves
 the name of the editor window in the <code>-editstartcommand</code>
-and <code>-editendcommand</code> callbacks.<p>
+and <code>-editendcommand</code> callbacks.
 
 <defitem get {<i>win</i> get <i>first last</i>}>
 <defitem get {<i>win</i> get <i>indexList</i>}>
 
-Retrieves the data from one or more rows in the browser.<p>
+Retrieves the data from one or more rows in the browser.
 
 The first form of the command returns a list whose elements are all of the
 items (i.e., row contents) between <i>first</i> and <i>last</i>, inclusive.
@@ -261,16 +261,16 @@ the list <i>indexList</i>: if the latter contains exactly one index then the
 return value is the item indicated by that index (or an empty
 string if the index refers to a non-existent item); otherwise the command
 returns the list of all of the items corresponding to the indices
-specified by <i>indexList</i>.<p>
+specified by <i>indexList</i>.
 
 <defitem layout {<i>win</i> layout}>
 
 Asks the databrowser(n) to layout the columns afresh, and then reload
 the data from the database.  Note that databrowser(n) does this
-automatically if the <b>-layout</b> option is are changed.<p>
+automatically if the <b>-layout</b> option is are changed.
 
 The <b>-displaycmd</b>, if defined, will (eventually) be called for
-each row loaded into the browser.<p>
+each row loaded into the browser.
 
 <defitem reload {<i>win</i> reload ?-force?}>
 
@@ -279,108 +279,108 @@ from the database for the current <b>-view</b>.  By default, the command
 schedules a "lazy" reload: the content will only be reloaded once, no
 matter how times the command is called; the reload will not be done
 until control is returned to the Tk event loop; and not until the 
-browser window is actually mapped.<p>
+browser window is actually mapped.
 
 If the <b>-force</b> option is given, the content will be reloaded
 immediately, and any pending lazy updates will be canceled.  
 This is suitable for use in code already protected by
-a <xref lazyupdater(n)>.<p>
+a <xref lazyupdater(n)>.
 
 The <b>-displaycmd</b>, if defined, will (eventually) be called for
-each row loaded into the browser.<p>
+each row loaded into the browser.
 
 <defitem rindex2uid {<i>win</i> rindex2uid <i>rindex</i>}>
 
 Given a tablelist row index, returns the matching
-UID (or "" if none).<p>
+UID (or "" if none).
 
 <defitem selection {<i>win</i> selection <i>subcommand</i> ?<i>args...</i>?}>
 
 This method is delegated to the underlying tablelist(n) widget.  Note that
 if this method is used to change the selection, the <b>-selectioncmd</b>
-will <i>not</i> be called.<p>
+will <i>not</i> be called.
 
 <defitem sortby {<i>win</i> sortby <i>cname</i> ?<i>direction</i>?}>
 
 Sorts the contents of the browser on the column named <i>cname</i>;
 the sort direction defaults to <b>-increasing</b>, but can be set to
-either <b>-increasing</b> or <b>-decreasing</b>.<p>
+either <b>-increasing</b> or <b>-decreasing</b>.
 
 <defitem tlist {<i>win</i> tlist}>
 
-Returns the widget's underlying tablelist(n) widget.<p>
+Returns the widget's underlying tablelist(n) widget.
 
 <defitem tlistbody {<i>win</i> tlistbody}>
 
 Returns the name of the widget's underlying tablelist(n)'s "body" 
-widget, which is sometimes needed for event bindings.<p>
+widget, which is sometimes needed for event bindings.
 
 <defitem toolbar {<i>win</i> toolbar}>
 
 Returns a ttk::frame into which the caller can add toolbar buttons and
-other controls.<p>
+other controls.
 
 <defitem uid2rindex {<i>win</i> uid2rindex <i>uid</i>}>
 
 Given a record UID, returns the matching tablelist row
-index (or "" if none).<p>
+index (or "" if none).
 
 <defitem uid {<i>win</i> uid <i>subcommand</i> ?<i>args...</i>?}>
 
 Every record has a unique ID (UID) used to retrieve its data. This ID
 is stored in the tablelist in a hidden column called "_uid". The
 databrowser(n) allows the client to update and manipulate rows by UID
-rather than by row index using the subcommands of <iref uid>.<p>
+rather than by row index using the subcommands of <iref uid>.
 
 <deflist uid>
 
 <defitem {uid curselection} {<i>win</i> uid curselection}>
 
 Returns a list of the UIDs of the selected rows, or the empty list
-if no rows are selected.  See also <iref curselection>.<p>
+if no rows are selected.  See also <iref curselection>.
 
 <defitem {uid delete} {<i>win</i> uid delete <i>uid</i>}>
 
-Deletes the row with the specified <i>uid</i>.<p>
+Deletes the row with the specified <i>uid</i>.
 
 <defitem {uid update} {<i>win</i> uid update <i>uid</i>}>
 
 Notifies the databrowser(n) that a row with the specified <i>uid</i>
-has been updated, and the changes need to be displayed.<p>
+has been updated, and the changes need to be displayed.
 
-The <b>-displaycmd</b> will be called.<p>
+The <b>-displaycmd</b> will be called.
 
 <defitem {uid select} {<i>win</i> uid select <i>uids</i> ?-silent?}>
 
 Selects the rows associated with the UIDs, ignoring unknown
 uids.  By default, calls the <b>-selectioncmd</b>; if 
-<b>-silent</b> is given, it does not.<p>
+<b>-silent</b> is given, it does not.
 
 <defitem {uid setbg} {<i>win</i> uid setbg <i>uid color</i>}>
 
-Sets the background color of the row with the given <i>uid</i>.<p>
+Sets the background color of the row with the given <i>uid</i>.
 
 <defitem {uid setfg} {<i>win</i> uid setfg <i>uid color</i>}>
 
-Sets the foreground color of the row with the given <i>uid</i>.<p>
+Sets the foreground color of the row with the given <i>uid</i>.
 
 <defitem {uid setcellbg} {<i>win</i> uid setcellbg <i>uid cname color</i>}>
 
 Sets the background color of the cell with the given <i>uid</i> and column
-name.<p>
+name.
 
 <defitem {uid setcellfg} {<i>win</i> uid setcellfg <i>uid cname color</i>}>
 
 Sets the foreground color of the cell with the given <i>uid</i>
-and column name.<p>
+and column name.
 
 <defitem {uid setcelltext} {<i>win</i> uid setcelltext <i>uid cname value</i>}>
 Sets the text of the cell with the given <i>uid</i>
-and column name.<p>
+and column name.
 
 <defitem {uid setfont} {<i>win</i> uid setfont <i>uid font</i>}>
 
-Sets the font of the row with the given <i>uid</i>.<p>
+Sets the font of the row with the given <i>uid</i>.
 
 </deflist uid>
 
@@ -388,21 +388,21 @@ Sets the font of the row with the given <i>uid</i>.<p>
 
 This method is delegated to the underlying tablelist(n), and retrieves
 the name of the window embedded via the cell <code>-window</code>
-option, or "" if none.<p>
+option, or "" if none.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-databrowser(n) requires Tcl 8.5 or later.<p>
+databrowser(n) requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks, Will Duquette<p>
+Dave Hanks, Will Duquette
 
 <section HISTORY>
 
-databrowser(n) is a new widget patterned after <xref sqlbrowser(n)>.<p>
+databrowser(n) is a new widget patterned after <xref sqlbrowser(n)>.
 
 </manpage>
 

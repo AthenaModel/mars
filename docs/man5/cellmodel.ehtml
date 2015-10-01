@@ -12,15 +12,15 @@ numeric constant, or as a formula.  <i>Solving</i> a cell model means
 to compute the values of all cells with formulas, iterating if
 necessary until the solution is found.  As such, a cell model can be
 thought of as a spreadsheet model in which cell names are used instead
-of row and column indices.<p>
+of row and column indices.
 
 Cell models are defined using the cellmodel(5) language, which is
 defined in this man page.  The <xref cellmodel(n)> module contains
-code for the definition and solution of cell models.<p>
+code for the definition and solution of cell models.
 
 <subsection "Cells">
 
-Cells are defined using the <iref let> command:<p>
+Cells are defined using the <iref let> command:
 
 <pre>
     let A = 5
@@ -32,7 +32,7 @@ Cells are defined using the <iref let> command:<p>
 
 The value of a cell can be a constant or a formula.  Formulas are
 simply Tcl expressions.  Cell values are retrieved by using the cell's
-name as a Tcl command:<p>
+name as a Tcl command:
 
 <pre>
     let A = 5
@@ -42,14 +42,14 @@ name as a Tcl command:<p>
 
 All of the standard Tcl math operators and functions are available;
 see also <xref FUNCTIONS>.  In addition, formulas can be defined
-using <xref MACROS>.<p>
+using <xref MACROS>.
 
 <subsection "Pages">
 
 Just as a spreadsheet can contain multiple worksheets, a cell model
 can contain multiple pages.  Every cell model begins with a page
 called the <b>null</b> page; the model may add additional named
-pages.<p>
+pages.
 
 Each page is associated with a Tcl namespace.  The <b>null</b> page is
 associated with the global namespace, and each named page has a
@@ -59,9 +59,9 @@ A formula on a given page may refer to cells defined on the same page
 by name, and to cells defined on previous pages by qualifying the cell
 name with the page name.  (See <xref Formulas>.)  Cells defined on
 the <b>null</b> page can be referred to on any page without
-qualification.<p>
+qualification.
 
-New pages are created using the <iref page> command.<p>
+New pages are created using the <iref page> command.
 
 <pre>
     # These cells are defined on the null page.
@@ -85,7 +85,7 @@ New pages are created using the <iref page> command.<p>
 
 A cell model's pages are solved in order of definition, starting with
 the <b>null</b> page.  Thus, a page can refer to cells on previous
-pages, but not to cells on subsequent pages.<p>
+pages, but not to cells on subsequent pages.
 
 Within a page, cells may be defined in any order; it isn't necessary
 for a cell to be defined after the cells it references from the same
@@ -94,7 +94,7 @@ page.
 <subsection "Cyclic vs. Acyclic Pages">
 
 If a page contains two or more cells whose formulas refer to each
-other in a circular fashion, the page is said to be <i>cyclic</i>:<p>
+other in a circular fashion, the page is said to be <i>cyclic</i>:
 
 <pre>
     let A = {[B] + 1}
@@ -103,23 +103,23 @@ other in a circular fashion, the page is said to be <i>cyclic</i>:<p>
 
 When a page is cyclic, <xref cellmodel(n)> will attempt to converge
 to a solution using the Gauss-Seidel algorithm; note that there might
-not be a valid solution.<p>
+not be a valid solution.
 
 If a page contains no circular definitions, it is said to be
 <i>acyclic</i>.  In this case, <xref cellmodel(n)> will solve the
 formulas on the page in the most efficient order, regardless of the
-order in which they are defined.<p>
+order in which they are defined.
 
 <subsection "Copying Pages">
 
 It's possible to copy cell definitions onto a new page from a previous
-page using the <iref copypage> command.<p>
+page using the <iref copypage> command.
 
 <section COMMANDS>
 
 A cell model specification is a Tcl script that uses the following
 commands to define the cell model.  (Other standard Tcl commands may
-be used as well.)<p>
+be used as well.)
 
 <deflist commands>
 
@@ -130,7 +130,7 @@ The <iref let> command defines a new <b>number</b> cell on the
 current page.  The cell <i>name</i> must begin with a letter, and can
 contain letters, digits, underscores, and internal periods.  The
 formula must be a single token; thus, formulas containing whitespace
-must be braced:<p>
+must be braced:
 
 <pre>
     let A = 5             ;# Constant cell
@@ -139,21 +139,21 @@ must be braced:<p>
 </pre>
 
 At present, only one option is defined, and it's of use only for
-formula cells:<p>
+formula cells:
 
 <deflist options>
 
 <defopt {-value <i>initialValue</i>}>
 
 This option allows the model to assign a formula cell's initial value
-explicitly.<p>
+explicitly.
 
 Every cell has a numeric value at all times.  Before the model has
 been solved, a formula cell's value defaults to 0.  This is fine, on
 acyclic pages; on cyclic pages, however, at least one cell will be
 referenced before its value has been computed.  Because convergence
 often depends on having a good starting point, it's useful to be able
-to specify the cell's initial value explicitly.<p>
+to specify the cell's initial value explicitly.
 
 </deflist options>
 
@@ -162,7 +162,7 @@ to specify the cell's initial value explicitly.<p>
 The <iref letsym> command defines a new <b>symbol</b> cell on the
 current page.  The cell <i>name</i> must begin with a letter, and can
 contain letters, digits, underscores, and internal periods.  The
-formula must be a single token; thus, formulas must be braced:<p>
+formula must be a single token; thus, formulas must be braced:
 
 <pre>
     letsym A = {"Constant String"}
@@ -170,14 +170,14 @@ formula must be a single token; thus, formulas must be braced:<p>
     letsym C = {[B] &lt; 10 ? "Under 10" : "Over 10"}
 </pre>
 
-At present, only one option is defined:<p>
+At present, only one option is defined:
 
 <deflist options>
 
 <defopt {-value <i>initialValue</i>}>
 
 This option allows the model to assign the cell's initial value
-explicitly.<p>
+explicitly.
 
 </deflist options>
 
@@ -185,14 +185,14 @@ explicitly.<p>
 
 Creates a new page called <i>name</i>; subsequent cells will be
 defined on this page.  The <i>name</i> must begin with a letter, and
-may contains letters, digits, and underscores.<p>
+may contains letters, digits, and underscores.
 
 <defitem copypage {copypage <i>page</i> ?<i>options...</i>?}>
 
 Copies cell definitions from the named <i>page</i> to the current
 page.  Formula cells are copied as is; constant cells are copied as
 formulas referring to the constant value on the copied page.  For
-example,<p>
+example,
 
 <pre>
     page A
@@ -204,7 +204,7 @@ example,<p>
     copypage A
 </pre>
 
-will result in the following cell definitions:<p>
+will result in the following cell definitions:
 
 <pre>
     A::X = 5
@@ -214,19 +214,19 @@ will result in the following cell definitions:<p>
 </pre>
 
 Thus, changing the value of A::Y will change the values of both
-A::Y and B::Y.<p>
+A::Y and B::Y.
 
 Copied cell definitions can be overridden using the <iref let>
-command.<p>
+command.
 
-The following options are defined:<p>
+The following options are defined:
 
 <deflist options>
 
 <defopt {-except <i>cells</i>}>
 
 Specifies a list of cell names to exclude when using the <b>-copy</b>
-option.  The new page will not contain the excluded cells.<p>
+option.  The new page will not contain the excluded cells.
 
 The cell names should not be qualified.  For example,
 
@@ -235,27 +235,27 @@ The cell names should not be qualified.  For example,
 </pre>
 
 will copy the definitions from page P, except for the definitions of
-cells P::C1, P::C2, and P::C3.<p>
+cells P::C1, P::C2, and P::C3.
 
 </deflist options>
 
 <defitem initfrom {initfrom <i>page</i> ?<i>page...</i>?}>
 
 Causes the cells on the current page to be initialized from the named
-<i>page</i> or pages whenever the current page's cells are to be solved.<p>
+<i>page</i> or pages whenever the current page's cells are to be solved.
 
 Every cell in the model has a default value, as specified by the
 <code>-value</code> option when the cell is defined.  When the model
 is first loaded or reset, every cell will
 have this value.  If a page is solved repeatedly subsequently, each
-cell on the page will begin with the value computed the last time.<p>
+cell on the page will begin with the value computed the last time.
 
 Sometimes, though, it's desirable to start a page with the values from
 some other page or pages.  For example, suppose there are two pages, A
 and B.  B uses <iref copypage> to copy A's formulas, and then
 modifies a few of them.  The intent is that B should take A's results,
 and then modify them.  For this to work, B must not only have A's
-formulas; it must also use A's results as its starting point.<p>
+formulas; it must also use A's results as its starting point.
 
 <defitem function {function <i>name arglist body</i>}>
 
@@ -264,13 +264,13 @@ simply a Tcl <xref tcl:proc(n)> that the formula interpreter sees as
 a function.  It can take any number of arguments, and should return a
 single value.  The body can contain a small subset of the standard Tcl
 commands: <xref tcl:expr(n)>, <xref tcl:set(n)>,
-<xref tcl:if(n)>, and <xref tcl:return(n)>.<p>
+<xref tcl:if(n)>, and <xref tcl:return(n)>.
 
 <defitem index {index <i>name indexlist</i>}>
 
 Defines an index for use with the <iref sum> and <iref prod>
 macros.  For example, if you want to sum over cells A.$i where i is in
-the set {1 2 3}, you'd define the index <code>i</code> like this:<p>
+the set {1 2 3}, you'd define the index <code>i</code> like this:
 
 <pre>
     index i {1 2 3}
@@ -279,7 +279,7 @@ the set {1 2 3}, you'd define the index <code>i</code> like this:<p>
 <defitem forall {forall <i>index script</i>}>
 
 Includes a <i>script</i> of cellmodel(5) commands for all values of
-the named <i>index</i>.  For example,<p>
+the named <i>index</i>.  For example,
 
 <pre>
     index i {a b c}
@@ -291,7 +291,7 @@ the named <i>index</i>.  For example,<p>
 
 The <i>index</i> can also be specified as a pair {<i>ivar index</i>};
 in this case, the variable name need not be the same as the index
-name.  For example,<p>
+name.  For example,
 
 <pre>
     index letters {a b c}
@@ -309,10 +309,10 @@ formula definitions.  Macros have names and argument lists, like Tcl
 procs, but their body is a <i>template</i> string that can contain variable
 references and calls to other macros.  The optional <i>initbody</i>
 can compute variables based on the arguments; these variables and the
-arguments can appear in the template string.<p>
+arguments can appear in the template string.
 
 For example, the following macro returns the formula for the
-sum of squares of two variables A.i, given their indices:<p>
+sum of squares of two variables A.i, given their indices:
 
 <pre>
     define ssq {i j} {[A.$i]**2 + [A.$j]**2}
@@ -321,10 +321,10 @@ sum of squares of two variables A.i, given their indices:<p>
 Note that the text in square brackets is <b>not</b> interpolated as a
 command; square brackets are reserved for cell value references, which
 are evaluated when the model is solved.  Macros, by comparison, are
-evaluated when the model is defined.<p>
+evaluated when the model is defined.
 
 See <xref MACROS> for more information on how to use macros, and for
-a list of predefined macros.<p>
+a list of predefined macros.
 
 </deflist commands>
 
@@ -332,7 +332,7 @@ a list of predefined macros.<p>
 
 Cell model formulas may contain the following functions, in addition
 to the standard Tcl <xref tcl:mathfunc(n)> functions; plus, new
-functions may be defined using the <iref function> command.<p>
+functions may be defined using the <iref function> command.
 
 <deflist funcs>
 
@@ -342,7 +342,7 @@ The case() function evaluates all of its arguments.  Then, if
 <i>condition1</i> is true (i.e., non-zero) it returns <i>value1</i>;
 otherwise, if <i>condition2</i> is true it returns <i>value2</i>; and
 so on.  If none of the conditions evaluate to true, the function
-returns 0.  For example, <p>
+returns 0.  For example, 
 
 <pre>
     let sign = {
@@ -352,7 +352,7 @@ returns 0.  For example, <p>
     }
 </pre>
 
-To do an "else" case, use "true" as the condition:<p>
+To do an "else" case, use "true" as the condition:
 
 <pre>
     let sign = {
@@ -369,13 +369,13 @@ The epsilon() function returns the epsilon value used to control
 convergence (the <xref cellmodel(n)> object's <b>-epsilon</b>
 option).  It is usually specified as a negative power of 10, i.e.,
 .0001; the number of zeroes is then the number of significant digits
-in the converged outputs.<p>
+in the converged outputs.
 
 <defitem fif {fif(<i>condition, value1,</i> ?<i>value2</i>?)}>
 
 The fif() function evaluates the <i>condition</i>; if it is true, it
 returns <i>value1</i> and if not, <i>value2</i>.  If <i>value2</i> is
-omitted, it defaults to 0.0.  For example, <p>
+omitted, it defaults to 0.0.  For example, 
 
 <pre>
     let sign = {
@@ -388,13 +388,13 @@ omitted, it defaults to 0.0.  For example, <p>
 Formats the <i>value</i> or values given the <i>fmt</i> string,
 just as <xref tcl:format(n)> does.  This can be used in
 <b>symbol</b> formulas (see <iref letsym>); it can also be used to
-round numeric values to a specified number of decimals places.<p>
+round numeric values to a specified number of decimals places.
 
 <defitem ediff {ediff(<i>a,b</i>)}>
 
 This function computes and returns the difference <i>a - b</i>.  If
 the difference is smaller than the the number of significant digits,
-as specified by <iref epsilon>, then this function returns 0.0.<p>
+as specified by <iref epsilon>, then this function returns 0.0.
 
 </deflist funcs>
 
@@ -404,9 +404,9 @@ A cellmodel(5) macro is a command that returns a formula or part of a
 formula.  Macros are evaluated when the model is being
 loaded.  They are usually used to define multiple formulas
 that have the same pattern.  Macros are created using the
-<iref define> command.<p>
+<iref define> command.
 
-A macro can be used to create all or part of a cell's formula:<p>
+A macro can be used to create all or part of a cell's formula:
 
 <pre>
     define ssq {i j} {[A.$i]**2 + [A.$j]**2}
@@ -419,7 +419,7 @@ In "SumOfSquares", the macro is called as a normal Tcl command at file
 scope.  It simply returns the desired formula.  In "TwiceSum", the
 macro is embedded in a formula.  Because square brackets denote cell
 references, macros are delimited by "<lb>:" and ":<rb>".  The text returned
-by the macro is simply substituted into the formula.<p>
+by the macro is simply substituted into the formula.
 
 Care is required when using macros.  For example, compare these two
 formulas, each using the "ssq" macro defined above:
@@ -431,7 +431,7 @@ formulas, each using the "ssq" macro defined above:
 
 The former is almost certainly what you're looking for; the latter is
 almost certainly a mistake.  Consequently, <code>ssq</code> should
-probably be defined as follows:<p>
+probably be defined as follows:
 
 <pre>
     define ssq {i j} {([A.$i]**2 + [A.$j]**2)}
@@ -439,7 +439,7 @@ probably be defined as follows:<p>
 
 
 In addition to user-defined macros, cell models may also use the
-following:<p>
+following:
 
 <deflist macros>
 
@@ -448,7 +448,7 @@ following:<p>
 This macro returns a formula that's the sum of <i>formula</i> over the
 named <iref index>.  For
 example, suppose you have cells A.1, A.2,...,A.5.  Then, the two
-following cell definitions are equivalent:<p>
+following cell definitions are equivalent:
 
 <pre>
     index i {1 2 3 4 5}
@@ -457,11 +457,11 @@ following cell definitions are equivalent:<p>
     let Sum = {<lb>:sum i {[A.$i]}:<rb>}
 </pre>
 
-Note the summation formula is parenthesized automatically.<p>
+Note the summation formula is parenthesized automatically.
 
 The <i>index</i> can also be specified as a pair {<i>ivar index</i>};
 in this case, the variable name need not be the same as the index
-name.  For example,<p>
+name.  For example,
 
 <pre>
     index numbers {1 2 3 4 5}
@@ -474,7 +474,7 @@ name.  For example,<p>
 This macro returns a formula that's the product of <i>formula</i> over the
 named <iref index>.  For
 example, suppose you have cells A.1, A.2,...,A.5.  Then, the two
-following cell definitions are equivalent:<p>
+following cell definitions are equivalent:
 
 <pre>
     index i {1 2 3 4 5}
@@ -483,11 +483,11 @@ following cell definitions are equivalent:<p>
     let Product = {<lb>:prod i {[A.$i]}:<rb>}
 </pre>
 
-Note that the factors are parenthesized automatically.<p>
+Note that the factors are parenthesized automatically.
 
 The <i>index</i> can also be specified as a pair {<i>ivar index</i>};
 in this case, the variable name need not be the same as the index
-name.  For example,<p>
+name.  For example,
 
 <pre>
     index numbers {1 2 3 4 5}
@@ -501,7 +501,7 @@ name.  For example,<p>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

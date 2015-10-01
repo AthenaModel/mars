@@ -12,31 +12,31 @@ namespace import ::marsutil::*
 <section DESCRIPTION>
 
 The oohelpers(n) package contains commands that make using TclOO a bit 
-easier.<p>
+easier.
 
 <section "GENERAL COMMANDS">
 
 This module defines the following commands to be used with TclOO classes
-and objects.<p>
+and objects.
 
 <deflist commands>
 
 <defitem "isa" {isa <i cls obj>}>
 
 Returns 1 if <i obj> is an instance of <i cls> or one of its subclasses,
-and 0 otherwise.<p>
+and 0 otherwise.
 
 <defitem "isancestor" {isancestor <i parent child>}>
 
 Returns 1 if <i parent> is an ancestor class of the <i child> class
-(including being a direct superclass), and 0 otherwise.<p>
+(including being a direct superclass), and 0 otherwise.
 
 </deflist commands>
 
 <section "CLASS-DEFINITION COMMANDS">
 
 This module defines the following commands to be used in class definitions or
-with <code>oo::define</code>:<p>
+with <code>oo::define</code>:
 
 <deflist define>
 
@@ -44,7 +44,7 @@ with <code>oo::define</code>:<p>
 
 Defines a class metadata variable, a constant <i value> that can be retrieved
 from the class object and from its instances by calling the method of the
-same <i name>.  For example,<p>
+same <i name>.  For example,
 
 <example>
 oo::class create myclass {
@@ -70,7 +70,7 @@ oo::class create myclass {
 Defines a class metadata variable whose value is a dictionary.  Such
 variables are just like normal <iref meta> variables, except that the
 automatically generated methods have an optional <i key> argument, allowing
-for dictionary look ups. For example,<p>
+for dictionary look ups. For example,
 
 <example>
 oo::class create myclass {
@@ -94,7 +94,7 @@ set points [$obj lookup B]
 <defitem "typemethod" {typemethod <i>method arglist body</i>}>
 
 <b>Deprecated.</b> In class definitions, the syntax "<tt self method>" is
-equivalent to "<tt typemethod>" as defined here.<p>
+equivalent to "<tt typemethod>" as defined here.
 
 Defines a method on the class's class object.  In other words,
 
@@ -119,7 +119,7 @@ oo::objdefine myclass {
 <section "BODY COMMANDS">
 
 This module defines the following commands for use in method bodies
-(including constructor and destructor bodies):<p>
+(including constructor and destructor bodies):
 
 <deflist body>
 
@@ -127,7 +127,7 @@ This module defines the following commands for use in method bodies
 
 Returns a command prefix consisting of a call to the current object's
 named <i>method</i> plus any additional arguments.  The command prefix
-can be called by other objects even if the method is unexported.<p>
+can be called by other objects even if the method is unexported.
 
 </deflist body>
 
@@ -137,7 +137,7 @@ This package requires Tcl 8.6 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

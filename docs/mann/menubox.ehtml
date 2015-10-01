@@ -12,27 +12,27 @@ namespace import ::marsgui::*
 <section DESCRIPTION>
 
 menubox(n) is a ttk::combobox(n) widget tailored to be used as a read-only
-pull-down widget.<p>
+pull-down widget.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem menubox {menubox <i>pathName ?options...?</i>}>
 
-Creates a new menubox(n) widget named <i>pathName</i>.<p>
+Creates a new menubox(n) widget named <i>pathName</i>.
 
 The menubox(n) widget may be created with any of the
-ttk::combobox options, as well as the following:<p>
+ttk::combobox options, as well as the following:
 
 <deflist options>
 
 <defopt {-command <i>cmd</i>}>
 
 Specifies a command to be called, with no additional arguments,
-whenever the user selects an item from the menubox's pulldown list.<p>
+whenever the user selects an item from the menubox's pulldown list.
 
 </deflist options>
 
@@ -41,13 +41,13 @@ whenever the user selects an item from the menubox's pulldown list.<p>
 <section "INSTANCE COMMAND">
 
 The instance command has the same subcommands as the ttk::notebook
-widget, starting with the following:<p>
+widget, starting with the following:
 
 <deflist instance>
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
@@ -65,7 +65,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

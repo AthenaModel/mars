@@ -15,18 +15,18 @@ gtclient(n) defines an API which allows a
 <xref commclient(n)> to handle game truth published via
 <xref gtserver(n)>/<xref commserver(n)>.  See the
 <xref EXAMPLE>, below, for how to hook up the gtclient(n)
-to the <xref commclient(n)> object.<p>
+to the <xref commclient(n)> object.
 
 Once a gtclient(n) object is created and connected to
 the <xref commclient(n)>, it will receive all game truth published by
 the <xref gtserver(n)>.  Other modules in the application can
 retrieve game truth values at any time using the <iref get>
 method, and can also register a variety of callbacks for handling
-updates as they occur.<p>
+updates as they occur.
 
 Note that the gtclient(n) API is designed to match the message protocol
 used by <xref gtserver(n)>; see the <xref gtserver(n)> man page
-for details of the protocol.<p>
+for details of the protocol.
 
 <section COMMANDS>
 
@@ -37,41 +37,41 @@ for details of the protocol.<p>
 Creates a new gtclient(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref gtclient> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The <iref gtclient> may be created with the following options:<p>
+The <iref gtclient> may be created with the following options:
 
 <deflist gtclient options>
 
 <defopt {-logger <i>name</i>}>
 
 The name of the <xref logger(n)> object to use to log gtclient(n)
-activity.<p>
+activity.
 
 <defopt {-logcomponent <i>name</i>}>
 
 The component name to pass to the <code>-logger</code> object when
-logging messages; defaults to "gt".<p>
+logging messages; defaults to "gt".
 
 <defopt {-refreshstartcmd <i>command</i>}>
 
 If defined, the <code>-refreshstartcmd</code> is called in the global scope
-on <iref startrefresh>, before the refresh begins.<p>
+on <iref startrefresh>, before the refresh begins.
 
 <defopt {-refreshendcmd <i>command</i>}>
 
 If defined, the <code>-refreshendcmd</code> is called in the global scope
-on <iref endrefresh>, before any watchers are called.<p>
+on <iref endrefresh>, before any watchers are called.
 
 <defopt {-completecmd <i>command</i>}>
 
 If defined, the <code>-completecmd</code> is called in the global
-scope whenever <iref complete> method is received.<p>
+scope whenever <iref complete> method is received.
 
 <defopt {-db <i>name</i>}>
 
 Defines the workstation database that stores game truth objects that are 
-received from the <xref gtserver(n)>.<p>
+received from the <xref gtserver(n)>.
 
 </deflist gtclient options>
 
@@ -80,60 +80,60 @@ received from the <xref gtserver(n)>.<p>
 <section "INSTANCE COMMAND">
 
 Each instance of the <iref gtclient> object has the following
-subcommands:<p>
+subcommands:
 
 <deflist instance>
 
 <defitem cget {$gtclient cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {$gtclient configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem startrefresh {$gtclient startrefresh}>
 
 Indicates the beginning of a game truth refresh.  Watchers will not be
-called until the refresh is complete.<p>
+called until the refresh is complete.
 
 <defitem endrefresh {$gtclient endrefresh}>
 
 Indicates the end of a game truth refresh.  The
 <code>-refreshendcmd</code> will be called, if defined, followed by
-all defined watcher callbacks.<p>
+all defined watcher callbacks.
 
 <defitem set {$gtclient set <i>name value</i> ?<i>name value...</i>?}>
 
 Saves the named game truth variables with the specified values,
-and calls any watcher callbacks (see <iref watch>, below).<p>
+and calls any watcher callbacks (see <iref watch>, below).
 
 Note that if this method is called during a refresh, the watchers will
-not be called until the refresh is over.<p>
+not be called until the refresh is over.
 
 <defitem unset {$gtclient unset <i>name</i> ?<i>name</i>...?}>
 
 Unsets the named game truth variables.  The variables are erased from
-the gtclient(n)'s memory.<p>
+the gtclient(n)'s memory.
 
 <defitem clear {$gtclient clear}>
 
-Unsets all game truth variables.<p>
+Unsets all game truth variables.
 
 <defitem complete {$gtclient complete}>
 
 Notifies the client that the current set of game truth variables is
 consistent and complete; if defined, the <code>-completecmd</code>
-is called.<p>
+is called.
 
 <defitem get {$gtclient get <i>name</i>}>
 
-Returns the value of the named game truth variable.<p>
+Returns the value of the named game truth variable.
 
 <defitem var {$gtclient var <i>name</i>}>
 
 Returns the fully-qualified variable name associated with the
-named game truth variable, for use as a <code>-textvariable</code>.<p>
+named game truth variable, for use as a <code>-textvariable</code>.
 
 <defitem watch {$gtclient watch <i>name command</i>}>
 
@@ -141,16 +141,16 @@ Defines a watcher callback on the named game truth variable; whenever
 the variable's value is updated, the new value will be append to
 <i>command</i> and the result evaluated in the global scope.  All
 defined watchers are also called after each refresh, immediately
-after the <code>-refreshendcmd</code>.<p>
+after the <code>-refreshendcmd</code>.
 
-To delete a watcher, set it to the empty string.<p>
+To delete a watcher, set it to the empty string.
 
 <defitem class {$gtclient class <i>class table idcolumn</i>}>
 
 Defines a class of simulation object that will be created, updated and perhaps 
 deleted. Each class has a corresponding <i>table</i> in the workstation database.
 This table is the one that has rows created, updated or deleted. The
-<i>idcolumn</i> specifies which column in the table is the key column.<p>
+<i>idcolumn</i> specifies which column in the table is the key column.
 
 <defitem update {$gtclient update <i>class id</i> ?<i>dict</i>?}>
 
@@ -160,7 +160,7 @@ the workstation database is updated with the information in the dict. Otherwise
 the workstation database has a new record created that has the supplied id
 and data in the supplied dict.
 A call is made to the callback supplied in the <iref onupdate> 
-command, if there is one. The callback has appended to it "update $id $dict".<p>
+command, if there is one. The callback has appended to it "update $id $dict".
 
 <defitem delete {$gtclient delete <i>class id</i>}>
 
@@ -168,7 +168,7 @@ Receives a delete message from the <xref gtserver(n)> with the supplied
 <i>class</i> and <i>id</i>. A call is made to the callback supplie in the 
 <iref onupdate> command, if there is one. The callback has appended to it
 "delete $id $dict", where <i>dict</i> is queried from the workstation database.
-<p>. The item is then removed from the workstation database.
+. The item is then removed from the workstation database.
 
 <defitem onupdate {$gtclient onupdate <i>class prefix</i>}>
 
@@ -176,9 +176,9 @@ Defines a callback that should be made whenever the client receives a create,
 update or delete message from the <xref gtserver(n)>. 
 The callback has appended
 to it the string "create", "update" or "delete" along with the id and dict for
-the object.<p>
+the object.
 
-To delete an onpudate command set it to the empty string.<p>
+To delete an onpudate command set it to the empty string.
 
 </deflist instance>
 
@@ -187,7 +187,7 @@ To delete an onpudate command set it to the empty string.<p>
 The gtclient(n) is initialized as follows.  Note that if the
 application has a single gtclient(n), it is conventionally called
 <code>::gt</code>, as shown; however, any name will do, provided that
-the <xref commclient(n)>'s alias is "gt".<p> 
+the <xref commclient(n)>'s alias is "gt". 
 
 <pre>
 # FIRST, create the gtclient(n) object
@@ -241,7 +241,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

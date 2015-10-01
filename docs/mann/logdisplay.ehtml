@@ -17,14 +17,14 @@ define parsing, filtering, and formatting details.  It does assume
 that each log entry consists of one or more fields which can easily
 be displayed in columns.  The final field in each entry can consist
 of multiple lines of data as flattened by <xref logger(n)>; such
-data will be displayed appropriately.<p>
+data will be displayed appropriately.
 
 The widget has many options, including the ability to automatically
-check for new log entries.<p>
+check for new log entries.
 
 The <xref scrollinglog(n)> widget combines logdisplay(n) with
 <xref filter(n)> and <xref finder(n)> in a convenient package;
-most users will find <xref scrollinglog(n)> to be the more useful widget.<p>
+most users will find <xref scrollinglog(n)> to be the more useful widget.
 
 <section "ENTRY FORMAT">
 
@@ -33,7 +33,7 @@ be read incrementally by <xref logreader(n)>; the application must
 provide a <code>-parsecmd</code> which will parse a text string
 representing a block of zero or more log entries into a list of
 log entries.  Each parsed log entry will be a list with the
-following structure:<p>
+following structure:
 
 <pre>
     &lt;field&gt; [&lt;field&gt;...] &lt;tag&gt;
@@ -42,24 +42,24 @@ following structure:<p>
 That is, one or more fields followed by a display tag.  Each
 entry must have exactly the same number of fields.
 The fields represent the data to be displayed; the tag determines
-how the logdisplay(n) displays it (i.e., color, font, etc.).<p>
+how the logdisplay(n) displays it (i.e., color, font, etc.).
 
 The valid tags are specified by the <code>-tags</code> option.  The
-fields are defined by the <code>-format</code> option.<p>
+fields are defined by the <code>-format</code> option.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem logdisplay {logdisplay <i>pathName ?options...?</i>}>
 
-Creates a new <iref logdisplay> widget named <i>pathName</i>.<p>
+Creates a new <iref logdisplay> widget named <i>pathName</i>.
 
 The <iref logdisplay> widget contains a <xref rotext(n)> widget;
 it may be created with any of the <xref rotext(n)> widget's options,
-plus the following logdisplay(n)-specific options:<p>
+plus the following logdisplay(n)-specific options:
 
 <deflist logdisplay options>
 
@@ -67,7 +67,7 @@ plus the following logdisplay(n)-specific options:<p>
 
 A list of text widget tag names and their configuration data.  Each
 entry is a list consisting of a tag name followed text(n) tag
-configuration options and values:<p>
+configuration options and values:
  
 <pre>
     &lt;tag name&gt; &lt;option&gt; &lt;data&gt; ...
@@ -75,13 +75,13 @@ configuration options and values:<p>
 
 The <code>-parsecmd</code> includes a tag name with each parsed entry;
 the entry will be tagged with the tag name and hence displayed with
-the tag options specified here.<p>
+the tag options specified here.
 
 If a parsed entry uses a tag that isn't included in
 <code>-tags</code>, the entry will be displayed using the default font
-and color settings.<p>
+and color settings.
 
-For example,<p>
+For example,
 
 <pre>
     -tags {
@@ -96,7 +96,7 @@ A parsing command used to parse the contents of a log file into the
 proper format.  The <i>parsecmd</i> will be passed a single argument,
 the text string to be parsed; this string will represent a block of
 zero or more log entries.  It must return a list of parsed log
-entries; see <xref "ENTRY FORMAT"> for more details.<p>
+entries; see <xref "ENTRY FORMAT"> for more details.
 
 <defopt {-filtercmd <i>cmd</i>}>
 
@@ -105,13 +105,13 @@ entry should be displayed or not according to the application's
 filtering criteria.  It is executed for each log entry which might
 be displayed.  It will be called with a single log entry (as
 defined in <xref "ENTRY FORMAT">) appended as a single argument.
-It must return 1 if the entry should be displayed, and 0 if not.<p>
+It must return 1 if the entry should be displayed, and 0 if not.
 
 <defopt {-msgcmd <i>cmd</i>}>
 
 A command for reporting messages to the user; if defined, <i>cmd</i>
 will be called with a message appended to it as a single argument
-whenever logdisplay(n) wishes to report a message.<p>
+whenever logdisplay(n) wishes to report a message.
 
 <defopt {-format <i>formatlist</i>}>
 
@@ -119,33 +119,33 @@ Specifies the display format for log entries.  There must be
 an entry in <i>formatlist</i> for each field in a parsed log entry
 (see <xref "ENTRY FORMAT">), and the order of the entries in
 <i>formatlist</i> must match the order of the fields in a parsed log
-entry.<p>
+entry.
 
-Each entry in <i>formatlist</i> must be a list of the form:<p>
+Each entry in <i>formatlist</i> must be a list of the form:
 
 <pre>
     &lt;field name>  &lt;field width>  &lt;display flag>
 </pre>
 
-The <i>field name</i> identifies the field.<p>
+The <i>field name</i> identifies the field.
 
 The <i>field width</i> is the display width of the field in monospace
 characters; field values are truncated to the <i>field width</i>.
 For the last field only the width may be 0, in which case no
-truncation is ever done on that field.<p>
+truncation is ever done on that field.
 
 The last field may also contain newlines represented as "\n"; in
 this case each line is formatted to align properly with the left side
 of the column and each line is truncated to <i>field width</i>, or not
-if it's 0.<p>
+if it's 0.
 
 
 The <i>display flag</i> indicates whether or not to display the field
-initially.<p>
+initially.
 
-This option is read-only after widget creation.<p>
+This option is read-only after widget creation.
 
-For example,<p>
+For example,
 
 <pre>
     -format {
@@ -161,32 +161,32 @@ For example,<p>
 
 If set, the widget will display the name of the current log file on a
 button at the top of the widget.  Clicking the button will cause the
-widget to look for new entries in the current file.  Defaults to false.<p>
+widget to look for new entries in the current file.  Defaults to false.
 
-This option is read-only after widget creation.<p>
+This option is read-only after widget creation.
 
 <defopt {-autoupdate <i>boolean</i>}>
 
 If true, the widget will automatically look for new log entries in the
 current file every <code>-updateinterval</code> milliseconds.  Defaults
-to "off".<p>
+to "off".
 
 <defopt {-updateinterval <i>milliseconds</i>}>
 
 Specifies the interval between automatic updates in milliseconds
 when <code>-autoupdate</code> is true.
-Defaults to 1000 (i.e., one second).<p>
+Defaults to 1000 (i.e., one second).
 
 <defopt {-autoscroll <i>boolean</i>}>
 
 If set, the logdisplay automatically scrolls to show new entries as they are
-appended.<p>
+appended.
 
 <defopt {-autowidth <i>boolean</i>}>
 
 If true, column widths will be widened to match the text they contain
 (except for the final column, which is a special case).  Defaults to
-false.<p>
+false.
 
 <defopt {-foundcmd <i>cmd</i>}>
 
@@ -197,9 +197,9 @@ the widget's find status is updated.  It will be called with two
 additional arguments, both integers: the number of instances of the
 target string which have been found (or 0 if there are none) and
 the index (0 to N-1) of the instance which is currently highlighted
-(or -1 if no instance is highlighted).<p>
+(or -1 if no instance is highlighted).
 
-See <xref finder(n)> for an example.<p>
+See <xref finder(n)> for an example.
 
 </deflist logdisplay options>
 
@@ -211,29 +211,29 @@ See <xref finder(n)> for an example.<p>
 
 <defitem field {$logdisplay field <i>subcommand</i> ?<i>args...</i>?}>
 
-This method provides access to the field definitions.<p>
+This method provides access to the field definitions.
 
 <deflist field>
 
 <defitem {field list} {$logdisplay field list}>
 
-Returns a list of the field names.<p>
+Returns a list of the field names.
 
 <defitem {field show} {$logdisplay field show <i>fields</i>}>
 
 Sets the display flag for each field listed in <i>fields</i>, and
 redisplays the widget's contents.  The display flags of other fields
-are not affected.<p>
+are not affected.
 
 <defitem {field hide} {$logdisplay field hide <i>fields</i>}>
 
 Clears the display flag for each field listed in <i>fields</i>, and
 redisplays the widget's contents.  The display flags of other fields
-are not affected.<p>
+are not affected.
 
 <defitem {field isshown} {$logdisplay field isshown <i>field</i>}>
 
-Returns the <i>field</i>'s display flag setting, true or false.<p>
+Returns the <i>field</i>'s display flag setting, true or false.
 
 </deflist>
 
@@ -241,11 +241,11 @@ Returns the <i>field</i>'s display flag setting, true or false.<p>
 
 The <iref find> method, along with the <code>-foundcmd</code>
 callback, implements the logdisplay(n) widget's half of the find/found
-protocol.  It is used to search for and highlight text strings.<p>
+protocol.  It is used to search for and highlight text strings.
 
 This functionality is provided by the underlying <xref rotext(n)>
 widget; see <xref rotext(n)> for further information on the
-<iref find> method.<p>
+<iref find> method.
 
 <defitem format {$logdisplay format <i>text</i>}>
 
@@ -253,7 +253,7 @@ Returns the formated version of the raw log entry contained in <i>text</i>.
 All active filtering mechanisms are considered when performing the
 formatting.  This command is useful to any client that needs a
 formatted version of <i>text</i> but doesn't have a need to display
-it.<p>
+it.
 
 <defitem load {$logdisplay load <i>filename</i> <i>?showend?</i>}>
 
@@ -262,18 +262,18 @@ matches the name of the current logfile then the widget will read and
 display any new entries from the file.  If <i>filename</i> is "" then
 the display is cleared.  When the optional <i>showend</i> is true, the
 most recent contents or acitve match will be displayed regardless of
-the -autoscroll option.<p>
+the -autoscroll option.
 
 <defitem redisplay {$logdisplay redisplay}>
 
 Causes the widget to redisplay its contents.  This is usually done
-to force a redisplay after changing the filter criteria.<p>
+to force a redisplay after changing the filter criteria.
 
 </deflist>
 
 <section "SEE ALSO">
 
-<xref scrollinglog(n)>, <xref loglist(n)>, <xref jnem_log(1)>.<p>
+<xref scrollinglog(n)>, <xref loglist(n)>, <xref jnem_log(1)>.
 
 <section ENVIRONMENT>
 
@@ -285,7 +285,7 @@ directory.
 
 <section AUTHOR>
 
-Dave Jaffe<p>
+Dave Jaffe
 
 <section HISTORY>
 

@@ -10,18 +10,18 @@
 <xref sqldocument(n)> sections, i.e., modules that add to the
 <xref sqldocument(n)> schema.  Such a module can add both permanent
 and temporary entities--tables, indicies, views, etc.--to the schema,
-populate its temporary tables, and define SQL functions.<p>
+populate its temporary tables, and define SQL functions.
 
 By convention, schema entities and functions defined by an
 <xref sqlsection(i)> should have names which derive from the
-section's name, so as to avoid name collisions with other sections.<p>
+section's name, so as to avoid name collisions with other sections.
 
 <subsection "Registration">
 
 In order to be included in an <xref sqldocument(n)> database, the
 <xref sqlsection(i)> must register itself with the
 <xref sqldocument(n)> type.  If <code>::fred</code> implements the
-<xref sqlsection(i)> interface, it can register itself as follows:<p>
+<xref sqlsection(i)> interface, it can register itself as follows:
 
 <pre>
    ::marsutil::sqldocument register ::fred
@@ -32,16 +32,16 @@ all future <xref sqldocument(n)> databases.  In particular,
 <code>::fred</code>'s temporary schema definitions and SQL functions
 will be added to all instances of <xref sqldocument(n)> on
 <xref sqldocument(n) open>, and the persistent schema definitions
-will be added on <xref sqldocument(n) clear>.<p>
+will be added on <xref sqldocument(n) clear>.
 
 An <xref sqlsection(i)> module can choose to register itself
 as soon as its code is loaded, or it can allow the application to
-decide whether or not it should be registered.<p>
+decide whether or not it should be registered.
 
 <subsection "Subcommands">
 
 Every <xref sqlsection(i)> module must be an ensemble command with
-at least the following subcommands:<p>
+at least the following subcommands:
 
 <deflist subcommands>
 
@@ -50,55 +50,55 @@ at least the following subcommands:<p>
 Returns the <i>section</i>'s "title", a human-readable equivalent of
 the module's name.  For example, <xref sqldocument(n)> is an
 <xref sqlsection(i)>; its module name is
-<code>::marsutil::sqldocument</code>, and its title is "sqldocument(n)".<p>
+<code>::marsutil::sqldocument</code>, and its title is "sqldocument(n)".
 
-The title will primarily be used when documenting the schema.<p>
+The title will primarily be used when documenting the schema.
 
 <defitem schema {<i>section</i> sqlsection schema}>
 
 Returns the <i>section</i>'s persistent schema definitions as a block
 of SQL text.  The block should not contain any "CREATE TEMP TABLE",
-"CREATE TEMP VIEW", or "CREATE TEMP TRIGGER" statements.<p>
+"CREATE TEMP VIEW", or "CREATE TEMP TRIGGER" statements.
 
 If the section defines no persistent schema definitions, this
-subcommand should return the empty string.<p>
+subcommand should return the empty string.
 
 <defitem tempschema {<i>section</i> sqlsection tempschema}>
 
 Returns the <i>section</i>'s temporary schema definitions as a block
 of SQL text.  The block should contain only "CREATE TEMP TABLE",
 "CREATE TEMP VIEW", and "CREATE TEMP TRIGGER" statements, with
-related indices.<p>
+related indices.
 
 If the section defines no temporary schema definitions, this
-subcommand should return the empty string.<p>
+subcommand should return the empty string.
 
 <defitem tempdata {<i>section</i> sqlsection tempdata}>
 
 Returns content for zero or more of the section's temporary tables.
 The content is structured as a dictionary whose keys are the table
-names and whose values are lists of row dictionaries.<p>
+names and whose values are lists of row dictionaries.
 
 When the <xref sqldocument(n)> containing the section is opened or
 cleared, the temporary data will be loaded into the relevant
-tables.<p>
+tables.
 
 New sections should define this subcommand; it is optional, however,
-for backward compatibility with older code.<p>
+for backward compatibility with older code.
 
 <defitem functions {<i>section</i> sqlsection functions}>
 
 Returns the <i>section</i>'s function definitions as a dictionary
-of function names and the Tcl command prefixes which implement them.<p>
+of function names and the Tcl command prefixes which implement them.
 
 If the section defines no SQL functions, this
-subcommand should return the empty string.<p>
+subcommand should return the empty string.
 
 </deflist subcommands>
 
 <section EXAMPLE>
 
-Here's an example of a minimal <xref sqlsection(i)> module.<p>
+Here's an example of a minimal <xref sqlsection(i)> module.
 
 <pre>
 snit::type sample {
@@ -194,12 +194,12 @@ snit::type sample {
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
 22 June 2009: Added <iref tempdata>.  Because this is new to the
-spec, it will remain optional.<p>
+spec, it will remain optional.
 
 </manpage>
 

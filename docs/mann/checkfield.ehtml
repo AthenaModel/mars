@@ -13,11 +13,11 @@ namespace import ::marsgui::*
 
 The checkfield(n) widget is a <xref tk:ttk_checkbutton(n)> configured as a
 <xref field(i)> data entry field.  It is used for entering boolean
-flags.<p>
+flags.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -30,7 +30,7 @@ the <code>-variable</code>, <code>-onvalue</code>, <code>-offvalue</code>,
 and <code>-command</code>, as these are used (and hidden) by the wrapper.  
 In particular, the <code>-text</code>, <code>-image</code>, and 
 <code>-compound</code> options can be used to configure the widget's 
-displayed text or image.<p>
+displayed text or image.
 
 <deflist options>
 
@@ -39,12 +39,12 @@ displayed text or image.<p>
 From <xref field(i)>.  Specifies a <i>command</i> to be called
 whenever the field's value changes, for any reason whatsoever
 (including explicit calls to <iref set>).  The new value is appended
-to the <i>command</i> as an argument.<p>
+to the <i>command</i> as an argument.
 
 <defopt {-state <i>state</i>}>
 
 From <xref field(i)>.  Sets the state to <b>normal</b> or <b>disabled</b>.
-If <b>disabled</b>, the field cannot be edited by the user.<p>
+If <b>disabled</b>, the field cannot be edited by the user.
 
 </deflist options>
 
@@ -52,22 +52,22 @@ If <b>disabled</b>, the field cannot be edited by the user.<p>
 
 <section "INSTANCE COMMAND">
 
-checkfield(n) widgets have the following subcommands:<p>
+checkfield(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-From <xref field(i)>.  Returns the value of the specified <i>option</i>.<p>
+From <xref field(i)>.  Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 From <xref field(i)>.  Sets the value of one or more of the object's
-options.<p>
+options.
 
 <defitem get {<i>pathName</i> get}>
 
-From <xref field(i)>.  Returns the field's current value.<p>
+From <xref field(i)>.  Returns the field's current value.
 
 <defitem set {<i>pathName</i> set <i>value</i> ?-silent?}>
 
@@ -76,7 +76,7 @@ any valid boolean value; the value will be saved as 1 or 0 internally.
 If the value has really changed, the <code>-changecmd</code> is called,
 unless the <code>-silent</code> option is given.  Note that
 successive calls to <iref set> with the same <i>value</i> will
-result in at most one call to the <code>-changecmd</code>.<p>
+result in at most one call to the <code>-changecmd</code>.
 
 </deflist instance>
 
@@ -91,7 +91,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

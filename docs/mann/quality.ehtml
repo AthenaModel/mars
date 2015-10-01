@@ -17,19 +17,19 @@ into qualitative categories with symbolic names.
 A <iref quality> object
 translates category symbols to numeric values and <i>vice
 versa</i>.  In addition, each category symbol has two forms:
-a short symbolic name and a longer descriptive name.<p>
+a short symbolic name and a longer descriptive name.
 
 A <iref quality> object is thus very similar to an
 <xref enum(n)> enumeration, except that the symbols are associated
-with arbitrary numbers instead of an ordered set of indices.<p>
+with arbitrary numbers instead of an ordered set of indices.
 
 Note that a numeric value associated with a <iref quality> need not
 have one of the specific values listed in the <iref quality>'s
 definition.  The <iref quality> object can relate arbitrary
-numeric values back to specific categories.<p>
+numeric values back to specific categories.
 
 The boundaries between two categories can be implicit (midway between
-the numeric values associated with the categories) or explicit.<p>
+the numeric values associated with the categories) or explicit.
 
 <subsection "Rounding">
 
@@ -38,7 +38,7 @@ can convert a numeric value to a symbolic value.  These commands all
 round the numeric value using the given <code>-format</code> string
 before doing the look-up; this guarantees that numeric values that
 display the same when <iref format>ted always map to the same
-categories.<p>
+categories.
 
 <section COMMANDS>
 
@@ -52,7 +52,7 @@ are defined in the <i>deflist</i>, which has one of two forms,
 depending on the value of <code>-bounds</code>.  If
 <code>-bounds</code> is <b>no</b>, the default, then the bounds
 between the categories are implicit, and the <i>deflist</i> has
-this form:<p>
+this form:
 
 <pre>
 short long value
@@ -62,7 +62,7 @@ short long value
 
 If <code>-bounds</code> is <b>yes</b>, then the bounds
 for each category are explicit, and the <i>deflist</i> has
-this form:<p>
+this form:
 
 <pre>
 short long min value max
@@ -70,7 +70,7 @@ short long min value max
 ...
 </pre>
 
-A <iref quality> can be created with the following <i>options</i>:<p>
+A <iref quality> can be created with the following <i>options</i>:
 
 <deflist quality options>
 
@@ -80,24 +80,24 @@ the symbolic categories have explicit bounds or not.  If <b>no</b>
 (the default) the bounds are midway between the numeric values of each
 pair of adjacent categories.  If <b>yes</b>, the bounds are as
 specified, and the values of <code>-min</code> and <code>-max</code>
-are computed automatically.<p>
+are computed automatically.
 
 <defopt {-min <i>value</i>}>
 The minimum numeric <i>value</i> for this quality.  The default
-is no minimum.<p>
+is no minimum.
 
 <defopt {-max <i>value</i>}>
 The maximum numeric <i>value</i> for this quality.  The default
-is no maximum.<p>
+is no maximum.
 
 <defopt {-format <i>format</i>}>
 A <i>format</i> string used to format numeric values associated
-with this quality.  The default is "%4.2f".<p>
+with this quality.  The default is "%4.2f".
 
 <b>Note:</b> make sure that your format string provides for at least
 as many places after the decimal as the numeric values used in the
 type definition!  Otherwise, numeric value to symbolic value
-conversions may fail.<p>
+conversions may fail.
 
 
 </deflist quality options>
@@ -105,7 +105,7 @@ conversions may fail.<p>
 For example, the following code defines "goodness" as a numeric value
 that ranges from 0.0 to 1.0; the range is broken into five categories
 ranging from "Very Good" to "Very Bad".  Numeric goodness
-values should be formatted with 1 decimal place.<p>
+values should be formatted with 1 decimal place.
 
 <pre>
 quality goodness {
@@ -117,7 +117,7 @@ quality goodness {
 } -min 0.0 -max 1.0 -format {%3.1f}
 </pre>
 
-With explicit bounds, the definition would be as follows:<p>
+With explicit bounds, the definition would be as follows:
 
 <pre>
 quality goodness {
@@ -130,51 +130,51 @@ quality goodness {
 </pre>
 
 The <i>name</i> becomes a Tcl command, defined in the current scope;
-<iref quality> returns the fully-qualified form of <i>name</i>.<p>
+<iref quality> returns the fully-qualified form of <i>name</i>.
 
 </deflist>
 
 <section "INSTANCE COMMAND">
 
 Each instance of the <iref quality> object has the following
-subcommands:<p>
+subcommands:
 
 <deflist>
 
 <defitem cget {$quality cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {$quality configure <i>option value...</i>}>
 
-Sets the value of one or more options.<p>
+Sets the value of one or more options.
 
 <defitem validate {$quality validate <i>input</i>}>
 
 Validates that <i>input</i> is a valid value for this quality.  If it
 is, it is returned in canonical form i.e., as a number.
 If it is not, an error is thrown with
-an <code>-errorcode</code> of <b>INVALID</b>.<p>
+an <code>-errorcode</code> of <b>INVALID</b>.
 
 <defitem size {$quality size}>
 
 Returns the number of symbolic categories in the quality.  Given <i>n</i>
-categories, they are indexed from 0 to <i>n</i>-1.<p>
+categories, they are indexed from 0 to <i>n</i>-1.
 
 <defitem names {$quality names}>
 <defitem shortnames {$quality shortnames}>
 
 Returns a list of the short category names, in index order.  The
-form <iref shortnames> is deprecated.<p>
+form <iref shortnames> is deprecated.
 
 <defitem longnames {$quality longnames}>
 
-Returns a list of the long category names, in index order.<p>
+Returns a list of the long category names, in index order.
 
 <defitem namedict {$quality namedict}>
 
 Returns a dictionary of the short and long category names, in index
-order.<p>
+order.
 
 <defitem value {$quality value <i>input</i>}>
 
@@ -182,21 +182,21 @@ Given a short name, a long name, or a numeric value within the valid
 range, returns a numeric value.  Throws an error given any other
 <i>input</i>.  If the input is symbolic, returns the
 corresponding value from the quality's definition; if the input is
-numeric, it is returned unchanged. Name lookups are case-insensitive.<p>
+numeric, it is returned unchanged. Name lookups are case-insensitive.
 
 This subcommand is usually used to translate arbitrary symbolic
-or numeric inputs into values within the quality's range.<p>
+or numeric inputs into values within the quality's range.
 
 <defitem strictvalue {$quality strictvalue <i>input</i>}>
 
 Given a short name, a long name, or a numeric value within the valid
 range, returns the corresponding numeric value from the quality's definition.
 Throws an error given any other <i>input</i>.  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
 This subcommand is usually used to translate a category name into a
 numeric value; it can also be used to translate an arbitrary numeric
-value into the specific value associated with the appropriate category.<p>
+value into the specific value associated with the appropriate category.
 
 <defitem name {$quality name <i>input</i>}>
 <defitem shortname {$quality shortname <i>input</i>}>
@@ -204,53 +204,53 @@ value into the specific value associated with the appropriate category.<p>
 Given a short name, a long name, or a numeric value within the valid
 range, returns the corresponding short category name.  Given any other
 <i>input</i>, returns "".  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
 Numeric inputs are <xref "Rounding" rounded> before the lookup is
-performed.<p>
+performed.
 
-The form <iref shortname> is deprecated.<p>
+The form <iref shortname> is deprecated.
 
 <defitem longname {$quality longname <i>input</i>}>
 
 Given a short name, a long name, or a numeric value with the valid
 rnage, returns the corresponding long category name.
 Given any other <i>input</i>, returns "".  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
 Numeric inputs are <xref "Rounding" rounded> before the lookup is
-performed.<p>
+performed.
 
 <defitem index {$quality index <i>input</i>}>
 
 Given a short name, a long name, or a numeric value within the valid
 range, returns the index of the specific category.
 Given any other <i>input</i>, returns -1.  Name lookups are
-case-insensitive.<p>
+case-insensitive.
 
 Numeric inputs are <xref "Rounding" rounded> before the lookup is
-performed.<p>
+performed.
 
 <defitem format {$quality format <i>value</i>}>
 
 Given a numeric value of this quality type, formats and returns
-the value as specified by the <b>-format</b> string.<p>
+the value as specified by the <b>-format</b> string.
 
 <defitem inrange {$quality inrange <i>value</i>}>
 
 Returns 1 if the arbitrary <i>value</i> falls within the quality's
-<b>-min</b> and <b>-max</b>, and 0 otherwise.<p>
+<b>-min</b> and <b>-max</b>, and 0 otherwise.
 
 <defitem clamp {$quality clamp <i>value</i>}>
 
 Clamps the arbitrary <i>value</i> within the quality's 
-<b>-min</b> and <b>-max</b>, and returns the clamped value.<p>
+<b>-min</b> and <b>-max</b>, and returns the clamped value.
 
 <defitem html {$quality html}>
 
 Returns an HTML snippet which documents the quality's names, long
 names, values, and (if <code>-bounds</code> is <b>yes</b>) category
-bounds.<p>
+bounds.
 
 </deflist>
 
@@ -268,7 +268,7 @@ library directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

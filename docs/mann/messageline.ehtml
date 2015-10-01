@@ -14,32 +14,32 @@ namespace import ::marsgui::*
 The messagelin(n) widget provides a message line to be used at the
 bottom of application windows.  The messageline will usually be blank.
 On request it will display a single line of text, which will remain
-until replaced or until a programmer-defined interval elapses.<p>
+until replaced or until a programmer-defined interval elapses.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem messageline {messageline <i>pathName ?options...?</i>}>
 
-Creates a new messageline(n) widget named <i>pathName</i>.<p>
+Creates a new messageline(n) widget named <i>pathName</i>.
 
-The messageline widget may be created with the following options:<p>
+The messageline widget may be created with the following options:
 
 <deflist messageline options>
 
 <defopt {-font <i>fontspec</i>}>
 
-Specifies the widget's text font.<p>
+Specifies the widget's text font.
 
 <defopt {-blankinterval <i>msecs</i>}>
 
 If set to 0, messages written to the message line will be displayed
 until they are replaced by some other non-blank message.  Otherwise,
 the messageline will be blanked whenever a message has been displayed
-for longer than <i>msecs</i> milliseconds.<p>
+for longer than <i>msecs</i> milliseconds.
 
 </deflist messageline options>
 
@@ -52,7 +52,7 @@ for longer than <i>msecs</i> milliseconds.<p>
 <defitem puts {$messageline puts <i>msg</i>}>
 
 Displays <i>msg</i>, which should be a single line of text, on the
-message line.<p>
+message line.
 
 </deflist>
 
@@ -67,12 +67,12 @@ directory.
 <section AUTHOR>
 
 Dave Jaffe,
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-7/5/2005 DJ Original package.<p>
-6/1/2006 WHD Package rewritten.<p>  
+7/5/2005 DJ Original package.
+6/1/2006 WHD Package rewritten.  
 
 </manpage>
 

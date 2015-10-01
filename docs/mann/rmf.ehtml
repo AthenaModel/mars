@@ -18,21 +18,21 @@ rmf(n) defines a family of "relationship multiplier functions", or
 number that ranges from -1.0 (perfect enemies) to 1.0 (perfect
 friends), into a multiplier.  Models use
 RMFs to determine the magnitude of an effect based on the relationship
-between the affected group and the acting group.<p>
+between the affected group and the acting group.
 
 The various RMFs are implemented as subcommands of the <iref rmf>
 command.  Because there are many RMFs, and because the RMF to be
 used in a particular rule can be set in the <xref parmdb(5)>,
 <iref rmf> is also an <xref enum(n)> of the RMF names, which are
-as follows:<p>
+as follows:
 
-<fromproject {::simlib::rmf html}><p>
+<fromproject {::simlib::rmf html}>
 
 <subsection "Configuration Parameters">
 
 rmf(n) is a <xref parm(i)>, and defines the following configuration
 parameter.  The <iref rmf parm> subcommand can be used to set and query
-parameter values.<p>
+parameter values.
 
 <expand [fromproject {::simlib::rmf parm manpage}]>
 
@@ -44,15 +44,15 @@ default value of
 <fromproject {::simlib::rmf parm getdefault rmf.nominalRelationship}>.
 Note that where the plots cross the -1.0 and 1.0 lines they do so at
 &plusmn;<fromproject {::simlib::rmf parm getdefault rmf.nominalRelationship}>
-<p>
 
-<img src="rmf2.gif"><p>
+
+<img src="rmf2.gif">
 
 If <b>rmf.nominalRelationship</b> is set to 1.0, we get the RMFs used
 in JNEM 2.1.  Note that where the plots cross the -1.0 and 1.0 lines,
-they do so at &plusmn;1.0.<p>
+they do so at &plusmn;1.0.
 
-<img src="rmf.gif"><p>
+<img src="rmf.gif">
 
 <section COMMANDS>
 
@@ -61,10 +61,10 @@ they do so at &plusmn;1.0.<p>
 <defitem rmf {rmf <i>subcommand</i> ?<i>args...</i>?}>
 
 The <iref rmf> command has all of the standard
-<xref enum(n)> subcommands; the following are defined as well.<p>
+<xref enum(n)> subcommands; the following are defined as well.
 
 In what follows, the value of the <b>rmf.nominalRelationship</b>
-parameter is indicated by <i>Rnom</i>.<p>
+parameter is indicated by <i>Rnom</i>.
 
 <deflist rmf>
 
@@ -74,79 +74,79 @@ The <iref rmf parm> subcommand gives access to the rmf(n) module's
 configuration <xref parmset(n)>; see
 <xref "Configuration Parameters"> for details.  The subcommands
 of <iref rmf parm> are exactly those of <xref parmset(n)>
-instances.<p>
+instances.
 
 
 <defitem "rmf constant" {rmf constant <i>R</i> ?<i Rnom>?}>
 
 Returns a constant 1.0 regardless of <i>R</i>.
 The "Constant" function should be used when the
-relationship between the two groups should have no effect.<p>
+relationship between the two groups should have no effect.
 
-The <i Rnom> argument is ignored.<p>
+The <i Rnom> argument is ignored.
 
 <defitem "rmf linear" {rmf linear <i>R</i> ?<i Rnom>?}>
 
 Returns <i>R/Rnom</i>.  The "Linear" function should be used when the
 effect of an input should be directly proportional to the strength of the
-relationship.<p>
+relationship.
 
 If given, the <i Rnom> argument overrides the
-<tt rmf.nominalRelationship> parameter.<p>
+<tt rmf.nominalRelationship> parameter.
 
 <defitem "rmf quad" {rmf quad <i>R</i> ?<i Rnom>?}>
 
 Returns (<i>R/Rnom</i>)&sup2;&sdot;sign(<i>R</i>).  The "Quad" function
 is similar to <iref rmf linear> but has a weaker effect for <i>R</i> &lt;
-<i>Rnom</i> and a stronger effect for <i>R</i> &gt; <i>Rnom</i>.<p>
+<i>Rnom</i> and a stronger effect for <i>R</i> &gt; <i>Rnom</i>.
 
 Note that friends are affected with the same sign as
 the input's magnitude, and enemies with the opposite sign, i.e.,
-if friends are affected positively then enemies are affected negatively.<p>
+if friends are affected positively then enemies are affected negatively.
 
 If given, the <i Rnom> argument overrides the
-<tt rmf.nominalRelationship> parameter.<p>
+<tt rmf.nominalRelationship> parameter.
 
 <defitem "rmf frquad" {rmf frquad <i>R</i> ?<i Rnom>?}>
 
 Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &gt; 0, and 0 otherwise.  Friends
 are affected according to the strength of the relationship, but
-enemies are not affected at all.<p>
+enemies are not affected at all.
 
 If given, the <i Rnom> argument overrides the
-<tt rmf.nominalRelationship> parameter.<p>
+<tt rmf.nominalRelationship> parameter.
 
 <defitem "rmf frmore" {rmf frmore <i>R</i> ?<i Rnom>?}>
 
 Returns ((1+<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and friends are
 affected, but enemies are affected much less than friends, and
-perfect enemies are not affected at all.<p>
+perfect enemies are not affected at all.
 
 Note that both friends and enemies are affected with the same sign
 as the input's magnitude; thus, if it is a positive input then
-both friends and enemies are affected positively.<p>
+both friends and enemies are affected positively.
 
 If given, the <i Rnom> argument overrides the
-<tt rmf.nominalRelationship> parameter.<p>
+<tt rmf.nominalRelationship> parameter.
 
 <defitem "rmf enquad" {rmf enquad <i>R</i> ?<i Rnom>?}>
 
 Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &lt; 0, and 0 otherwise.  Enemies
 are affected according to the strength of the relationship, but
-friends are not affected at all.<p>
+friends are not affected at all.
 
 If given, the <i Rnom> argument overrides the
-<tt rmf.nominalRelationship> parameter.<p>
+<tt rmf.nominalRelationship> parameter.
 
 <defitem "rmf enmore" {rmf enmore <i>R</i> ?<i Rnom>?}>
 
 Returns ((1&minus;<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and
 friends are affected, but friends are affected much less than enemies,
-and perfect friends are not affected at all.<p>
+and perfect friends are not affected at all.
 
 Note that both friends and enemies are affected with the same sign
 as the input's magnitude; thus, if it is a positive input then
-both friends and enemies are affected positively.<p>
+both friends and enemies are affected positively.
 
 </deflist>
 
@@ -163,7 +163,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

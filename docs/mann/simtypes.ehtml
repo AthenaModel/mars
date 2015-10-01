@@ -14,11 +14,11 @@ namespace import ::simlib::*
 <section DESCRIPTION>
 
 This module defines data types required by the Mars Simulation Library,
-<xref simlib(n)>, and its clients.<p>
+<xref simlib(n)>, and its clients.
 
 <section QUALITIES>
 
-simtypes(n) defines the following <xref quality(n)> types.<p>
+simtypes(n) defines the following <xref quality(n)> types.
 
 <deflist>
 
@@ -26,7 +26,7 @@ simtypes(n) defines the following <xref quality(n)> types.<p>
 
 This quality is used to measure the degree of affinity or relationship
 between two population groups.  Values have the bounds
-shown in the following table:<p>
+shown in the following table:
 
 <fromproject {::simlib::qaffinity html}>
 
@@ -36,19 +36,19 @@ shown in the following table:<p>
 This quality is used to measure the level of cooperation between two
 population groups; it can be interpreted as the probability that one
 group will give information to another group.  Values have the bounds
-shown in the following table:<p>
+shown in the following table:
 
 <fromproject {::simlib::qcooperation html}>
 
 <defitem qduration qduration>
 
 This quality is used to describe the duration of <xref gram(n)>
-level inputs, in decimal days.<p>
+level inputs, in decimal days.
 
 Numerically,
 <iref qduration> values have a minimum of 0.0.
 Symbolically,
-durations are broken down into these categories:<p>
+durations are broken down into these categories:
 
 <fromproject {::simlib::qduration html}>
 
@@ -57,12 +57,12 @@ durations are broken down into these categories:<p>
 This quality is used to measure an entity's emphasis on agreement or
 disagreement with respect to a particular topic in a <xref mam(n)> belief
 system. Numerically, the values range from 0.0 to 1.0 and have the bins
-shown in the following table:<p>
+shown in the following table:
 
 <fromproject {::simlib::qemphasis html}>
 
 For this variable, it is more usual to enter data using the symbolic
-values than to enter specific numbers.<p>
+values than to enter specific numbers.
 
 <defitem qmag qmag>
 
@@ -70,9 +70,9 @@ This quality is used to describe the magnitude of <xref gram(n)>
 level and slope inputs, among other things.
 For level inputs it represents the percent change to the level of
 satisfaction, and for slope events it represents the percent change
-per day.<p>
+per day.
 
-Symbolically, magnitude is broken down into these categories:<p>
+Symbolically, magnitude is broken down into these categories:
 
 <fromproject {::simlib::qmag html}>
 
@@ -81,17 +81,17 @@ Symbolically, magnitude is broken down into these categories:<p>
 This quality is used to measure an entity's position for or against
 a topic in a <xref mam(n)> belief system.  Numerically, the values
 range from -1.0 to 1.0, and have the bins
-shown in the following table:<p>
+shown in the following table:
 
 <fromproject {::simlib::qposition html}>
 
 <defitem qrel qrel>
 
 This quality is used to describe the relationship between two
-groups.<p>
+groups.
 
 Numerically, <iref qrel> values range from -1.0 to +1.0.  Symbolically,
-relationships are broken down into these categories:<p>
+relationships are broken down into these categories:
 
 <fromproject {::simlib::qrel html}>
 
@@ -103,7 +103,7 @@ pgroup's level of satisfaction with each of its concerns.
 Numerically,
 <iref qsaliency> values range from
 0.0 to 1.0.  Symbolically,
-saliency is broken down into these categories:<p>
+saliency is broken down into these categories:
 
 <fromproject {::simlib::qsaliency html}>
 
@@ -112,7 +112,7 @@ saliency is broken down into these categories:<p>
 This quality is used to rate levels of group satisfaction with
 respect to various concerns.  Numerically,
 <iref qsat> values range from -100.0 to +100.0.
-Symbolically, satisfaction is broken down into these categories:<p>
+Symbolically, satisfaction is broken down into these categories:
 
 <fromproject {::simlib::qsat html}>
 
@@ -121,7 +121,7 @@ Symbolically, satisfaction is broken down into these categories:<p>
 This quality is used to describe the trend (slope) of
 <xref gram(n)> satisfaction curves.
 Symbolically, the possible trends are broken down into these
-categories:<p>
+categories:
 
 <fromproject {::simlib::qtrend html}>
 
@@ -129,21 +129,21 @@ categories:<p>
 
 <section ENUMERATIONS>
 
-simtypes(n) defines the following <xref enum(n)> types.<p>
+simtypes(n) defines the following <xref enum(n)> types.
 
 <deflist enums>
 
 <defitem egrouptype egrouptype>
 
 This enumeration defines the population group types which are used by the
-simulation.<p>
+simulation.
 
 <fromproject {::simlib::egrouptype html}>
 
 <defitem eproximity eproximity>
 
 This enumeration is used to express the proximity of one neighborhood
-to another.<p>
+to another.
 
 <fromproject {::simlib::eproximity html}>
 
@@ -151,31 +151,31 @@ to another.<p>
 
 <section "NUMERIC TYPES">
 
-simtypes(n) defines the following numeric types.<p>
+simtypes(n) defines the following numeric types.
 
 <deflist ranges>
 
 <defitem ipopulation ipopulation>
 
 This <b>snit::integer</b> defines the set of valid population numbers,
-integers greater than or equal to zero.<p>
+integers greater than or equal to zero.
 
 <defitem rfraction rfraction>
 
 This <xref range(n)> defines the set of valid proper decimal fractions.
 Numerically, <iref rfraction> values range from
-0.0 to 1.0.<p>
+0.0 to 1.0.
 
 <defitem rfracpair rfracpair>
 
 This type defines the set of pairs of <iref rfraction>'s, where
-the elements of the pair sum to less than or equal to 1.0.<p>
+the elements of the pair sum to less than or equal to 1.0.
 
 <defitem rmagnitude rmagnitude>
 
 This <xref range(n)> defines the set of valid real magnitudes.
 Numerically, <iref rmagnitude> values range upwards from
-0.0.<p>
+0.0.
 
 </deflist>
 
@@ -189,7 +189,7 @@ library directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

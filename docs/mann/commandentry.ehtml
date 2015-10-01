@@ -13,43 +13,43 @@ namespace import ::marsgui::*
 
 The commandentry(n) widget is a Tk entry widget customized to support
 a bash/tcsh-style command history, which is accessible by pressing
-the Up and Down arrow keys.<p>
+the Up and Down arrow keys.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem commandentry {commandentry <i>pathName ?options...?</i>}>
 
-Creates a new commandentry(n) widget named <i>pathName</i>.<p>
+Creates a new commandentry(n) widget named <i>pathName</i>.
 
 The commandentry(n) widget may be created with the standard Tk entry
-widget options, plus the following commandentry-specific options:<p>
+widget options, plus the following commandentry-specific options:
 
 <deflist commandentry options>
 
 <defopt {-history <i>num</i>}>
 
 Specifies the number of commands saved in the history.  Defaults to
-20.<p>
+20.
 
 <defopt {-clearbtn <i>flag</i>}>
 
 If true, the commandentry will have a "clear" button at its righthand
 end.  The button looks like a black circle with an "X" in it; it will
 be enabled when the widget contains any text, and disabled otherwise.
-Defaults to false.<p>
+Defaults to false.
 
-This option can only be set at creation time.<p>
+This option can only be set at creation time.
 
 <defopt {-returncmd <i>cmd</i>}>
 
 Specifies a command that will be called when the text in the widget is
 executed, i.e., when the user presses <lb>Return<rb> or the application
 calls <iref execute>.  A single argument, the current content of
-the widget, will be appended to the command.<p>
+the widget, will be appended to the command.
 
 <defopt {-changecmd <i>cmd</i>}>
 
@@ -57,17 +57,17 @@ Specifies a command to be called when the contents of the widget
 changes due to user interaction.  A single argument, the new
 content of the widget, will be appended to the command.  Note that
 the <iref set> and <iref clear> methods never cause the
-<code>-changecmd</code> to be called.<p>
+<code>-changecmd</code> to be called.
 
 <defopt {-keycmd <i>cmd</i>}>
 
 Specifies a command that will be called on every <lb>KeyRelease<rb>;
 event. The character code and the keysym will be appended to the
-command as two separate arguments.<p>
+command as two separate arguments.
 
 Note that the test <code>[string is print $char]</code> is useful for
 determining whether the user entered a real character or some other
-key.<p>
+key.
 
 </deflist commandentry options>
 
@@ -80,23 +80,23 @@ key.<p>
 <defitem set {$commandentry set <i>text</i>}>
 
 Sets the contents to <i>text</i>.  The <code>-changecmd</code> will
-<b>not</b> be called.<p>
+<b>not</b> be called.
 
 <defitem clear {$commandentry clear}>
 
 Clears the commandentry.  The <code>-changecmd</code> will <b>not</b>
-be called.<p>
+be called.
 
 <defitem get {$commandentry get}>
 
-Returns the current contents.<p>
+Returns the current contents.
 
 <defitem execute {$commandentry execute}>
 
 Saves the current contents of the widget to the history stack, unless
 the widget is empty or the current contents matches the previous entry
 in the history stack; then calls the <code>-returncmd</code> with the
-current contents.<p>
+current contents.
 
 </deflist>
 
@@ -111,12 +111,12 @@ directory.
 <section AUTHOR>
 
 Dave Jaffe,
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-6/23/2005 DJ Original package.<p>
-6/02/2006 WHD General clean-up.<p>
+6/23/2005 DJ Original package.
+6/02/2006 WHD General clean-up.
 
 </manpage>
 

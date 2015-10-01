@@ -15,36 +15,36 @@ This module defines the <code>::marsgui::sqlbrowser</code>, which
 presents the contents of an SQLite3 table or view in a tablelist(n)
 widget.  It allows sorting and filtering of the data, provides a
 -selectioncmd callback, and handles the <xref gtclient(n)>
-create/update/delete protocol.<p>
+create/update/delete protocol.
 
 See the file <code>test_sqlbrowser.tcl</code> in the <xref marsgui(n)>
-source directory for an example of how to use sqlbrowser(n).<p>
+source directory for an example of how to use sqlbrowser(n).
 
-sqlbrowser(n) is based on the tablelist(n) widget.<p>
+sqlbrowser(n) is based on the tablelist(n) widget.
 
 <subsection "Column Layout">
 
 By default, sqlbrowser(n) will display all columns in the specified
 <b>-view</b>, using the database column names as the column titles.  All
-data is displayed left-justified and is sorted using a naive string sort.<p>
+data is displayed left-justified and is sorted using a naive string sort.
 
 If desired, the user can improve the appearance and the behavior by
 specifying an explicit layout specification using the <b>-layout</b>
 option.  The value of <b>-layout</b> must be a list of lists, one list for
 each column to be displayed in the browser.  Each list will have the
-following syntax:<p>
+following syntax:
 
-<i>cname label</i> ?<i>option value...</i>?<p>
+<i>cname label</i> ?<i>option value...</i>?
 
 where <i>cname</i> is the column name in the <b>-view</b> and <i>label</i>
 is the column title.  If <i>label</i> is a single hyphen, "<code>-</code>",
-then the column name will be used as the label.<p>
+then the column name will be used as the label.
 
 The options are tablelist(n) <iref columnconfigure>
 options, and are passed through to the tablelist(n).  In theory,
 any tablelist(n) column option can be used; be aware that many do not
 make sense in this context.  Of those that do, these are the most likely
-to be useful:<p>
+to be useful:
 
 <ul>
 <li> <b>-align left|center|right</b>
@@ -52,41 +52,41 @@ to be useful:<p>
 <li> <b>-foreground <i>color</i></b>
 <li> <b>-maxwidth <i>width</i></b>
 <li> <b>-sortmode ascii|dictionary|integer|real</b>
-</ul><p>
+</ul>
 
 sqlbrowser(n) specifies the following options by default; they can
-be overridden by the user:<p>
+be overridden by the user:
 
 <ul>
 <li> The default <b>-sortmode</b> is <b>dictionary</b>.
 <li> If the caller specifies a numeric <b>-sortmode</b>, then the
      default <b>-align</b> is <b>right</b>.
-</ul><p>
+</ul>
 
 
 <subsection "Layouts and UIDs">
 
 The <b>-uid</b> column need not be included in the <b>-layout</b>.
-See <iref uid>, below, for more on UIDs.<p>
+See <iref uid>, below, for more on UIDs.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem sqlbrowser {sqlbrowser <i>win ?options...?</i>}>
 
-Creates a new <iref sqlbrowser> widget named <i>win</i>.<p>
+Creates a new <iref sqlbrowser> widget named <i>win</i>.
 
-The <iref sqlbrowser> widget may be created with the following options:<p>
+The <iref sqlbrowser> widget may be created with the following options:
 
 <deflist sqlbrowser options>
 
 <defopt {-borderwidth <i>width</i>}>
 <defopt {-relief <i>relief</i>}>
 
-These options are delegated to the hull ttk::frame widget.<p>
+These options are delegated to the hull ttk::frame widget.
 
 <defopt {-editstartcommand <i>command</i>}>
 <defopt {-editendcommand <i>command</i>}>
@@ -98,7 +98,7 @@ These options are delegated to the hull ttk::frame widget.<p>
 <defopt {-stripeheight <i>rows</i>}>
 <defopt {-titlecolumns <i>number</i>}>
 
-These options are delegated to the underlying tablelist(n) widget.<p>
+These options are delegated to the underlying tablelist(n) widget.
 
 <defopt {-columnsorting <i>flag</i>}>
 
@@ -108,29 +108,29 @@ a particular column, in ascending or descending order, by clicking on
 the column label.  If <b>off</b>, the sort order is determined by the
 table or view being displayed, and cannot be changed.  (This is
 appropriate when the order of the items in the table is meaningful,
-e.g., priority ordering.)<p>
+e.g., priority ordering.)
 
 <defopt {-db <i>db</i>}>
 
 <b>Read-only after creation.</b>
 Specifies the name of the <xref sqldocument(n)> object (or equivalent)
-in which the SQLite3 data resides.<p>
+in which the SQLite3 data resides.
 
 <defopt {-displaycmd <i>cmd</i>}>
 
 Specifies a command that is called for each row inserted or updated in the
 browser.  The <i>cmd</i> is a command prefix that will be called with two
 additional arguments, the row index and a list of the data values to be
-displayed in the row's cells, in order from left to right.<p>
+displayed in the row's cells, in order from left to right.
 
 This command can be used to set the color or font of particular rows
-or cells based on the data they contain.<p>
+or cells based on the data they contain.
 
 <defopt {-filterbox <i>flag</i>}>
 
 If the flag is true (the default) the browser's toolbar will include
 a <xref filter(n)> widget for filtering the content.  If false,
-it will not.<p>
+it will not.
 
 <defopt {-layout <i>spec</i>}>
 
@@ -138,12 +138,12 @@ By default, sqlbrowser(n) titles each column with the column name from the
 view or table being browsed, and treats all data as left-justified strings.
 The caller can override this behavior by defining an explicit layout
 specification.  See <xref "Column Layout"> for the syntax for
-layout specifications.<p>
+layout specifications.
 
 <defopt {-reloadbtn <i>flag</i>}>
 
 If <i>flag</i> is true, then a "reload" button will appear in the toolbar,
-to the right of the filter box.  Defaults to false.<p>
+to the right of the filter box.  Defaults to false.
 
 <defopt {-reloadon <i>eventList</i>}>
 
@@ -152,7 +152,7 @@ events, and reload its contents when any of them are received.  The
 <i>eventList</i> must be a list of <xref notifier(n)> subjects and
 events.  For example, the following option causes the browser to
 reload whenever the <b>&lt;Reset&gt;</b> event is received from
-the <b>::sim</b> object.<p>
+the <b>::sim</b> object.
 
 <pre>
     sqlbrowser .browser             \
@@ -161,12 +161,12 @@ the <b>::sim</b> object.<p>
 </pre>
 
 If the value of <b>-reloadon</b> is changed, the previous bindings will be
-unbound; and all bindings will be unbound when the browser is destroyed.<p>
+unbound; and all bindings will be unbound when the browser is destroyed.
 
 <defopt {-selectioncmd <i>cmd</i>}>
 
 Specifies a command that is called whenever the sqlbrowser(n)'s
-selection has changed (or might have changed).<p>
+selection has changed (or might have changed).
 
 <defopt {-uid <i>name</i>}>
 
@@ -180,7 +180,7 @@ a row is created, updated, or deleted in the underlying table.
 <defopt {-view <i>view</i>}>
 
 Sets the name of the database table or view contains the data
-to be displayed.<p>
+to be displayed.
 
 <defopt {-views <i>dict</i>}>
 
@@ -203,21 +203,21 @@ entries, or old entries, as indicated by three SQL views:
 
 In the example, the browser will initially browse
 <b>mytable_current</b>, but the user can select <b>mytable</b> or
-<b>mytable_old</b> as well.<p>
+<b>mytable_old</b> as well.
 
 If the value of <code>-views</code> is not empty, then the
 sqlbrowser will included a "View" pulldown which lists the labels;
 selecting a view will set <code>-view</code> to the specified SQL
 view or table.  In addition, if <code>-view</code> is set explicitly,
-the "View" pulldown will update itself to match.<p>
+the "View" pulldown will update itself to match.
 
 Note that all of the views should provide the same columns, or, at least,
-all of the columns called out in the <b>-layout</b>.<p>
+all of the columns called out in the <b>-layout</b>.
 
 <defopt {-where <i>expression</i>}>
 
 Specifies an SQL expression to use in a WHERE clause to filter the
-rows being displayed, or the empty string.<p>
+rows being displayed, or the empty string.
 
 </deflist sqlbrowser options>
 
@@ -229,11 +229,11 @@ rows being displayed, or the empty string.<p>
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cellcget {<i>win</i> cellcget <i>cellindex option</i>}>
 <defitem cellconfigure {<i>win</i> cellconfigure <i>cellindex</i> ?<i>option value...</i>?}>
@@ -245,42 +245,42 @@ Sets the values of the specified <i>options</i>.<p>
 
 These methods are delegated to the underlying tablelist(n), and query
 the tablelist(n) row, column and cell options.  See the tablelist(n)
-documentation for details.<p>
+documentation for details.
 
 <defitem cindex2cname {<i>win</i> cindex2cname <i>cindex</i>}>
 
 Given a tablelist column index,  returns the matching
-the database column name (or "" if none).<p>
+the database column name (or "" if none).
 
 <defitem cname2cindex {<i>win</i> cname2cindex <i>cname</i>}>
 
 Given a database column name, returns the matching tablelist column
-index (or "" if none).<p>
+index (or "" if none).
 
 <defitem clear {<i>win</i> clear}>
 
-Deletes all rows from the browser.<p>
+Deletes all rows from the browser.
 
 <defitem curselection {<i>win</i> curselection}>
 
 Returns a list of the row indices of the selected rows, or the empty list
-if no rows are selected.  See also <iref uid curselection>.<p>
+if no rows are selected.  See also <iref uid curselection>.
 
 <b NOTE:> Unlike <iref uid curselection>, this command returns row 
 indices for all rows the underlying Tablelist considers to be 
 selected, even if they are currently hidden, i.e., even if their
-<tt -hide> option is set.<p>
+<tt -hide> option is set.
 
 <defitem editwinpath {<i>win</i> editwinpath}>
 
 This method is delegated to the underlying tablelist(n), and retrieves
 the name of the editor window in the <code>-editstartcommand</code>
-and <code>-editendcommand</code> callbacks.<p>
+and <code>-editendcommand</code> callbacks.
 
 <defitem get {<i>win</i> get <i>first last</i>}>
 <defitem get {<i>win</i> get <i>indexList</i>}>
 
-Retrieves the data from one or more rows in the browser.<p>
+Retrieves the data from one or more rows in the browser.
 
 The first form of the command returns a list whose elements are all of the
 items (i.e., row contents) between <i>first</i> and <i>last</i>, inclusive.
@@ -289,7 +289,7 @@ the list <i>indexList</i>: if the latter contains exactly one index then the
 return value is the item indicated by that index (or an empty
 string if the index refers to a non-existent item); otherwise the command
 returns the list of all of the items corresponding to the indices
-specified by <i>indexList</i>.<p>
+specified by <i>indexList</i>.
 
 <defitem layout {<i>win</i> layout}>
 
@@ -300,10 +300,10 @@ typically be used if a single SQL <b>-view</b> were being used to
 represent a sequence of arbitrary queries, each with its own set of
 columns.  After redefining the SQL view, call the <iref layout>
 to display the data. Note that the
-work is done <i>after</i> the caller returns to the Tk event loop.<p>
+work is done <i>after</i> the caller returns to the Tk event loop.
 
 The <b>-displaycmd</b>, if defined, will (eventually) be called for
-each row loaded into the browser.<p>
+each row loaded into the browser.
 
 <defitem reload {<i>win</i> reload ?-force?}>
 
@@ -312,41 +312,41 @@ from the database for the current <b>-view</b>.  By default, the command
 schedules a "lazy" reload: the content will only be reloaded once, no
 matter how times the command is called; the reload will not be done
 until control is returned to the Tk event loop; and not until the 
-browser window is actually mapped.<p>
+browser window is actually mapped.
 
 If the <b>-force</b> option is given, the content will be reloaded
 immediately.  This is suitable for use in code already protected by
-a <xref lazyupdater(n)>.<p>
+a <xref lazyupdater(n)>.
 
 The <b>-displaycmd</b>, if defined, will (eventually) be called for
-each row loaded into the browser.<p>
+each row loaded into the browser.
 
 <defitem rindex2uid {<i>win</i> rindex2uid <i>rindex</i>}>
 
 Given a tablelist row index,  returns the matching
-the row UID (or "" if none).<p>
+the row UID (or "" if none).
 
 <defitem selection {<i>win</i> selection <i>subcommand</i> ?<i>args...</i>?}>
 
 This method is delegated to the underlying tablelist(n) widget.  Note that
 if this method is used to change the selection, the <b>-selectioncmd</b>
-will <i>not</i> be called.<p>
+will <i>not</i> be called.
 
 <defitem sortby {<i>win</i> sortby <i>cname</i> ?<i>direction</i>?}>
 
 Sorts the contents of the browser on the column named <i>cname</i>;
 the sort direction defaults to <b>-increasing</b>, but can be set to
-either <b>-increasing</b> or <b>-decreasing</b>.<p>
+either <b>-increasing</b> or <b>-decreasing</b>.
 
 <defitem toolbar {<i>win</i> toolbar}>
 
 Returns a ttk::frame into which the caller can add toolbar buttons and
-other controls.<p>
+other controls.
 
 <defitem uid2rindex {<i>win</i> uid2rindex <i>uid</i>}>
 
 Given a row UID, returns the matching tablelist row
-index (or "" if none).<p>
+index (or "" if none).
 
 <defitem uid {<i>win</i> uid <i>subcommand</i> ?<i>args...</i>?}>
 
@@ -354,7 +354,7 @@ If the <b>-uid</b> option is given, it names a database column that
 contains a value that is unique across all rows in the <b>-view</b>: a
 unique ID, or "UID". The sqlbrowser(n) can then allow the caller to update
 and manipulate rows by UID rather than by row index.  The subcommands
-or <iref uid> are used for this purpose.<p>
+or <iref uid> are used for this purpose.
 
 <deflist uid>
 
@@ -362,66 +362,66 @@ or <iref uid> are used for this purpose.<p>
 
 Notifies the sqlbrowser(n) that a row with the specified <i>uid</i>
 has been added to the <b>-view</b> (or to the table(s) underlying
-it), and needs to be displayed.<p>
+it), and needs to be displayed.
 
-The <b>-displaycmd</b> will be called.<p>
+The <b>-displaycmd</b> will be called.
 
 <defitem {uid curselection} {<i>win</i> uid curselection}>
 
 Returns a list of the UIDs of the selected rows, or the empty list
-if no rows are selected.  See also <iref curselection>.<p>
+if no rows are selected.  See also <iref curselection>.
 
 <b NOTE:> Unlike <iref curselection>, this command returns only UIDs
 associated with visible rows, i.e., those for which the <tt -hide> option 
 is not set.  Hidden rows (e.g., those filtered out using the 
 filter box) are never included, even if the underlying Tablelist 
-considers them selected.<p>
+considers them selected.
 
 <defitem {uid delete} {<i>win</i> uid delete <i>uid</i>}>
 
 Notifies the sqlbrowser(n) that a row with the specified <i>uid</i>
 has been deleted from the <b>-view</b>, and needs to be deleted from
-the browser as well.<p>
+the browser as well.
 
 <defitem {uid update} {<i>win</i> uid update <i>uid</i>}>
 
 Notifies the sqlbrowser(n) that a row with the specified <i>uid</i>
 has been updated in the <b>-view</b> (or in the table(s) underlying
-it), and needs to be displayed.<p>
+it), and needs to be displayed.
 
-The <b>-displaycmd</b> will be called.<p>
+The <b>-displaycmd</b> will be called.
 
 <defitem {uid select} {<i>win</i> uid select <i>uids</i> ?-silent?}>
 
 Selects the rows associated with the UIDs, ignoring unknown
 uids.  By default, calls the <b>-selectioncmd</b>; if 
-<b>-silent</b> is given, it does not.<p>
+<b>-silent</b> is given, it does not.
 
 <defitem {uid setbg} {<i>win</i> uid setbg <i>uid color</i>}>
 
-Sets the background color of the row with the given <i>uid</i>.<p>
+Sets the background color of the row with the given <i>uid</i>.
 
 <defitem {uid setfg} {<i>win</i> uid setfg <i>uid color</i>}>
 
-Sets the foreground color of the row with the given <i>uid</i>.<p>
+Sets the foreground color of the row with the given <i>uid</i>.
 
 <defitem {uid setcellbg} {<i>win</i> uid setcellbg <i>uid cname color</i>}>
 
 Sets the background color of the cell with the given <i>uid</i> and column
-name.<p>
+name.
 
 <defitem {uid setcellfg} {<i>win</i> uid setcellfg <i>uid cname color</i>}>
 
 Sets the foreground color of the cell with the given <i>uid</i>
-and column name.<p>
+and column name.
 
 <defitem {uid setcelltext} {<i>win</i> uid setcelltext <i>uid cname value</i>}>
 Sets the text of the cell with the given <i>uid</i>
-and column name.<p>
+and column name.
 
 <defitem {uid setfont} {<i>win</i> uid setfont <i>uid font</i>}>
 
-Sets the font of the row with the given <i>uid</i>.<p>
+Sets the font of the row with the given <i>uid</i>.
 
 </deflist uid>
 
@@ -429,23 +429,23 @@ Sets the font of the row with the given <i>uid</i>.<p>
 
 This method is delegated to the underlying tablelist(n), and retrieves
 the name of the window embedded via the cell <code>-window</code>
-option, or "" if none.<p>
+option, or "" if none.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-sqlbrowser(n) requires Tcl 8.5 or later.<p>
+sqlbrowser(n) requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks, Will Duquette<p>
+Dave Hanks, Will Duquette
 
 <section HISTORY>
 
 sqlbrowser(n) is a substantial rewrite of tablebrowser(n),
 an original package written for JNEM and modified subsequently for
-Athena.<p>
+Athena.
 
 </manpage>
 
