@@ -15,30 +15,30 @@ namespace import ::marsgui::*
 non-application-specific) GUI code for use in Mars.
 This module defines the ::marsgui::debugger widget, a toplevel
 window which can be invoked to help debug problems in a
-a Tcl/Tk application.<p>
+a Tcl/Tk application.
 
-At present, the ::marsgui::debugger provides the following features:<p>
+At present, the ::marsgui::debugger provides the following features:
 
 <ul>
   <li> A <xref cli(n)> which  provides command-line access to the main
-       Tcl interpreter.<p>
+       Tcl interpreter.
 
   <li> A <xref winbrowser(n)>, which provides information on any
-       window in the Tk window tree.<p>
+       window in the Tk window tree.
 
   <li> A <xref cmdbrowser(n)>, which provides information on any
-       command known to the Tcl interpreter.<p>
+       command known to the Tcl interpreter.
        
   <li> A <xref modeditor(n)>, which allows the user to edit code in
        the running application, source it back in, and save it to disk
        as a mod file.
-</ul><p>
+</ul>
 
 <section OPTIONS>
 
 The <iref debugger> widget has the same options as the
 standard Tk "toplevel" widget; in addition, it provides the
-following:<p>
+following:
 
 <deflist options>
 
@@ -47,41 +47,41 @@ following:<p>
 <b>Read-only.</b>  The <i>flag</i> must be a Boolean value.  If it is
 true, the created window assumes that it is the main window in the
 application; closing the window will terminate the program.  The
-option defaults to false.><p>
+option defaults to false.>
 
 <defopt {-editordefaultdir <i>path</i>}>
 
 Specifies the default directory for the editor tab's "File Save" dialog.
-If unset, the dialog will open in the current working directory.<p>
+If unset, the dialog will open in the current working directory.
 
 <defopt {-editorformatcmd <i>command</i>}>
 
 Specifies the name of a command used to format an edited mod before saving
 it.  The command takes two additional arguments, the file name and
 the code to format.  It should return the formatted text.  The
-application can use this to add boilerplate to the saved file.<p>
+application can use this to add boilerplate to the saved file.
 
 </deflist>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem debugger {debugger <i>pathName ?options...?</i>}>
 
-Creates a new toplevel debugger window named <i>pathName</i>.<p>
+Creates a new toplevel debugger window named <i>pathName</i>.
 
 
 <defitem "debugger new" {debugger new <i>?options...?</i>}>
 
-Creates a new toplevel debugger window, with the specified options.<p>
+Creates a new toplevel debugger window, with the specified options.
 
 <defitem "debugger debug" {debugger debug ?<i>command...</i>?}>
 
 Pops up a debugger, creating one if necessary, and attempts to load
-<i>command...</i> into the debugger's mod editor.<p>
+<i>command...</i> into the debugger's mod editor.
 
 </deflist commands>
 
@@ -91,16 +91,16 @@ Pops up a debugger, creating one if necessary, and attempts to load
 
 <defitem configure {$debugger configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {$debugger cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem edit {$debugger edit <i>command</i>}>
 
 Loads the <i>command</i>'s definition into the debugger's
-mod editor.<p>
+mod editor.
 
 </deflist>
 
@@ -114,7 +114,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

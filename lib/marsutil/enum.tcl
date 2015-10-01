@@ -237,22 +237,27 @@ snit::type ::marsutil::enum {
     # Returns a snippet of HTML suitable for inclusion in a man page.
 
     method html {} {
-        append out "<table>\n"
+        append out "<table class=\"table\">\n"
 
         append out "<tr>\n"
-        append out "<th align=\"right\">Index</th>\n"
-        append out "<th align=\"left\">Name</th>\n"
-        append out "<th align=\"left\">Long Name</th>\n"
+        append out "<th>Index</th>\n"
+        append out "<th>Name</th>\n"
+        append out "<th>Long Name</th>\n"
         append out "</tr>\n"
 
         set len [llength $shortnames]
 
         for {set i 0} {$i < $len} {incr i} {
-            append out "<tr>\n"
-            append out "<td valign=\"baseline\" align=\"center\">$i</td>\n"
+            if {$i % 2 == 0} {
+                set cls tr-even
+            } else {
+                set cls tr-odd
+            }
+            append out "<tr class=\"$cls\">\n"
+            append out "<td>$i</td>\n"
             append out \
-                "<td valign=\"baseline\" align=\"left\"><tt>[lindex $shortnames $i]</tt></td>\n"
-            append out "<td valign=\"baseline\" align=\"left\">[lindex $longnames $i]</td>\n"
+                "<td><tt>[lindex $shortnames $i]</tt></td>\n"
+            append out "<td>[lindex $longnames $i]</td>\n"
             append out "</tr>\n"
         }
 

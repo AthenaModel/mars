@@ -13,15 +13,15 @@
 </deflist program>
 
 The mars(1) command is the launcher for a number of Mars development
-tools.  See the individual Mars man pages for the full set.<p>
+tools.  See the individual Mars man pages for the full set.
 
 <section ENVIRONMENT>
 
-mars(1) requires tclsh8.5.<p>
+mars(1) requires tclsh8.5.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

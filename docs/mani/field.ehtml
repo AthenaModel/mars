@@ -9,19 +9,19 @@
 A map <xref field(i)> is a widget that allows a data item to be
 entered in a dialog box.  <xref marsgui(n)> provides a number of
 field types; all of them implement at least the interface described
-here.<p>
+here.
 
 
 <subsection "Commands">
 
-Each field(i) widget type provides at least the following command:<p>
+Each field(i) widget type provides at least the following command:
 
 <deflist commands>
 
 <defitem field {field <i>pathName</i> ?<i>option value...</i>?}>
 
 As usual, it creates an instance of the type called <i>pathName</i>,
-given the specified options, and returns the <i>pathName</i>.<p>
+given the specified options, and returns the <i>pathName</i>.
 
 Every field(i) widget supports at least the following options:
 
@@ -32,13 +32,13 @@ Every field(i) widget supports at least the following options:
 Specifies a <i>command</i> to be called whenever the field's value
 changes, for any reason whatsoever (including explicit calls to
 <iref set>.  The new value is appended to the <i>command</i> as an
-argument.<p>
+argument.
 
 <defopt {-state <i>state</i>}>
 
 field(i) widgets have states, just as the normal <code>tk::</code> and
 <code>ttk::</code> widgets do.  The valid states are <b>normal</b> and
-<b>disabled</b>.<p>
+<b>disabled</b>.
 
 </deflist options>
 
@@ -47,36 +47,36 @@ field(i) widgets have states, just as the normal <code>tk::</code> and
 
 <subsection "Instance Command">
 
-Every field(i) widget provides at least the following instance commands:<p>
+Every field(i) widget provides at least the following instance commands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem get {<i>pathName</i> get}>
 
-Returns the field's current value.<p>
+Returns the field's current value.
 
 <defitem set {<i>pathName</i> set <i>value</i>}>
 
 Explicitly sets the field's <i>value</i>, and calls the
 <code>-changecmd</code> if the value has really changed, i.e.,
 successive calls to <iref set> with the same <i>value</i> will
-result in at most one call to the <code>-changecmd</code>.<p>
+result in at most one call to the <code>-changecmd</code>.
 
-To clear the field, set its value to "".<p>
+To clear the field, set its value to "".
 
 </deflist instance>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

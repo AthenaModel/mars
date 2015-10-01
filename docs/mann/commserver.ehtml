@@ -15,7 +15,7 @@ namespace import ::marsutil::commserver
 
 commserver(n) defines a <xref comm(n)>-based command server;
 <xref comm(n)> is a socket-based communications package defined in
-Tcllib.<p> 
+Tcllib. 
 
 
 The commserver(n) object accepts connections from clients at a
@@ -24,11 +24,11 @@ time.  Commands sent from the client are passed to an executive object
 for processing, and the response (whether a normal result or an error
 message) is sent back to the client.  In addition, the application
 which contains the commserver can send messages to specific clients or
-broadcast them to all clients.<p>
+broadcast them to all clients.
 
 Note that the commserver(n) object doesn't begin to accept
 connections immediately on creation; call <iref listen> when
-the application is ready to accept connections.<p>
+the application is ready to accept connections.
 
 The client connects by sending the command "<tt>connect
 <i>name</i></tt>", where <i>name</i> is the client's logical name.
@@ -36,26 +36,26 @@ The name and the client's IP address (or "localhost", for local
 connections) are passed to the commserver(n)'s <b>-validatecmd</b>,
 which must validate the client.  If the client's logical name is
 "" (the empty string), then the client's comm(n) ID is used in its
-place.<p>
+place.
 
 Commands received from connected clients are passed to the
 <b>-evalcmd</b> for processing.  Return values and thrown errors are
-passed back to the client.<p>
+passed back to the client.
 
 Any Tcl application may be a client by using <xref comm(n)> directly;
 however, the <xref commclient(n)> type encapsulates the <xref comm(n)>
 code, and provides a safe interpreter for processing messages coming
-in from the server.<p>
+in from the server.
 
 <section "MESSAGE PROTOCOL">
 
-By default, <xref comm(n)> sends a command as a list of tokens, e.g.,<p>
+By default, <xref comm(n)> sends a command as a list of tokens, e.g.,
 
 <pre>
     comm::comm send $port set a 5     ;# Sends "set a 5"
 </pre>
 
-commserver(n) expects the command to be sent as a single token, e.g.,<p>
+commserver(n) expects the command to be sent as a single token, e.g.,
 
 <pre>
     comm::comm send $port {set a 5}   ;# Sends "set a 5"
@@ -66,9 +66,9 @@ The commands received by the commserver are arbitrary strings; the
 executive may process them however it likes.  Typically they will be
 formatted as Tcl commands, and the executive will handle them using
 a safe Tcl interpreter, but this isn't required.  The executive is
-expected to return a result or throw an error in the usual way.<p>
+expected to return a result or throw an error in the usual way.
 
-The response to the client is a list of two items:<p>
+The response to the client is a list of two items:
 
 <pre>
     ok|error &lt;result&gt;
@@ -76,12 +76,12 @@ The response to the client is a list of two items:<p>
 
 If the executive processed the command successfully, then the first
 token will be "ok" and the second will the result of calling the
-command.<p>
+command.
 
 If the executive threw an error, then the first token will be "error"
-and the second will be an error message.<p>
+and the second will be an error message.
 
-Note that <xref commclient(n)> handles this protocol automatically.<p>
+Note that <xref commclient(n)> handles this protocol automatically.
 
 <section COMMANDS>
 
@@ -92,53 +92,53 @@ Note that <xref commclient(n)> handles this protocol automatically.<p>
 Creates a new commserver(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref commserver> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The <iref commserver> may be created with the following options:<p>
+The <iref commserver> may be created with the following options:
 
 <deflist commserver options>
 
 <defopt {-port <i>portId</i>}>
 
-The <xref comm(n)> port ID at which to receive incoming commands.<p>
+The <xref comm(n)> port ID at which to receive incoming commands.
 
 This option must be set at creation time, and is read-only
-thereafter.<p>
+thereafter.
 
 <defopt {-logger <i>name</i>}>
 
 The name of the <xref logger(n)> object to use to log server
-activity.<p>
+activity.
 
 This option must be set at creation time, and is read-only
-thereafter.<p>
+thereafter.
 
 <defopt {-logcomponent <i>name</i>}>
 
 The component name to pass to the <code>-logger</code> object when
-logging messages; defaults to "commserver".<p>
+logging messages; defaults to "commserver".
 
 <defopt {-allowremote <i>flag</i>}>
 
 If 0, the default, clients may only connect from the local host.
-If 1, connections are accepted from remote hosts as well.<p>
+If 1, connections are accepted from remote hosts as well.
 
 <b>Note:</b> if remote clients are allowed, take care to ensure
 that they are properly validated, and that the executive given
-to them is suitably constrained!<p>
+to them is suitably constrained!
 
 <defopt {-validatecmd <i>prefix</i>}>
 
 The <i>prefix</i> is a command prefix.  When a new client connects,
 its logical name and IP address (or "localhost") will be appended to
-<i>prefix</i>, which will then be executed.<p>
+<i>prefix</i>, which will then be executed.
 
 The resulting command must validate the logical name and IP address.
 It may refuse the connection by throwing an error; otherwise the
-connection is presumed to be valid.<p>
+connection is presumed to be valid.
 
 If no <b>-validatecmd</b> is supplied, then all connections are
-valid.  Note that this is unsafe if <b>-allowremote</b> is enabled.<p>
+valid.  Note that this is unsafe if <b>-allowremote</b> is enabled.
 
 <defopt {-evalcmd <i>prefix</i>}>
 
@@ -146,14 +146,14 @@ The <i>prefix</i> is a command prefix.  When a connected client
 sends a command, the <i>prefix</i> is called as a command with two
 additional arguments, the client name and the client's command.
 The <b>-evalcmd</b> should evaluate the client's command; any return
-value or thrown error are passed back to the client.<p>
+value or thrown error are passed back to the client.
 
 <defopt {-connectcmd <i>prefix</i>}>
 
 The <i>prefix</i> is a command prefix.  When a new client connects
 and is validated successfully, its logical name and IP address (or
 "localhost") will be appended to <i>prefix</i>, which will then be
-executed.  Any return value is ignored.<p>
+executed.  Any return value is ignored.
 
 </deflist commserver options>
 
@@ -162,29 +162,29 @@ executed.  Any return value is ignored.<p>
 <section "INSTANCE COMMAND">
 
 Each instance of the <iref commserver> object has the following
-subcommands:<p>
+subcommands:
 
 <deflist instance>
 
 <defitem cget {commserver cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {$commserver configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem listen {$commserver listen}>
 
 Call this command when ready for the commserver(n) to accept
-connections.<p>
+connections.
 
 <defitem broadcast {$commserver broadcast <i>script</i>}>
 
 Sends the script to all clients asynchronously, ignoring any reply.
 The script will usually be a Tcl command for the client to process
 (probably in a safe interpreter), but is in fact an arbitrary text;
-the client and server must agree on meaning of such messages.<p>
+the client and server must agree on meaning of such messages.
 
 <defitem send {$commserver send <i>name script</i>}>
 
@@ -192,33 +192,33 @@ Sends the script to the specific client asynchronously, ignoring any
 reply.  The <i>name</i> is the client's logical name.
 The script will usually be a Tcl command for the client to process
 (probably in a safe interpreter), but is in fact an arbitrary text;
-the client and server must agree on meaning of such messages.<p>
+the client and server must agree on meaning of such messages.
 
 <defitem clientid {$commserver clientid}>
 
 When the server is processing a client's command, this method returns
-the client's <xref comm(n)> ID.<p>
+the client's <xref comm(n)> ID.
 
 <defitem clientname {$commserver clientname}>
 
 When the server is processing a client's command, this method returns
-the client's logical name.<p>
+the client's logical name.
 
 <defitem clients {$commserver clients}>
 
-Returns a list of the logical names of all current clients.<p>
+Returns a list of the logical names of all current clients.
 
 <defitem clientStatus {$commserver clientStatus <i>name</i>}>
 
 Returns the connection status for the client identified by
-<i>name</i>.  The return value is "connected" or "disconnected".<p>
+<i>name</i>.  The return value is "connected" or "disconnected".
 
 <defitem clientTime {$commserver clientTime <i>name</i>}>
 
 Returns the time of last connection/disconnection for the client
 identified by <i>name</i>.  The return value is the number of seconds
 since the last epoch.  A return value of 0 indicates the client has
-never connected.<p>
+never connected.
 
 </deflist instance>
 
@@ -235,7 +235,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

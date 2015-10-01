@@ -12,30 +12,30 @@ package require marsutil <version>
 
 The <tt ::marsutil::order> class is part of the Mars Order Processing
 framework, which includes <xref order(n)>, <xref order_set(n)>,
-<xref order_flunky(n)>, and <xref order_dialog(n)>.<p>
+<xref order_flunky(n)>, and <xref order_dialog(n)>.
 
 In this framework, an "order" is a request from the user to change the
 program's state in some way, e.g., to add, update, or delete an entity
 of some kind.  Each type of order has its own parameters; together they
 have the same interface, which supports validation, logging, and user
-undo/redo.<p>
+undo/redo.
 
 An order is created as an instance of an order leaf class, which is a
 descendant of <tt ::marsutil::order>.  It can be validated and executed
 on its own; more typically, it is executed by an instance of 
-<xref order_flunky(n)>, which handles the undo/redo stacks.<p>
+<xref order_flunky(n)>, which handles the undo/redo stacks.
 
 New subclasses of order(n) are defined using an instance of 
 <xref order_set(n)>, which ensures that the each order class has the 
 right superclass and good default <xref oohelpers(n) meta>data settings.
 The order set then provides introspection on the set of
-defined order classes and validation of order type names.<p>
+defined order classes and validation of order type names.
 
 Each application or library that defines orders will usually define its
 own <xref order_set(n)> and <xref order_flunky(n)> objects, and may
-choose to subclass <xref order(n)> and <xref order_flunky(n)>.<p>
+choose to subclass <xref order(n)> and <xref order_flunky(n)>.
 
-<img {src="order.svg" width="100%"}><p>
+<img {src="order.svg" width="100%"}>
 
 <subsection "Intermediate Base Classes">
 
@@ -55,60 +55,60 @@ The actual orders are leaf classes descended from
 <xref order_set(n) define> method.  Each order class represents a
 particular kind of operation on the application or library's
 data.  This man page explains the standard interface for every 
-order class.<p> 
+order class. 
 
 <subsection "Order Lifecycle">
 
 Each instance of an order class goes through a lifecycle, as indicated
 by the four order states: <b CHANGED>, <b INVALID>, <b VALID>, 
 and <b EXECUTED>.  The order object's current state is returned by its
-<iref state> method.<p>
+<iref state> method.
 
 When first created, an order is in the <b CHANGED> set; it returns to
-this state whenever the order's parameters are modified.<p>
+this state whenever the order's parameters are modified.
 
 When the order's <iref valid> method is called, the order's parameters
-are validated, and it goes to the <b VALID> or <b INVALID> state.<p>
+are validated, and it goes to the <b VALID> or <b INVALID> state.
 
 If the order is in the <b VALID> state, then calling its 
 <iref execute> method makes the order take effect; the order will be in 
-the <b EXECUTED> state.<p>
+the <b EXECUTED> state.
 
 It is usually possible to undo an <b EXECUTED> order.  If the 
 <iref canundo> method returns a true value, then the <iref undo> method
 will undo the order's effects and the order will return to the <b VALID>
-state.<p>
+state.
 
 <b NOTE:> Undo/redo will only work if proper undo/redo stack discipline is 
 maintained.  For this reason, orders are usually executed, undone, and
 redone under the control of an <xref order_flunky(n)>.  See
-<xref "EXAMPLES">, below.<p> 
+<xref "EXAMPLES">, below. 
 
 <subsection "Customization">
 
 Subclasses of <tt ::marsutil::order> are expected to customize the
-parent class in the following ways:<p>
+parent class in the following ways:
 
 <ul>
-<li> Define the order <xref "Metadata">.<p>
+<li> Define the order <xref "Metadata">.
 
 <li> Override the <iref _validate> method to validate the order's 
-     parameters.  The method may use the <xref "Validation Helpers">.<p>
+     parameters.  The method may use the <xref "Validation Helpers">.
 
 <li> Override the <iref _execute> method to do whatever the order is
     suppose to do.  The method may use the 
-    <xref "Execution Helpers">.<p>
+    <xref "Execution Helpers">.
 
 <li> Optionally, override the <iref narrative> method to return 
      an undo/redo narrative based on the actual parameter values.  
      If this is not overridden, the order's <iref title> will be used 
-     as the narrative string.<p>
+     as the narrative string.
 
 <li> Optionally, override the <iref canundo> and <iref undo> methods.
      Usually, the <iref _execute> method will call <iref setundo>
      to save an undo script, which the existing methods will use to
      undo the order.  But the order may choose to handle everything
-     directly.<p>
+     directly.
 </ul>
 
 <subsection "Parameters with Default Values">
@@ -119,14 +119,14 @@ parameter has a default value, it is assumed that it can never validly
 be the empty string, i.e., that it can never be NULL in the SQL sense.
 If this is an issue, the order should define a sentinel value for that
 parameter that indicates that it is empty, e.g., "NONE", thus providing
-the functionality while meeting the constraint.<p>
+the functionality while meeting the constraint.
 
-See <xref "EXAMPLES">, below.<p>
+See <xref "EXAMPLES">, below.
 
 <section COMMANDS>
 
 The following commands create instances of order(n), which isn't
-usually all that useful.<p>
+usually all that useful.
 
 <deflist>
 
@@ -134,22 +134,22 @@ usually all that useful.<p>
 
 Creates a new instance of <tt ::marsutil::order>
 called <i name>; if given, the <i parmdict> is a dictionary 
-used to initialize the order parameters.<p>
+used to initialize the order parameters.
 
-It is more usual to create order instances via an <xref order_flunky(n)>.<p>
+It is more usual to create order instances via an <xref order_flunky(n)>.
 
 <defitem "order new" {::marsutil::order new ?<i parmdict>?}>
 
 Creates a new instance of <tt ::marsutil::order> with an arbitrary
 name; if given, the <i parmdict> is a dictionary 
-used to initialize the order parameters.<p>
+used to initialize the order parameters.
 
 </deflist>
 
 <section "INSTANCE COMMAND">
 
 Each instance order(n) or its subclasses has at least the following 
-groups of subcommands.<p>
+groups of subcommands.
 
 <subsection "Metadata">
 
@@ -157,12 +157,12 @@ Each order class will have a number of attached metadata values; these
 are defined by the <xref oohelpers(n) meta> class definition statement.
 The <tt meta> statement takes a <i name> and <i value> and defines an
 instance method and a class method, both called <i name>, and both
-returning the <i value>.<p>
+returning the <i value>.
 
 By convention, subclasses of order(n) should define the following metadata
 items.  Note that <xref order_set(n)>'s <xref order_set(n) define> method
 provides defaults for these.  In addition, the programmer may choose
-to add any additional metadata he likes.<p>
+to add any additional metadata he likes.
 
 <deflist meta>
 
@@ -171,16 +171,16 @@ to add any additional metadata he likes.<p>
 Returns the name of the order, e.g., "MY:ORDER".  By convention, orders
 have names in all capital letters with ":" as a separator.  This is 
 distinct from the order class's name, which is usually the order name
-qualified by some namespace.<p>
+qualified by some namespace.
 
 The <tt name> metadata item is usually defined automatically by
-<xref order_set(n)>.<p>
+<xref order_set(n)>.
 
 <defitem title {<i>obj</i> title}>
 
-Returns the title of the order, e.g., "My Order".<p>  If the order class
+Returns the title of the order, e.g., "My Order".  If the order class
 doesn't define it explicitly, then <xref order_set(n)> makes it the same
-as the order name.<p>
+as the order name.
 
 <defitem parmlist {<i obj> parmlist}>
 
@@ -188,42 +188,42 @@ as the order name.<p>
 values using Tcl's <tt proc> argument list syntax: each element in the
 list defines the name of a parameter.  If the element is a pair, the second 
 item in the pair is the default value; otherwise the default value is the
-empty string.<p>
+empty string.
 
 If a parameter has a default value, then using <iref set> to set it to ""
-will actually set it to its default value.<p> 
+will actually set it to its default value. 
 
-Every leaf class should define this metadata value.<p>
+Every leaf class should define this metadata value.
 
 <defitem sendstates {<i>obj</i> sendstates}>
 
 Returns a list of the <xref order_flunky(n)> states in which this order 
 may be sent.  "Send States" are a means of controlling which orders can
-be used at different times; see <xref order_flunky(n)> for details.<p>
+be used at different times; see <xref order_flunky(n)> for details.
 
 <xref order_set(n)> defaults this value to the empty list, which is
-appropriate if "send states" are not being used.<p>
+appropriate if "send states" are not being used.
 
 
 <defitem form {<i obj> parmtags}>
 
 Parmtags, or "parameter tags", relate order parameter names to data types
 that can be "pucked" in the application's GUI.  The value of this item is
-a dictionary of data types by parameter name.<p>
+a dictionary of data types by parameter name.
 
 <xref order_set(n)> defaults this value to the empty list, which is
-usually appropriate.<p>
+usually appropriate.
 
 <defitem monitor {<i obj> monitor}>
 
 This a boolean flag; if true (the default), the order's execution should
 be monitored and reported to the application, and if false then not.
 Just what form the monitoring will take depends on the application,
-and will be implemented by a subclass of <xref order_flunky(n)>.<p>
+and will be implemented by a subclass of <xref order_flunky(n)>.
 
 The only reason for turning monitoring off is when executing an order
 that performs a large amount of work and then sends its own notification
-at the end (i.e., locking a scenario or ticking time forward).<p>
+at the end (i.e., locking a scenario or ticking time forward).
 
 </deflist meta>
 
@@ -234,9 +234,9 @@ class's <i defaults> metadata item.  Parameter values are saved in the
 instance's <tt parms()> array.  Order classes defined using 
 <xref orderset(n)> can use the <tt parms()> array freely in all of their
 methods; other classes would need to call <tt my variable parms> in each
-relevant method to bring <tt parms()> into scope.<p>
+relevant method to bring <tt parms()> into scope.
 
-The following subcommands manipulate the <tt parms()> array.<p>
+The following subcommands manipulate the <tt parms()> array.
 
 <deflist parms>
 
@@ -244,50 +244,50 @@ The following subcommands manipulate the <tt parms()> array.<p>
 
 This command is identical to <iref get>, but expresses the parameter
 name using option notation, e.g., the parameter "<tt foo>" is entered as
-"<tt -foo>"<p>
+"<tt -foo>"
 
 <defitem configure {<i obj> configure <i option value...>}>
 
-Sets the value of one or more order parameters using option notation.<p>
+Sets the value of one or more order parameters using option notation.
 
 <defitem defaults {<i obj> defaults}>
 
 Returns the order's default parameter settings, a dictionary of default
-values by parameter name.<p>
+values by parameter name.
 
 <defitem get {<i obj> get <i parm>}>
 
-Returns the value of the named <i parm>.<p>
+Returns the value of the named <i parm>.
 
 <defitem getdict {<i obj> getdict}>
 
-Returns a dictionary of the order's parameters by parameter name.<p>
+Returns a dictionary of the order's parameters by parameter name.
 
 <defitem parms {<i obj> parms}>
 
 Returns a list of the names of the order's parameters, in the order in
-which they appear in the order's <iref defaults>.<p>
+which they appear in the order's <iref defaults>.
 
 <defitem set {<i obj> set <i parm value>}>
 
 Sets the <i value> of the named <i parm>, and changes the order's 
 <iref state> to <b CHANGED>.  This command cannot be used when the
-order is in the <b EXECUTED> state.<p>
+order is in the <b EXECUTED> state.
 
 <b Note:> If the <i value> is the empty string, and the <i parm> has
-a default value, then it will be assigned its default value.<p>
+a default value, then it will be assigned its default value.
 
 <defitem setdict {<i obj> setdict <i parmdict>}>
 
 Sets some or all of the order's parameters given a dictionary of 
 parameter names and values.  Note that <iref set> is used to make the
-actual changes.<p>
+actual changes.
 
 </deflist parms>
 
 <subsection "Other Queries">
 
-The user may also make the following queries:<p>
+The user may also make the following queries:
 
 <deflist query>
 
@@ -295,45 +295,45 @@ The user may also make the following queries:<p>
 
 Returns a narrative string for the order instance.  This string
 defaults to the order's title, e.g., "My Order"; the class may override
-this method to provide a more detailed narrative.<p>
+this method to provide a more detailed narrative.
 
-The narrative primarily appears in the Edit/Undo and Edit/Redo menu items.<p>
+The narrative primarily appears in the Edit/Undo and Edit/Redo menu items.
 
 <defitem state {<i obj> state}>
 
 This command returns the order object's own state, which is one of
-<b CHANGED>, <b VALID>, <b INVALID>, or <b EXECUTED>:<p>
+<b CHANGED>, <b VALID>, <b INVALID>, or <b EXECUTED>:
 
 <ul>
     <li> A newly created or modified order will be in the <b CHANGED>
-         state.<p>
+         state.
 
     <li> Calling <iref valid> attempts to validate the order's parameters.
          Afterwards the state will be either <b>VALID</b> or 
-         <b>INVALID</b>.<p>
+         <b>INVALID</b>.
 
     <li> If the order's state is <b>VALID</b>, then calling 
         <iref execute> will execute it; and will go
-         into the <b EXECUTED> state.<p>
+         into the <b EXECUTED> state.
 
     <li> Orders in the <b EXECUTED> state can be undone by calling
-         <iref undo>, but cannot be modified in other ways.<p>
+         <iref undo>, but cannot be modified in other ways.
 
     <li> If the order has been executed, then calling <iref undo> will
-         undo its effects, returning it to the <b VALID> state.<p>
+         undo its effects, returning it to the <b VALID> state.
 </ul>
 
 <defitem prune {<i obj> prune}>
 
 Returns a dictionary of order parameter names and values that is pruned
-of all parameters with default values.<p>
+of all parameters with default values.
 
 </deflist query>
 
 <subsection "Order Operations">
 
 The following methods are used to move an order through its lifecycle.
-See <xref "Order Lifecycle">, above.<p>
+See <xref "Order Lifecycle">, above.
 
 <deflist ops>
 
@@ -342,21 +342,21 @@ See <xref "Order Lifecycle">, above.<p>
 Returns 1 if the order's parameters are valid and 0 otherwise.  If
 the order was not already known to be valid, it will be validated by
 calling its <iref _validate> method, and the order's state will be
-changed to <b VALID> or <b INVALID> as appropriate.<p>
+changed to <b VALID> or <b INVALID> as appropriate.
 
 <defitem _validate {<i obj> _validate}>
 
 This method must be overridden by the subclass to actually validate
 the order's parameters.  It should use the <xref "Validation Helpers">
 to do this.  The parameter values are accessed via the <tt parms()> array.
-<p>
+
 
 <defitem errdict {<i obj> errdict}>
 
 If the order's state is <b INVALID>, then this method returns a dictionary
 of error messages by parameter name.  The dictionary may also contain
 a "*" key whose value is an error message applying to the order as a 
-whole.<p>
+whole.
 
 <defitem execute {<i obj> execute ?<i flunky>?}>
 
@@ -364,40 +364,40 @@ Executes the order, optionally in the context of an <xref order_flunky(n)>
 called <i flunky>.  If a <i flunky> is provided, then the order preserves
 the flunky's execution 
 mode; this is made available to the order code via its <iref mode> method.
-<p>
+
 
 The order is executed by calling its <iref _execute> method, and passes
-along that method's return value to its caller.<p>
+along that method's return value to its caller.
 
 Only <b VALID> orders can be executed; after execution, the order will
-be in the <b EXECUTED> state.<p>
+be in the <b EXECUTED> state.
 
 <defitem _execute {<i obj> _execute ?<i flunky>?}>
 
 The subclass must override this method to carry out the order's work on 
 execution.  The method may use the <xref "Execution Helpers">,
 and the parameter values are accessed via the <tt parms()> array. This
-method's return value will be returned to the ultimate caller.<p>
+method's return value will be returned to the ultimate caller.
 
 Usually an undone order can be redone simply by executing the order a
 second time, in the same way.  Sometimes in order to redo the order 
 identically, the order requires information produced during the first
 execution.  In this case, the order should save that information in
-an instance variable so that it is available on redo.<p>
+an instance variable so that it is available on redo.
 
 Similarly, if the <iref execute> method was called with a <i flunky>,
 it is passed along to this method; and if there is any information
 from the flunky that the order needs for undo/redo, it should be saved
-in an instance variable.<p>
+in an instance variable.
 
 <defitem canundo {<i obj> canundo}>
 
 Returns 1 if the order is <b EXECUTED> and can be undone, and 0 otherwise.
-<p>
+
 
 By default, the order can be undone if the <iref _execute> method 
 specified an undo script using <iref setundo>.  The developer may choose
-to override this method in subclasses.<p>
+to override this method in subclasses.
 
 <defitem undo {<i obj> undo}>
 
@@ -406,7 +406,7 @@ calling the order's undo script, which was set by calling <iref setundo>
 in the order's <iref _execute> method.  If desired, the developer may 
 implement the undo algorithm directly in this method, in which case 
 <iref _execute> should save any necessary undo data in instance variables
-and override <iref canundo> appropriately.<p>
+and override <iref canundo> appropriately.
 
 </deflist ops>
 
@@ -414,7 +414,7 @@ and override <iref canundo> appropriately.<p>
 
 The following methods are for use in subclasses' <iref _validate> method.
 They are "protected", i.e., they can be used only in order(n) 
-subclasses.<p>
+subclasses.
 
 <deflist valhelp>
 
@@ -422,12 +422,12 @@ subclasses.<p>
 
 The <iref prepare> method prepares the parameter for use by the
 <iref _execute> method.  It can transform and validate the parameter 
-value in a number of ways.<p>
+value in a number of ways.
 
 It is customary to begin each order's <iref _validate> method with a 
 succession of <iref prepare> commands, one for each parameter.  The
 method's useful work is done by the options, which are processed in
-order from left to right.  The options are as follows:<p>
+order from left to right.  The options are as follows:
 
 <deflist options>
 
@@ -436,62 +436,62 @@ order from left to right.  The options are as follows:<p>
 This is similar to <code>-type</code>.  It indicates that the value is
 a list of which every element must be a member of the specified
 validation type.  If any element is invalid, the parameter is
-<iref reject>ed.<p>
+<iref reject>ed.
 
 <defopt {-listwith <i>valcmd</i>}>
 
 This is similar to <tt -with>.  It indicates that the value is a list of
 which every element must be valid according to the specified validation
-command.  If any element is invalid, the parameter is <iref reject>ed.<p>
+command.  If any element is invalid, the parameter is <iref reject>ed.
 
 <defopt {-normalize}>
 
 Normalizes internal whitespace: all internal whitespace sequences are
-replaced with single spaces.<p>
+replaced with single spaces.
 
 <defopt {-num}>
 
 Tcl interprets integer numbers with leading zeroes as octal numbers.
 To prevent this, this option removes leading zeroes from parameter
 values which are non-zero integers.  Floating point and other
-non-integer values are left alone, and plain zeroes are left alone.<p>
+non-integer values are left alone, and plain zeroes are left alone.
 
 <defopt {-oneof <i>list</i>}>
 
 Ensures that the parameter's value is a member of the <i>list</i>.  If
 the list is short enough, the valid values will be included in any
-error message.<p>
+error message.
 
 <defopt {-required}>
 
 The parameter is required; if the parameter's value is the empty
-string, consequently, it is <iref reject>ed.<p>
+string, consequently, it is <iref reject>ed.
 
 <defopt {-selector}>
 
 The parameter is a <xref dynaform(n)> selector; validate that its
 value matches one of the selector's cases.  This option is used in
-place of a <code>-type</code> option.<p>
+place of a <code>-type</code> option.
 
 <defopt {-someof <i>list</i>}>
 
 Ensures that the parameter's value consists of a list of values, each 
 of which is a member of <i>list</i>.  If <i>list</i> is short enough,
-the valid values will be included in any error message.<p>
+the valid values will be included in any error message.
 
 <defopt {-toupper}>
 
-Converts the parameter's value to all uppercase.<p>
+Converts the parameter's value to all uppercase.
 
 <defopt {-tolower}>
 
-Converts the parameter's value to all lowercase.<p>
+Converts the parameter's value to all lowercase.
 
 <defopt {-type <i>valtype</i>}>
 
 Indicates that the value of the parameter must belong to a validation
 type called <i>valtype</i>.  Specifying this option is essentially the
-same as including the following code snippet in the order body:<p>
+same as including the following code snippet in the order body:
 
 <example>
     my checkon $parm {
@@ -500,7 +500,7 @@ same as including the following code snippet in the order body:<p>
 </example>
 
 The <i>valtype</i>'s "validate" method is used to validate the value,
-and may also put it into canonical form.<p>
+and may also put it into canonical form.
 
 Note that 
 
@@ -519,7 +519,7 @@ my prepare -with {::foo validate}
 Indicates that the value of the parameter must be acceptable to a 
 validation command called <i>valcmd</i>.  Specifying this option is 
 essentially the same as including the following code snippet in the order 
-body:<p>
+body:
 
 <example>
     my checkon $parm {
@@ -528,7 +528,7 @@ body:<p>
 </example>
 
 The validation command should accept and return a valid input, possibly
-putting it into canonical form, and throw <b INVALID> for invalid inputs.<p>
+putting it into canonical form, and throw <b INVALID> for invalid inputs.
 
 </deflist options>
 
@@ -537,13 +537,13 @@ putting it into canonical form, and throw <b INVALID> for invalid inputs.<p>
 This method returns 1 if there's no point in validating parameter 
 <i parm> any further, and 0 otherwise.  The parameter is "bad" if it
 has no value (i.e., its value is the empty string) or if it has already
-been <iref reject>ed.<p>
+been <iref reject>ed.
 
 <defitem reject {my reject <i parm errtext>}>
 
 Rejects the named <i parm> with the given error text, saving the 
 error text for later use.  This command doesn't throw an error; 
-typically we want to reject as many of the parameters as possible.<p>
+typically we want to reject as many of the parameters as possible.
 
 <defitem checkon {my checkon <i parm script>}>
 
@@ -551,10 +551,10 @@ If the given <i parm> is not known to be "bad" (see <iref badparm>),
 then this method executes the <i script> to validate it further.  The
 script may call <i reject> to reject the parameter; or, the parameter
 will be rejected automatically if the script throws <b INVALID>
-(as it might if a validation type is used to validate the value).<p>
+(as it might if a validation type is used to validate the value).
 
 For example, the following code will validate that parameter <i i>
-is an integer, only if <i i> isn't already known to be "bad".<p>
+is an integer, only if <i i> isn't already known to be "bad".
 
 <example>
 my checkon i {
@@ -568,7 +568,7 @@ my checkon i {
 Usually we want to try to find all of the errors in an order; but sometimes
 a particular error will preclude further processing.  This command simply
 causes the <iref _validate> method to return early, only if at least one 
-parameter value is known to be invalid.<p>
+parameter value is known to be invalid.
 
 </deflist valhelp>
 
@@ -576,7 +576,7 @@ parameter value is known to be invalid.<p>
 
 The following methods are for use in subclasses' <iref _execute> method.
 They are "protected", i.e., they can be used only in order(n) 
-subclasses.<p>
+subclasses.
 
 <deflist exechelp>
 
@@ -585,7 +585,7 @@ subclasses.<p>
 Saves the undo <i script>.  If a non-empty string is saved the order
 will be undoable; otherwise not--unless the subclass overrides 
 <iref canundo> and <iref undo>, in which case <iref setundo> is 
-probably irrelevant.<p>
+probably irrelevant.
 
 <defitem mode {my mode}>
 
@@ -593,15 +593,15 @@ If the order was executed by an <xref order_flunky(n)>, this command
 will return its execute mode, one of <b gui>, <b normal>, or 
 <i private>.  Otherwise, it will return <b private>.  (See 
 <xref order_flunky(n)> for details.)  Note that an <b EXECUTED> order
-preserves the flunky's mode at the time it was executed.<p>
+preserves the flunky's mode at the time it was executed.
 
 In particular, if the mode is <b gui> then the order may access the 
-GUI, e.g., to pop up confirmation dialogs.<p>
+GUI, e.g., to pop up confirmation dialogs.
 
 <defitem cancel {my cancel}>
 
 Cancels execution of the order.  This is usually called in response to
-a selection of "Cancel" in a confirmation dialog.<p>
+a selection of "Cancel" in a confirmation dialog.
 
 </deflist exechelp>
 
@@ -611,14 +611,14 @@ a selection of "Cancel" in a confirmation dialog.<p>
 
 First, create an order_set for this package's orders.  This is usually
 # done in the <tt pkgModules.tcl> file, just prior to the modules that
-define orders.<p>
+define orders.
 
 <example>
 ::marsutil::order_set ::mylib::orders
 </example>
 
 Then, use the order set to define the orders.  See <xref order_set(n)>
-for metadata defaults.<p>
+for metadata defaults.
 
 <example>
 mylib::orders define BSYS:PLAYBOX:UPDATE {
@@ -644,7 +644,7 @@ mylib::orders define BSYS:PLAYBOX:UPDATE {
 </example>
 
 Next, the library or application must create an <xref order_flunky(n)>
-to manage order execution for this set of orders:<p>
+to manage order execution for this set of orders:
 
 <example>
 set flunky [::marsutil::order_flunky new ::mylib::orders]
@@ -666,15 +666,15 @@ $flunky redo
 
 <section "SEE ALSO">
 
-<xref order_flunky(n)>, <xref order_set(n)>.<p>
+<xref order_flunky(n)>, <xref order_set(n)>.
 
 <section ENVIRONMENT>
 
-order(n) requires Tcl 8.6 or later.<p>
+order(n) requires Tcl 8.6 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

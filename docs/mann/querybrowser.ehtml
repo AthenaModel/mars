@@ -15,24 +15,24 @@ This module defines the <code>::marsgui::querybrowser</code>, which
 allows the user to enter an arbitrary SQL query and browse the results.
 The widget consists of an <xref sqlbrowser(n)> widget in a paned
 window with a <xref texteditor(n)> widget.  Queries are entered in
-the <xref texteditor(n)> and the results are shown in the browser.<p>
+the <xref texteditor(n)> and the results are shown in the browser.
 
 querybrowser(n) turns the query into a view that is browsed by the
 browser.  The SQLite3 authorizer mechanism is used to prevent the user
 from affecting the contents of the database with a careless or malicious
-query.<p>
+query.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem querybrowser {querybrowser <i>win ?options...?</i>}>
 
-Creates a new <iref querybrowser> widget named <i>win</i>.<p>
+Creates a new <iref querybrowser> widget named <i>win</i>.
 
-The <iref querybrowser> widget may be created with the following options:<p>
+The <iref querybrowser> widget may be created with the following options:
 
 <deflist querybrowser options>
 
@@ -41,18 +41,18 @@ The <iref querybrowser> widget may be created with the following options:<p>
 <defopt {-height <i>height</i>}>
 <defopt {-width <i>width</i>}>
 
-These options are delegated to the hull ttk::frame widget.<p>
+These options are delegated to the hull ttk::frame widget.
 
 <defopt {-selectmode <i>mode</i>}>
 
 This option is delegated to the underlying <xref sqlbrowser(n)>
-widget.<p>
+widget.
 
 <defopt {-db <i>db</i>}>
 
 <b>Read-only after creation.</b>
 Specifies the name of the <xref sqldocument(n)> object (or equivalent)
-in which the SQLite3 data resides.<p>
+in which the SQLite3 data resides.
 
 <defopt {-reloadon <i>eventList</i>}>
 
@@ -61,7 +61,7 @@ events, and reload its contents when any of them are received.  The
 <i>eventList</i> must be a list of <xref notifier(n)> subjects and
 events.  For example, the following option causes the browser to
 reload whenever the <b>&lt;Reset&gt;</b> event is received from
-the <b>::sim</b> object.<p>
+the <b>::sim</b> object.
 
 <pre>
     querybrowser .browser             \
@@ -70,12 +70,12 @@ the <b>::sim</b> object.<p>
 </pre>
 
 If the value of <b>-reloadon</b> is changed, the previous bindings will be
-unbound; and all bindings will be unbound when the browser is destroyed.<p>
+unbound; and all bindings will be unbound when the browser is destroyed.
 
 <defopt {-selectioncmd <i>cmd</i>}>
 
 Specifies a command that is called whenever the querybrowser(n)'s
-selection has changed (or might have changed).<p>
+selection has changed (or might have changed).
 
 </deflist querybrowser options>
 
@@ -87,25 +87,25 @@ selection has changed (or might have changed).<p>
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem clear {<i>win</i> clear}>
 
-Deletes all rows from the browser.<p>
+Deletes all rows from the browser.
 
 <defitem curselection {<i>win</i> curselection}>
 
 Returns a list of the row indices of the selected rows, or the empty list
-if no rows are selected.<p>
+if no rows are selected.
 
 <defitem get {<i>win</i> get <i>first last</i>}>
 <defitem get {<i>win</i> get <i>indexList</i>}>
 
-Retrieves the data from one or more rows in the browser.<p>
+Retrieves the data from one or more rows in the browser.
 
 The first form of the command returns a list whose elements are all of the
 items (i.e., row contents) between <i>first</i> and <i>last</i>, inclusive.
@@ -114,45 +114,45 @@ the list <i>indexList</i>: if the latter contains exactly one index then the
 return value is the item indicated by that index (or an empty
 string if the index refers to a non-existent item); otherwise the command
 returns the list of all of the items corresponding to the indices
-specified by <i>indexList</i>.<p>
+specified by <i>indexList</i>.
 
 <defitem "query get" {<i>win</i> query get}>
 
-Returns the text of the SQL query from the query editor pane.<p>
+Returns the text of the SQL query from the query editor pane.
 
 <defitem "query set" {<i>win</i> query set <i>sql</i>}>
 
-Sets the text of the SQL query in the editor pane, and executes it.<p>
+Sets the text of the SQL query in the editor pane, and executes it.
 
 <defitem reload {<i>win</i> reload}>
 
 Asks the querybrowser(n) to clear its contents and reload all the data
-from the database for the current query.<p>
+from the database for the current query.
 
 <defitem selection {<i>win</i> selection <i>subcommand</i> ?<i>args...</i>?}>
 
 This method is delegated to the underlying tablelist(n) widget.  Note that
 if this method is used to change the selection, the <b>-selectioncmd</b>
-will <i>not</i> be called.<p>
+will <i>not</i> be called.
 
 <defitem toolbar {<i>win</i> toolbar}>
 
 Returns a ttk::frame into which the caller can add toolbar buttons and
-other controls.<p>
+other controls.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-querybrowser(n) requires Tcl 8.5 or later.<p>
+querybrowser(n) requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-Original package.<p>
+Original package.
 
 </manpage>
 

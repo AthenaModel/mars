@@ -15,7 +15,7 @@ namespace import ::marsutil::*
 
 <xref sqldocument(n)> is a Tcl wrapper around SQLite3 database
 objects.  It provides access to all features of an SQLite3 database
-object; in addition:<p>
+object; in addition:
 
 <ul>
   <li> By default, sqldocument(n) implements a commit-on-demand policy.
@@ -24,34 +24,34 @@ object; in addition:<p>
        immediately.  This improves performance when many independent
        transactions are done in rapid succession, at the expense of
        concurrent access (which JNEM does not need).  This behavior
-       is controlled by the <code>-autotrans</code> option.<p>
+       is controlled by the <code>-autotrans</code> option.
 
   <li> By default, sqldocument(n) disables SQLite3's rollback
        capability, resulting in a performance gain.  If the ability to
        roll back transactions is required, set <code>-rollback</code>
-       to "on".<p>
+       to "on".
 
   <li> Checking of foreign key constraints is enabled automatically
        (<b>PRAGMA foreign_keys=on;</b>).  To disable foreign keys,
-       set <code>-foreignkeys</code> to "off".<p>
+       set <code>-foreignkeys</code> to "off".
 
   <li> Modules which adhere to the <xref sqlsection(i)> interface
        can be registered with an instance of <xref sqldocument(n)>,
        thus including their schema and function definitions in all
-       databases subsequently created using that instance.<p>
+       databases subsequently created using that instance.
 
   <li> A number of useful operations from <xref sqlib(n)> are
-       provided as subcommands.<p>
+       provided as subcommands.
 </ul>
 
 <b>NOTE:</b> The SQLite3 database file is closed when the
 sqldocument(n) object is destroyed--but updates are not committed.
-Call <iref close> explicitly!<p>
+Call <iref close> explicitly!
 
 <section "SCHEMA">
 
 At present, sqldocument(n) adds no definitions of its own to the database
-schema; if it did, they would appear here.<p>
+schema; if it did, they would appear here.
 
 <pre>
 <fromproject {::marsutil::sqldocument sqlsection schema}>
@@ -60,7 +60,7 @@ schema; if it did, they would appear here.<p>
 <section "SQL FUNCTIONS">
 
 sqldocument(n) defines the following standard SQL functions, which
-may be used in addition to those defined by SQLite3:<p>
+may be used in addition to those defined by SQLite3:
 
 <deflist sql_functions>
 
@@ -69,24 +69,24 @@ may be used in addition to those defined by SQLite3:<p>
 This function retrieves the <i>key</i>'s value from the <i>dict</i>,
 or the empty string if the <i>key</i> is not found.  It is
 useful for doing queries against a column whose value is a Tcl
-dictionary.<p>
+dictionary.
 
 <defitem error {error(<i>errmsg</i>,...)}>
 
 This function maps to the standard Tcl <code>error(n)</code> command.
-It's useful for throwing errors in queries (e.g., in lock triggers).<p>
+It's useful for throwing errors in queries (e.g., in lock triggers).
 
 <defitem format {format(<i>fmtstring</i>, <i>args...</i>)}>
 
 This function maps to the standard Tcl <code>format(n)</code> command.
 It's useful for formatting retrieved values during queries.  For
-example,<p>
+example,
 
 <pre>
   $db query {
      SELECT id,format('%5.1f',magnitude) FROM nsat_levels
   }
-</pre><p>
+</pre>
 
 <defitem joinlist {joinlist(<i>list</i>, <i>delimiter</i>)}>
 
@@ -97,28 +97,28 @@ It's useful for formatting list-valued database columns.  For example,
   $db query {
      SELECT FED_ID,joinlist(DETAILS, ', ') FROM absits
   }
-</pre><p>
+</pre>
 
 <defitem nonempty {nonempty(<i>arg</i>,...)}>
 
 Returns the value of the first argument which is neither NULL nor the
 empty string, or the empty string if no argument is non-empty.  This
 is a Tcl-friendly equivalent to COALESCE() which treats empty strings
-like NULLs.<p>
+like NULLs.
 
 <defitem now {now(?<i>offset</i>?)}>
 
 If <code>-clock</code> is specified, then <iref now> will be
 defined, and will return the current simulation time in ticks.  If
 <i>offset</i> is given, it's an offset in integer ticks; it will be
-added to the current simulation time, and returned.<p>
+added to the current simulation time, and returned.
 
 <defitem percent {percent(<i>frac</i>)}>
 Displays the fraction as a percentage.  If the fraction
 is at least 0.005, displays it as an integer percentage, e.g.,
 1%, 10%, 25%.  If the fraction is <lb>= 0.005 but greater than
 0.0, displays it as "~0%".
-<p>
+
 
 <defitem timestr {timestr(<i>ticks</i>, ?<i>offset</i>?)}>
 <defitem tozulu {tozulu(<i>ticks</i>, ?<i>offset</i>?)}>
@@ -128,20 +128,20 @@ If <code>-clock</code> is specified, then <iref timestr> and
 defined.  Given a simulation time as <i>ticks</i> plus an optional
 <i>offset</i>, returns the resulting simulation time as a
 human-readable time string; the format depends on the particular
-<xref simclock(i)> object assigned to <code>-clock</code>.<p>
+<xref simclock(i)> object assigned to <code>-clock</code>.
 
 <b>Note: The <iref tozulu> form is deprecated.</b>
 
 <defitem wallclock {wallclock()}>
 
-Returns the wall-clock time in Unix seconds.<p>
+Returns the wall-clock time in Unix seconds.
 
 </deflist sql_functions>
 
 <section "COLLATING SEQUENCES">
 
 This module defines the following additional collation sequences for
-use when defining or querying database tables:<p>
+use when defining or querying database tables:
 
 <deflist collations>
 
@@ -151,16 +151,16 @@ The <b>DICT</b> collating sequence causes a column to be sorted in
 dictionary order, as defined by the <xref tcl:lsort(n)> command's
 <b>-dictionary</b> option.  This is useful for columns that contain
 an embedded number, as it makes "N10" sort after "N9" rather than
-between "N1" and "N2".<p>
+between "N1" and "N2".
 
 This collating sequence should be used sparingly, as its
-implementation is rather slow.<p>
+implementation is rather slow.
 
 </deflist collations>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
@@ -169,13 +169,13 @@ This module defines the following command:<p>
 Creates a new <iref sqldocument> object named <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref sqldocument> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
 After the object is created, a database file must still
 be <iref open>ed, and (if so desired) it must also be
-<iref clear>ed.<p>
+<iref clear>ed.
 
-The object may be created with the following options:<p>
+The object may be created with the following options:
 
 <deflist options>
 
@@ -184,13 +184,13 @@ The object may be created with the following options:<p>
 If <b>on</b>, the default, the sqldocument(n) always has an open
 transaction; changes are not committed until <iref commit> is
 called.  If <b>off</b>, the application can batch queries into
-transactions as it chooses, and <iref commit> has no effect.<p>
+transactions as it chooses, and <iref commit> has no effect.
 
 <defopt {-clock <i>simclock</i>}>
 
 <b>Readonly.</b> The <i>simclock</i> must be a <xref simclock(i)>
 object.  If this option is given, the <iref now> and
-<iref timestr> SQL functions will be defined.<p>
+<iref timestr> SQL functions will be defined.
 
 <defopt {-commitcmd <i>command</i>}>
 
@@ -198,31 +198,31 @@ If specified, this command is called after the database is committed but
 before a new transaction is begun. This is most useful when the
 <b>-autotrans</b> option is <b>on</b> since it gives the ability to perform
 some task while the database is not locked due to an open transaction.
-<p>
+
 
 <defopt {-explaincmd <i>command</i>}>
 
 If specified, the <i>command</i> is a command prefix to be called by 
 <iref explain> with two additional arguments: the query, and the
-result of using SQLite's "EXPLAIN QUERY PLAN" on the query.<p>
+result of using SQLite's "EXPLAIN QUERY PLAN" on the query.
 
 <defopt {-foreignkeys <i>boolean</i>}>
 
 Explicitly enables or disables foreign key checking, according to the
 value of the <i>boolean</i> flag.  Foreign key checking is
 <b>on</b> by default.  See <b>PRAGMA foreign_keys</b> in the SQLite3
-documentation for more information.<p>
+documentation for more information.
 
 <defopt {-readonly <i>boolean</i>}>
 
 If <b>yes</b>, the sqldocument(n) object can be used to read an existing
 database, but cannot change it in any way; any attempt to write to it
-will throw an error.<p>
+will throw an error.
 
 <defopt {-rollback <i>boolean</i>}>
 
 If <b>on</b>, transactions can be rolled back instead of committed.
-If <b>off</b>, the default, they cannot.<p>
+If <b>off</b>, the default, they cannot.
 
 <defopt {-subject <i>name</i>}>
 
@@ -232,7 +232,7 @@ as the subject of the events.  If this option's value is not empty,
 it is used as the subject instead.  This is useful when
 the sqldocument(n) is wrapped by another object, as is frequently the
 case.  The appropriate subject is then the wrapper rather than the
-sqldocument(n) itself.<p>
+sqldocument(n) itself.
 
 </deflist options>
 
@@ -241,10 +241,10 @@ sqldocument(n) itself.<p>
 sqldocument(n) is itself an <xref sqlsection(i)>, as it defines
 schema entities (see <xref SCHEMA>) and SQL functions (see
 <xref "SQL FUNCTIONS">).  See <xref sqlsection(i)> for a description
-of this method's subcommands.<p>
+of this method's subcommands.
 
 sqldocument(n) is the only sqlsection(i) registered automatically with
-all instances.<p>
+all instances.
 
 </deflist commands>
 
@@ -252,29 +252,29 @@ all instances.<p>
 
 The created sqldocument(n) object has the following subcommands; in
 addition, it supports all of the methods of an SQLite3 database
-object (except as overridden here).<p>
+object (except as overridden here).
 
 <deflist instance>
 
 <defitem clear {$db clear}>
 
 Initializes the contents of the database, deleting any existing
-data and re-defining the schema.<p>
+data and re-defining the schema.
 
 <defitem close {$db close}>
 
 Closes the database, first committing any updates.  The database
 cannot be accessed again unless it is first <iref open>ed
-explicitly.<p>
+explicitly.
 
 <defitem commit {$db commit}>
 
 Saves all pending updates.  If <code>-autotrans</code> is off, this
-command has no effect.<p>
+command has no effect.
 
 <defitem dbfile {$db dbfile}>
 
-Returns the name of the last-opened database file, or "" if none.<p>
+Returns the name of the last-opened database file, or "" if none.
 
 <defitem delete {$db delete ?-grab? <i>table condition</i> ?<i>table condition</i>...?}>
 
@@ -285,11 +285,11 @@ option is included, the call returns a <iref grab> data set of all
 of the deleted rows, including those from cascading and triggered
 deletes; the table specifications in the dataset include the "INSERT"
 tag, so that <iref ungrab> will use INSERT rather than UPDATE to
-insert the rows into the database.<p>
+insert the rows into the database.
 
 With <code>-grab</code>, the command is intended to capture deleted
 row data so that cascading and triggered
-deletes can be easily undone using <iref ungrab>.  For example,<p>
+deletes can be easily undone using <iref ungrab>.  For example,
 
 <pre>
     # Delete an entry, plus cascading deletes, and save the undo data.
@@ -300,26 +300,26 @@ deletes can be easily undone using <iref ungrab>.  For example,<p>
 </pre>
 
 Note that this command does not support <iref grab>'s
-<code>-tcl</code> option.<p>
+<code>-tcl</code> option.
 
 <defitem eval {$db eval <i>query</i> ?<i>args...</i>?}>
 
 This is simply the standard SQLite3 "eval" subcommand.  See the
-SQLite3 documentation for details.<p>
+SQLite3 documentation for details.
 
 <defitem explain {$db explain <i>query</i> ?<i>args...</i>?}>
 
 The <iref explain> method is intended to function identically to 
 SQLite's standard <iref eval> method, except that it will run
 "EXPLAIN QUERY PLAN" on the query and call the
-<code>-explaincmd</code> prior to actually executing the query.<p>
+<code>-explaincmd</code> prior to actually executing the query.
 
 This feature is for use by the developer as an aid to improving
 performance: set the <code>-explaincmd</code> when creating the
 instance of <iref sqldocument>; then, in order to tune a
 particular query, replace the call to <iref eval> with a call to
 <iref explain>.  When optimization is complete, replace
-<iref explain> with <iref eval> once again.<p>
+<iref explain> with <iref eval> once again.
 
 <defitem fklist {$db fklist <i>table</i> ?-indirect?}>
 
@@ -327,7 +327,7 @@ Returns a list of the tables with foreign keys that reference the
 specified <i>table</i>, excluding <i>table</i> itself.  If the
 <code>-indirect</code> option is included, the list also includes the
 tables that depend indirectly on <i>table</i>.  It is an error if
-<i>table</i> is unknown.<p>
+<i>table</i> is unknown.
 
 <defitem grab {$db grab ?-insert? <i>table condition</i> ?<i>table condition...</i>?}>
 
@@ -336,7 +336,7 @@ database, and returns them to the user as one value.  The grabbed data
 can later be restored to the database using <iref ungrab>.
 For example, an operation that updates rows in the database might
 grab the rows prior to the change so that the original values can
-be restored afterwards.<p>
+be restored afterwards.
 
 The returned value is called a "grab data set".  It is a flat list
 structure {<i>tableSpec values tableSpec values...</i>} where
@@ -346,45 +346,45 @@ by <iref grab>, the <i>tableSpec</i> is simply the name of the
 table; if the optional <code>-insert</code> option is included, 
 however, it will be a list {<i>tableName</i> INSERT}.  The
 INSERT tag tells <iref ungrab> to use INSERT to put the data
-in the table rather than UPDATE.<p>
+in the table rather than UPDATE.
 
 NULL values are retrieved as the SQLite3 "nullvalue", which defaults
-to the empty string.<p>
+to the empty string.
 
-For example,<p>
+For example,
 
 <pre>
     set data [$db grab table1 {x=5} table2 {y=10}]
 </pre>
 
 will grab all rows from table1 where x = 5, and all rows from
-table2 where y = 10.<p>
+table2 where y = 10.
 
 The result of calling <iref grab> can be passed to
 the <iref ungrab> command to put the rows
-back in the database.<p>
+back in the database.
 
 <defitem insert {$db insert <i>table dict</i>}>
 
 Inserts the contents of dictionary <i>dict</i> into the database as a
 row in the named <i>table</i>.  The dictionary keys must be the same
 as the column names in the table.  <b>It's an error if a row already
-exists with the same key column values.</b><p>
+exists with the same key column values.</b>
 
 This will be less efficient than an explicit "INSERT INTO" with
 hardcoded column names, but where performance isn't an issue it wins
-on maintainability.<p>
+on maintainability.
 
-Compare to <iref replace>.<p>
+Compare to <iref replace>.
 
 <defitem islocked {$db islocked <i>table</i>}>
 
 Returns 1 if the named table exists and is <iref lock>ed, and 0
-otherwise.<p>
+otherwise.
 
 <defitem isopen {$db isopen}>
 
-Returns 1 if a database file is open, and 0 otherwise.<p>
+Returns 1 if a database file is open, and 0 otherwise.
 
 <defitem lock {$db lock <i>tables</i>}>
 
@@ -392,24 +392,24 @@ Locks one more database tables, where <i>tables</i> is a list of the
 table names.  Locked tables are effectively read-only; attempts to
 update, insert, or delete rows will fail until the table
 is <iref unlock>ed again.  Note that locked tables can
-still be dropped in their entirety.<p>
+still be dropped in their entirety.
 
 The tables to be locked must exist, and may be either persistent or
 temporary.  Note that tables in "attached" databases cannot be locked
-using this mechanism.<p>
+using this mechanism.
 
 Locking a table that is already locked is <b>not</b> an error; the table
-simply remains locked.<p>
+simply remains locked.
 
 <defitem mat {$db mat <i>table iname jname ename</i> ?<i>options...</i>?}>
 
 Extracts a <xref mat(n)> matrix from the database; the arguments and
-options are as for <xref sqlib(n)>'s <xref sqlib(n) "sqlib mat"> method.<p>
+options are as for <xref sqlib(n)>'s <xref sqlib(n) "sqlib mat"> method.
 
 <defitem monitor {$db monitor <i>subcommand</i> ?<i>args...</i>?}>
 
 The <iref monitor> family of commands is used to monitor changes to
-RDB tables, row by row.  The subcommands are as follows:<p>
+RDB tables, row by row.  The subcommands are as follows:
 
 <deflist monitor>
 
@@ -417,11 +417,11 @@ RDB tables, row by row.  The subcommands are as follows:<p>
 
 Requests monitoring of the specified <i>table</i>.  The
 <i>keynames</i> argument should a list of one or more column names;
-these are the columns used to identify the modified rows.<p>
+these are the columns used to identify the modified rows.
 
 <defitem "monitor remove" {$db monitor remove <i>table</i>}>
 
-Disables monitoring for the specified <i>table</i>.<p>
+Disables monitoring for the specified <i>table</i>.
 
 <defitem "monitor script" {$db monitor script <i>body</i>}>
 
@@ -431,16 +431,16 @@ monitoring is enabled for all of the requested tables; after <i>body</i> is
 executed, a <xref notifier(n)> event is sent for every
 monitored database row that changed, and monitoring is disabled
 again.  Note that monitoring is disabled and notifications are
-sent even if <i>body</i> throws an error.<p>
+sent even if <i>body</i> throws an error.
 
 Each notifier event will have the scenariodb(n) object as its
 subject and the table name (quoted in angle brackets) as its event.
 The event will have two arguments: the operation (<b>update</b> or
-<b>delete</b>) and a key value indicating the row that changed.<p>
+<b>delete</b>) and a key value indicating the row that changed.
 
 For example, if the <b>rel_fg</b> table is monitored and the
 relationship for group G1's relationship with G2 is modified, the
-following event will be sent:<p>
+following event will be sent:
 
 <pre>
     notifier send $db <lb>rel_fg<rb> update {G1 G2}
@@ -452,26 +452,26 @@ much the same way by the GUI, and it is difficult to get SQLite3 to be
 precise about whether a change is an addition or an update.  (SQLite3
 can distinguish clearly between an INSERT statement and an UPDATE
 statement; but an INSERT OR REPLACE can do either an insert or
-an update, and there's no easy way to tell which.)<p>
+an update, and there's no easy way to tell which.)
 
 In addition, if at least one <b>update</b> or <b>delete</b> event has
-been sent, the database will also send one final event:<p>
+been sent, the database will also send one final event:
 
 <pre>
     notifier send $db <lb>Monitor<rb>
 </pre>
 
 Calls to <iref monitor script> and <iref monitor transaction>
-can be nested.<p>
+can be nested.
 
 <defitem "monitor transaction" {$db monitor transaction <i>body</i>}>
 
 This command is essentially the same as <iref monitor script>,
 except that it executes <i>body</i> in the context of an
-SQL transaction, using SQLite3's "transaction" subcommand.<p>
+SQL transaction, using SQLite3's "transaction" subcommand.
 
 Calls to <iref monitor transaction> and <iref monitor script>
-can be nested.<p>
+can be nested.
 
 </deflist monitor>
 
@@ -479,76 +479,76 @@ can be nested.<p>
 
 Opens (but does not <iref clear>) a database file with the specified
 <i>filename</i>.  If <i>filename</i> is missing, <iref open> will
-re-open the previously-opened database file, if any.<p>
+re-open the previously-opened database file, if any.
 
-Call <iref clear> explicitly to initialize the database.<p>
+Call <iref clear> explicitly to initialize the database.
 
 All temporary schema definitions and all SQL function definitions from
 all registered <xref sqlsection(i)> modules will be defined in
 the database as soon as it is <iref open>ed.  The persistent schema
 definitions will be not be defined in a newly created database until
-it is <iref clear>ed.</i>
+it is <iref clear>ed.
 
 <defitem query {$db query <i>sql</i> ?<i>options...</i>?}>
 
 Queries the database and returns the results formatted for
 display.  The options are as for <xref sqlib(n)>'s
-<xref sqlib(n) query> method.<p>
+<xref sqlib(n) query> method.
 
 <defitem register {$db register <i>section</i>}>
 
 Registers an <xref sqlsection(i)> module with this instance, where
 <i>section</i> is the fully-qualified name of the module.  Once
 registered, the <i>section</i>'s definitions will be included as
-appropriate on <iref open> and <iref clear>.<p>
+appropriate on <iref open> and <iref clear>.
 
 <defitem replace {$db replace <i>table dict</i>}>
 
 Inserts the contents of dictionary <i>dict</i> into the database as a
 row in the named <i>table</i>.  The dictionary keys must be the same
 as the column names in the table.  <b>If there's already a row with
-matching key columns, it will be replaced.</b><p>
+matching key columns, it will be replaced.</b>
 
 This will be less efficient than an explicit "INSERT OR REPLACE INTO" with
 hardcoded column names, but where performance isn't an issue it wins
-on maintainability.<p>
+on maintainability.
 
-Compare to <iref insert>.<p>
+Compare to <iref insert>.
 
 <defitem safeeval {$db safeeval <i>args...</i>}>
 
 This subcommand is just like "eval", but is
 prevented from changing the contents of the database.  It is
 intended for use in commands accessible to the user of the
-application.<p>
+application.
 
 <defitem safequery {$db safequery <i>args...</i>}>
 
 This subcommand is just like <iref query>, but is
-prevented from changing the contents of the database.<p>
+prevented from changing the contents of the database.
 
 <defitem saveas {$db saveas <i>filename</i>}>
 
 Saves a copy of the persistent contents of the database to a new
 database file called <i>filename</i>.  It's an error if there is
-already a file with that <i>filename</i>.<p>
+already a file with that <i>filename</i>.
 
 <defitem schema {$db schema ?<i>table</i>?}>
 
 Returns the SQL schema for the specified <i>table</i>, or for the
 database as a whole.  The output includes both persistent and
-temporary definitions.  The <i>table</i> may contain wildcards.<p>
+temporary definitions.  The <i>table</i> may contain wildcards.
 
 <defitem sections {$db sections}>
 
 Returns a list of the names of the <xref sqlsection(i)>
-modules registered with this instance.<p>
+modules registered with this instance.
 
 <defitem tables {$db tables}>
 
 Returns the names of the tables defined in the current database,
 including temporary tables and tables defined in attached
-databases.<p>
+databases.
 
 <defitem ungrab {$db ungrab <i>data</i>}>
 
@@ -557,7 +557,7 @@ this command puts the data back into the database using either UPDATE
 or INSERT, as determined by the optional INSERT tag in each table's
 specification in the data set.  For example, the following code grabs
 rows from the database, modifies them, and then restores the original
-values.<p>
+values.
 
 <pre>
     set data [$db grab table1 {x=5} table2 {y=10}]
@@ -568,34 +568,34 @@ values.<p>
 </pre>
 
 If the INSERT tag is included in a table spec, this command
-can also be used to re-insert deleted rows.<p>
+can also be used to re-insert deleted rows.
 
 Note that the schemas of the relevant tables should not be altered
 between grabbing and ungrabbing, or the ungrabbing will have
-unpredictable results.<p>
+unpredictable results.
 
 Whether updating or inserting, values that match the 
 SQLite3 "nullvalue" will be inserted as NULL.  When updating, however,
-it is assumed that key columns do not contain NULL.<p>
+it is assumed that key columns do not contain NULL.
 
 <defitem unlock {$db unlock <i>tables</i>}>
 
 Unlocks one more <iref lock>ed database tables, where <i>tables</i>
 is a list of the table names.  Once unlocked, the tables are
-once again read-write, and rows can be updated, inserted, or deleted.<p>
+once again read-write, and rows can be updated, inserted, or deleted.
 
 Unlocking a table that isn't locked is <b>not</b> an error; the table
-simply remains unlocked.<p>
+simply remains unlocked.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-This package requires Tcl 8.5 or later.<p>
+This package requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

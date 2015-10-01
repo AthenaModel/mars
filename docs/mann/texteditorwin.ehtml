@@ -14,9 +14,9 @@ namespace import ::marsgui::*
 <xref marsgui(n)> contains general-purpose (i.e.,
 non-application-specific) GUI code for use in Mars.
 This module defines the ::marsgui::texteditorwin, a simple text editor
-window which can be popped up to edit files in any Tk application.<p>
+window which can be popped up to edit files in any Tk application.
 
-The text editor has the following features:<p>
+The text editor has the following features:
 
 <ul>
   <li> Multiple edit windows
@@ -24,59 +24,59 @@ The text editor has the following features:<p>
   <li> New Window, Open File, Save File, Save File As.
 </ul>
 
-texteditorwin(n) is based on the <xref texteditor(n)> editing widget.<p>
+texteditorwin(n) is based on the <xref texteditor(n)> editing widget.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem texteditorwin {texteditorwin <i>pathName ?options...?</i>}>
 
-Creates a new toplevel texteditorwin window named <i>pathName</i>.<p>
+Creates a new toplevel texteditorwin window named <i>pathName</i>.
 
 The <iref texteditorwin> widget has all the options of the
-standard Tk "toplevel" widget; in addition, it has the following:<p>
+standard Tk "toplevel" widget; in addition, it has the following:
 
 <deflist options>
 
 <defopt {-height <i>height</i>}>
 
-Sets the height of the editor in lines of text.<p>
+Sets the height of the editor in lines of text.
 
 <defopt {-width <i>width</i>}>
 
-Sets the width of the editor in columns of text.</p>
+Sets the width of the editor in columns of text.
 
 <defopt {-background <i>color</i>}>
 
-Sets the background color of the editor pane.<p>
+Sets the background color of the editor pane.
 
 <defopt {-foreground <i>color</i>}>
 
-Sets the foreground color of the editor pane.<p>
+Sets the foreground color of the editor pane.
 
 <defopt {-font <i>color</i>}>
 
-Sets the text font.<p>
+Sets the text font.
 
 <defopt {-title <i>title</i>}>
 
 Sets the window title; the name of the current file is added
 automatically.  The title defaults to "Text Editor" appended to
-the title of the application's main window, ".".<p>
+the title of the application's main window, ".".
 
 <defopt {-initialdir <i>dir</i>}>
 
 Sets the <code>-initialdir</code> passed to <code>tk_getOpenFile</code>
-and <code>tk_getSaveFile</code>.<p>
+and <code>tk_getSaveFile</code>.
 
 <defopt {-filetypes <i>typelist</i>}>
 
 Sets the list of file types (<code>-filetypes</code>) passed to
 <code>tk_getOpenFile</code> and <code>tk_getSaveFile</code>.  See
-the Tk manpages for the format.<p>
+the Tk manpages for the format.
 
 </deflist options>
 
@@ -88,27 +88,27 @@ the Tk manpages for the format.<p>
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem load {<i>win</i> load <i>filename</i>}>
 
 Loads the named file into the editor.  The file will not be
-loaded if the current file needs to be saved.<p>
+loaded if the current file needs to be saved.
 
 The named file need not exist; if it does not, a blank document
 will be created, but the file name will be saved for when the
-file is saved.<p>
+file is saved.
 
 <defitem open {<i>win</i> open ?<i>filename</i>?}>
 
 Called with a file name, this subcommand is equivalent to
 <iref load>.  Called without a file name, prompts the user
 to select a file to open.  Note that no file can be opened
-if the current file needs to be saved.<p>
+if the current file needs to be saved.
 
 </deflist instance>
 
@@ -122,7 +122,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

@@ -17,23 +17,23 @@ widgets, including the <xref rotext(n)>, <xref logdisplay(n)> and
 string; it provides a menu for selecting the target type, which may be
 incremental, exact, wildcard, or regexp; and it provides buttons for
 navigating through the instances of the target in the data being
-searched.<p>
+searched.
 
 See the <xref EXAMPLE>, below, for details on how to connect
-a finder(n) with a <xref rotext(n)> widget.<p>
+a finder(n) with a <xref rotext(n)> widget.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem finder {finder <i>pathName ?options...?</i>}>
 
-Creates a new <iref finder> widget named <i>pathName</i>.<p>
+Creates a new <iref finder> widget named <i>pathName</i>.
 
 The <iref finder> widget may be created with all the standard Tk frame
-widget options, plus the following finder(n)-specific options:<p>
+widget options, plus the following finder(n)-specific options:
 
 <deflist finder options>
 
@@ -42,18 +42,18 @@ widget options, plus the following finder(n)-specific options:<p>
 Specifies the command the finder will use to request searches and
 browse the search results.  This will usually be the "find" method
 of a <xref rotext(n)> or similar widget.  The <xref EXAMPLE>
-shows how to connect a finder(n) with a <xref rotext(n)> widget.<p>
+shows how to connect a finder(n) with a <xref rotext(n)> widget.
 
 <defopt {-width <i>chars</i>}>
 
 Specifies the character width of the finder(n)'s text entry field.
-Defaults to 20.<p>
+Defaults to 20.
 
 <defopt {-msgcmd <i>cmd</i>}>
 
 Specifies a command to be used for passing messages to the user.
 The command will be called with one additional argument, the message
-to display; it will usually be displayed in the window's message line.<p>
+to display; it will usually be displayed in the window's message line.
 
 <defopt {-targettype <i>type</i>}>
 
@@ -61,21 +61,21 @@ Sets the type of the target string: <b>incremental</b>, <b>exact</b>,
 <b>wildcard</b>, or <b>regexp</b>.  Defaults to <b>exact</b>.  If the
 target type is <b>incremental</b>, then an <b>exact</b>-match search
 will be done incrementally as each character of the target string is
-entered by the user.<p>
+entered by the user.
 
 <defopt {-loglist <i>widget</i>}>
 
 If set to the name of a <xref loglist(n)> widget, the finder(n) will
 include buttons for searching through the logs displayed in the
 loglist(n) using that widget's  <xref loglist(n) searchlogs>
-and <xref loglist(n) stopsearch> methods.<p>
+and <xref loglist(n) stopsearch> methods.
 
 <defopt {-multicol <i>val</i>}>
 
 A boolean option indicating whether or not the search string spans
 multiple columns.  The intdended receiver of this will be the declared
 <i>-loglist</i> if it exists.  If <i>-loglist</i> is not
-specified, this option has no use.<p>
+specified, this option has no use.
 
 </deflist finder options>
 
@@ -85,20 +85,20 @@ specified, this option has no use.<p>
 
 <deflist instance>
 
-<defitem found {$finder found <i>count instance</i></i>}>
+<defitem found {$finder found <i>count instance</i>}>
 
 This method is used by the recipient of the <code>-findcmd</code>
-to notify the finder(n) of the search results.<p>
+to notify the finder(n) of the search results.
 
 The <i>count</i> is the number of instances of the target which were
-found; it will be 0 if no instances were found, or if the target is "".<p>
+found; it will be 0 if no instances were found, or if the target is "".
 
 The <i>instance</i> identifies the instance which is currently
 being highlighted on the display, if any.  If an instance is
 highlighted, it will be a number from 0 to <i>count</i> - 1.
-Otherwise it will be -1.<p>
+Otherwise it will be -1.
 
-The <xref EXAMPLE> shows how to connect the finder(n) to other widgets.<p>
+The <xref EXAMPLE> shows how to connect the finder(n) to other widgets.
 
 </deflist>
 
@@ -157,7 +157,7 @@ a finder(n) to a <xref rotext(n)> displaying an arbitrary text file.
     close $f
 
     .rotext see 1.0
-</pre><p>
+</pre>
 
 <section ENVIRONMENT>
 
@@ -170,11 +170,11 @@ directory.
 <section AUTHOR>
 
 Dave Jaffe,
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-6/24/2005 DJ Original package.<p>
+6/24/2005 DJ Original package.
 6/09/2006 WHD Updated to support find/found protocol.
 
 </manpage>

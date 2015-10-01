@@ -5,20 +5,20 @@
 <pre>
 package require marsutil <version>
 namespace import ::marsutil::*
-</pre><p>
+</pre>
 
 <itemlist>
 
 <section DESCRIPTION>
 
 zulu(n) defines a number of operations on "zulu-time" strings.  A
-zulu-time string is a UTC date-and-time string with this format:<p>
+zulu-time string is a UTC date-and-time string with this format:
 
 <pre>
 ddhhmmZmmmyy
 </pre>
 
-where<p>
+where
 
 <ul>
   <li> "dd" is the day of the month, 01 to 31
@@ -27,14 +27,14 @@ where<p>
   <li> "Z" is a literal Z
   <li> "mmm" is the abbreviated month name, JAN, FEB, MAR, etc.
   <li> "yy" is the two-digit year.
-</ul><p>
+</ul>
 
 This module defines conversions from zulu-time strings to Unix clock
-seconds and vice-versa.<p>
+seconds and vice-versa.
 
 <b>Note:</b> CBS understands a two-digit year "yy" to fall in the
 range 1950 to 2049.  This module is based on Tcl's <tt>clock</tt>
-command, which uses the range 1969 to 2068 instead.<p>
+command, which uses the range 1969 to 2068 instead.
 
 <section COMMANDS>
 
@@ -43,18 +43,18 @@ command, which uses the range 1969 to 2068 instead.<p>
 <defitem "zulu fromsec" {zulu fromsec <i>seconds</i>}>
 
 Given a standard Unix time in clock <i>seconds</i>, returns the
-zulu-time string.  Seconds within the minute are truncated.<p>
+zulu-time string.  Seconds within the minute are truncated.
 
 <defitem "zulu tosec" {zulu tosec <i>zulutime</i>}>
 
 Given a <i>zulutime</i> string, returns the standard Unix time in
-clock seconds.<p>
+clock seconds.
 
 <defitem "zulu validate" {zulu validate <i>zulutime</i>}>
 
 Validates the <i>zulutime</i>, throwing an error with error code
 <b>INVALID</b> for invalid strings and returning the canonical form
-(all uppercase) otherwise.<p>
+(all uppercase) otherwise.
 
 </deflist>
 
@@ -68,7 +68,7 @@ library directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

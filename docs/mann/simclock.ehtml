@@ -12,37 +12,37 @@ namespace import ::marsutil::*
 
 <section DESCRIPTION>
 
-simclock(n) defines a simulation clock type.<p>
+simclock(n) defines a simulation clock type.
 
 A simclock(n) can run in two modes, active and passive.  In passive
 mode, the simclock(n) simply tracks the current simulation time and
 makes it available in a variety of forms (e.g., minutes, hours,
 days).  In active mode, the simclock(n) will advance simulation time
 in steps at a rate determined by a "game ratio", e.g., 10 simulated
-minutes per real-time minute.<p>
+minutes per real-time minute.
 
 <subsection "Representation of Simulated Time">
 
 Simumulated time, or "sim time", is represented as an integer number
 of ticks since time 0.  The tick size is specified using the <b>-tick</b>
 option, and can be any integer number of minutes, hours, or days.
-Time can only be advanced by one or more ticks.<p>
+Time can only be advanced by one or more ticks.
 
 A simclock(n) can convert between ticks and minutes, hours, and 
 days.  It can also convert the current sim time to the number of
-minutes, hours, or days since time 0.<p>
+minutes, hours, or days since time 0.
 
 In addition, the <b>-t0</b> option specifies the "start date", a 
 zulu-time string for the specific time and date corresponding to
 time 0.  Consequently, the simclock(n) can convert between
-sim times in ticks and zulu-time strings.<p>
+sim times in ticks and zulu-time strings.
 
 <subsection "Advancing Time">
 
 In passive mode, time must be advanced manually, by calling the
 simclock(n)'s <iref advance>, <iref step>, or <iref tick>
 methods.  Note that <iref tick> calls the <code>-advancecmd</code>,
-where <iref advance> and <iref step> do <b>not</b>.<p>
+where <iref advance> and <iref step> do <b>not</b>.
 
 In active mode, time advances automatically.  To enter active mode,
 call the simclock(n)'s <iref start> method; then, set the desired
@@ -52,11 +52,11 @@ called.  The simclock(n)'s <code>-requestcmd</code> and
 <iref grant> method can be used to request and receive permission to
 advance time from some other object.  To stop advancing time, set the
 <iref ratio> back to zero, or call the simclock(n)'s
-<iref stop> method.<p>
+<iref stop> method.
 
 Note that active mode requires use of the Tcl event loop; time can
 only advance automatically while the application is in the event
-loop.<p>
+loop.
 
 <subsection "Time Specification Strings">
 
@@ -64,9 +64,9 @@ To ease user input, simclock(n) supports time specification strings,
 or "time specs".  A time spec consists of a base time, specified in
 one of a number of ways, with an optional positive or negative offset
 in ticks.  The time spec can be validated and translated into
-ticks.<p>
+ticks.
 
-The base time can be specified in the following ways:<p>
+The base time can be specified in the following ways:
 
 <ul>
   <li> As a zulu-time string.
@@ -74,9 +74,9 @@ The base time can be specified in the following ways:<p>
   <li> As the string <b>T0,</b> which translates to 0 ticks.
   <li> As the string <b>NOW</b>, which translates to the current simulation
        time in ticks.
-</ul><p>
+</ul>
 
-Thus, the following are all valid time specs:<p>
+Thus, the following are all valid time specs:
 
 <ul>
   <li> <b>NOW</b>: the current simulation time.
@@ -84,16 +84,16 @@ Thus, the following are all valid time specs:<p>
   <li> <b>NOW-10</b>: Ten ticks ago.
   <li> <b>100000ZJAN09</b>: Midnight (UTC) on January 10, 2009
   <li> <b>100000ZJAN09-30</b>: 30 ticks prior to 100000ZJAN09.
-</ul><p>
+</ul>
 
 If the base time is omitted, it is presumed to be the current
 simulation time; thus <b>+30</b> means 30 ticks from now and
 <b>-30</b> means 30 ticks ago.  Note that <b>+30</b> and
 <b>30</b> are two different times; the former is 30 ticks from now,
-and the latter is sim time 30.<p>
+and the latter is sim time 30.
 
 See also the <iref fromTimeSpec>, <iref timespec validate>,
-<iref past validate> and <iref future validate> commands.<p>
+<iref past validate> and <iref future validate> commands.
 
 <section COMMANDS>
 
@@ -104,9 +104,9 @@ See also the <iref fromTimeSpec>, <iref timespec validate>,
 Creates a new <iref simclock> object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref simclock> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The <iref simclock> object may be created with the following options:<p>
+The <iref simclock> object may be created with the following options:
 
 <deflist options>
 
@@ -114,7 +114,7 @@ The <iref simclock> object may be created with the following options:<p>
 
 Sets the simclock(n)'s  tick interval.  The tick specification,
 <i>tickSpec</i>, is a list of two elements, a positive integer and the
-desired units, e.g.,<p>
+desired units, e.g.,
 
 <ul>
   <li> <code>-tick {1 minute}</code>
@@ -123,26 +123,26 @@ desired units, e.g.,<p>
   <li> <code>-tick {4 hours}</code>
   <li> <code>-tick {1 day}</code>
   <li> <code>-tick {7 days}</code>
-</ul><p>
+</ul>
 
 The valid units are <b>minutes</b>, <b>hours</b>, and <b>seconds</b>;
-the final "s" in each unit name is optional.<p>
+the final "s" in each unit name is optional.
 
 The <b>tick</b> option's value can only be set when the current sim
 time is 0; once time has been advanced, the tick size can no longer be
-changed.<p>
+changed.
 
 <defopt {-t0 <i>zulutime</i>}>
 
 Sets the simulation start date to <i>zulutime</i>.  The default start
-date ("T-zero") is "010000ZJAN70".<p>
+date ("T-zero") is "010000ZJAN70".
 
 <defopt {-zuluvar <i>name</i>}>
 
 Specifies the name of a variable which will be updated with the
 current simulation time as a <xref zulu(n)> time string whenever
 the simulation time changes.  Note that setting the variable's
-value explicitly has no effect on the <iref simclock> object.<p>
+value explicitly has no effect on the <iref simclock> object.
 
 <defopt {-advancecmd <i>cmd</i>}>
 
@@ -151,56 +151,56 @@ while the simclock(n) is in active mode, and when <iref tick> is
 called in passive mode.  The simulation time will have
 already been updated and (in active mode) the actual game ratio
 measured.  When a <code>-requestcmd</code> is defined, the
-<code>-advancecmd</code> will be called by <iref grant>.<p>
+<code>-advancecmd</code> will be called by <iref grant>.
 
 <defopt {-requestcmd <i>cmd</i>}>
 
 If this option is defined, then when the simclock(n) is in active mode
 it will request permission to advance time prior to each advance by
 calling <i>cmd</i> with one additional argument, the time (in ticks)
-to which it wishes to advance.  In <i>cmd</i>, the application may:<p>
+to which it wishes to advance.  In <i>cmd</i>, the application may:
 
 <ul>
   <li> <b>Return normally</b>, indicating that the request will be granted.
        In this case it is the application's responsibility to call the
        simclock(n)'s <iref grant> method either immediately, prior
-       to returning from <i>cmd</i>, or at some future time.<p>
+       to returning from <i>cmd</i>, or at some future time.
 
   <li> <b>Defer the request</b>, by returning the <b>break</b> return
        code.  (<code>return -code break</code>).  This tells
        simclock(n) that a transient state prevents the request from
-       being granted at the moment, but to keep trying.<p>
+       being granted at the moment, but to keep trying.
 
   <li> <b>Throw an error</b>, indicating that an unexpected error
-       occurred.  simclock(n) will log the error and keep trying.<p>
+       occurred.  simclock(n) will log the error and keep trying.
 </ul>
 
 <defopt {-ratiovar <i>name</i>}>
 
 Whenever the desired game ratio is set or changed, the variable called
-<i>name</i> receives the new value.<p>
+<i>name</i> receives the new value.
 
 <defopt {-actualratiovar <i>name</i>}>
 
 Whenever the actual game ratio is measured or reset, the variable
 called <i>name</i> receives the new value.  If the actual game ratio
-has not yet been measured, then <i>name</i> will be set to "???".<p>
+has not yet been measured, then <i>name</i> will be set to "???".
 
 <defopt {-logger <i>cmd</i>}>
 
 Specifies the name of a <xref logger(n)> or equivalent object, to be
-used to log status while in active mode.<p>
+used to log status while in active mode.
 
 <defopt {-logcomponent <i>component</i>}>
 
 Specifies the object's <i>component</i> name, to use when logging to
-its <code>-logger</code>.  Defaults to <b>clock</b>.<p>
+its <code>-logger</code>.  Defaults to <b>clock</b>.
 
 </deflist options>
 
 <defitem ticktype {ticktype validate <i>value</i>}>
 
-Throws an error if <i>value</i> is not a valid <b>-tick</b> value.<p>
+Throws an error if <i>value</i> is not a valid <b>-tick</b> value.
 
 </deflist commands>
 
@@ -211,89 +211,89 @@ Throws an error if <i>value</i> is not a valid <b>-tick</b> value.<p>
 <defitem actualratio {<i obj> actualratio}>
 
 <b>Active Mode.</b>  Returns the measured game ratio value, or "???"
-if no measurement is available.<p>
+if no measurement is available.
 
 <defitem advance {<i obj> advance <i>t</i>}>
 
 <b>Passive Mode.</b>  Manually advances simulation time to <i>t</i>
 ticks in response to some external time update.  Returns the new
 simulation time in ticks.  Does <b>not</b> call the
-<code>-advancecmd</code>.<p>
+<code>-advancecmd</code>.
 
 <defitem asDays {<i obj> asDays ?<i>offset</i>?}>
 
 Returns the current simulation time in decimal days.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the returned time.<p>
+the returned time.
 
 <defitem asHours {<i obj> asHours ?<i>offset</i>?}>
 
 Returns the current simulation time in decimal hours.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the returned time.<p>
+the returned time.
 
 <defitem asMinutes {<i obj> asMinutes ?<i>offset</i>?}>
 
 Returns the current simulation time in minutes.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the returned time.<p>
+the returned time.
 
 <defitem asString {<i obj> asString ?<i>offset</i>?}>
 <defitem asZulu {<i obj> asZulu ?<i>offset</i>?}>
 
 Returns the current simulation time as a <xref zulu(n)> time
 string.  If given, <i>offset</i> should be an offset in ticks; it is
-added to the returned time.<p>
+added to the returned time.
 
 <defitem cget {<i obj> cget <i>option</i>}>
 
-Retrieve the value of any of the object's options.<p>
+Retrieve the value of any of the object's options.
 
 <defitem configure {<i obj> configure ?<i>option value...</i>?}>
 
-Set any of the object's options.<p>
+Set any of the object's options.
 
 <defitem fromDays {<i obj> fromDays <i>days</i>}>
 
 Converts a simulation time in decimal <i>days</i> to a simulation time
-in ticks; fractional ticks are rounded to the nearest integer.<p>
+in ticks; fractional ticks are rounded to the nearest integer.
 
 <defitem fromHours {<i obj> fromHours <i>hours</i>}>
 
 Converts a simulation time in decimal <i>hours</i> to a simulation time
-in ticks; fractional ticks are rounded to the nearest integer.<p>
+in ticks; fractional ticks are rounded to the nearest integer.
 
 <defitem fromMinutes {<i obj> fromMinutes <i>minutes</i>}>
 
 Converts a simulation time in decimal <i>minutes</i> to a simulation time
-in ticks; fractional ticks are rounded to the nearest integer.<p>
+in ticks; fractional ticks are rounded to the nearest integer.
 
 <defitem fromZulu {<i obj> fromZulu <i>zulutime</i>}>
 
 Converts a <xref zulu(n)> time string into a simulation time
-in ticks; fractional ticks are rounded to the nearest integer.<p>
+in ticks; fractional ticks are rounded to the nearest integer.
 
 <defitem fromTimeSpec {<i obj> fromTimeSpec <i>spec</i>}>
 
 Converts a time specification string, <i>spec</i>, into a sim time in
-ticks.<p>
+ticks.
 
 <defitem {timespec validate} {<i obj> timespec validate <i>spec</i>}>
 
 Validates the <i>spec</i> and returns the corresponding sim time in
-ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
 
 <defitem {past validate} {<i obj> past validate <i>spec</i>}>
 
 Validates the <i>spec</i> as a time between <b>T0</b> and <b>NOW</b>
 (inclusive) and returns the corresponding sim time in
-ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
 
 <defitem {future validate} {<i obj> future validate <i>spec</i>}>
 
 Validates the <i>spec</i> as a time no earlier than <b>NOW</b>
 and returns the corresponding sim time in
-ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
 
 <defitem grant {<i obj> grant <i>ticks</i>}>
 
@@ -303,19 +303,19 @@ to advance time.  For example, the <code>-requestcmd</code> might ask
 the federation for permission to advance time; when permission is
 received, then or later, the application can call <iref grant> to
 allow the request to proceed.  The <i>ticks</i> argument is the time
-for which permission was requested.<p>
+for which permission was requested.
 
-Note that <iref grant> calls the <code>-advancecmd</code> directly.<p>
+Note that <iref grant> calls the <code>-advancecmd</code> directly.
 
 <defitem isactive {<i obj> isactive}>
 
-Returns 1 if the simclock(n) is in active mode, and 0 otherwise.<p>
+Returns 1 if the simclock(n) is in active mode, and 0 otherwise.
 
 <defitem now {<i obj> now ?<i>offset</i>?}>
 
 Returns the current simulation time in ticks.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the returned time.<p>
+the returned time.
 
 <defitem ratio {<i obj> ratio ?<i>rat</i>?}>
 
@@ -326,58 +326,58 @@ advance.  If the game ratio is 1.0, simulation time will advance at a
 rate of at most 1 minute per wallclock minute.  If the game ratio is
 <b>auto</b>, the simclock(n) will request a new time advance
 immediately after each time advance is granted; that is, it will not
-artificially limit the speed of the simulation.<p>
+artificially limit the speed of the simulation.
 
 <defitem reset {<i obj> reset}>
 
 Resets simulation time to 0 ticks.  In addition, the simclock(n) is
-returned to passive mode and the game ratio is set to 0.<p>
+returned to passive mode and the game ratio is set to 0.
 
 <defitem start {<i obj> start ?<i>ticks</i>?}>
 
 <b>Active Mode.</b>  Enters active mode, allowing the simclock(n) to
 run on its own.  Optionally, sets the current simulation time to
 <i>ticks</i>.  Note that simulated time will not advance unless the
-application enters the Tcl event loop.<p>
+application enters the Tcl event loop.
 
 Note: if the game ratio was previously set to something other than
 0.0, the simclock will request a time advance during the
-<iref start> call. <p>
+<iref start> call. 
 
 <defitem step {<i obj> step <i>ticks</i>}>
 
 <b>Passive Mode.</b> Manually advances simulation time by the
 specified number of <i>ticks</i> in response to some external time
 update.  Returns the new simulation time in ticks.  Does <b>not</b> call the
-<code>-advancecmd</code>.<p>
+<code>-advancecmd</code>.
 
 <defitem stop {<i obj> stop}>
 
 <b>Active Mode.</b>  Returns the simclock(n) to passive mode; time
-will no longer advance.  The game ratio is reset to 0.<p>
+will no longer advance.  The game ratio is reset to 0.
 
 <defitem tick {<i obj> tick}>
 
 <b>Passive Mode.</b> Manually advances simulation time by one tick,
-calling the <code>-advancecmd</code> (if any).<p>
+calling the <code>-advancecmd</code> (if any).
 
 <defitem toDays {<i obj> toDays <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in ticks into decimal days.  If given,
 <i>offset</i> should be an offset in ticks; it is added to the
-specified time.<p>
+specified time.
 
 <defitem toHours {<i obj> toHours <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in <i>ticks</i> into decimal
 hours.  If given, <i>offset</i> should be an offset in ticks; it is added to
-the specified time.<p>
+the specified time.
 
 <defitem toMinutes {<i obj> toMinutes <i>ticks</i> ?<i>offset</i>?}>
 
 Converts a simulation time in <i>ticks</i> into decimal
 minutes.  If given, <i>offset</i> should be an offset in ticks; it is added to
-the specified time.<p>
+the specified time.
 
 <defitem toString {<i obj> toString <i>ticks</i> ?<i>offset</i>?}>
 <defitem toZulu {<i obj> toZulu <i>ticks</i> ?<i>offset</i>?}>
@@ -385,7 +385,7 @@ the specified time.<p>
 Converts a simulation time in integer <i>ticks</i> into a
 <xref zulu(n)> time string.  If given,
 <i>offset</i> should be an offset in ticks; it is added to
-the specified time.<p>
+the specified time.
 
 </deflist instance command>
 
@@ -403,7 +403,7 @@ library directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

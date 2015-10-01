@@ -13,14 +13,14 @@ package require marsgui <version>
 This module defines a number of standard icon images.  Each icon is a
 standard Tk image; all are defined in the <code>::marsgui::icon</code>
 namespace.  <b>Note that it's necessary to use the fully qualified
-name!</b><p>
+name!</b>
 
-To see the icons that are available, use the <xref mars_icons(1)> tool.<p>
+To see the icons that are available, use the <xref mars_icons(1)> tool.
 
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

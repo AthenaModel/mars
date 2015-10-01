@@ -13,7 +13,7 @@ namespace import ::marsutil::*
 
 The gradient(n) module defines a type for defining and computing
 color gradients: shadings of color used to visualize a range of input
-levels.<p>
+levels.
 
 A gradient is defined by six parameters: the input range, specified as
 a minimum level, a midpoint, and a maximum level, and the colors
@@ -25,22 +25,22 @@ the midpoint it is scaled between the minimum color and the midpoint
 color; for inputs between the midpoint and the maximum level, it is
 scaled between the midpoint color and the maximum color.  For example,
 a value between -100 and +100 could gradate from red at -100 to white
-at 0 to green at +100.<p>
+at 0 to green at +100.
 
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem gradient {gradient <i>pathName ?options...?</i>}>
 
-Creates a new <iref gradient> widget named <i>pathName</i>.<p>
+Creates a new <iref gradient> widget named <i>pathName</i>.
 
 The <iref gradient> widget may be created with the following
 options; the defaults cause inputs from 0.0 to 1.0 to produce shades
-of gray from white to black.<p>
+of gray from white to black.
 
 <deflist gradient options>
 
@@ -48,31 +48,31 @@ of gray from white to black.<p>
 
 Specifies the color, in <b>#<i>rrggbb</i></b> form, which corresponds
 to the minimum input level, <code>-minlevel</code>.  Defaults to
-<b>#FFFFFF</b>.<p>
+<b>#FFFFFF</b>.
 
 <defopt {-midcolor <i>color</i>}>
 
 Specifies the color, in <b>#<i>rrggbb</i></b> form, which corresponds
 to the midpoint input level, <code>-midlevel</code>.  Defaults to
-<b>#FFFFFF</b>.<p>
+<b>#FFFFFF</b>.
 
 <defopt {-maxcolor <i>color</i>}>
 
 Specifies the color, in <b>#<i>rrggbb</i></b> form, which corresponds
 to the maximum input level, <code>-maxlevel</code>.  Defaults to
-<b>#000000</b>.<p>
+<b>#000000</b>.
 
 <defopt {-minlevel <i>level</i>}>
 
-Specifies the minimum input level.  Defaults to 0.0.<p>
+Specifies the minimum input level.  Defaults to 0.0.
 
 <defopt {-midlevel <i>level</i>}>
 
-Specifies the midpoint input level.  Defaults to 0.0.<p>
+Specifies the midpoint input level.  Defaults to 0.0.
 
 <defopt {-maxlevel <i>level</i>}>
 
-Specifies the maximum input level.  Defaults to 1.0.</p>
+Specifies the maximum input level.  Defaults to 1.0.
 
 </deflist gradient options>
 
@@ -84,18 +84,18 @@ Specifies the maximum input level.  Defaults to 1.0.</p>
 
 <defitem configure {$gradient configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {$gradient cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem color {$gradient color <i>level</i>}>
 
 Given an input <i>level</i> ranging from <code>-minlevel</code> to
 <code>-maxlevel</code>, returns an output color (in <b>#<i>rrggbb</i></b>
 form) scaled from <code>-mincolor</code> to <code>-midcolor</code> to
-<code>-maxcolor</code>.<p>
+<code>-maxcolor</code>.
 
 </deflist>
 
@@ -109,7 +109,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

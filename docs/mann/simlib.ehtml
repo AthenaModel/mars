@@ -12,24 +12,24 @@ namespace import ::simlib::*
 <section DESCRIPTION>
 
 simlib(n) contains non-GUI simulation infrastructure modules.
-See <xref index(n)> for the entire list.<p>
+See <xref index(n)> for the entire list.
 
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package
-directory.<p>
+directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-Some content derives from earlier versions in JNEM's simlib(n).<p>
+Some content derives from earlier versions in JNEM's simlib(n).
 
 </manpage>
 

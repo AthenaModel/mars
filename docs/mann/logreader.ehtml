@@ -12,28 +12,28 @@ namespace import ::marsutil::*
 <section DESCRIPTION>
 
 A logreader(n) object reads and parses a log file given a user-defined
-parsing function.  There are two ways to use a logreader:<p>
+parsing function.  There are two ways to use a logreader:
 
 <ul>
   <li> The <iref get> method returns the parsed contents of an
-       entire log file given the file name.<p>
+       entire log file given the file name.
 
   <li> The <iref newentries> method allows the application to
-       periodically retrieve new entries from an active log file.<p>
+       periodically retrieve new entries from an active log file.
 </ul>
 
 logreader(n) places few requirements on either the log file or the
-parsing function. It assumes that:<p>
+parsing function. It assumes that:
 
 <ul>
   <li> Log file entries are written atomically--i.e., that it need not
-       worry about reading a partial entry from the disk.<p>
+       worry about reading a partial entry from the disk.
 
-  <li> A newline character at the end of the file can be ignored.<p>
+  <li> A newline character at the end of the file can be ignored.
 </ul>
 
 A log file with newlines between entries will meet these requirements,
-provided that it is output as a line-buffered file:<p>
+provided that it is output as a line-buffered file:
 
 <pre>
     set channel [open $filename w]
@@ -42,15 +42,15 @@ provided that it is output as a line-buffered file:<p>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem logreader {logreader <i>pathName ?options...?</i>}>
 
-Creates a new <iref logreader> component named <i>pathName</i>.<p>
+Creates a new <iref logreader> component named <i>pathName</i>.
 
-The <iref logreader> widget may be created with the following option:<p>
+The <iref logreader> widget may be created with the following option:
 
 <deflist logreader options>
 
@@ -72,7 +72,7 @@ any way desired by the application.  Required.
 <defitem get {$logreader get <i>file</i>}>
 
 Returns the parsed content of the named <i>file</i>, as parsed by the
-<code>-parsecmd</code>.<p>
+<code>-parsecmd</code>.
 
 <defitem newentries {$logreader newentries <i>file</i>}>
 
@@ -81,16 +81,16 @@ returns the parsed content, leaving the file open.  Subsequent calls
 parse and return any new entries; if there are none,
 <code>-parsecmd</code> will be called on the empty string.  When
 <iref newentries> is called on a different file, the current file is
-closed and the new file is opened.<p>
+closed and the new file is opened.
 
 <defitem close {$logreader close}>
 
-Explicitly closes the current log file, if any.<p>
+Explicitly closes the current log file, if any.
 
 <defitem filename {$logreader filename}>
 
 Returns the name of the most recently read log file, as it was passed
-to <iref get> or <iref newentries>.<p>
+to <iref get> or <iref newentries>.
 
 <defitem isfileopen {$logreader isfileopen}>
 
@@ -108,11 +108,11 @@ directory.
 
 <section AUTHOR>
 
-Dave Jaffe, Will Duquette<p>
+Dave Jaffe, Will Duquette
 
 <section HISTORY>
 
-07/05/2005 DJ Original package.<p>
+07/05/2005 DJ Original package.
 
 06/05/2006 WHD Minor clean-up.
 

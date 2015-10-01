@@ -16,11 +16,11 @@ allows an object to update itself in a lazy fashion.  The client calls
 the <iref update> method whenever an update is desired; after a
 specified <b>-delay</b>, the <b>-command</b> is called.  The 
 <iref update> method can be called any number of times during the
-delay interval, but the <b>-command</b> will be called only once.<p>
+delay interval, but the <b>-command</b> will be called only once.
 
 If the controlled object is a Tk widget, use the <b>-window</b>
 option; the <b>-command</b> will be called only when the window is
-mapped, thus saving unnecessary updates.<p>
+mapped, thus saving unnecessary updates.
 
 <section COMMANDS>
 
@@ -31,33 +31,33 @@ mapped, thus saving unnecessary updates.<p>
 Creates a new lazyupdater(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref lazyupdater> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The <iref lazyupdater> may be created with the following options:<p>
+The <iref lazyupdater> may be created with the following options:
 
 <deflist lazyupdater options>
 
 <defopt {-command <i>script</i>}>
 
 Defines a Tcl script to be evaluated in the global scope when the
-lazyupdater fires.  Defaults to "".<p>
+lazyupdater fires.  Defaults to "".
 
 <defopt {-delay idle|<i>msecs</i>}>
 
 Specifies the update delay, which must be either the string
 <b>idle</b> or the length of the delay in milliseconds
 (a positive integer).  If set to <b>idle</b>, the object schedules
-an idle task rather than a timeout.  Defaults to 1.<p>
+an idle task rather than a timeout.  Defaults to 1.
 
 If this value is changed after the object is created, then it takes
-effect the next time <iref update> is called.<p>
+effect the next time <iref update> is called.
 
 <defopt {-window <i>window</i>}>
 
 If the <b>-window</b> option is set, it must be the name of a Tk
 widget.  Then, the <b>-command</b> will be called only if the
 widget is mapped (i.e., visible), and an <iref update> will be
-scheduled automatically when the widget becomes mapped.<p>
+scheduled automatically when the widget becomes mapped.
 
 </deflist lazyupdater options>
 
@@ -65,28 +65,28 @@ scheduled automatically when the widget becomes mapped.<p>
 
 <section "INSTANCE COMMAND">
 
-Each instance of the <iref lazyupdater> object has the following subcommands:<p>
+Each instance of the <iref lazyupdater> object has the following subcommands:
 
 <deflist instance>
 
 <defitem cancel {<i>obj</i> cancel}>
 
 Cancels any pending update.  This is useful when the client has
-forced an update for some reason.<p>
+forced an update for some reason.
 
 <defitem cget {<i>obj</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>obj</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem update {<i>obj</i> update}>
 
 Schedules the <b>-command</b> to be called after the <b>-delay</b>.
 This method can be called any number of times during the delay
-interval; the <b>-command</b> will be called only once.<p>
+interval; the <b>-command</b> will be called only once.
 
 
 </deflist instance>
@@ -104,7 +104,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

@@ -699,7 +699,7 @@ snit::type ::marsutil::parmset {
 
     # manpage
     #
-    # Produces EHTML documentation as a deflist in jnem_man(1) format, 
+    # Produces EHTML documentation as a deflist in kite:ehtml(5) format, 
     # for inclusion in a man page.
 
     method manpage {} {
@@ -725,7 +725,6 @@ snit::type ::marsutil::parmset {
                 # FIRST, output the docs for this subset
                 append out "<defitem $item.* $item.*>\n"
                 append out "$info(doc-$id)\n"
-                append out "<p>\n\n"
 
                 # NEXT, push the subset onto the stack.
                 lappend stack $item
@@ -738,7 +737,6 @@ snit::type ::marsutil::parmset {
                 append out "<defitem $item {$item <i>value</i>}>\n"
                 append out "Defaults to \"<b><tt>$info(defvalue-$id)</tt></b>\".\n"
                 append out [QuoteText "$info(doc-$id)\n"]
-                append out "<p>\n\n"
             }
         }
 
@@ -766,7 +764,7 @@ snit::type ::marsutil::parmset {
     # dynamic scripting.
 
     method manlinks {} {
-        set out "<mktree [list $self]>\n\n"
+        set out "<mktree [list $self]>\n"
         set stack {}
 
         foreach {item ntype} [$self items] {
@@ -781,7 +779,7 @@ snit::type ::marsutil::parmset {
                 set oldTop [lindex $stack end]
                 set stack [lrange $stack 0 end-1]
                 
-                append out "</ul></li>\n\n"
+                append out "</ul></li>\n"
             }
 
             if {$ntype eq "subset"} {
@@ -791,7 +789,7 @@ snit::type ::marsutil::parmset {
                 # NEXT, push the subset onto the stack.
                 lappend stack $item
 
-                append out "<ul>\n\n"
+                append out "<ul>\n"
             } else {
                 append out "<li><iref $item></li>\n"
             }
@@ -800,7 +798,7 @@ snit::type ::marsutil::parmset {
         while {[lindex $stack end] ne ""} {
             set stack [lrange $stack 0 end-1]
             
-            append out "</ul></li>\n\n"
+            append out "</ul></li>\n"
         }
 
         append out "</mktree>\n"

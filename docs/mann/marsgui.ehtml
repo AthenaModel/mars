@@ -21,133 +21,103 @@ more.
 <section DETAILS>
 
 In addition to the modules and commands listed in the index,
-above, marsgui(n) modifies standard Tk as follows:<p>
+above, marsgui(n) modifies standard Tk as follows:
 
 <ul>
   <li> Defines Ctrl+Z, Ctrl+C, and Ctrl+V as the
-       standard cut, copy, and paste keys.<p>
+       standard cut, copy, and paste keys.
        
   <li> Defines Ctrl+Z and Ctrl+Shift+Z as the standard Undo/Redo keys;
        widgets must support the &lt;&lt;Undo&gt;&gt; and
-       &lt;&lt;Redo&gt;&gt; virtual events.<p>
+       &lt;&lt;Redo&gt;&gt; virtual events.
 
   <li> Defines Ctrl+Shift+A as the standard "select all" key.
-       Widgets must support the &lt;&lt;SelectAll&gt;&gt; virtual event.<p>
+       Widgets must support the &lt;&lt;SelectAll&gt;&gt; virtual event.
 
-  <li> Defines a number of standard <xref FONTS>.<p>
+  <li> Defines a number of standard <xref FONTS>.
   
   <li> Modifies the standard <xref tk:text(n)> and <xref tk:entry(n)>
-       widget bindings so that pasting text deletes the current selection.<p>
+       widget bindings so that pasting text deletes the current selection.
        
-  <li> Requests the <b>clam</b> ttk:: theme.<p>
+  <li> Requests the <b>clam</b> ttk:: theme.
       
-  <li> Defines new ttk:: <xref STYLES>.<p>
+  <li> Defines new ttk:: <xref STYLES>.
 
   <li> Adds a number of definitions to the option database so that the
        appearance and color of the standard Tk widgets matches the
        current ttk::theme, or is otherwise improved.  See the code for
-       specifics.<p>
+       specifics.
 </ul>
 
 <section FONTS>
 
-marsgui(n) defines the following standard fonts.<p>
+marsgui(n) defines the following standard fonts.
 
-<table>
+<topiclist "Font Name" "Description">
 
-<tr><th>Font Name</th> <th>Description</th></tr>
-
-<tr>
-<td><code><b>codefont</b></td>
-<td>
+<topic "[tt][b codefont][/tt]">
 Standard fixed pitch font.
-</td>
-</tr>
+</topic>
 
-<tr>
-<td><code><b>codefontitalic<b></code></td>
-<td>
+<topic "[tt][b codefontitalic][/tt]">
 <code><b>codefont</b></code> + Italics
-</td>
-</tr>
+</topic>
 
 <tr>
-<td><code><b>codefontbold</b></code></td>
-<td>
+<topic "[tt][b codefontbold][/tt]">
 <code><b>codefont</b></code> + Bold face
-</td>
-</tr>
+</topic>
 
-<tr>
-<td><code><b>tinyfont</b></code></td>
-<td>
+<topic "[tt][b tinyfont][/tt]">
 Tiny sans-serif font, for small buttons.
-</td>
-</tr>
+</topic>
 
-<tr>
-<td><code><b>messagefont</b></code></td>
-<td>
+<topic "[tt][b messagefont][/tt]">
 Sans-serif font for messages
-</td>
-</tr>
+</topic>
 
-<tr>
-<td><code><b>messagefontb</b></code></td>
-<td>
+<topic "[tt][b messagefontb][/tt]">
 <code><b>messagefont</b></code> + Bold Face
-</td>
-</tr>
+</topic>
 
-<tr>
-<td><code><b>reportfont</b></td>
-<td>
+<topic "[tt][b reportfont][/tt]">
 Font for report headers.
-</td>
-</tr>
+</topic>
 
-</table>
+</topiclist>
 
 <section STYLES>
 
-marsgui(n) defines the follow styles for use with ttk:: widgets.<p>
+marsgui(n) defines the follow styles for use with ttk:: widgets.
 
-<table>
+<topiclist "Style Name" "Description">
 
-<tr><th>Style Name</th> <th>Description</th></tr>
-
-<tr>
-<td><code><b>Entrybutton.Toolbutton</b></td>
-<td>
+<topic "[tt][b Entrybutton.Toolbutton][/tt]">
 The standard <code><b>Toolbutton</b></code> style configures
 ttk::button widgets for use in toolbars.  This style extends this
 with a white background, for use in compound entry widgets like
-<xref commandentry(n)>.<p>
-</td>
-</tr>
+<xref commandentry(n)>.
+</topic>
 
-<tr>
-<td><code><b>Menubox.TCombobox<b></code></td>
-<td>
+<topic "[tt][b Menubox.TCombobox][/tt]">
 This style extends the standard <code><b>TCombobox</b></code> style,
 used for the ttk::combobox widget, giving it a white background even
 when it is readonly.
-</td>
-</tr>
+</topic>
 
-</table>
+</topiclist>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package
-directory.<p>
+directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

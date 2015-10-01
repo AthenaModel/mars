@@ -15,7 +15,7 @@ This widget provides a text filter control for doing exact, wildcard
 and regular expression-based filtering, both inclusive and exclusive,
 of arbitrary text.  The widget contains a sieve icon which pops up a
 menu, an entry field (with command history) for typing filter text,
-and a clear button.<p>
+and a clear button.
 
 Filtering is triggered when <lb>Return<rb> is pressed in
 the entry field, when the field is cleared, and when the search type
@@ -23,12 +23,12 @@ and inclusive/exclusive match flag is set.  When filtering is
 triggered, the client's <code>-filtercmd</code> is called.  The
 <code>-filtercmd</code> will typically pass one or more snippets of
 text to the <iref check> method, and display them or not depending
-on the result.<p>
+on the result.
 
 <subsection "The Sieve Icon Menu">
 
 The first set of entries on the menu allows the user to select the
-type of the filter text:<p>
+type of the filter text:
 
 <ul>
   <li> <b>Exact</b>  -- An arbitrary text string
@@ -37,67 +37,67 @@ type of the filter text:<p>
   <li> <b>Wildcard</b>  -- A string containing wildcard characters,
        e.g., "*"
   <li> <b>Regexp</b> -- A regular expression
-</ul><p>
+</ul>
 
-The second set is a single flag, <b>Ignore Case</b>.<p>
+The second set is a single flag, <b>Ignore Case</b>.
 
-The third set indicates whether filtration is inclusive or exclusive:<p>
+The third set indicates whether filtration is inclusive or exclusive:
 
 <ul>
   <li> <b>Include Matches</b> -- data items which match the filter
        text pass the filter.
   <li> <b>Exclude Matches</b> -- data items which do <i>not</i> match
-       the filter text pass the filter.<p>
-</ul><p>
+       the filter text pass the filter.
+</ul>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem filter {filter <i>pathName ?options...?</i>}>
 
-Creates a new <iref filter> widget named <i>pathName</i>.<p>
+Creates a new <iref filter> widget named <i>pathName</i>.
 
 The <iref filter> widget may be created with all the standard Tk frame
-widget options, plus the following filter(n)-specific options:<p>
+widget options, plus the following filter(n)-specific options:
 
 <deflist filter options>
 
 <defopt {-width <i>chars</i>}>
 
 Specifies the character width of the filter(n)'s entry field.
-Defaults to 20.<p>
+Defaults to 20.
 
 <defopt {-filtercmd <i>cmd</i>}>
 
 Specifies a command to be called whenever filtration is triggered; the
 command can do anything at all, but will usually use
-<iref check> to filter one or more snippets of text.<p>
+<iref check> to filter one or more snippets of text.
 
 The <code>-filtercmd</code> will be called when <lb>Return<rb> is pressed
 in the widget's text field, when any character is pressed (in
 <b>incremental</b> mode), when the text field is cleared, when
 an option is changed on <xref "The Sieve Icon Menu">, and when the
 <code>-filtertype</code> or <code>-ignorecase</code> options are
-changed by the application.<p>
+changed by the application.
 
 <defopt {-filtertype <i>value</i>}>
 
 Explicitly sets the filter type to one of <b>exact</b> (the default),
-<b>incremental</b>, <b>wildcard</b>, or <b>regexp</b>, and calls the <code>-filtercmd</code>.<p>
+<b>incremental</b>, <b>wildcard</b>, or <b>regexp</b>, and calls the <code>-filtercmd</code>.
 
 <defopt {-ignorecase <i>flag</i>}>
 
 Explicitly sets the ignore case <i>flag</i> (the default is false),
-and calls the <code>-filtercmd</code>.<p>
+and calls the <code>-filtercmd</code>.
 
 <defopt {-msgcmd <i>cmd</i>}>
 
 A command for reporting messages to the user; if defined, <i>cmd</i>
 will be called with a message appended to it as a single argument
-whenever filter(n) wishes to report a message.<p>
+whenever filter(n) wishes to report a message.
 
 </deflist filter options>
 
@@ -110,7 +110,7 @@ whenever filter(n) wishes to report a message.<p>
 <defitem check {$filter check <i>string</i>}>
 
 Checks the <i>string</i> against the current filter text and settings,
-and returns 1 if the <i>string</i> passes the filter and 0 otherwise.<p>
+and returns 1 if the <i>string</i> passes the filter and 0 otherwise.
 
 </deflist>
 
@@ -125,11 +125,11 @@ directory.
 <section AUTHOR>
 
 Dave Jaffe, 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-6/24/2005 DJ Original package.<p>
+6/24/2005 DJ Original package.
 6/07/2006 WHD Redesigned.
 
 </manpage>

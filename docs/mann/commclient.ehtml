@@ -13,13 +13,13 @@ namespace import ::marsutil::commclient
 
 commclient(n) defines a client for connecting to
 a <xref commserver(n)> object in another application over a TCP/IP
-socket.<p>
+socket.
 
 The client can send commands to the server for processing; it can also
 receive update commands from the server.  Update commands are
 processed in a safe interpreter; it is the client's responsibility
 to alias handlers for each update command into the safe interpreter
-using the <iref alias> method.<p>
+using the <iref alias> method.
 
 The connection is first established using the <iref connect>
 command; if the first attempt is unsuccessful, commclient(n) will
@@ -29,12 +29,12 @@ commclient(n) will ping the <xref commserver(n)> every
 <code>-pingmsecs</code> milliseconds, to verify that it is still there.
 Should the <xref commserver(n)> goes away, commclient(n) will
 begin to try to re-establish the connection as soon as the server's
-disappearance is noted.<p>
+disappearance is noted.
 
 The <code>-connectcmd</code>, if any, is called when the client
 first succeeds in connecting to the server; the
 <code>-disconnectcmd</code> is called if the server disconnects,
-as soon as the server's disappearance is noted.<p>
+as soon as the server's disappearance is noted.
 
 <section COMMANDS>
 
@@ -45,9 +45,9 @@ as soon as the server's disappearance is noted.<p>
 Creates a new commclient(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref commclient> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The <iref commclient> may be created with the following options:<p>
+The <iref commclient> may be created with the following options:
 
 <deflist commclient options>
 
@@ -55,59 +55,59 @@ The <iref commclient> may be created with the following options:<p>
 
 Logical name of the client.  Defaults to ""; it needs to be set only
 if the server implements logical-name-based validation.  The set
-of valid logical names is then determined by the server.<p>
+of valid logical names is then determined by the server.
 
 <defopt {-connectcmd <i>command</i>}>
 
 When commclient(n) first succeeds in connecting to a
 <xref commserver(n)>, and on successful reconnection, commclient(n)
-will call the specified <i>command</i> with no additional arguments.<p>
+will call the specified <i>command</i> with no additional arguments.
 
 <defopt {-disconnectcmd <i>command</i>}>
 
 When commclient(n) loses its connection to the <xref commserver(n)>,
 it will call the specified <i>command</i> with no additional
 arguments.  Note that <i>command</i> is not called on unsuccessful
-connection attempts.<p>
+connection attempts.
 
 <defopt {-logcomponent <i>name</i>}>
 
 The component name to pass to the <code>-logger</code> object when
-logging messages; defaults to "commclient".<p>
+logging messages; defaults to "commclient".
 
 <defopt {-logger <i>name</i>}>
 
 The name of the <xref logger(n)> object to use to log client
-activity.<p>
+activity.
 
 This option must be set at creation time, and is read-only
-thereafter.<p>
+thereafter.
 
 <defopt {-retrymsecs <i>interval</i>}>
 
 Specifies the connection retry interval in milliseconds; defaults
-to 500.  Must be positive.<p>
+to 500.  Must be positive.
 
 <defopt {-pingmsecs <i>interval</i>}>
 
 Specifies the ping interval in milliseconds; defaults to 5000.  Must be
-positive.<p>
+positive.
 
 <defopt {-portid <i>portId</i>}>
 
 The comm(n) port ID of the <xref commserver(n)> to which the client
-will connect.<p>
+will connect.
 
 This option must be set at creation time, and is read-only
-thereafter.<p>
+thereafter.
 
 <defopt {-hostip <i>hostIp</i>}>
 
 The IP address of the <xref jnem_sim(1)> host, or "" for the
-local host.<p>
+local host.
 
 This option must be set at creation time, and is read-only
-thereafter.<p>
+thereafter.
 
 </deflist commclient options>
 
@@ -115,17 +115,17 @@ thereafter.<p>
 
 <section "INSTANCE COMMAND">
 
-Each instance of the <iref commclient> object has the following subcommands:<p>
+Each instance of the <iref commclient> object has the following subcommands:
 
 <deflist instance>
 
 <defitem cget {$commclient cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {$commclient configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem connect {$commclient connect}>
 
@@ -133,10 +133,10 @@ Attempts to connect to the server; this generally needs to be
 called only once, as soon as the client is ready to connect.
 If the server does not respond, the client
 will retry every <code>-retrymsecs</code> milliseconds.  An
-error is thrown if the server refuses the connection.<p>
+error is thrown if the server refuses the connection.
 
 It's an error to call <iref connect> if the client is already
-connected to the server.<p>
+connected to the server.
 
 <defitem send {$commclient send <i>script</i>}>
 
@@ -144,23 +144,23 @@ Sends the script to the server for execution.  If the server executes
 the script normally, <iref send> will return the script's result; if
 the server catches an error while executing the script, then
 <iref send> will throw the same error message (the
-<code>-errorCode</code> is not preserved).<p>
+<code>-errorCode</code> is not preserved).
 
 If <iref send> is called when the client is not yet connected to the
 server, this error will be thrown: "client is not connected to the
-server".<p>
+server".
 
 If <iref send> tries to send the <i>script</i> and fails because the
-server has disconnected, this error will be thrown: "lost connection".<p>
+server has disconnected, this error will be thrown: "lost connection".
 
 <defitem id {$commclient id}>
 
-Returns the client's comm(n) ID.<p>
+Returns the client's comm(n) ID.
 
 <defitem alias {$commclient alias <i>srcCmd targetCmd</i> ?<i>arg...</i>?}>
 
 Aliases the target update command into the safe interpreter as
-<i>srcCmd</i>.<p>
+<i>srcCmd</i>.
 
 </deflist instance>
 
@@ -177,7 +177,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

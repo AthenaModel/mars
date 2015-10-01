@@ -11,52 +11,52 @@ a <xref mapcanvas(n)> icon type.  Mapcanvas icons are graphics
 symbols, possibly composed of multiple <xref tk:canvas(n)> items
 than can be positioned and manipulated using map coordinates and
 reference strings via the <xref mapcanvas(n)>
-<xref mapcanvas(n) icon> command.<p>
+<xref mapcanvas(n) icon> command.
 
 A <xref mapicon(i)>'s primary responsibility is to draw the icon on
 the canvas to begin with; then, various aspects of the icon's
-appearance can be manipulated using the icon's options (if any).<p>
+appearance can be manipulated using the icon's options (if any).
 
 When the object is destroyed, it should remove itself from the
 canvas, using <xref tcl:catch(n)> in case the canvas has already
-been destroyed.<p>
+been destroyed.
 
 <section "CANVAS TAGS">
 
 Every icon should be tagged with the following canvas tags, in the
-following order:<p>
+following order:
 
 <ul>
-  <li> Its <b><i>id</i></b>.  This is the final component of its command name.<p>
+  <li> Its <b><i>id</i></b>.  This is the final component of its command name.
 
   <li> Any tags required to identify pieces of the icon to support
        changes to option values.  These should be called names like
-       "<b><i>id</i>.this</b>" and "<b><i>id</i>.that</b>".<p>
+       "<b><i>id</i>.this</b>" and "<b><i>id</i>.that</b>".
 
-  <li> Its <iref typename>.<p>
+  <li> Its <iref typename>.
 
-  <li> The tag "<b>icon</b>".<p>
+  <li> The tag "<b>icon</b>".
 
-  <li> Any additional tags, as specified by <code>-tags</code>.<p>
+  <li> Any additional tags, as specified by <code>-tags</code>.
 </ul>
 
 
 <section OPTIONS>
 
-Every mapicon(i) should define at least the following options:<p>
+Every mapicon(i) should define at least the following options:
 
 <deflist options>
 
 <defopt {-tags <i>taglist</i>}>
 
 This is a list of additional canvas tags that should be applied to this
-particular icon.<p>
+particular icon.
 
 </deflist options>
 
 <section COMMANDS>
 
-Every <xref mapicon(i)> module must define a command like the following:<p>
+Every <xref mapicon(i)> module must define a command like the following:
 
 <deflist commands>
 
@@ -65,40 +65,42 @@ Every <xref mapicon(i)> module must define a command like the following:<p>
 Creates a new mapicon(i) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref mapicon> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
 The <i>canvas</i> is the window name of the <xref mapcanvas(n)> on
 which the icon will appear.  It will be drawn at canvas coordinates
-<i>cx</i>,<i>cy</i>.<p>
+<i>cx</i>,<i>cy</i>.
 
 The options vary by icon type.
 The standard Snit <b>info options</b> method may be used to retrieve
-the option names.<p>
+the option names.
 
 <defitem typename {<i>mapicon</i> typename}>
 
 Returns the name by which the icon type will be known to users of the
-<xref mapcanvas(n)> widget.<p>
+<xref mapcanvas(n)> widget.
+
+</deflist commands>
 
 <section "INSTANCE COMMAND">
 
-Each instance of a <iref mapicon> object has the following subcommands:<p>
+Each instance of a <iref mapicon> object has the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>obj</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>obj</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem draw {<i>obj</i> draw <i>cx cy</i>}>
 
 Redraws the icon at the specified coordinates, using the current
 option settings.  The previous instance of the icon (if any) is
-deleted from the canvas.<p>
+deleted from the canvas.
 
 </deflist instance>
 
@@ -115,7 +117,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

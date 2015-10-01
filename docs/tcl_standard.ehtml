@@ -18,7 +18,7 @@ Removed NaturalDocs commenting conventions.
 </change>
 
 <change 11/10/09 New whd>
-Updated from the JNEM Tcl coding standard.  Updates include:<p>
+Updated from the JNEM Tcl coding standard.  Updates include:
 
 <ul>
 <li> NaturalDocs commenting conventions
@@ -33,19 +33,19 @@ Updated from the JNEM Tcl coding standard.  Updates include:<p>
 
 This page contains the Tcl/Tk coding standards for the Mars
 Simulation Infrastructure Library and its client projects.  They apply
-to all new work done in Tcl/Tk for Mars, with the following provisos:<p>
+to all new work done in Tcl/Tk for Mars, with the following provisos:
 
 <ul>
   <li> Where conformance to some other standard is clearly
        appropriate. For example, when using a framework library like
        RTI it is appropriate to modify these standards so as to be
-       consistent with the practices of the framework.<p>
+       consistent with the practices of the framework.
 
   <li> Where, in the judgement of the programmer, not following the
        standard in a particular case results in manifestly clearer
        code. This is not a license to flout the standard; it is
        intended to cover special circumstances, and must be defensible
-       during code reviews.<p>
+       during code reviews.
 </ul>
 
 <hrule>
@@ -58,12 +58,12 @@ This document is the recognized standard for Tcl code within the
 Tcl/Tk community at large.  It was originally developed at Sun
 Microsystems and is now maintained by the Tcl Core Team. It is,
 however, somewhat dated.  Consequently, the standards described here
-derive from the <i>Tcl Style Guide</i> but do not depend directly on it.<p>
+derive from the <i>Tcl Style Guide</i> but do not depend directly on it.
 
 Many of the module skeletons in <xref file> involve Snit type and
 widget definitions; see also the
 <link http://tcllib.sourceforge.net/doc/snitfaq.html "Snit FAQ">
-for best practices for Snit types.<p>
+for best practices for Snit types.
 
 <section intro.tbd "Standards Yet To Be Written">
 
@@ -79,19 +79,19 @@ code level.
 <section form.linelength "Line Length">
 
 In general, lines of code should not exceed 80 characters; where
-possible, lines should be broken after about 72 characters.<p>
+possible, lines should be broken after about 72 characters.
 
 <section form.linelength.longstrings "Long Text Strings">
 
 An exception can be made for long literal
 text strings which define a <b>single</b> line of text.  For example, prefer
-code like this<p>
+code like this
 
 <pre>
     error "This is a very long text string which is a single line of text...."
 </pre>
 
-to this<p>
+to this
 
 <pre>
     set msg "This is a very long text string "
@@ -100,7 +100,7 @@ to this<p>
 </pre>
 
 Before letting the string extend past 80 columns, however, first try
-to put it on its own line, outdenting if necessary:<p>
+to put it on its own line, outdenting if necessary:
 
 <pre>
     error \
@@ -112,7 +112,7 @@ spread across multiple lines, possibly using
 <xref marsutil(n) outdent> or <xref template(n) tsubst> to remove
 or preserve indentation.  For example, the following code defines a long
 message, indented with the code; the <xref marsutil(n) outdent> command
-removes the unwanted whitespace at the beginning of each line:<p>
+removes the unwanted whitespace at the beginning of each line:
 
 <pre>
 puts [outdent {
@@ -131,9 +131,9 @@ puts [outdent {
 <section form.indentation "Indentation">
 
 <ul>
-  <li> Tab characters shall <b>not</b> to be used for indentation.<p>
+  <li> Tab characters shall <b>not</b> to be used for indentation.
 
-  <li> Text at file scope should be flush with the left margin:<p>
+  <li> Text at file scope should be flush with the left margin:
 
 <pre>
 proc myproc {} {
@@ -142,7 +142,7 @@ proc myproc {} {
 </pre>
 
   <li> Text within curly braces should be indented four spaces
-       relative to the line on which the open brace appears:<p>
+       relative to the line on which the open brace appears:
 
 <pre>
 proc myproc {x} {
@@ -155,7 +155,7 @@ proc myproc {x} {
 </pre>
 
   <li> Continuation lines should be indented four spaces relative to the
-       first line in the command.<p>
+       first line in the command.
 
 <pre>
 label .mylabel \
@@ -165,7 +165,7 @@ label .mylabel \
 </pre>
 
   <li> Continuations to a bracketed command should usually
-       be indented four spaces relative to the bracketed command.<p>
+       be indented four spaces relative to the bracketed command.
 
 <pre>
 set a [list \
@@ -178,15 +178,15 @@ set a [list \
 <section form.continuation "Continuation Lines">
 
 In Tcl, commands which continue onto another line need to be escaped
-with a backslash ("\") at the end of the previous line.<p>
+with a backslash ("\") at the end of the previous line.
 
 <ul>
   <li> Avoid using backslashed continuation lines unnecessarily, except for
-       certain cases listed below.<p>
+       certain cases listed below.
 
   <li> Prefer the natural continuation provided by curly brackets to
        using backslashes.  For example, <b>never</b> use a backslash
-       to break a line right before a curly brace.<p>
+       to break a line right before a curly brace.
 
 <pre>
 # Don't do this!
@@ -198,7 +198,7 @@ if {$x == $y} \
 
   <li> When a command ends with a homogeneous list of items which is
        too long to fit on one line, consider putting each item on its
-       own line.<p>
+       own line.
 
 <pre>
 set a [list \
@@ -209,11 +209,11 @@ set a [list \
 
        In this case the backslashes on the second and subsequent lines
        should be made to line up, as shown, and should be at least one
-       space past the end of the longest item.<p>
+       space past the end of the longest item.
 
   <li> When creating an object (e.g., a Tk widget) with one or more
        creation options, put each option and its value on its own
-       line.<p>
+       line.
 
 <pre>
 label .mylabel \
@@ -222,11 +222,11 @@ label .mylabel \
     -background white
 </pre>
 
-       The options, values, and backslashes should line up as shown.<p>
+       The options, values, and backslashes should line up as shown.
 
        Format the command this way even if only one or two options are
        being set and the options and values would all fit on the first
-       line.<p>
+       line.
 
  <pre>
  # Don't do this!
@@ -234,7 +234,7 @@ label .mylabel \
  </pre>
 
   <li> The previous rule generally applies to any command which takes
-       a long string of options.<p>
+       a long string of options.
 </ul>
 
 <section form.comments "Comments">
@@ -243,11 +243,11 @@ Good comments are a must.  Comments are used to structure code modules
 so that they are easier to read and specific content easier to find.
 At the line-of-code level, Comments should focus on details which are
 <b>not</b> obvious from looking at the code.  Comments should protect
-the programmers who follow from nasty surprises.<p>
+the programmers who follow from nasty surprises.
 
 The commenting standards contained in the following subsections
 should be observed as far as they go; but do not hesitate to extend
-them in exceptional circumstances.<p>
+them in exceptional circumstances.
 
 <section form.comments.nd "NaturalDocs">
 
@@ -257,10 +257,10 @@ to be used to produce HTML documentation of application and library
 internals.  After a year's experience, the development team
 determined that NaturalDocs should be abandoned.  The
 following features of NaturalDocs-style comments should be removed
-from the code in the course of normal maintenance.<p>
+from the code in the course of normal maintenance.
 
 <ul>
-<li> Style markup should be deleted, e.g., *bold* and _italic_.<p>
+<li> Style markup should be deleted, e.g., *bold* and _italic_.
      
 <li> Header comments no longer need begin with a known keyword,
      e.g., prefer
@@ -281,19 +281,19 @@ from the code in the course of normal maintenance.<p>
      proc myproc ...
      </pre>
 
-<li> Entity links in angle brackets should be removed:<p>
+<li> Entity links in angle brackets should be removed:
 
      <pre>
      # Remove the angle brackets here:
      # This is a link to &lt;myproc&gt;.
      </pre>
-</ul><p>
+</ul>
 
 <section form.comments.file "File Header Comments">
 
 Every code file should begin with a header comment which looks
 generally like this (different kinds of code file may tweak this
-comment in different ways, or have additional boilerplate):<p>
+comment in different ways, or have additional boilerplate):
 
 <pre>
          1         2         3         4         5         6         7  
@@ -340,12 +340,12 @@ For example,
 Additional keywords and documentation can be added as needed; content
 following each keyword should be indented three spaces from the "#" mark.
 The separator lines should be exactly 72 columns wide.  (An editor
-which supports templates can be extremely useful here.)<p>
+which supports templates can be extremely useful here.)
 
 <section form.comments.filesection "File Section Comments">
 
 Code files should be broken into sections using section comments,
-which provide a title for the section:<p>
+which provide a title for the section:
 
 <pre>
          1         2         3         4         5         6         7  
@@ -355,7 +355,7 @@ which provide a title for the section:<p>
 </pre>
 
 If the section requires a longer description, it should follow
-directly after the section title, separated by a blank comment line.<p>
+directly after the section title, separated by a blank comment line.
 
 <pre>
 #-----------------------------------------------------------------------
@@ -366,13 +366,13 @@ directly after the section title, separated by a blank comment line.<p>
 </pre>
 
 See the descriptions of the various kinds of code file in
-<xref file> for commonly used file sections.<p>
+<xref file> for commonly used file sections.
 
 <section form.comments.typesection "Type and Widget Sections">
 
 Snit type and widget definitions should also be broken into sections.
 In this case, the section comment should be indented, and shortened
-so that the row of hyphens still extends to the 72nd column:<p>
+so that the row of hyphens still extends to the 72nd column:
 
 <pre>
          1         2         3         4         5         6         7  
@@ -385,7 +385,7 @@ snit::type mytype {
 </pre>
 
 The following sections are commonly used, though rarely all in the
-same type or widget definition.<p>
+same type or widget definition.
 
 <pre>
 snit::type mytype {
@@ -422,23 +422,23 @@ snit::type mytype {
     #-------------------------------------------------------------------
     # Utility Methods and Procs
 }
-</pre><p>
+</pre>
 
 Section headers used for collections of methods and type methods are
 fairly fluid; in particular, the groupings implied by the section
 titles above should not be considered part of the standard.  If a
 public method is implemented in part by one or two private methods
 which exist only for that purpose, they should generally follow
-directly after the public method.<p>
+directly after the public method.
 
 In short, think of the code file as a document that's telling a story, and
-use the grouping that best communicates the story.<p>
+use the grouping that best communicates the story.
 
 <section form.comments.endline "End-line Comments">
 
 In general, full-line comments are preferred to end-line comments.
 It is allowable, though, to use end-line comments to document a
-sequence of items such as variable declarations:<p>
+sequence of items such as variable declarations:
 
 <pre>
 variable thisVariable    5    ;# This short description
@@ -448,7 +448,7 @@ variable anotherVariable 7    ;# Another short description
 
 If the items can't be cleanly documented as shown--e.g., if one
 variable name or value is much longer than the
-others--then full-line comments should be used instead.<p>
+others--then full-line comments should be used instead.
 
 When end-line commands are used, they should always be written
 as shown, with the semicolon immediately preceding the pound sign,
@@ -457,13 +457,13 @@ as shown, with the semicolon immediately preceding the pound sign,
 <section form.comments.events "Notifier Event Comments">
 
 If a module sends <xref notifier(n)> events, they should be
-documented in a section comment near the top of the module.<p>
+documented in a section comment near the top of the module.
 
 <section form.comments.components "Component Comments">
 
 Type and instance components should be documented using end-line
 comments, unless there is something particularly odd about them; use a
-normal comment in the latter case.<p>
+normal comment in the latter case.
 
 <pre>
 snit:type {
@@ -488,7 +488,7 @@ snit:type {
 <section form.comments.option "Option Comments">
 
 Options defined in a Snit type or widget definition should be placed
-in an Options section, and preceded by a comment like this:<p>
+in an Options section, and preceded by a comment like this:
 
 <pre>
 snit:type {
@@ -505,18 +505,18 @@ snit:type {
 </pre>
 
 The description need not include the default value (if any) since it's
-right there.<p>
+right there.
 
 If the option references a <code>-configuremethod</code> or
 <code>-cgetmethod</code>, the method may be defined following the
 option.  If multiple options reference the same method, it should be
-defined at the end of the Options section.<p>
+defined at the end of the Options section.
 
 <section form.comments.variable "Variable Comments">
 
 As a general rule, scalar type and instance variables should be
 documented with end-line comments unless there is more to be said
-than will fit.  Thus, prefer this:<p>
+than will fit.  Thus, prefer this:
 
 <pre>
     #-------------------------------------------------------------------
@@ -534,7 +534,7 @@ than will fit.  Thus, prefer this:<p>
 </pre>
 
 Particularly significant type and instance variables should be preceded by a
-header comment, like this:<p>
+header comment, like this:
 
 <pre>
 snit:type {
@@ -555,7 +555,7 @@ snit:type {
 Array variables with a variety of distinct keys should always be
 documented using a header comment; the comment should
 list the distinct keys or kinds of key, and the kind of values that
-go with them.<p>
+go with them.
 
 <pre>
     # info array
@@ -579,7 +579,7 @@ go with them.<p>
 Every procedure definition should begin with a comment that describes
 the procedure's calling sequence, arguments, options, purpose, and return
 value, along with anything else the developer should know about the
-procedure.  The following template should be used:<p>
+procedure.  The following template should be used:
 
 <pre>
 # procname arg1 arg2
@@ -594,7 +594,7 @@ procedure.  The following template should be used:<p>
 
 The argument names and descriptions should be separated by a hyphen,
 as shown.  When there are multiple arguments, the hyphens should be
-vertically aligned, one space to the left of the descriptions.<p>
+vertically aligned, one space to the left of the descriptions.
 
 For example,
 
@@ -611,7 +611,7 @@ proc double {x} {
 </pre>
 
 The calling sequence should indicate optional arguments using question
-marks, as is done in the standard Tcl man pages.<p>
+marks, as is done in the standard Tcl man pages.
 
 <pre>
 # multiply x ?factor?
@@ -628,7 +628,7 @@ proc multiply {x {factor 2}} {
 
 Repeating arguments should be indicated using an ellipsis ("...").  If
 the command takes options, the options and their meanings should be
-listed after the normal arguments.<p>
+listed after the normal arguments.
 
 <pre>
 # modify x ?options...?
@@ -670,9 +670,9 @@ snit::type mytype {
 </pre>
 
 If the constructor simply handles the type or widget's options,
-there's no need to call attention to the <i>args</i> parameter.<p>
+there's no need to call attention to the <i>args</i> parameter.
 
-If need be, the destructor can be documented in the same way:<p>
+If need be, the destructor can be documented in the same way:
 
 <pre>
     # destructor
@@ -723,7 +723,7 @@ snit::type mytype {
 
 Procedure, method, and typemethod bodies should be broken into logical
 paragraphs using FIRST/NEXT comments.  Each such comment should
-introduce and describe the block of code that follows.<p>
+introduce and describe the block of code that follows.
 
 <pre>
 proc UpdateDatabase {args} {
@@ -741,26 +741,26 @@ proc UpdateDatabase {args} {
 
 <ul>
   <li> The block following a FIRST/NEXT comment may be as little as
-       one line of code, but will usually be larger.<p>
+       one line of code, but will usually be larger.
 
   <li> Small procedures consisting of only a few lines of code can
-       dispense with FIRST/NEXT comments.<p>
+       dispense with FIRST/NEXT comments.
 
   <li> Large loop bodies and then/else clauses should also be broken
-       into paragraphs using FIRST/NEXT comments.<p>
+       into paragraphs using FIRST/NEXT comments.
 </ul>
 
-FIRST/NEXT comments help the body of code to tell its story.<p>
+FIRST/NEXT comments help the body of code to tell its story.
 
 <section code "Code Semantics">
 
 <xref form> dealt with coding standards at the level of appearance;
-this section deals with code at the level of meaning.<p>
+this section deals with code at the level of meaning.
 
 <section code.naming "Naming Conventions">
 
 This section describes the naming conventions to use in writing
-Tcl code.<p>
+Tcl code.
 
 <section code.naming.camelcase "Prefer Camel Case">
 
@@ -768,33 +768,33 @@ Multi-word names should generally use "Camel Case", e.g.,
 "myVariable" rather than "my_variable".  However, there are
 exceptions, as called out in the following sections.  In
 particular, short multi-word names may use all lowercase with no
-separators, provided that the name reads clearly.<p>
+separators, provided that the name reads clearly.
 
 <section code.naming.public "Public Names">
 
 A name is public if it is intended for use outside the module or type
-definition within which it is defined.<p>
+definition within which it is defined.
 
 <section code.naming.public.command "Public Command Names">
 
 <ul>
   <li> Public command names should always begin with a lowercase
-       letter, e.g., <xref marsutil(n) assert>.<p>
+       letter, e.g., <xref marsutil(n) assert>.
 
   <li> Where possible without sacrificing clarity, public command names
        should be short, and all lowercase with no separators, e.g.,
        <xref marsutil(n) lmaxlen>, which is short for "list maximum
        length".  This is an extreme case, but it succeeds because the
        name is consistent with those of the standard list manipulation
-       commands.<p>
+       commands.
 
   <li> When defining a family of commands with related names, e.g.,
        "matnew", "matadd", "matmul", consider defining an ensemble
-       command instead, e.g., "mat new", "mat add", "mat mul".<p>
+       command instead, e.g., "mat new", "mat add", "mat mul".
 
   <li> If a code file defines a single ensemble command, the command
        name should match the file name.  (See
-       <xref file.mod.ensemble>.)<p>
+       <xref file.mod.ensemble>.)
 </ul>
 
 <section code.naming.public.methods "Public Methods and Typemethods">
@@ -803,21 +803,21 @@ As with public commands, public method names begin with a lowercase
 letter.  Because method and typemethod names are always subcommands of
 an ensemble command, they are already read as the second word of a
 multiword name.  Consequently they are almost always short, consisting
-of one or two words, all lowercase with no separators.<p>
+of one or two words, all lowercase with no separators.
 
 When defining a family of methods with related names, consider using
 hierarchical method names instead, i.e., unite them in a
 sub-ensemble.  An example is the Tk text widget's "tag *" command and
-its subcommands.<p>
+its subcommands.
 
 <section code.naming.public.variables "Public Variables">
 
 Public variables (those documented for use outside the module in which
 they are defined) should have names beginning with a lowercase
-letter, e.g., "::mymodule::myVariable".<p>
+letter, e.g., "::mymodule::myVariable".
 
 When referenced from another module, public variables should
-always be fully qualified, e.g.,<p>
+always be fully qualified, e.g.,
 
 <pre>
 if {$::mymodule::my == 2} {
@@ -826,46 +826,46 @@ if {$::mymodule::my == 2} {
 </pre>
 
 However, use of public variables is discouraged; procedural
-interfaces are preferred.<p>
+interfaces are preferred.
 
 <section code.naming.private "Private Names">
 
 A name is private if it is intended for use only inside the module
-within which it is defined.<p>
+within which it is defined.
 
 <section code.naming.private.commands "Private Command Names">
 
 A command is private if it is only intended for use inside the module
-within which it is defined.<p>
+within which it is defined.
 
 Private command names always begin with an upper-case letter, and are
 frequently much longer than public names, e.g.,
-"ComputeMeanSumOfSquares".<p>
+"ComputeMeanSumOfSquares".
 
 <section code.naming.private.methods "Private Methods and Typemethods">
 
 Private method and typemethod names are defined just like private
 command names: Camel Case with an initial capital letter, and
-frequently with multiple words.<p>
+frequently with multiple words.
 
 <section code.naming.private.variables "Private and Local Variables">
 
 Private variables, including local variables defined in procedure and
 method bodies, private package variables, and Snit instance and type
 variables, should be defined with Camel Case names beginning with
-an initial lowercase letter.<p>
+an initial lowercase letter.
 
 The previous version of this standard called for private variable
 names to begin with a capital letter, to distinguish them from public
 variable names; but in practice there are extremely few public variable
 names.  Consequently, all variables are written with an initial
-lowercase letter.<p>
+lowercase letter.
 
 <section code.expressions "Expressions">
 
 <ul>
   <li> When using <b>expr</b> to compute the value of an expression,
-       the expression should always be enclosed in curly braces:<p>
+       the expression should always be enclosed in curly braces:
 
 <pre>
     set a [expr {$b * $c}]
@@ -874,11 +874,11 @@ lowercase letter.<p>
        If the braces are omitted, both the Tcl
        interpreter and the expression parser will interpolate
        variables.  This degrades performance and can also be source of
-       subtle bugs.<p>
+       subtle bugs.
 
   <li> The <xref marsutil(n) let> command is more readable than
        the <b>set/expr</b> idiom, especially when doing a
-       sequence of computations:<p>
+       sequence of computations:
 
 <pre>
     let a {$b * $c}
@@ -886,10 +886,10 @@ lowercase letter.<p>
 </pre>
 
   <li> Note that <xref marsutil(n) let> is slightly slower than
-  <b>set/expr</b>; prefer <b>set/expr</b> when performance is crucial.<p>
+  <b>set/expr</b>; prefer <b>set/expr</b> when performance is crucial.
 
   <li> Format expressions too long to fit on one line like blocks of
-       code.  Indentation should indicating grouping.<p>
+       code.  Indentation should indicating grouping.
 
 <pre>
     let dist {
@@ -914,7 +914,7 @@ lowercase letter.<p>
 
   <li> When an <b>if</b> or <b>while</b> condition consists of a
        series of subexpressions and'd or or'd together, it is usually best
-       to put each subexpression on a separate line.<p>
+       to put each subexpression on a separate line.
 
 <pre>
     if {3*$x + 5 == 7 &&
@@ -925,14 +925,14 @@ lowercase letter.<p>
     }
 </pre>
 
-       In this case, the "&&" or "||" operators should line up.<p>
+       In this case, the "&&" or "||" operators should line up.
 </ul>
 
 <section code.return "Functional Return Values">
 
 The Tcl Style Guide says to always use the "return" statement
 rather than relying Tcl to return the value of the last command
-executed in the body of a proc.<p>
+executed in the body of a proc.
 
 In procs or methods of one or two lines, however, it is
 acceptable to omit the "return" statement, provided that the
@@ -947,7 +947,7 @@ proc double {x} {
 }
 </pre>
 
-to<p>
+to
 
 <pre>
 proc double {x} {
@@ -956,7 +956,7 @@ proc double {x} {
 </pre>
        
 This is especially helpful when programming in a more functional
-style.<p>
+style.
 
 Commands that are called primarily for their side-effects should
 always use "return" explicitly if they return a value, regardless of
@@ -968,7 +968,7 @@ In static languages like C, variables are typed.  In dynamic languages
 like Python, variables are untyped but values are typed.  In Tcl,
 neither variables nor values are innately typed.  A value can take on
 many different types depending on how it is used.  This is possible
-because, in Tcl, "everything is a string."<p>
+because, in Tcl, "everything is a string."
 
 In practice, however, the programmer often knows whether a variable is
 supposed to contain an integer, or a floating point number, or a list, or
@@ -977,15 +977,15 @@ notional type of each variable and use the appropriate operations for
 that type.  Failure to do so can lead to "shimmering", in which Tcl
 is constantly having to convert the value's internal representation
 from one type to another.  A bad case of shimmering can lead to
-serious performance problems.<p>
+serious performance problems.
 
-Therefore,<p>
+Therefore,
 
 <ul>
   <li> Use "eq" and "ne" to compare strings for equality rather than
-       "==" and "!=".<p>
+       "==" and "!=".
 
-  <li> Use <b>llength</b> to test for list-emptiness.  This is right:<p>
+  <li> Use <b>llength</b> to test for list-emptiness.  This is right:
 
 <pre>
 if {[llength $mylist] == 0} {
@@ -993,7 +993,7 @@ if {[llength $mylist] == 0} {
 }
 </pre>
 
-       This is wrong:<p>
+       This is wrong:
  
 <pre>
 if {$mylist eq ""} {
@@ -1002,13 +1002,13 @@ if {$mylist eq ""} {
 </pre>
 
   <li> Use <b>list</b> and <b>lappend</b> to build lists from
-       arbitrary data, rather than using string handling routines.<p>
+       arbitrary data, rather than using string handling routines.
 
        The string representation of a Tcl list is a
        whitespace-delimited list of tokens.  It's perfectly all right
        to use this fact to type structured data directly into your
        program as list literals; for example, the following is a
-       common idiom for initializing an array variable:<p>
+       common idiom for initializing an array variable:
 
        <pre>
 array set myarray {
@@ -1020,7 +1020,7 @@ array set myarray {
 
        When arbitrary data is involved (i.e., variables), relying on
        this is a source of errors.  In the following, list <i>a</i> is
-       a two-element list, but list <i>b</i> is a three-element list:<p>
+       a two-element list, but list <i>b</i> is a three-element list:
 
 <pre>
 set name1 "Joe"
@@ -1031,7 +1031,7 @@ set b "name $name2"
 </pre>
 
        If <b>list</b> is used, both lists will have two elements, as
-       desired.<p>
+       desired.
 
 <pre>
 set name1 "Joe"
@@ -1048,44 +1048,44 @@ set b [list name $name2]
 Tcl/Tk modules frequently define callback commands which are passed
 to other modules to be called at a later time, usually when some
 anticipated event occurs.  Three flavors of callback are typically
-used:<p>
+used:
 
 <ul>
   <li> Script callbacks
   <li> Script callbacks with symbol substitution
   <li> Command prefix callbacks
-</ul><p>
+</ul>
 
 Tcl's <b>after</b> command, which is used to define timeout and idle
 state callbacks, registers script callbacks.  The callback can be a
 Tcl script of any size, from one command to many; <b>after</b> places
 no restrictions on it.  (Note: it's usually preferable to
 define a <xref timeout(n)> object rather than use a bare
-<b>after</b> handler.)<p>
+<b>after</b> handler.)
 
 Tk's <b>bind</b> command, which is used to define bindings for
 keyboard and mouse events, registers script callbacks with symbol
 substitution.  The callback can be a Tcl script of any size, and
 event-specific "%" symbols, if present, will be replaced with details
 of the event.  On a mouse event, for example, <b>%x</b> and <b>%y</b> will be
-replaced with the pixel coordinates of the event.<p>
+replaced with the pixel coordinates of the event.
 
 Other Tk callbacks, such as the <b>scrollbar</b> widget's
 <b>-command</b> callback, expect a "command prefix": a partial command
 to which the scrollbar will <b>lappend</b> one or more additional arguments
-before the command is called.<p>
+before the command is called.
 
 Whatever the object defining the callback allows, however, the client
 should always register a callback which consists of a single command
 or command prefix.  The command will usually be a
 procedure, method, or typemethod defined just for the purpose, along with
-any leading arguments required by the client.<p>
+any leading arguments required by the client.
 
 <section code.callbacks.procs "Procedure Callbacks">
 
 If the callback command is a normal command or procedure, possibly with leading
 arguments provided by the client, the command should be created using
-<b>list</b>:<p>
+<b>list</b>:
 
 <pre>
 scrollbar .yscroll \
@@ -1094,10 +1094,10 @@ scrollbar .yscroll \
 </pre>
 
 With the exception of Tk widget commands, the callback command should
-almost always be fully qualified.<p>
+almost always be fully qualified.
 
 In a Snit type or widget definition, where the callback procedure is
-defined in the body of the type, use <b>myproc</b> instead of list:<p>
+defined in the body of the type, use <b>myproc</b> instead of list:
 
 <pre>
 myobject configure \
@@ -1106,12 +1106,12 @@ myobject configure \
 
 The <b>myproc</b> command builds the command as a list in the same way
 that <b>list</b> does, but also fully-qualifies the procedure's name
-automatically.<p>
+automatically.
 
 <section code.callbacks.events "Event Bindings">
 
 In a Tk event binding, any substitutions should be written as
-arguments to the command:<p>
+arguments to the command:
 
 <pre>
 proc ButtonPress {x y} {
@@ -1126,7 +1126,7 @@ Tk event bindings are allowed to return the <b>break</b> return code;
 this tells Tk that no further bindings should be called for the given
 event.  The event handler should do this by explicitly returning
 the <b>break</b> code, rather than by including "break" in the
-callback string.  For example, the following is correct:<p>
+callback string.  For example, the following is correct:
 
 <pre>
 proc ButtonPress {x y} {
@@ -1140,14 +1140,14 @@ proc ButtonPress {x y} {
 bind .thingy <lb>1<rb> [list ButtonPress %x %y]
 </pre>
 
-Alternatively, the following can be used.<p>
+Alternatively, the following can be used.
 
 <pre>
 bind .thingy <lb>1<rb> {ButtonPress %x %y; break}
 </pre>
 
 The following doesn't work at all; <b>break</b> is called when the
-callback is defined, not when the button is pressed:<p>
+callback is defined, not when the button is pressed:
 
 <pre>
 bind .thingy <lb>1<rb> [list ButtonPress %x %y; break]
@@ -1158,7 +1158,7 @@ bind .thingy <lb>1<rb> [list ButtonPress %x %y; break]
 Snit instance methods can be used as callbacks.  There are two cases.
 In the first, the creator of the Snit object is wiring it up to
 some other object.  In this case, the callback command can be created
-with <b>list</b>, just as shown in <xref code.callbacks.procs><p>
+with <b>list</b>, just as shown in <xref code.callbacks.procs>
 
 In the second case, it is the object itself which is passing one of
 its own methods to another another object as a callback command.
@@ -1166,7 +1166,7 @@ This usually occurs in the object's constructor.  Here, the
 <b>mymethod</b> command should be used to build the callback.
 Suppose, for example, the object is creating a Tk <b>button</b>
 widget, and wants one of its methods to be called when the button
-is pushed:<p>
+is pushed:
 
 <pre>
 snit::type myobject {
@@ -1193,17 +1193,17 @@ snit::type myobject {
 
 The <b>mymethod</b> command returns a command which will call
 the method safely; like <b>list</b>, it allows additional leading
-arguments to be included in the callback.<p>
+arguments to be included in the callback.
 
 Similarly, use <b>mytypemethod</b> to create callback commands which
-call one of a Snit type's typemethods.<p>
+call one of a Snit type's typemethods.
 
 <section code.callbacks.calling "Calling Callbacks">
 
 Callbacks should almost always be called in the global scope; any
 other choice has too many opportunities for unpleasant surprises.
 If the callback command takes no additional arguments, it may be
-called like this:<p>
+called like this:
 
 <pre>
 uplevel #0 $callback
@@ -1211,7 +1211,7 @@ uplevel #0 $callback
 
 It is frequently the case that the callback might not be defined, as
 when it's registered using an object option.  In this case, the code
-is:<p>
+is:
 
 <pre>
 if {$callback ne ""} {
@@ -1219,7 +1219,7 @@ if {$callback ne ""} {
 }
 </pre>
 
-If the callback takes additional arguments, the code is a little longer:<p>
+If the callback takes additional arguments, the code is a little longer:
 
 <pre>
 # Call callback with two additional args, a and b
@@ -1231,17 +1231,17 @@ if {$callback ne ""} {
 </pre>
 
 Finally, note that the <xref marsutil(n) callwith> command does all this
-in one line; the following example is equivalent to its predecessor.<p>
+in one line; the following example is equivalent to its predecessor.
 
 <pre>
 callwith $callback $a $b
 </pre>
 
 Of course, <xref marsutil(n) callwith> can also be used for callbacks
-which take no additional arguments.<p>
+which take no additional arguments.
 
 Alternatively, if the command prefix might consist of multiple tokens,
-"{*}" notation can be used:<p>
+"{*}" notation can be used:
 
 <pre>
 if {$callback ne ""} {
@@ -1250,26 +1250,26 @@ if {$callback ne ""} {
 </pre>
 
 This presumes that the callback command is fully-qualified, as it should
-be.<p>
+be.
 
 <section file "File Layout">
 
 This section contains standard regarding to the placement, contents,
-and layout of various kinds of Tcl code files.<p>
+and layout of various kinds of Tcl code files.
 
 <section file.scripts "Executable Scripts">
 
 <ul>
   <li> Executable scripts should be placed in the project
        <code>bin/</code> or <b>tools/bin</b> directory, and
-       should be documented with a man page in <b>docs/man1/</b>.<p>
+       should be documented with a man page in <b>docs/man1/</b>.
 
   <li> The names of executable Tcl script files should omit the ".tcl"
-       suffix.<p>
+       suffix.
 
   <li> Executable Tcl script files should begin with the following
        lines, where "wish" (or another interpreter) can be substituted
-       for "tclsh" as required:<p>
+       for "tclsh" as required:
 
 <pre>
 #!/bin/sh
@@ -1279,13 +1279,13 @@ exec tclsh8.5 "$0" "$@"
 </pre>
 
        The "#-*-tcl-*-" line allows Emacs to recognize that the file
-       is a Tcl file.<p>
-</ul><p>
+       is a Tcl file.
+</ul>
 
 <section file.scripts.classic "Classic Script Layout">
 
 In the classic layout, the script will usually have the following
-skeleton.<p>
+skeleton.
 
 <pre>
 #!/bin/sh
@@ -1349,7 +1349,7 @@ main $argv
 
 In this layout, the script's code is grouped into an application
 ensemble, conventionally called <b>app</b>.  Application ensembles are
-easily created using Snit.  The skeleton is as follows:<p>
+easily created using Snit.  The skeleton is as follows:
 
 <pre>
 #!/bin/sh
@@ -1422,31 +1422,31 @@ Tcl libraries are called "packages".  Packages are defined in
 subdirectories of the project <code>lib/</code> directory; each
 subdirectory contains one package. The directory name is the same as the
 package name; thus, the <xref marsutil(n)> package resides in the
-<code>mars/lib/marsutil</code> directory.<p>
+<code>mars/lib/marsutil</code> directory.
 
 Mars defines two kinds of packages: library packages and application
 packages.  A library package is a traditional library; an application
 package is an application's main body of code packaged as a Tcl
 package, to be loaded by the <xref mars(1)> loader script.
-Application package names all begin with "app_".<p>
+Application package names all begin with "app_".
 
 A library package's API is documented by one or more
 man pages in <code>mars/docs/mann</code>, one man page for the package
 itself and one for each of its submodules (e.g., <xref marsutil(n)>,
 <xref mat(n)>).  An application is documented for the user
 as a single man page in <code>mars/docs/man1</code>, e.g.,
-<xref mars_gram(1)>.<p>
+<xref mars_gram(1)>.
 
 Every package has a package index file (<xref file.package.index>),
 a package loader file (<xref file.package.loader>), and one or more
 module files (<xref file.mod>); all of these files reside in the
-package's subdirectory.<p>
+package's subdirectory.
 
 Every package has a version number, e.g., "1.0".  The version number
 if extremely important for packages released "into the wild"; for
 packages used only in a single software system that is maintained in a
 CM repository, as Mars is, the version can usually be set to "1.0" and
-ignored.<p>
+ignored.
 
 <section file.package.index "Package Index Files">
 
@@ -1454,7 +1454,7 @@ The package index file is always called <code>pkgIndex.tcl</code>;
 it notifies the Tcl interpreter that the package exists.  Tcl provides
 a tool, the <b>pkg_mkIndex</b> command, which will build the
 <code>pkgIndex.tcl</code> file automatically; it should <b>not</b> be
-used.  Instead, the following skeleton should be used.<p>
+used.  Instead, the following skeleton should be used.
 
 <pre>
 #-------------------------------------------------------------------------
@@ -1470,39 +1470,39 @@ used.  Instead, the following skeleton should be used.<p>
 package ifneeded mypackage 1.0 [list source [file join $dir mypackage.tcl]]
 </pre>
 
-Replace "mypackage" with the actual package name throughout.<p>
+Replace "mypackage" with the actual package name throughout.
 
 <section file.package.loader "Package Loader Files">
 
 The package loader file always has the same name as the package, e.g.,
-"mypackage.tcl".  It has the following responsibilities:<p>
+"mypackage.tcl".  It has the following responsibilities:
 
 <ul>
-  <li> It loads any other packages used by this package.<p>
+  <li> It loads any other packages used by this package.
 
-  <li> It notifies Tcl that this package has been loaded.<p>
+  <li> It notifies Tcl that this package has been loaded.
 
-  <li> For library packages:<p>
+  <li> For library packages:
 
        <ul>
          <li> It defines the package namespace, which
               has the same name as the package.  All library package
-              code and variables lives in the package namespace.<p>
+              code and variables lives in the package namespace.
 
          <li> It defines the package's "library" variable, which
               contains the absolute path to the package's directory.
               This is useful of the package needs to access data files
-              (such as icon files).<p>
+              (such as icon files).
 
          <li> It imports commands from other packages into the package
-              namespace, if desired.<p>
-       </ul><p>
+              namespace, if desired.
+       </ul>
 
   <li> It loads each of the package's submodules, each of which has
-       its own file.<p>
+       its own file.
 </ul>
 
-The following is a typical skeleton for a package loader file.<p>
+The following is a typical skeleton for a package loader file.
 
 <pre>
 #-----------------------------------------------------------------------
@@ -1567,16 +1567,16 @@ which are assumed to belong to either a library or an application
 package.  The differences between library and application modules are
 described in <xref file.mod.libvsapp>; then,
 different module patterns within these two broad categories are
-discussed in <xref file.mod.classic> and following.<p>
+discussed in <xref file.mod.classic> and following.
 
 <section file.mod.libvsapp "Library vs. Application Modules">
 
 The main distinction between library and application modules is that
 library modules live in the library package's namespace, whereas
 application modules are allowed to live in the global namespace
-(though they may define their own).<p>
+(though they may define their own).
 
-The following is a skeleton for a simple library module:<p>
+The following is a skeleton for a simple library module:
 
 <pre>
 #-----------------------------------------------------------------------
@@ -1624,7 +1624,7 @@ proc ::mypackage::george {} {
 It begins with code that exports all public commands defined in the
 package from the package namespace; this is followed by the file's
 content.  Command names to be exported should be listed one per line in
-alphabetical order, as shown.<p>
+alphabetical order, as shown.
 
 The <b>namespace export</b> command allows wildcards to be used when
 specifying the commands to export; for example, the following command
@@ -1641,19 +1641,19 @@ public commands imported from other packages will then be exported by
 this package!  As it is generally an error to import two commands with
 the same name into a single namespace (or the same command twice),
 this practice can yield annoying integration bugs at inconvenient
-times.<p>
+times.
 
 Generally speaking, application modules will look the
-same but won't define a namespace or export any names.<p>
+same but won't define a namespace or export any names.
 
 Note that there is no need to define the package (<b>package
 provide</b>) or to load packages needed by this one (<b>package
 require</b>) or import names into the package namespace
 (<b>namespace import</b>), because the package loader file should
-already have done this (<xref file.package.loader>).<p>
+already have done this (<xref file.package.loader>).
 
 The nature of the file's content depends on the module pattern used;
-see <xref file.mod.classic> and following.<p>
+see <xref file.mod.classic> and following.
 
 <section file.mod.classic  "Classic Modules">
 
@@ -1663,22 +1663,22 @@ namespace to protect itself from interference with other modules.
 If the module is a library module, the namespace will be the package
 namespace.  If the module is an application module, the namespace
 will be specific to the module--or the module might define its
-commands and variables in the global namespace.<p>
+commands and variables in the global namespace.
 
-A classic module contains the following things:<p>
+A classic module contains the following things:
 
 <ul>
-  <li> A <b>namespace eval</b> section which:<p>
+  <li> A <b>namespace eval</b> section which:
        <ul>
          <li> Exports public command names using <b>namespace export</b>.
          <li> Declares and initializes module variables using <b>variable</b>.
        </ul>
-  <li> Public procs, defined in the module's namespace and exported above.<p>
+  <li> Public procs, defined in the module's namespace and exported above.
 
-  <li> Private procs, defined in the module's namespace.<p>
+  <li> Private procs, defined in the module's namespace.
 </ul>
 
-A typical skeleton looks like this:<p>
+A typical skeleton looks like this:
 
 <pre>
 #-----------------------------------------------------------------------
@@ -1737,7 +1737,7 @@ proc ::mypackage ComputeGadgetFrequency {} {
 </pre>
 
 The file may be divided into sections as best makes sense for the
-content.<p>
+content.
 
 <section file.mod.ensemble "Ensemble Modules">
 
@@ -1745,50 +1745,50 @@ An <i>ensemble module</i> defines a single public ensemble command
 that serves as the sole entry point to the module's functionality.
 The ensemble is implemented as a Snit type with no instances; the
 ensemble command's subcommands are typemethods of the type.  All of
-the module's code is defined within the type definition.<p>
+the module's code is defined within the type definition.
 
-An ensemble module will contain the following things:<p>
+An ensemble module will contain the following things:
 
 <ul>
   <li> The Snit type, whose name should be same as that of the
        module.  If the module is "mymodule.tcl", the type name should
-       be "mymodule".<p>
+       be "mymodule".
 
   <li> If the type requires significant initialization, it should
        define an <b>init</b> typemethod so that the application can
-       choose when to initialize it.<p>
+       choose when to initialize it.
 
   <li> Library modules which require significant initialization
        controlled by the application should generally be written as
        object modules (<xref file.mod.object>) rather than as
-       ensemble modules.<p>
+       ensemble modules.
 
-  <li> For library modules:<p>
+  <li> For library modules:
 
        <ul>
-         <li> The type should be defined in the package namespace.<p>
+         <li> The type should be defined in the package namespace.
 
          <li> The module should begin with a <b>namespace eval</b>
               block which exports the ensemble's name from the package
-              namespace.<p>
+              namespace.
        </ul>
 
        Note that every type defines its own namespace; hence,
        application modules which use this pattern have no need to
        define an module-specific namespace beyond that provided by the
-       type.<p>
+       type.
 
   <li> If necessary, the module can import names from other packages
-       into its own namespace.<p>
+       into its own namespace.
 </ul>
 
 The skeleton for ensemble modules should look like this; as always,
 the type definition can be divided into sections as best documents
-its content.<p>
+its content.
 
 See also the
 <link http://tcllib.sourceforge.net/doc/snitfaq.html "Snit FAQ">
-for best practices for Snit types.<p>
+for best practices for Snit types.
 
 <pre>
 #-----------------------------------------------------------------------
@@ -1859,41 +1859,41 @@ An <i>object module</i> defines a single Snit type or widget, usually
 with no extra type methods.  If type methods are required for a
 non-widget type, then the manager/object module pattern should be used
 instead (<xref file.mod.manager>).  All of the module's code is defined
-within the type definition.<p>
+within the type definition.
 
-An object module will contain the following things:<p>
+An object module will contain the following things:
 
 <ul>
   <li> The Snit type or widget, whose name should be same as that of the
        module.  If the module is "myobject.tcl", the type name should
-       be "myobject".<p>
+       be "myobject".
 
-  <li> For library modules:<p>
+  <li> For library modules:
 
        <ul>
-         <li> The type or widget should be defined in the package namespace.<p>
+         <li> The type or widget should be defined in the package namespace.
 
          <li> The module should begin with a <b>namespace eval</b>
               block which exports the ensemble's name from the package
-              namespace.<p>
+              namespace.
        </ul>
 
        Note that every type defines its own namespace; hence,
        application modules which use this pattern have no need to
        define an module-specific namespace beyond that provided by the
-       type.<p>
+       type.
 
   <li> If necessary, the module can import names from other packages
-       into its own namespace.<p>
+       into its own namespace.
 </ul>
 
 The skeleton for object modules should look like this; as always,
 the type definition can be divided into sections as best documents
-its content.<p>
+its content.
 
 See also the
 <link http://tcllib.sourceforge.net/doc/snitfaq.html "Snit FAQ">
-for best practices for Snit types and widgets.<p>
+for best practices for Snit types and widgets.
 
 
 <pre>
@@ -1967,13 +1967,13 @@ snit::type myobject {
 
 Given a collection of objects of a particular type, it's sometimes
 useful to provide a manager interface that operates on the entire
-collection or which can locate particular objects given relevant inputs.<p>
+collection or which can locate particular objects given relevant inputs.
 
 Snit supports this pattern by allowing a type to have both type
 methods (subcommands of the type command) and instance methods
 (subcommands of the object instances).  The management activities can
 be implemented in terms of type methods and type variables, both of
-which the instances can access.<p>
+which the instances can access.
 
 <b>This mechanism should not be used for non-GUI object types,
 as it leads to confusing errors!</b>  One of the features of Snit is that
@@ -1981,22 +1981,22 @@ instances are created by the type's <b>create</b> type method--which can be
 omitted. This means that if the type is passed a type method name which is
 misspelled, the type assumes it to be an instance name and quietly creates
 an instance with that name. The call appears to succeed, but
-doesn't do anything like what was wanted.<p>
+doesn't do anything like what was wanted.
 
 Note that Snit widgets do not have this problem.  Tk window names must
 begin with a ".", and subcommand names simply don't.  Thus, it's
 unlikely that a mispelled subcommand would cause a new window to be
-created.<p>
+created.
 
 For non-GUI object types, though, the manager/object pattern should be
 implemented using two
 types: an ensemble, as shown in <xref file.mod.ensemble>, followed
 by an object type or widget, as shown in <xref file.mod.object>.
 The typical skeleton for this pattern is simply a combination of the 
-ensemble and object module skeletons.<p>
+ensemble and object module skeletons.
 
 When this pattern is used, the ensemble will usually have a typemethod
-explicitly defined for creating objects of the object or widget type.<p>
+explicitly defined for creating objects of the object or widget type.
 
 </document>
 

@@ -15,7 +15,7 @@
 mars_icons(1) is a browser for the icon images that are included with
 <xref marsgui(n)>. By default, it shows the standard set of
 <xref marsicons(n)> icons; it can also be passed a namespace name to
-browse the icons from other namespaces.<p>
+browse the icons from other namespaces.
 
 <subsection "Icon Namespaces">
 
@@ -23,15 +23,15 @@ The <xref marsgui(n)> icon set is displayed by default; it consists of a
 number of icons created using the <xref mkicon(n)> command, which allows 
 multiple icons to be created from a single pattern, editable in a text 
 editor, and which also allows icons to contain transparent pixels.  These 
-icons have names like <code>::marsgui::icon::<i>name</i></code>.<p>
+icons have names like <code>::marsgui::icon::<i>name</i></code>.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-Original application.<p>
+Original application.
 
 </manpage>
 

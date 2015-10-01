@@ -16,12 +16,12 @@ controls the <code>-state</code> of one or more other objects.
 Controlled objects are typically Tk menu items and buttons; however,
 <xref statecontroller(n)> can control any object with a
 <code>-state</code> option with values <b>normal</b> and
-<b>disabled</b>.<p>
+<b>disabled</b>.
 
 The <xref statecontroller(n)> updates the state of controlled
 objects when explicitly asked to do so via its <iref update>
 method.  Optionally, it can do so on receipt of one or more
-<xref notifier(n)> events.<p>
+<xref notifier(n)> events.
 
 The <xref statecontroller(n)> determines whether the controlled
 objects should be enabled or disabled by evaluating a boolean
@@ -30,7 +30,7 @@ expression may reference the controlled object as <code>$obj</code>.
 In addition, each controlled object may specify a dictionary of data
 items peculiar to that object; this is called the <b>objdict</b>.
 The <code>-condition</code> may reference any of the entries in the
-dictionary by name.<p>
+dictionary by name.
 
 <section COMMANDS>
 
@@ -41,9 +41,9 @@ dictionary by name.<p>
 Creates a new statecontroller(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref statecontroller> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The <xref statecontroller(n)> may be created with the following options:<p>
+The <xref statecontroller(n)> may be created with the following options:
 
 <deflist statecontroller options>
 
@@ -51,11 +51,11 @@ The <xref statecontroller(n)> may be created with the following options:<p>
 
 A boolean <i>expression</i> that will be evaluated for each controlled
 object.  The object will be enabled if the expression is true, and
-disabled if false.<p>
+disabled if false.
 
 The <i>expression</i> may reference the controlled object as
 <code>$obj</code>, and any of the values in the object dictionary.
-See <xref EXAMPLES> for details.<p>
+See <xref EXAMPLES> for details.
 
 <defopt {-events <i>eventlist</i>}>
 
@@ -63,7 +63,7 @@ The <i>eventlist</i> must be a flat list of <xref notifier(n)>
 subjects and events.  The <xref statecontroller(n)> will
 automatically subscribe to each of the subject/event pairs, and will
 update all controlled objects whenever one of the events is received.
-Any event arguments are ignored.<p>
+Any event arguments are ignored.
 
 </deflist statecontroller options>
 
@@ -71,7 +71,7 @@ Any event arguments are ignored.<p>
 
 Defines a menu item, and returns "$menu $label".  This is a
 convenience function that makes it easier to control menu items; see
-the <xref EXAMPLES> for more.  It's equivalent to the following code:<p>
+the <xref EXAMPLES> for more.  It's equivalent to the following code:
 
 <pre>
     $menu add $itemtype -label $label {*}$options
@@ -82,23 +82,23 @@ the <xref EXAMPLES> for more.  It's equivalent to the following code:<p>
 <section "INSTANCE COMMAND">
 
 Each instance of the <iref statecontroller> object has the following
-subcommands:<p>
+subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>obj</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>obj</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem control {<i>obj</i> control <i>object</i> ?<i>key value...</i>?}>
 
 Directs the <iref statecontroller> to control the
 <code>-state</code> of the specified <i>object</i>.  The remaining
-arguments collectively form the <i>object</i>'s object dictionary.<p>
+arguments collectively form the <i>object</i>'s object dictionary.
 
 Usually, the <b>object</b> is the name of a Tk widget instance.  Menu
 items, however, are a special case, as a menu item isn't a widget;
@@ -106,18 +106,18 @@ rather, it's owned by a widget.  If the controlled object is a menu
 item, then <b>object</b> must be a list of two items: the instance
 command of the menu on which the item appears, and the index of the
 item, as defined in for the Tk <tt menu> command.  
-The item's label string is a valid index.<p>
+The item's label string is a valid index.
 
 <defitem update {<i>obj</i> update ?<i>objects</i>?}>
 
 By default, this command explicitly updates the <code>-state</code> of
 all controlled objects.  Alternatively, it can update only the
 listed subset of the controlled objects.  This command is useful in
-two cases:<p>
+two cases:
 
 <ul>
   <li> First, when updates need to be triggered by something other
-       than a <xref notifier(n)> event, e.g., by a Tk event.<p>
+       than a <xref notifier(n)> event, e.g., by a Tk event.
 
   <li> Second, when it's known that the triggering event can affect
        only a small subset of the controlled objects.
@@ -128,7 +128,7 @@ two cases:<p>
 <section EXAMPLES>
 
 The following <iref statecontroller> is used to enable and disable
-widgets based on whether the order sent by the widget is valid or not:<p>
+widgets based on whether the order sent by the widget is valid or not:
 
 <pre>
     statecontroller ::cond::orderIsValid -events {
@@ -141,10 +141,10 @@ widgets based on whether the order sent by the widget is valid or not:<p>
 Updates are triggered by receipt of the <b><lb>State<rb></b> event
 from the <code>::order</code> processor.  The controlled widget is enabled
 if the <code>$order</code> specified in its object dictionary is
-valid, and disabled otherwise.<p>
+valid, and disabled otherwise.
 
 A button widget is normally associated with the
-<iref statecontroller> as follows:<p>
+<iref statecontroller> as follows:
 
 <pre>
     cond::orderIsValid control \
@@ -178,7 +178,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

@@ -14,20 +14,20 @@ namespace import ::marsgui::*
 This module defines the ::marsgui::modeditor widget, which allows the
 developer to edit the application's code on the fly, and save the changes
 to disk as a "mod" file.  The editor can grab the code for any command
-implemented in Tcl, and source it back into the application on demand.<p>
+implemented in Tcl, and source it back into the application on demand.
 
 <section OPTIONS>
 
 The widget has the same options as the
 standard ttk::frame; in addition, it provides the
-following:<p>
+following:
 
 <deflist options>
 
 <defopt {-defaultdir <i>path</i>}>
 
 Specifies the default directory for the editor's "Save" dialog.
-If unset, the dialog will open in the current working directory.<p>
+If unset, the dialog will open in the current working directory.
 
 <defopt {-formatcmd <i>command</i>}>
 
@@ -35,26 +35,26 @@ Specifies the name of a command used to format an edited mod before saving
 it.  The command takes three additional arguments, the file name, the code to 
 format and the modeditor windows path name.  
 It should return the formatted text.  The application can use this to add 
-boilerplate to the saved file.<p>
+boilerplate to the saved file.
 
 <defopt {-logcmd <i>command</i>}>
 
 Allows the widget to display <xref isearch(n)> status messages to the
 user.  The <i>command</i> is a Tcl command expecting one additional
 argument, a text string.  The client will usually arrange for this
-string to be written to a <xref messageline(n)>.<p>
+string to be written to a <xref messageline(n)>.
 
 </deflist>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem modeditor {modeditor <i>pathName ?options...?</i>}>
 
-Creates a new modeditor widget window named <i>pathName</i>.<p>
+Creates a new modeditor widget window named <i>pathName</i>.
 
 </deflist commands>
 
@@ -64,18 +64,18 @@ Creates a new modeditor widget window named <i>pathName</i>.<p>
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem grab {<i>win</i> grab <i>name</i>}>
 
 Grabs the definition of the named command using
 <xref cmdinfo(n) getcode>, and appends it to the text in the editor
 pane.  If the named command has already been grabbed, the user is asked
-whether they really want to do that.<p>
+whether they really want to do that.
 
 </deflist>
 
@@ -89,7 +89,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

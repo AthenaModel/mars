@@ -13,11 +13,11 @@ namespace import ::marsgui::*
 
 <xref mkicon(n)> provides a commands for creating families of
 icon images from text input.  The images can be created as Tk image
-commands, or as image files.<p>
+commands, or as image files.
 
 <section COMMANDS>
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
@@ -29,14 +29,14 @@ characters in the <i>charmap</i> to specific colors.  The <i>cmd</i>
 is the name to be given to the new image command; if it is the empty
 string, a name is automatically generated.  If it is not a
 fully-qualified name, it is presumed to be in the caller's
-namespace.<p>
+namespace.
 
 The <i>charmap</i> is a list of strings, each string denoting one row
 of pixels.  The strings are usually formatted in successive lines.
 Each character represents a color. The <i>colors</i> argument is
 simply a dictionary of characters and Tk color specifications, with
 one addition: the pseudo-color name <b>trans</b>.  Pixels mapped to
-<b>trans</b> will be transparent.<p>
+<b>trans</b> will be transparent.
 
 The caller can specify a sequence of <i>suffix</i> and <i>mod</i> arguments
 to create a family of icons based on the same <i>charmap</i>,
@@ -44,14 +44,14 @@ where <i>mod</i> is a dictionary of characters and Tk color specifications
 that modifies the definitions in <i>colors</i>.
 The first icon will be created as described above, and the subsequent ones
 will be created by appending <i>suffix</i> to the <i>cmd</i> and merging
-<i>mod</i> with <i>colors</i>.<p>
+<i>mod</i> with <i>colors</i>.
 
 The command returns a list of the names of the newly created
-image commands.<p>
+image commands.
 
 For example, the follow command defines an image similar to a mouse
 pointer arrow with a black foreground and a transparent background,
-along with a gray icon to be used when the icon is disabled.<p>
+along with a gray icon to be used when the icon is disabled.
 
 <pre>
 mkicon arrow {
@@ -82,7 +82,7 @@ This command takes the same input as <iref mkicon>, but saves the
 new images to a series of disk files using <i>name</i> and
 <i>suffix</i> instead of creating a Tk image.
 The files will have the specified format, typically <b>gif</b> or
-<b>png</b>.  Returns a list of the absolute file names of the new files.<p>
+<b>png</b>.  Returns a list of the absolute file names of the new files.
 
 </deflist commands>
 
@@ -96,7 +96,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

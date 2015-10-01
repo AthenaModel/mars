@@ -12,69 +12,69 @@ namespace import ::marsutil::*
 <section DESCRIPTION>
 
 <xref cmdinfo(n)> provides a number of subcommands useful for
-introspection on Tcl commands.<p>
+introspection on Tcl commands.
 
 <section "COMMAND TYPES">
 
 The <iref cmdinfo type> command determines the type of any given
-command.  <xref cmdinfo(n)> recognizes the following types:<p>
+command.  <xref cmdinfo(n)> recognizes the following types:
 
 <topiclist>
 <topic [b proc]>
-A normal Tcl command procedure.<p>
+A normal Tcl command procedure.
 </topic>
 
 <topic [b nse]>
-A "namespace ensemble" command.<p>
+A "namespace ensemble" command.
 </topic>
 
 <topic [b alias]>
-An interpreter alias.<p>
+An interpreter alias.
 </topic>
 
 <topic [b oo-object]>
-A TclOO object or class.<p>
+A TclOO object or class.
 </topic>
 
 <topic [b snit-type]>
 A Snit type (including Snit widget types).  Note that the command is
-also a namespace ensemble.<p>
+also a namespace ensemble.
 </topic>
 
 <topic [b snit-instance]>
 An instance of a Snit type (include widget instances).  Note that the
-command is also a namespace ensemble.<p>
+command is also a namespace ensemble.
 </topic>
 
 <topic [b unknown]>
 A command of unknown origin, i.e., a command
 implemented in a binary Tcl extension, an alias from a parent
-interpreter, or a command that is truly undefined.<p>
+interpreter, or a command that is truly undefined.
 
 </topic>
 <topic [b ns]>
 A namespace. The <b ns> type is never actually returned by 
 <iref cmdinfo type>; however, <iref cmdinfo list> returns a list of both 
 the commands and namespaces within a given namespace, sorted in dictionary 
-order, and so it is convenient to define a type for the namespaces.<p>
+order, and so it is convenient to define a type for the namespaces.
 </topic>
 </topiclist>
 
 <section COMMANDS>
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
 <defitem "cmdinfo exists" {cmdinfo exists <i>name</i>}>
 
 Returns 1 if a command with the specified <i>name</i> is defined in the
-caller's scope, and 0 otherwise.<p>
+caller's scope, and 0 otherwise.
 
 <defitem "cmdinfo type" {cmdinfo type <i>name</i>}>
 
 Returns the type of the command with the specified <i>name</i> in the
-caller's scope; see <xref "COMMAND TYPES">.<p>
+caller's scope; see <xref "COMMAND TYPES">.
 
 <defitem "cmdinfo origin" {cmdinfo origin <i>cmdline</i>}>
 
@@ -82,37 +82,37 @@ Returns the ultimate origin of the code called by the given <i cmdline>,
 looking up aliases, namespace ensemble subcommands, and TclOO and Snit
 object methods.  The origin is returned in the form of a triple,
 {<i type> <i command> ?<i detail>?}, where the <i type> is one of the
-following symbols:<p>
+following symbols:
 
 <topiclist>
 <topic [b unknown]>
 The <i command> is the name of the command whose origin could not
-be determined, and the <i detail> is an explanatory message.<p> 
+be determined, and the <i detail> is an explanatory message. 
 </topic>
 
 <topic [b proc]>
 The <i command> is the name of the procedure, and the <i detail> is
-absent.<p>
+absent.
 </topic>
 
 <topic [b oo-objmethod]>
 The <i command> is the name of a TclOO object, and the <i detail> is the
-name of a method defined directly on the object.<p>
+name of a method defined directly on the object.
 </topic>
 
 <topic [b oo-method]>
 The <i command> is the name of a TclOO class, and the <i detail> is the
-name of one of the class's instance methods.<p>
+name of one of the class's instance methods.
 </topic>
 
 <topic [b snit-typemethod]>
 The <i command> is the name of a Snit type or widget, and the <i detail> 
-is the name of a type method.<p>
+is the name of a type method.
 </topic>
 
 <topic [b snit-method]>
 The <i command> is the name of a Snit type or widget, and the <i detail> 
-is the name of an instance method.<p>
+is the name of an instance method.
 </topic>
 </topiclist>
 
@@ -122,18 +122,18 @@ is the name of an instance method.<p>
 Returns a list of the commands and namespaces defined as children of
 namespace <i>ns</i>.  The list has the form of a dictionary whose keys
 are the fully qualified command and namespace names and whose values
-are <xref "COMMAND TYPES"> for each.<p>
+are <xref "COMMAND TYPES"> for each.
 
 Note that a namespace can appear twice, as both a namespace and a
 namespace ensemble.  Consequently, all namespace names will be
-formatted with a trailing "::" to ensure uniqueness.<p>
+formatted with a trailing "::" to ensure uniqueness.
 
 <defitem "cmdinfo nsemap" {cmdinfo nsemap <i>nse</i>}>
 
 Returns a dictionary of the subcommand mappings for namespace ensemble
 <i>nse</i>.  Note that <b>snit-type</b> and <b>snit-instance</b> commands
 are also namespace ensembles, and so have mappings; however, methods are
-not added to the mapping until they are first called.<p>
+not added to the mapping until they are first called.
 
 <defitem "cmdinfo getcode" {cmdinfo getcode <i cmdline> ?-related?}>
 
@@ -144,79 +144,79 @@ code is available.  (A command definition is a Tcl script that will
 redefine the specific command in context.)  If the <i cmdline> begins with
 a <b proc>, for example, then <iref cmdinfo getcode> will return a 
 <tt proc> script.  If it begins with a TclOO object and method, then
-<iref cmdinfo getcode> will return the method definition.<p>
+<iref cmdinfo getcode> will return the method definition.
 
 If the <tt -related> option is given, then the output may include 
-related code definitions as well:<p>
+related code definitions as well:
 
 <ul>
 <li> If the command is a TclOO object, the output will include all of the
-methods on the command's call-chain, excluding filters and forwards.<p>
+methods on the command's call-chain, excluding filters and forwards.
 
 <li> If the command is a TclOO class, and the remaining argument names
      an instance method of that class, the instance method's definition
      will be included.  If the class has class and instance methods with
-     the same name, both will appear.<p>
+     the same name, both will appear.
 
 <li> Similarly, if the command is a Snit type or widget, and the remaining 
      argument names an instance method of that class, the instance 
      method's definition will be included.  If the type has type and 
-     instance methods with the same name, both will appear.<p>
+     instance methods with the same name, both will appear.
 </ul>
 
 <defitem "cmdinfo is" {cmdinfo is <i predicate> <i cmd>}>
 
 This command groups together a number of predicates about commands, where
 <i cmd> is a <b fully-qualified> command name.  The command returns 1
-if the predicate is true, and 0 otherwise.  The predicates are as follows:<p>
+if the predicate is true, and 0 otherwise.  The predicates are as follows:
 
 <topiclist>
 <topic [b alias]>
-The <i cmd> is an alias defined in the current interpreter.<p>
+The <i cmd> is an alias defined in the current interpreter.
 </topic>
 
 <topic [b dummyWindow]>
-The command is a BWidget dummy window, used internally.<p>
+The command is a BWidget dummy window, used internally.
 
 <topic [b nse]>
-The <i cmd> is a namespace ensemble.<p>
+The <i cmd> is a namespace ensemble.
 </topic>
 
 <topic [b oo-object]>
-The <i cmd> is a TclOO object or class.<p>
+The <i cmd> is a TclOO object or class.
 </topic>
 
 <topic [b proc]>
-The <i cmd> is a normal Tcl command procedure.<p>
+The <i cmd> is a normal Tcl command procedure.
 </topic>
 
 <topic [b snit-instance]>
 The <i cmd> is a namespace ensemble implementing an instance of a 
-Snit type (include widget instances).<p>
+Snit type (include widget instances).
 </topic>
 
 <topic [b snit-method]>
-The <i cmd> is a <b proc> defining a Snit instance method.<p>
+The <i cmd> is a <b proc> defining a Snit instance method.
 </topic>
 
 <topic [b snit-type]>
 The <i cmd> is a namespace ensemble implementing a Snit type 
-(including Snit widget types).<p>
+(including Snit widget types).
 </topic>
 
 <topic [b snit-typemethod]>
-The <i cmd> is a <b proc> defining a Snit type method.<p>
+The <i cmd> is a <b proc> defining a Snit type method.
 </topic>
 
 <topic [b window]>
-The command has the same name as a Tk window.<p>
+The command has the same name as a Tk window.
 
 </topic>
 <topic [b ns]>
 A namespace. The <b ns> type is never actually returned by 
 <iref cmdinfo type>; however, <iref cmdinfo list> returns a list of both 
 the commands and namespaces within a given namespace, sorted in dictionary 
-order, and so it is convenient to define a type for the namespaces.<p>
+order, and so it is convenient to define a type for the namespaces.
 </topic>
 </topiclist>
 
@@ -233,7 +233,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

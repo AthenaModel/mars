@@ -13,23 +13,23 @@ namespace import ::marsgui::*
 
 This module defines a tool for popping up modal dialogs containing
 <xref dynaform(n)> forms.  The dialogs have these
-characteristics:<p>
+characteristics:
 
 <ul>
-  <li> <b>OK</b> and <b>Cancel</b> buttons.<p>
+  <li> <b>OK</b> and <b>Cancel</b> buttons.
 
-  <li> If desired, a <b>Help</b> button.<p>
+  <li> If desired, a <b>Help</b> button.
 
-  <li> A user-defined title.<p>
+  <li> A user-defined title.
 
-  <li> <xref dynaform(n)>-based content.<p>
+  <li> <xref dynaform(n)>-based content.
 
-  <li> Optional validation support.<p>
-</ul><p>
+  <li> Optional validation support.
+</ul>
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
@@ -39,61 +39,61 @@ Pops up a message box containing a text entry widget, given the
 following options.  On "Cancel", returns the empty string; on
 "OK", validates and returns the form's field/value dictionary.
 Pressing the window manager's close button
-is the same as pressing "Cancel".<p> 
+is the same as pressing "Cancel". 
 
 <deflist options>
 <defopt {-resources <i>rdict</i>}>
 
 Specifies a <tt -resources> dictionary to pass along to the 
-<xref dynaview(n)> widget, as required by the <tt -formtype>.<p>
+<xref dynaview(n)> widget, as required by the <tt -formtype>.
 
 <defopt {-formtype <i>ftype</i>}>
 
-Names the <xref dynaform(n)> form type to display in the dialog.<p>
+Names the <xref dynaform(n)> form type to display in the dialog.
 
 <defopt {-helpcmd <i>cmd</i>}>
 
 If given, the dialog will have a <b>Help</b> button; pressing the
 <b>Help</b> button will call the <i>cmd</i>, which presumably
-displays related help in some fashion.<p>
+displays related help in some fashion.
 
 <defopt {-initvalue <i>dict</i>}>
 
 Specifies an initial value for the form, specified as a dictionary of
 field names and values.  The <i>dict</i> need not contain an entry
-for every one of the the form's fields.<p>
+for every one of the the form's fields.
 
 <defopt {-oktext <i>text</i>}>
 
-Specifies the text for the <b>OK</b> button.  Defaults to "OK".<p>
+Specifies the text for the <b>OK</b> button.  Defaults to "OK".
 
 <defopt {-parent <i>window</i>}>
 
-The message box will appear over the specfied window.<p>
+The message box will appear over the specfied window.
 
 <defopt {-title <i>string</i>}>
 
-The dialog window will have the specified title <i>string</i>.<p>
+The dialog window will have the specified title <i>string</i>.
 
 <defopt {-validatecmd <i>command</i>}>
 
 Specifies a validation command.  The command should take one
-additional argument, the name/value dictionary to validate.<p>
+additional argument, the name/value dictionary to validate.
 
 If the dictionary is valid, the command should return normally; if it returns 
 a text string, the string will be displayed at the bottom of the dialog in
-black text.<p>
+black text.
 
 If the dictionary is invalid, the command should do one of two things:
 First, the command can throw an error with error code <b>INVALID</b>.
-The error message will be displayed at the bottom of the dialog in red text.<p>
+The error message will be displayed at the bottom of the dialog in red text.
 
 Second, the command can throw an error with error code
 <b>REJECTED</b>.  The error result must then be a dictionary of field
 names and error messages.  The dialog will mark fields with invalid
 values by coloring their labels red, and when an invalid field is
 selected its error message will appear at the bottom of the dialog in
-red text.<p>
+red text.
 
 </deflist options>
 
@@ -102,7 +102,7 @@ red text.<p>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

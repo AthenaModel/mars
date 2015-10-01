@@ -13,7 +13,7 @@ namespace import ::marsutil::*
 
 range(n) defines a bounded value definition type.  Each instance of
 the type defines a range of numeric values, and can do the following
-things:<p>
+things:
 
 <ul>
   <li> Validate that a value belongs to the range.
@@ -21,7 +21,7 @@ things:<p>
   <li> Test whether an arbitrary numeric value is within bounds or
        not.
   <li> Format values for output.
-</ul><p>
+</ul>
 
 <section COMMANDS>
 
@@ -30,80 +30,80 @@ things:<p>
 <defitem range {range <i>name ?options...?</i>}>
 
 <iref range> defines a new range type called
-<i>name</i>.<p>
+<i>name</i>.
 
-A <iref range> can be created with the following <i>options</i>:<p>
+A <iref range> can be created with the following <i>options</i>:
 
 <deflist range options>
 
 <defopt {-min <i>value</i>}>
 The minimum numeric <i>value</i> for this range.  The default
-is no minimum.<p>
+is no minimum.
 
 <defopt {-max <i>value</i>}>
 The maximum numeric <i>value</i> for this range.  The default
-is no maximum.<p>
+is no maximum.
 
 <defopt {-format <i>format</i>}>
 A <i>format</i> string used to format numeric values belonging
-to this range.  The default is "%4.2f".<p>
+to this range.  The default is "%4.2f".
 
 </deflist range options>
 
 For example, the following code defines "probability" as a numeric value
 that ranges from 0.0 to 1.0, to be output with three decimal places of
-precision.<p>
+precision.
 
 <pre>
 range probability -min 0.0 -max 1.0 -format {%5.3f}
 </pre>
 
 The <i>name</i> becomes a Tcl command, defined in the current scope;
-<iref range> returns the fully-qualified form of <i>name</i>.<p>
+<iref range> returns the fully-qualified form of <i>name</i>.
 
 </deflist>
 
 <section "INSTANCE COMMAND">
 
 Each instance of the <iref range> object has the following
-subcommands:<p>
+subcommands:
 
 <deflist>
 
 <defitem cget {$range cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {$range configure <i>option value...</i>}>
 
-Sets the value of one or more options.<p>
+Sets the value of one or more options.
 
 <defitem validate {$range validate <i>input</i>}>
 
 Validates that <i>input</i> belongs to the range.  If it does, it is
 returned unchanged.  If it does not, an error is thrown with error
-code <b>INVALID</b>.<p>
+code <b>INVALID</b>.
 
 <defitem value {$range value <i>input</i>}>
 
 Identical to <iref validate>; it is included so that range(n) types
 can be used interchangeably with <xref quality(n)> types in some
-cases (e.g., <xref mat(n) "mat numerize"><p>
+cases (e.g., <xref mat(n) "mat numerize">
 
 <defitem format {$range format <i>value</i>}>
 
 Given a numeric value of this range type, formats and returns
-the value as specified by the <b>-format</b> string.<p>
+the value as specified by the <b>-format</b> string.
 
 <defitem inrange {$range inrange <i>value</i>}>
 
 Returns 1 if the arbitrary <i>value</i> falls within the range's
-<b>-min</b> and <b>-max</b>, and 0 otherwise.<p>
+<b>-min</b> and <b>-max</b>, and 0 otherwise.
 
 <defitem clamp {$range clamp <i>value</i>}>
 
 Clamps the arbitrary <i>value</i> within the range's 
-<b>-min</b> and <b>-max</b>, and returns the clamped value.<p>
+<b>-min</b> and <b>-max</b>, and returns the clamped value.
 
 </deflist>
 
@@ -121,7 +121,7 @@ library directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
