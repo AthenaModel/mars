@@ -17,6 +17,14 @@
 #include <stdlib.h>
 #include <tcl.h>
 
+ typedef struct EllipsoidData {
+    double a;     /* - Major Axis. */         
+    double b;     /* - Minor axis value. */
+    double e2;    /* - Eccentricity squared. */
+    double ee2;   /* - Eccentricity squared prime. */
+    double flat;  /* - Earth Flattening. */
+} EllipsoidData;
+
 /*
  * Windows needs to know which symbols to export.
  */

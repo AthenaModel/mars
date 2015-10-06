@@ -19,8 +19,8 @@ namespace eval ::kiteinfo:: {
     variable kiteInfo
 
     array set kiteInfo {
-        reqver-Tktable 2.11
         mansec-5 {File Formats}
+        reqver-Tktable 2.11
         build-libTiff {make clean all}
         local-Img 0
         reqver-comm 4.6
@@ -33,9 +33,7 @@ namespace eval ::kiteinfo:: {
         dists install-%platform
         build-Marsbin {make -f MakeTEA clean all}
         local-tablelist 0
-        build-libGeostars {make clean all}
         local-treectrl 0
-        clean-libGeostars {make clean}
         reqver-kiteutils 0.4.12
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150917.docx
         binary-marsgui 0
@@ -75,7 +73,7 @@ namespace eval ::kiteinfo:: {
         requires {snit sqlite3 comm Img BWidget treectrl tablelist Tktable Tkhtml kiteutils}
         poc William.H.Duquette@jpl.nasa.gov
         mansec-n {Tcl Commands}
-        srcs {libGeotrans libGeostars libTiff libGTiff Marsbin}
+        srcs {libGeotrans libTiff libGTiff Marsbin}
         local-comm 0
         mansec-1 Executables
         gui-mars 0
