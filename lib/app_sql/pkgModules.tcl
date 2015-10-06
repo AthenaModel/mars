@@ -28,7 +28,7 @@ package provide app_sql 3.0.23
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require sqlite3 3.8
 package require snit 2.3
-package require kiteutils 0.4.11
+package require kiteutils 0.4.12
 package require -exact marsutil 3.0.23
 package require -exact marsgui 3.0.23
 # -kite-require-end
