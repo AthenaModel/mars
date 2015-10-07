@@ -33,7 +33,7 @@
 #define HAVE_DECL_OPTARG 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-/* #undef HAVE_DLFCN_H */
+#define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
@@ -42,7 +42,7 @@
 #define HAVE_FLOOR 1
 
 /* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
-/* #undef HAVE_FSEEKO */
+#define HAVE_FSEEKO 1
 
 /* Define to 1 if you have the `getopt' function. */
 #define HAVE_GETOPT 1
@@ -76,7 +76,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <io.h> header file. */
-#define HAVE_IO_H 1
+/* #undef HAVE_IO_H */
 
 /* Define to 1 if you have the `isascii' function. */
 #define HAVE_ISASCII 1
@@ -103,7 +103,7 @@
 #define HAVE_MEMSET 1
 
 /* Define to 1 if you have the `mmap' function. */
-/* #undef HAVE_MMAP */
+#define HAVE_MMAP 1
 
 /* Define to 1 if you have the <OpenGL/glu.h> header file. */
 /* #undef HAVE_OPENGL_GLU_H */
@@ -121,7 +121,7 @@
 #define HAVE_SEARCH_H 1
 
 /* Define to 1 if you have the `setmode' function. */
-#define HAVE_SETMODE 1
+/* #undef HAVE_SETMODE */
 
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_SNPRINTF 1
@@ -255,7 +255,7 @@
 #define SIZEOF_SIGNED_INT 4
 
 /* The size of `signed long', as computed by sizeof. */
-#define SIZEOF_SIGNED_LONG 4
+#define SIZEOF_SIGNED_LONG 8
 
 /* The size of `signed long long', as computed by sizeof. */
 #define SIZEOF_SIGNED_LONG_LONG 8
@@ -264,16 +264,16 @@
 #define SIZEOF_SIGNED_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 4
+#define SIZEOF_SIZE_T 8
 
 /* The size of `unsigned char *', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_CHAR_P 4
+#define SIZEOF_UNSIGNED_CHAR_P 8
 
 /* The size of `unsigned int', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_INT 4
 
 /* The size of `unsigned long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG 4
+#define SIZEOF_UNSIGNED_LONG 8
 
 /* The size of `unsigned long long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG_LONG 8
@@ -307,7 +307,7 @@
 #define TIFF_INT32_T signed int
 
 /* Signed 64-bit type formatter */
-#define TIFF_INT64_FORMAT "%I64d"
+#define TIFF_INT64_FORMAT "%ld"
 
 /* Signed 64-bit type */
 #define TIFF_INT64_T signed long
@@ -322,13 +322,13 @@
 #define TIFF_PTRDIFF_T ptrdiff_t
 
 /* Size type formatter */
-#define TIFF_SIZE_FORMAT "%u"
+#define TIFF_SIZE_FORMAT "%lu"
 
 /* Unsigned size type */
-#define TIFF_SIZE_T unsigned int
+#define TIFF_SIZE_T unsigned long
 
 /* Signed size type formatter */
-#define TIFF_SSIZE_FORMAT "%d"
+#define TIFF_SSIZE_FORMAT "%ld"
 
 /* Signed size type */
 #define TIFF_SSIZE_T signed long
@@ -343,7 +343,7 @@
 #define TIFF_UINT32_T unsigned int
 
 /* Unsigned 64-bit type formatter */
-#define TIFF_UINT64_FORMAT "%I64u"
+#define TIFF_UINT64_FORMAT "%lu"
 
 /* Unsigned 64-bit type */
 #define TIFF_UINT64_T unsigned long
@@ -358,7 +358,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* define to use win32 IO system */
-#define USE_WIN32_FILEIO 1
+/* #undef USE_WIN32_FILEIO */
 
 /* Version number of package */
 #define VERSION "4.0.6"
@@ -376,7 +376,7 @@
 #endif
 
 /* Define to 1 if the X Window System is missing or not being used. */
-#define X_DISPLAY_MISSING 1
+/* #undef X_DISPLAY_MISSING */
 
 /* Support Deflate compression */
 /* #undef ZIP_SUPPORT */
