@@ -1,4 +1,4 @@
-/* "$Id: mkg3states.c,v 1.12 2015-06-21 01:09:09 bfriesen Exp $ */
+/* "$Id: mkg3states.c,v 1.9 2004/10/10 11:46:16 dron Exp $ */
 
 /*
  * Copyright (c) 1991-1997 Sam Leffler
@@ -40,10 +40,6 @@
 #endif
 
 #include "tif_fax3.h"
-
-#ifndef HAVE_GETOPT
-extern int getopt(int, char**, char*);
-#endif
 
 #define	streq(a,b)	(strcmp(a,b) == 0)
 
@@ -383,11 +379,8 @@ main(int argc, char* argv[])
     FILE* fd;
     char* outputfile;
     int c;
-
-#if !HAVE_DECL_OPTARG
     extern int optind;
     extern char* optarg;
-#endif
 
     while ((c = getopt(argc, argv, "c:s:bp")) != -1)
 	switch (c) {
@@ -445,10 +438,3 @@ main(int argc, char* argv[])
 }
 
 /* vim: set ts=8 sts=8 sw=8 noet: */
-/*
- * Local Variables:
- * mode: c
- * c-basic-offset: 8
- * fill-column: 78
- * End:
- */
