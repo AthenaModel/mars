@@ -1445,9 +1445,18 @@ latlong_frommgrs(ClientData cd, Tcl_Interp *interp,
         /* NOTE: The Geotrans documentation says that the constant 
          * is MGRS_STR_ERROR; the source code defines MGRS_STRING_ERROR. */
         if (result & MGRS_STRING_ERROR) {
-            sprintf(errBuf,
-                    "Invalid MGRS string: \"%s\"",
-                    mgrsString);
+
+            if (strlen(mgrsString) > 20)
+            {
+              sprintf(errBuf,
+                      "Invalid MGRS string: \"%-20.20s...\"",
+                      mgrsString);
+            } else {
+              sprintf(errBuf,
+                      "Invalid MGRS string: \"%s\"",
+                      mgrsString);
+
+            }
         } 
         else 
         {
