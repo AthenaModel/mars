@@ -33,7 +33,7 @@
 #define HAVE_DECL_OPTARG 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-/* #undef HAVE_DLFCN_H */
+#define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
@@ -42,7 +42,7 @@
 #define HAVE_FLOOR 1
 
 /* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
-/* #undef HAVE_FSEEKO */
+#define HAVE_FSEEKO 1
 
 /* Define to 1 if you have the `getopt' function. */
 #define HAVE_GETOPT 1
@@ -76,7 +76,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <io.h> header file. */
-#define HAVE_IO_H 1
+/* #undef HAVE_IO_H */
 
 /* Define to 1 if you have the `isascii' function. */
 #define HAVE_ISASCII 1
@@ -103,7 +103,7 @@
 #define HAVE_MEMSET 1
 
 /* Define to 1 if you have the `mmap' function. */
-/* #undef HAVE_MMAP */
+#define HAVE_MMAP 1
 
 /* Define to 1 if you have the <OpenGL/glu.h> header file. */
 /* #undef HAVE_OPENGL_GLU_H */
@@ -115,13 +115,13 @@
 #define HAVE_POW 1
 
 /* Define if you have POSIX threads libraries and header files. */
-/* #undef HAVE_PTHREAD */
+#define HAVE_PTHREAD 1
 
 /* Define to 1 if you have the <search.h> header file. */
 #define HAVE_SEARCH_H 1
 
 /* Define to 1 if you have the `setmode' function. */
-#define HAVE_SETMODE 1
+/* #undef HAVE_SETMODE */
 
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_SNPRINTF 1
@@ -178,7 +178,7 @@
 /* #undef HAVE_VARARGS_GLU_TESSCB */
 
 /* Define to 1 if you have the <windows.h> header file. */
-#define HAVE_WINDOWS_H 1
+/* #undef HAVE_WINDOWS_H */
 
 /* Native cpu byte order: 1 if big-endian (Motorola) or 0 if little-endian
    (Intel) */
@@ -194,7 +194,7 @@
 /* #undef JPEG_DUAL_MODE_8_12 */
 
 /* Support JPEG compression (requires IJG JPEG library) */
-/* #undef JPEG_SUPPORT */
+#define JPEG_SUPPORT 1
 
 /* 12bit libjpeg primary include file with path */
 /* #undef LIBJPEG_12_PATH */
@@ -218,7 +218,7 @@
 #define NEXT_SUPPORT 1
 
 /* Support Old JPEG compresson (read-only) */
-/* #undef OJPEG_SUPPORT */
+#define OJPEG_SUPPORT 1
 
 /* Name of package */
 #define PACKAGE "tiff"
@@ -245,7 +245,7 @@
 #define PACKBITS_SUPPORT 1
 
 /* Support Pixar log-format algorithm (requires Zlib) */
-/* #undef PIXARLOG_SUPPORT */
+#define PIXARLOG_SUPPORT 1
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -255,7 +255,7 @@
 #define SIZEOF_SIGNED_INT 4
 
 /* The size of `signed long', as computed by sizeof. */
-#define SIZEOF_SIGNED_LONG 4
+#define SIZEOF_SIGNED_LONG 8
 
 /* The size of `signed long long', as computed by sizeof. */
 #define SIZEOF_SIGNED_LONG_LONG 8
@@ -264,16 +264,16 @@
 #define SIZEOF_SIGNED_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 4
+#define SIZEOF_SIZE_T 8
 
 /* The size of `unsigned char *', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_CHAR_P 4
+#define SIZEOF_UNSIGNED_CHAR_P 8
 
 /* The size of `unsigned int', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_INT 4
 
 /* The size of `unsigned long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG 4
+#define SIZEOF_UNSIGNED_LONG 8
 
 /* The size of `unsigned long long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG_LONG 8
@@ -307,10 +307,10 @@
 #define TIFF_INT32_T signed int
 
 /* Signed 64-bit type formatter */
-#define TIFF_INT64_FORMAT "%I64d"
+#define TIFF_INT64_FORMAT "%ld"
 
 /* Signed 64-bit type */
-#define TIFF_INT64_T signed long long
+#define TIFF_INT64_T signed long
 
 /* Signed 8-bit type */
 #define TIFF_INT8_T signed char
@@ -322,16 +322,16 @@
 #define TIFF_PTRDIFF_T ptrdiff_t
 
 /* Size type formatter */
-#define TIFF_SIZE_FORMAT "%u"
+#define TIFF_SIZE_FORMAT "%lu"
 
 /* Unsigned size type */
-#define TIFF_SIZE_T unsigned int
+#define TIFF_SIZE_T unsigned long
 
 /* Signed size type formatter */
-#define TIFF_SSIZE_FORMAT "%d"
+#define TIFF_SSIZE_FORMAT "%ld"
 
 /* Signed size type */
-#define TIFF_SSIZE_T signed int
+#define TIFF_SSIZE_T signed long
 
 /* Unsigned 16-bit type */
 #define TIFF_UINT16_T unsigned short
@@ -343,10 +343,10 @@
 #define TIFF_UINT32_T unsigned int
 
 /* Unsigned 64-bit type formatter */
-#define TIFF_UINT64_FORMAT "%I64u"
+#define TIFF_UINT64_FORMAT "%lu"
 
 /* Unsigned 64-bit type */
-#define TIFF_UINT64_T unsigned long long
+#define TIFF_UINT64_T unsigned long
 
 /* Unsigned 8-bit type */
 #define TIFF_UINT8_T unsigned char
@@ -358,7 +358,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* define to use win32 IO system */
-#define USE_WIN32_FILEIO 1
+/* #undef USE_WIN32_FILEIO */
 
 /* Version number of package */
 #define VERSION "4.0.6"
@@ -376,10 +376,10 @@
 #endif
 
 /* Define to 1 if the X Window System is missing or not being used. */
-#define X_DISPLAY_MISSING 1
+/* #undef X_DISPLAY_MISSING */
 
 /* Support Deflate compression */
-/* #undef ZIP_SUPPORT */
+#define ZIP_SUPPORT 1
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE
