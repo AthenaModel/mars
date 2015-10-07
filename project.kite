@@ -13,7 +13,6 @@ provide Marsbin -binary
 
 # Compiled Directories
 src libGeotrans
-src libGeostars
 src libTiff
 src libGTiff
 src Marsbin -build {make -f MakeTEA clean all} -clean {make -f MakeTEA clean}

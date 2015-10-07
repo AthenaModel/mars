@@ -34,7 +34,7 @@
 #include <errno.h>
 
 #include <geotrans/geotrans.h>
-#include <geostars/geoStars.h>
+//#include <geostars/geoStars.h>
 #include <geotiff/xtiffio.h>
 #include <geotiff/geotiffio.h>
 #include <geotiff/geotiff.h>
@@ -87,7 +87,6 @@ typedef struct Ellipsoid {
     char*  code;
     double semi_major_axis;
     double inv_flattening;
-    int    geo_stars_datum;  /* maps to libGeostars ellipsoid table entry */
 } Ellipsoid;
 
 /* A coordinate pair */
@@ -167,18 +166,11 @@ static int marsutil_geotiffCmd     (ClientData, Tcl_Interp*, int,
                                  Tcl_Obj* CONST argv[]);
 
 /* latlong Subcommands */
-
 static int latlong_spheroid     (ClientData, Tcl_Interp*, int, 
                                  Tcl_Obj* CONST objv[]);
-
 static int latlong_tomgrs       (ClientData, Tcl_Interp*, int, 
                                  Tcl_Obj* CONST objv[]);
 static int latlong_frommgrs     (ClientData, Tcl_Interp*, int, 
-                                 Tcl_Obj* CONST objv[]);
-
-static int latlong_togcc        (ClientData, Tcl_Interp*, int, 
-                                 Tcl_Obj* CONST objv[]);
-static int latlong_fromgcc      (ClientData, Tcl_Interp*, int, 
                                  Tcl_Obj* CONST objv[]);
 static int latlong_dist         (ClientData, Tcl_Interp*, int, 
                                  Tcl_Obj* CONST objv[]);
@@ -203,8 +195,6 @@ static void         deleteLatlongInfo (LatlongInfo*);
 static Points*      newPoints         (void);
 static void         deletePoints      (Points*);
 
-static void         setEllipsoidData  (LatlongInfo*); 
-
 static GeotiffInfo* newGeotiffInfo    (void);
 static void         deleteGeotiffInfo (GeotiffInfo*);
 static void         closeGeotiff      (GeotiffInfo*);
@@ -222,7 +212,6 @@ static int    getBbox       (Tcl_Interp*, Tcl_Obj*, Bbox*);
 static int    getPoint      (Tcl_Interp*, Tcl_Obj*, Point*);
 static int    getPoints     (Tcl_Interp*, Tcl_Obj*, int minSize, Points*);
 static int    getLatLong    (Tcl_Interp*, Tcl_Obj*, double*, double*);
-static int    getGcc        (Tcl_Interp*, Tcl_Obj*, double*, double*, double*);
 static int    validateLatLong (Tcl_Interp*, double, double);
 
 /*
@@ -241,8 +230,6 @@ static SubcommandVector latlongTable [] = {
     {"spheroid", latlong_spheroid},
     {"tomgrs",   latlong_tomgrs},
     {"frommgrs", latlong_frommgrs},
-    {"togcc",    latlong_togcc},
-    {"fromgcc",  latlong_fromgcc},
     {NULL}
 };
 
@@ -256,36 +243,31 @@ static SubcommandVector geotiffTable[] = {
 /* Ellipsoids */
 
 static Ellipsoid ellipsoidTable [] = {
-    {"WE", 6378137.0  , 298.257223563, GEO_DATUM_WE}, // WGS 84
-    {"A1", 6377563.396, 299.3249646  , GEO_DATUM_AA}, // Airy 1830
-    {"A2", 6377340.189, 299.3249646  , GEO_DATUM_AM}, // Modified Airy 
-    {"AN", 6378160.0  , 298.25       , GEO_DATUM_AN}, // Australian National
-    {"BN", 6377483.865, 299.1528128  , GEO_DATUM_BN}, // Bessel 1841 (Namibia) 
-    {"BR", 6377397.155, 299.1528128  , GEO_DATUM_BR}, // Bessel 1841 
-    {"CC", 6378206.4  , 294.9786982  , GEO_DATUM_CC}, // Clarke 1866 
-    {"CD", 6378249.145, 293.465      , GEO_DATUM_CD}, // Clarke 1880
-    {"E1", 6377276.345, 300.8017     , GEO_DATUM_EA}, // Everest (India 1830) 
-    {"E2", 6377298.556, 300.8017     , GEO_DATUM_EB}, // Everest (Sabah Sarawak)  
-    {"E3", 6377301.243, 300.8017     , GEO_DATUM_EC}, // Everest (India 1956) 
-    {"E4", 6377295.664, 300.8017     , GEO_DATUM_ED}, // Everest (Malaysia 1969) 
-    {"E5", 6377304.063, 300.8017     , GEO_DATUM_EE}, // Everest (Malay. & Sing)  
-    {"E6", 6377309.613, 300.8017     , GEO_DATUM_EF}, // Everest (Pakistan)
-    {"MF", 6378155.0  , 298.3        , GEO_DATUM_FA}, // Modified Fischer 1960 
-    {"HM", 6378200.0  , 298.3        , GEO_DATUM_HE}, // Helmert 1906
-    {"HO", 6378270.0  , 297.0        , GEO_DATUM_HO}, // Hough 1960 
-    {"ID", 6378160.0  , 298.247      , GEO_DATUM_ID}, // Indonesian 1974 
-    {"IN", 6378388.0  , 297.0        , GEO_DATUM_IN}, // International 1924 
-    {"KR", 6378245.0  , 298.3        , GEO_DATUM_KA}, // Krassovsky 1940 
-    {"G8", 6378137.0  , 298.257222101, GEO_DATUM_RF}, // GRS 80 
-    {"SA", 6378160.0  , 298.25       , GEO_DATUM_SA}, // South American 1969 
-    {"W7", 6378135.0  , 298.26       , GEO_DATUM_WD}, // WGS 72 
+    {"WE", 6378137.0  , 298.257223563}, // WGS 84
+    {"A1", 6377563.396, 299.3249646  }, // Airy 1830
+    {"A2", 6377340.189, 299.3249646  }, // Modified Airy 
+    {"AN", 6378160.0  , 298.25       }, // Australian National
+    {"BN", 6377483.865, 299.1528128  }, // Bessel 1841 (Namibia) 
+    {"BR", 6377397.155, 299.1528128  }, // Bessel 1841 
+    {"CC", 6378206.4  , 294.9786982  }, // Clarke 1866 
+    {"CD", 6378249.145, 293.465      }, // Clarke 1880
+    {"E1", 6377276.345, 300.8017     }, // Everest (India 1830) 
+    {"E2", 6377298.556, 300.8017     }, // Everest (Sabah Sarawak)  
+    {"E3", 6377301.243, 300.8017     }, // Everest (India 1956) 
+    {"E4", 6377295.664, 300.8017     }, // Everest (Malaysia 1969) 
+    {"E5", 6377304.063, 300.8017     }, // Everest (Malay. & Sing)  
+    {"E6", 6377309.613, 300.8017     }, // Everest (Pakistan)
+    {"MF", 6378155.0  , 298.3        }, // Modified Fischer 1960 
+    {"HM", 6378200.0  , 298.3        }, // Helmert 1906
+    {"HO", 6378270.0  , 297.0        }, // Hough 1960 
+    {"ID", 6378160.0  , 298.247      }, // Indonesian 1974 
+    {"IN", 6378388.0  , 297.0        }, // International 1924 
+    {"KR", 6378245.0  , 298.3        }, // Krassovsky 1940 
+    {"G8", 6378137.0  , 298.257222101}, // GRS 80 
+    {"SA", 6378160.0  , 298.25       }, // South American 1969 
+    {"W7", 6378135.0  , 298.26       }, // WGS 72 
     {NULL}
 };
-
-/* EllipsoidData contains derived data from the reference ellipsoids above. 
- * The struct is defined in geoStars.h
- */
-static EllipsoidData ellipsoidData; 
 
 /*
  * Public Function Definitions
@@ -1244,7 +1226,7 @@ latlong_spheroid(ClientData cd, Tcl_Interp *interp,
 
     if (objc < 2 || objc > 3) 
     {
-        Tcl_WrongNumArgs(interp, 2, objv, "?name");
+        Tcl_WrongNumArgs(interp, 2, objv, "?name?");
         return TCL_ERROR;
     }
 
@@ -1262,7 +1244,6 @@ latlong_spheroid(ClientData cd, Tcl_Interp *interp,
         }
 
         info->spheroid = index;
-        setEllipsoidData(info);
     }
 
     Tcl_SetResult(interp, ellipsoidTable[info->spheroid].code, TCL_STATIC);
@@ -1485,123 +1466,6 @@ latlong_frommgrs(ClientData cd, Tcl_Interp *interp,
 
 
     /* TBD: refactor returning a lat/long pair? */
-    pair = Tcl_GetObjResult(interp);
-    Tcl_ListObjAppendElement(interp, pair, Tcl_NewDoubleObj(lat));
-    Tcl_ListObjAppendElement(interp, pair, Tcl_NewDoubleObj(lon));
-
-    return TCL_OK;
-}
-
-/***********************************************************************
- *
- * FUNCTION:
- *	latlong togcc loc 
- *
- * INPUTS:
- *	loc          A location as a lat/long pair in decimal degrees.
- *
- * RETURNS:
- *      The GCC coordinates in decimal meters as a three-element list.
- *
- * DESCRIPTION:
- *	Computes and returns the GCC coordinates associated with
- *      the lat/lon location.  Elevation is assumed to be 0.
- */
-
-static int 
-latlong_togcc(ClientData cd, Tcl_Interp *interp, 
-              int objc, Tcl_Obj* CONST objv[])
-{
-    double lat;
-    double lon;
-    double hgt = 0.0;
-    double efg[3];
-    Tcl_Obj*     xyz;
-
-    if (objc != 3) 
-    {
-        Tcl_WrongNumArgs(interp, 2, objv, "loc");
-        return TCL_ERROR;
-    }
-
-    /* FIRST, get loc, and validate */
-    if (getLatLong(interp, objv[2], &lat, &lon) != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    if (validateLatLong(interp, lat, lon) != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    /* NEXT, convert lat/long to radians */
-    lat *= radians;
-    lon *= radians;
-
-    geoLlh2EfgOpt(lat, lon, hgt, &ellipsoidData, 
-                  &efg[GEO_E], &efg[GEO_F], &efg[GEO_G]);
-        
-    /* NEXT, return X, Y and Z as a list */
-    xyz = Tcl_GetObjResult(interp);
-    Tcl_ListObjAppendElement(interp, xyz, Tcl_NewDoubleObj(efg[GEO_E]));
-    Tcl_ListObjAppendElement(interp, xyz, Tcl_NewDoubleObj(efg[GEO_F]));
-    Tcl_ListObjAppendElement(interp, xyz, Tcl_NewDoubleObj(efg[GEO_G]));
-
-    return TCL_OK;
-}
-
-/***********************************************************************
- *
- * FUNCTION:
- *	latlong fromgcc gcc
- *
- * INPUTS:
- *	gcc          A GCC location as three decimal meter values 
- *
- * RETURNS:
- *      The lat/long coordinates in decimal degrees.
- *
- * DESCRIPTION:
- *	Computes and returns the lat/long coordinates corresponding
- *      to the GCC coordinates. 
- */
-
-static int 
-latlong_fromgcc(ClientData cd, Tcl_Interp *interp, 
-                int objc, Tcl_Obj* CONST objv[])
-{
-    double   lat;
-    double   lon;
-    double   hgt;
-    double   efg[3];
-    Tcl_Obj* pair;
-
-    if (objc != 3) 
-    {
-        Tcl_WrongNumArgs(interp, 2, objv, "gcc");
-        return TCL_ERROR;
-    }
-
-    /* NEXT, get the GCC coordinates */
-    if (getGcc(interp, objv[2], &efg[GEO_E], &efg[GEO_F], &efg[GEO_G]) 
-        != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    /* NEXT, avoid problems for values on the pole */
-    if (abs(efg[GEO_E]) < 1.0e-10)
-    {
-        efg[GEO_E] = 1.0e-10;
-    }
-
-    geoEfg2LlhOpt(&ellipsoidData, efg,&lat,&lon,&hgt);
-
-    /* NEXT, convert lat/long to decimal degrees and return the result. */
-    lat /= radians;
-    lon /= radians;
-
     pair = Tcl_GetObjResult(interp);
     Tcl_ListObjAppendElement(interp, pair, Tcl_NewDoubleObj(lat));
     Tcl_ListObjAppendElement(interp, pair, Tcl_NewDoubleObj(lon));
@@ -2292,8 +2156,6 @@ newLatlongInfo(void)
     info->pointsBuffer = newPoints();
     info->spheroid = 0;
 
-    setEllipsoidData(info);
-
     return info;
 }
 
@@ -2354,31 +2216,6 @@ closeGeotiff(GeotiffInfo* info)
     return;
 }
 
-/***********************************************************************
- *
- * FUNCTION:
- *	setEllipsoidData
- *
- * INPUTS:
- *	info           Reference to LatLongInfo
- *
- * OUTPUTS:
- *	ellipsoidData   
- *
- * RETURNS:
- *	nothing
- *
- * DESCRIPTION:
- *	Compute essetial datum values from the current reference spheriod.
- *      This data is used for conversion to/from GCC values.
- */
-
-static void setEllipsoidData(LatlongInfo* info) 
-{
-    geoGetEllipsoid(&ellipsoidData.a, &ellipsoidData.b, &ellipsoidData.e2,
-                    &ellipsoidData.ee2, &ellipsoidData.flat, 
-                    ellipsoidTable[info->spheroid].geo_stars_datum);
-}
 
 /***********************************************************************
  *
@@ -2759,73 +2596,6 @@ getLatLong(Tcl_Interp* interp, Tcl_Obj* loc, double* lat, double* lon)
     }
 
     if (Tcl_GetDoubleFromObj(interp, locv[1], lon) != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    return TCL_OK;
-}
-
-/***********************************************************************
- *
- * FUNCTION:
- *	getGcc()
- *
- * INPUTS:
- *	interp		The Tcl interpreter
- *      loc		The location: a 3-element Tcl list
- *
- * OUTPUTS:
- *	x         Geo-celestiocentric x-axis value
- *      y         Geo-celestiocentric y-axis value
- *      z	  Geo-celestiocentric z-axis value
- *
- * RETURNS:
- *	TCL_OK on success and TCL_ERROR on failure, setting the error
- *      string in the latter case.
- *
- * DESCRIPTION:
- *	Converts a GCC triple into doubles--or, really, any 
- *      doubled-valued coordinate tripple.
- */
-
-static int
-getGcc(Tcl_Interp* interp, Tcl_Obj* loc, double* x, double* y, double* z)
-{
-    int locc;
-    Tcl_Obj** locv;
-    
-    if (Tcl_ListObjGetElements(interp, loc, &locc, &locv) != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    if (locc != 3)
-    {
-        Tcl_Obj* result = Tcl_GetObjResult(interp);
-
-        Tcl_AppendStringsToObj(
-            result, 
-            "expected X Y Z triple, got: \"", NULL);
-        Tcl_AppendObjToObj(result, loc);
-        Tcl_AppendStringsToObj(
-            result, 
-            "\"", NULL);
-
-        return TCL_ERROR;
-    }
-
-    if (Tcl_GetDoubleFromObj(interp, locv[0], x) != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    if (Tcl_GetDoubleFromObj(interp, locv[1], y) != TCL_OK)
-    {
-        return TCL_ERROR;
-    }
-
-    if (Tcl_GetDoubleFromObj(interp, locv[2], z) != TCL_OK)
     {
         return TCL_ERROR;
     }
