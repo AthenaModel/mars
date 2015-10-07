@@ -194,7 +194,7 @@
 /* #undef JPEG_DUAL_MODE_8_12 */
 
 /* Support JPEG compression (requires IJG JPEG library) */
-#define JPEG_SUPPORT 1
+/* #undef JPEG_SUPPORT */
 
 /* 12bit libjpeg primary include file with path */
 /* #undef LIBJPEG_12_PATH */
@@ -218,7 +218,7 @@
 #define NEXT_SUPPORT 1
 
 /* Support Old JPEG compresson (read-only) */
-#define OJPEG_SUPPORT 1
+/* #undef OJPEG_SUPPORT */
 
 /* Name of package */
 #define PACKAGE "tiff"
@@ -245,7 +245,7 @@
 #define PACKBITS_SUPPORT 1
 
 /* Support Pixar log-format algorithm (requires Zlib) */
-#define PIXARLOG_SUPPORT 1
+/* #undef PIXARLOG_SUPPORT */
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -379,7 +379,7 @@
 /* #undef X_DISPLAY_MISSING */
 
 /* Support Deflate compression */
-#define ZIP_SUPPORT 1
+/* #undef ZIP_SUPPORT */
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE
