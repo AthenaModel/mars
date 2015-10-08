@@ -26,7 +26,7 @@ namespace eval ::kiteinfo:: {
         reqver-comm 4.6
         local-Tktable 0
         clean-libGTiff {make clean}
-        xfiles docs/mag.docx
+        xfiles {}
         local-Tkhtml 0
         apps mars
         build-libGTiff {make clean all}
@@ -35,7 +35,6 @@ namespace eval ::kiteinfo:: {
         local-tablelist 0
         local-treectrl 0
         reqver-kiteutils 0.5.0
-        url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150917.docx
         binary-marsgui 0
         distpat-install-%platform {
     README.md
