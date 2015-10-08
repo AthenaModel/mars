@@ -12,7 +12,6 @@
 *.dylib
 /docs/*.html
 /docs/*/*.html
-*.docx
 *.xlsx
 *.pptx
 teapot.txt
