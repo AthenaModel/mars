@@ -34,7 +34,7 @@ namespace eval ::kiteinfo:: {
         build-Marsbin {make -f MakeTEA clean all}
         local-tablelist 0
         local-treectrl 0
-        reqver-kiteutils 0.4.12
+        reqver-kiteutils 0.5.0
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150917.docx
         binary-marsgui 0
         distpat-install-%platform {
