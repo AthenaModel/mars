@@ -1,5 +1,14 @@
 <document "Mars Build Notes">
 
+<h3 Mars v3.0.23 -- 12 October 2015>
+
+This build has one documentation update, and a bug that will be tested under
+an issue (#320) written against the Athena/athena repository. 
+
+<ul>
+<li> Issue #70: cellmodel(n): Recover old man page
+</ul>
+
 <h3 Mars v3.0.22 -- 17 September 2015>
 
 This build contains one enhancement:
