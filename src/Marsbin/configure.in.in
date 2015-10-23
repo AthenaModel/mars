@@ -76,7 +76,7 @@ TEA_SETUP_COMPILER
 TEA_ADD_SOURCES([marsbin.c])
 TEA_ADD_HEADERS([])
 TEA_ADD_INCLUDES([-I"../include"])
-TEA_ADD_LIBS([../lib/libGeostars.a ../lib/libGeotrans.a ../lib/libGTiff.a ../lib/libTiff.a])
+TEA_ADD_LIBS([../lib/libGeotrans.a ../lib/libGTiff.a ../lib/libTiff.a])
 TEA_ADD_CFLAGS([])
 TEA_ADD_STUB_SOURCES([])
 TEA_ADD_TCL_SOURCES([])
