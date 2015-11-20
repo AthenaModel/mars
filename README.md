@@ -5,4 +5,4 @@ See the [Documentation Index](docs/index.html) for details.
 
 ## License
 
-See [LICENSE].
+See [LICENSE](LICENSE).
