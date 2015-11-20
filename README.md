@@ -1,7 +1,6 @@
 # Mars Simulation Support Library
 
-Mars is the primary infrastructure layer for Athena and related projects.
-See the [Documentation Tree](http://htmlpreview.github.io/?https://github.com/AthenaModel/mars/blob/master/docs/index.html) for details.
+This code has been open-sourced by Caltech under JPL NTR-47857; the current code base now resides at http://github.com/AthenaModel/mars.  This repository is now of legacy interest only.
 
 ## License
 
