@@ -1,0 +1,954 @@
+<html>
+<head>
+<title>mars 3.0.23: mars_uram(1) -- URAM Workbench, submodule of mars(1)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mars_uram(1)</b> -- URAM Workbench, submodule of <a href="../man1/mars.html">mars(1)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#simulation_time">Simulation Time</a></li>
+
+</ul>
+    
+
+    <li><a href="#options">OPTIONS</a></li>
+    
+
+    <li><a href="#menus">MENUS</a></li>
+    <ul>
+
+    <li><a href="#file_menu">File Menu</a></li>
+
+    <li><a href="#edit_menu">Edit Menu</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#cli">CLI</a></li>
+    
+
+    <li><a href="#scripts">SCRIPTS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#mars_uram">mars uram ?options...? ?database?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mars uram-help">-help</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mars uram-script">-script <i>scriptFile</i></a></li>
+<li><a class="iref" href="#_equals_">= <i>expression...</i></a></li>
+<li><a class="iref" href="#bgerrtrace">bgerrtrace</a></li>
+<li><a class="iref" href="#call">call <i>script</i></a></li>
+<li><a class="iref" href="#coop">coop <i>subcommand</i> <i>args...</i></a></li>
+<li><a class="iref" href="#coop_badjust">coop badjust <i>driver f g delta</i></a></li>
+<li><a class="iref" href="#coop_bset">coop bset <i>driver f g value</i></a></li>
+<li><a class="iref" href="#coop_cset">coop cset <i>f g value...</i></a></li>
+<li><a class="iref" href="#coop_persistent">coop persistent <i>driver cause f g mag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#coop_transient">coop transient <i>driver cause f g mag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#coop_mass">coop mass ?<i>driver</i>?</a></li>
+<li><a class="iref" href="#debug">debug ?<i>command...</i>?</a></li>
+<li><a class="iref" href="#errtrace">errtrace</a></li>
+<li><a class="iref" href="#help">help ?-info? <i>command...</i></a></li>
+<li><a class="iref" href="#hrel">hrel <i>subcommand</i> <i>args...</i></a></li>
+<li><a class="iref" href="#hrel_badjust">hrel badjust <i>driver f g delta</i></a></li>
+<li><a class="iref" href="#hrel_bset">hrel bset <i>driver f g value</i></a></li>
+<li><a class="iref" href="#hrel_cset">hrel cset <i>f g value...</i></a></li>
+<li><a class="iref" href="#hrel_persisent">hrel persistent <i>driver cause f g mag</i></a></li>
+<li><a class="iref" href="#hrel_transient">hrel transient <i>driver cause f g mag</i></a></li>
+<li><a class="iref" href="#hrel_mass">hrel mass ?<i>driver</i>?</a></li>
+<li><a class="iref" href="#load">load <i>filename</i></a></li>
+<li><a class="iref" href="#loadperf">loadperf ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#log">log <i>message</i></a></li>
+<li><a class="iref" href="#now">now</a></li>
+<li><a class="iref" href="#parm">parm <i>subcommand</i> <i>args...</i></a></li>
+<li><a class="iref" href="#parm_get">parm get <i>parm</i></a></li>
+<li><a class="iref" href="#parm_help">parm help <i>parm</i></a></li>
+<li><a class="iref" href="#parm_list">parm list ?<i>pattern</i>?</a></li>
+<li><a class="iref" href="#parm_load">parm load</a></li>
+<li><a class="iref" href="#parm_names">parm names ?<i>pattern</i>?</a></li>
+<li><a class="iref" href="#parm_set">parm set <i>parm value</i></a></li>
+<li><a class="iref" href="#parm_reset">parm reset</a></li>
+<li><a class="iref" href="#parm_save">parm save</a></li>
+<li><a class="iref" href="#profile">profile <i>command</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#rdb">rdb <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#rdb_eval">rdb eval <i>sql</i></a></li>
+<li><a class="iref" href="#rdb_query">rdb query <i>sql</i></a></li>
+<li><a class="iref" href="#rdb_schema">rdb schema ?<i>table</i>?</a></li>
+<li><a class="iref" href="#rdb_tables">rdb tables</a></li>
+<li><a class="iref" href="#reset">reset</a></li>
+<li><a class="iref" href="#sat">sat <i>subcommand</i> <i>args...</i></a></li>
+<li><a class="iref" href="#sat_badjust">sat badjust <i>driver g c delta</i></a></li>
+<li><a class="iref" href="#sat_bset">sat bset <i>driver g c value</i></a></li>
+<li><a class="iref" href="#sat_cset">sat cset <i>g c value...</i></a></li>
+<li><a class="iref" href="#sat_persistent">sat persistent <i>driver cause g c mag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#sat_transient">sat transient <i>driver cause g c mag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#sat_mass">sat mass ?<i>driver</i>?</a></li>
+<li><a class="iref" href="#select">select <i>sql...</i></a></li>
+<li><a class="iref" href="#set">set <i>variable value</i></a></li>
+<li><a class="iref" href="#step">step ?<i>ticks</i>?</a></li>
+<li><a class="iref" href="#super">super <i>args...</i></a></li>
+<li><a class="iref" href="#unload">unload</a></li>
+<li><a class="iref" href="#vrel">vrel <i>subcommand</i> <i>args...</i></a></li>
+<li><a class="iref" href="#vrel_badjust">vrel badjust <i>driver g a delta</i></a></li>
+<li><a class="iref" href="#vrel_bset">vrel bset <i>driver g a value</i></a></li>
+<li><a class="iref" href="#vrel_cset">vrel cset <i>g a value...</i></a></li>
+<li><a class="iref" href="#vrel_persistent">vrel persistent <i>driver cause g a mag</i></a></li>
+<li><a class="iref" href="#vrel_transient">vrel transient <i>driver cause g a mag</i></a></li>
+<li><a class="iref" href="#vrel_mass">vrel mass ?<i>driver</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="mars_uram">mars uram ?options...? ?database?</a></dt>
+</dl>
+<p>mars_uram(1) is a tool for working with <a href="../mann/uram.html">uram(n)</a>
+interactively, and especially for performance optimization.
+It loads URAM data from a <a href="../man5/uramdb.html">uramdb(5)</a> file into an
+instance of <a href="../mann/uram.html">uram(n)</a>,
+and allows the user to schedule attitude inputs, query inputs
+and outputs, and advance simulation time.</p>
+
+<p>The <a href="../man5/uramdb.html">uramdb(5)</a> file name may be specified on the command line,
+in which case it will be loaded automatically.  The database file will
+be loaded before any <code>-script</code> specified on the
+command-line is executed.  Alternatively, <a href="../man5/uramdb.html">uramdb(5)</a> files can be
+loaded interactively using the <a class="iref" href="#load">load</a> command.</p>
+
+<p>The mars_uram(1) user interface consists of three areas: a simulation tool
+bar, a browser area containing the scrolling log and (ultimately) a
+number of data browsers, and an interactive
+command-line interface (CLI). As the model is exercised, a trace of
+activities is written to the scrolling log. The CLI provides
+a terminal-like command line interface at which mars_uram(1) commands can
+be typed; for example, entering the command <a class="iref" href="#select">select</a> will dump the
+results of a satisfaction query at the CLI.</p>
+
+<p>Note that the boundary between the browser area and the CLI can be dragged
+up or down with the mouse.</p>
+
+<p>See <a href="#menus">MENUS</a> for a description of mars_uram(1)'s menus.
+See <a href="#commands">COMMANDS</a> for a full list of mars_uram(1) commands.
+See <a href="#cli">CLI</a> for details on the shell's editing features.
+See <a href="#scripts">SCRIPTS</a> for details on how to write mars_uram(1)
+scripts.
+
+</p>
+
+<h2><a name="simulation_time">Simulation Time</a></h2>
+<p>mars_uram(1) measures simulation time in timesteps called
+"ticks", which are nominally one week long.  However, mars_uram(1) has
+no notion of simulation time beyond the tick.
+
+</p>
+
+<h2><a name="options">OPTIONS</a></h2>
+<p>mars_uram(1) may be invoked with the following command-line
+options:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="mars uram-help">-help</a></dt><dd>
+
+Writes the command-line syntax to standard output, and halts.
+
+</dd>
+<dt class="defopt"><a name="mars uram-script">-script <i>scriptFile</i></a></dt><dd>
+
+The specified script file will executed automatically.
+
+</dd>
+</dl>
+
+<h2><a name="menus">MENUS</a></h2>
+<p>mars_uram(1) provides the following menus:
+
+</p>
+
+<h2><a name="file_menu">File Menu</a></h2>
+    
+
+<dl>
+  <dt class="def">New Browser...</dt><dd>
+   Opens a new window containing a set of browser tabs.
+
+  </dd>
+<dt class="def">Load uramdb(5) File...</dt><dd>
+   Pops up the "Load uramdb(5) File..." dialog.  The selected file
+       will be loaded into the simulation.
+
+  </dd>
+<dt class="def">Save RDB File...</dt><dd>
+   Saves the current contents of the RDB, including all uramdb(5)
+       and uram(n) data, to disk as an RDB file.
+       
+  </dd>
+<dt class="def">Save CLI Scrollback Buffer...</dt><dd>
+   Saves the current contents of the CLI's scrollback buffer to disk
+       as a text file.
+
+  </dd>
+<dt class="def">Exit</dt><dd>
+   Terminates the application.
+</dd>
+</dl>
+
+<h2><a name="edit_menu">Edit Menu</a></h2>
+    
+
+<dl>
+  <dt class="def">Cut</dt><dd>
+   Cuts selected text to the clipboard.
+
+  </dd>
+<dt class="def">Copy</dt><dd>
+   Copies selected text to the clipboard.
+
+  </dd>
+<dt class="def">Paste</dt><dd>
+   Pastes the text from the clipboard.
+
+  </dd>
+<dt class="def">Select All</dt><dd>
+   Selects all text in the scrolling log or CLI.
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>mars_uram(1) provides the following commands, which may be
+entered at the <a href="#cli">CLI</a> or used in <a href="#scripts">SCRIPTS</a>:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="_equals_">= <i>expression...</i></a></dt><dd><p>
+
+Computes and returns the value of an arithmetic expression:
+
+</p><pre>
+    &gt; = 1 + 1
+    2
+    &gt;
+</pre>
+<p>Variables can be defined with <a class="iref" href="#set">set</a> and retrieved using "$"
+notation:
+
+</p>
+
+<pre>
+    &gt; set num 5
+    5
+    &gt; = $num * 2
+    10
+    &gt;
+</pre>
+
+</dd>
+<dt class="defitem"><a name="bgerrtrace">bgerrtrace</a></dt><dd>
+
+Returns (and logs) the stack trace from the most recent bgerror.
+
+</dd>
+<dt class="defitem"><a name="call">call <i>script</i></a></dt><dd>
+
+Calls the named <i>script</i>, which is assumed to be in the
+current working directory unless a path
+is specified. The ".tcl"
+extension may be omitted; <a class="iref" href="#call">call</a> will add it automatically.
+
+</dd>
+<dt class="defitem"><a name="coop">coop <i>subcommand</i> <i>args...</i></a></dt><dd><p>
+
+This command allows the user to enter cooperation inputs.  The
+subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="coop_badjust">coop badjust <i>driver f g delta</i></a></dt>
+<dt class="defitem"><a name="coop_bset">coop bset <i>driver f g value</i></a></dt>
+<dt class="defitem"><a name="coop_cset">coop cset <i>f g value...</i></a></dt>
+<dt class="defitem"><a name="coop_persistent">coop persistent <i>driver cause f g mag</i> ?<i>options...</i>?</a></dt>
+<dt class="defitem"><a name="coop_transient">coop transient <i>driver cause f g mag</i> ?<i>options...</i>?</a></dt><dd>
+These subcommands are delegated to <a href="../mann/uram.html">uram(n)</a> as is.
+
+</dd>
+<dt class="defitem"><a name="coop_mass">coop mass ?<i>driver</i>?</a></dt><dd>
+
+This subcommand creates cooperation inputs <i>en masse</i>, with
+<code>-p</code> and <code>-q</code> both set to 1.0.  The
+inputs are associated with the specified <i>driver</i>; if no driver
+is specified, one is generated automatically.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="debug">debug ?<i>command...</i>?</a></dt><dd><p>
+
+Invokes a debugger window.  The debugger is simply a Tcl interpreter
+with full access to the application's code and data; it's intended for
+developer use only.</p>
+
+<p>If a command name is given, the command will be loaded into the
+debugger's mod editor.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="errtrace">errtrace</a></dt><dd>
+
+When used interactively, returns the stack trace associated with the
+last command which returned an error.  This command is a debugging
+aid, and has no effect on the execution of the program.
+
+</dd>
+<dt class="defitem"><a name="help">help ?-info? <i>command...</i></a></dt><dd><p>
+
+Returns the calling syntax for the named <i>command</i> in
+human-readable format.  If <b>-info</b> is specified, then
+information on the linkage from the executive commands to the
+simulation internals is included in the output.</p>
+
+<p>For example,
+
+</p><pre>
+&gt; <b>help rdb</b>
+Usage: rdb subcommand ?args...?
+Valid subcommands: eval, query, schema, table
+&gt; <b>help rdb query</b>
+Usage: rdb query sql
+&gt;
+</pre>
+
+</dd>
+<dt class="defitem"><a name="hrel">hrel <i>subcommand</i> <i>args...</i></a></dt><dd><p>
+
+This command allows the user to enter horizontal relationship inputs.  The
+subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="hrel_badjust">hrel badjust <i>driver f g delta</i></a></dt>
+<dt class="defitem"><a name="hrel_bset">hrel bset <i>driver f g value</i></a></dt>
+<dt class="defitem"><a name="hrel_cset">hrel cset <i>f g value...</i></a></dt>
+<dt class="defitem"><a name="hrel_persisent">hrel persistent <i>driver cause f g mag</i></a></dt>
+<dt class="defitem"><a name="hrel_transient">hrel transient <i>driver cause f g mag</i></a></dt><dd>
+These subcommands are delegated to <a href="../mann/uram.html">uram(n)</a> as is.
+
+</dd>
+<dt class="defitem"><a name="hrel_mass">hrel mass ?<i>driver</i>?</a></dt><dd>
+
+This subcommand creates horizontal relationship inputs <i>en masse</i>.  The
+inputs are associated with the specified <i>driver</i>; if no driver
+is specified, one is generated automatically.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="load">load <i>filename</i></a></dt><dd>
+
+Tries to load the named <a href="../man5/uramdb.html">uramdb(5)</a> file.  mars_uram(1)
+looks for the file in the current working directory, which is the
+location from which mars_uram(1) was invoked; alternatively, you
+can specify an absolute path.
+
+</dd>
+<dt class="defitem"><a name="loadperf">loadperf ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a synthetic scenario for performance testing, and loads
+it into <a href="../mann/uram.html">uram(n)</a>.  See <a href="../mann/uramdb.html">uramdb(n)</a>
+<a href="../mann/uramdb.html#mkperfdb">mkperfdb</a> for the options.</p>
+
+<p>The call to <a href="../mann/uram.html">uram(n)</a> <a href="../mann/uram.html#init">init</a> is profiled
+automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="log">log <i>message</i></a></dt><dd><p>
+
+Writes <i>message</i> to the scrolling log, e.g.,
+
+</p><pre>
+    100000ZJAN05&gt; log "Hello, World!"
+</pre>
+
+
+</dd>
+<dt class="defitem"><a name="now">now</a></dt><dd>
+
+Returns the current simulation time in ticks.
+
+</dd>
+<dt class="defitem"><a name="parm">parm <i>subcommand</i> <i>args...</i></a></dt><dd><p>
+
+The <a class="iref" href="#parm">parm</a> command sets and queries preference parameters.
+Note that parameter values are saved automatically to
+~/.mars_uram/parmdb.defaults when the program exits, and reloaded
+at start up.
+
+</p><dl>
+
+<dt class="defitem"><a name="parm_get">parm get <i>parm</i></a></dt><dd>
+
+Retrieves the value of the named parameter.
+
+</dd>
+<dt class="defitem"><a name="parm_help">parm help <i>parm</i></a></dt><dd>
+
+Retrieves the documentation string for the parameter.
+
+</dd>
+<dt class="defitem"><a name="parm_list">parm list ?<i>pattern</i>?</a></dt><dd>
+
+Returns a human-readable list of parameters whose names match
+the specified wildcard pattern, in alphabetical order.
+If no <i>pattern</i> is
+specified, all parameters will be returned.
+
+</dd>
+<dt class="defitem"><a name="parm_load">parm load</a></dt><dd>
+
+Loads the parameter set from "~/.mars_uram/parmdb.defaults"; this also
+happens automatically at start up.
+
+</dd>
+<dt class="defitem"><a name="parm_names">parm names ?<i>pattern</i>?</a></dt><dd>
+
+Returns a list of the parameter names, in alphabetical order, which
+match the specified wildcard pattern; if no <i>pattern</i> is
+specified, all names will be returned.
+
+</dd>
+<dt class="defitem"><a name="parm_set">parm set <i>parm value</i></a></dt><dd>
+
+Sets the value of the named parameter, which must be valid.
+
+</dd>
+<dt class="defitem"><a name="parm_reset">parm reset</a></dt><dd>
+
+Resets all parameters to their default values.
+
+</dd>
+<dt class="defitem"><a name="parm_save">parm save</a></dt><dd>
+
+Saves the parameter set to "~/.mars_uram/parmdb.defaults";  this also
+happens automatically at shut down.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="profile">profile <i>command</i> ?<i>args...</i>?</a></dt><dd>
+
+Executes the command and times its execution. The time in microseconds and
+the command are logged, and the command's result is returned.
+
+</dd>
+<dt class="defitem"><a name="rdb">rdb <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Queries the application's run-time database. The subcommands are as
+follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="rdb_eval">rdb eval <i>sql</i></a></dt><dd><p>
+
+Executes the specified <i>sql</i> query and returns a list of the results.
+Note that the query will not be allowed to modify the database.</p>
+
+<p>This command is appropriate for use in scripts; prefer
+<a class="iref" href="#rdb_query">rdb query</a> or <a class="iref" href="#select">select</a> for interactive use.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rdb_query">rdb query <i>sql</i></a></dt><dd>
+
+Executes the specified <i>sql</i> query and returns the results in tabular
+form.  See also <a class="iref" href="#select">select</a>, which is often more convenient.
+
+</dd>
+<dt class="defitem"><a name="rdb_schema">rdb schema ?<i>table</i>?</a></dt><dd>
+
+Returns the SQL schema for the named table, or by default the entire
+database.
+
+</dd>
+<dt class="defitem"><a name="rdb_tables">rdb tables</a></dt><dd>
+
+Returns a list of the names of the database tables.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="reset">reset</a></dt><dd>
+
+Re-initializes URAM back to simulation time 0; this is
+equivalent to reloading the <a href="../man5/uramdb.html">uramdb(5)</a> file.
+
+</dd>
+<dt class="defitem"><a name="sat">sat <i>subcommand</i> <i>args...</i></a></dt><dd><p>
+
+This command allows the user to enter satisfaction inputs.  The
+subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="sat_badjust">sat badjust <i>driver g c delta</i></a></dt>
+<dt class="defitem"><a name="sat_bset">sat bset <i>driver g c value</i></a></dt>
+<dt class="defitem"><a name="sat_cset">sat cset <i>g c value...</i></a></dt>
+<dt class="defitem"><a name="sat_persistent">sat persistent <i>driver cause g c mag</i> ?<i>options...</i>?</a></dt>
+<dt class="defitem"><a name="sat_transient">sat transient <i>driver cause g c mag</i> ?<i>options...</i>?</a></dt><dd>
+These subcommands are delegated to <a href="../mann/uram.html">uram(n)</a> as is.
+
+</dd>
+<dt class="defitem"><a name="sat_mass">sat mass ?<i>driver</i>?</a></dt><dd>
+
+This subcommand creates satisfaction inputs <i>en masse</i>, with
+<code>-p</code> and <code>-q</code> both set to 1.0.  The
+inputs are associated with the specified <i>driver</i>; if no driver
+is specified, one is generated automatically.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="select">select <i>sql...</i></a></dt><dd><p>
+
+Executes the SQL query and returns the results in tabular form.
+This is simply a wrapper around <a class="iref" href="#rdb_query">rdb query</a>; compare
+
+</p><pre>
+  &gt; select * from uramdb_n
+</pre>
+<p>with
+
+</p>
+
+<pre>
+  &gt; rdb query {select * from uramdb_n}
+</pre>
+
+</dd>
+<dt class="defitem"><a name="set">set <i>variable value</i></a></dt><dd>
+
+Assigns a <i>value</i> to a named <i>variable</i>.
+
+</dd>
+<dt class="defitem"><a name="step">step ?<i>ticks</i>?</a></dt><dd><p>
+
+Advances simulation time by the specified number of <i>ticks</i>, if
+given; otherwise, by 1 tick.</p>
+
+<p>The call to <a href="../mann/uram.html">uram(n)</a> <a href="../mann/uram.html#advance">advance</a> is profiled
+automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="super">super <i>args...</i></a></dt><dd>
+
+Concatenates its arguments into a single command, and executes
+that command in the context of the application rather than in the
+URAM Workbench executive.
+
+</dd>
+<dt class="defitem"><a name="unload">unload</a></dt><dd>
+
+Unloads the current uramdb(5) file.
+
+</dd>
+<dt class="defitem"><a name="vrel">vrel <i>subcommand</i> <i>args...</i></a></dt><dd><p>
+
+This command allows the user to enter vertical relationship inputs.  The
+subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="vrel_badjust">vrel badjust <i>driver g a delta</i></a></dt>
+<dt class="defitem"><a name="vrel_bset">vrel bset <i>driver g a value</i></a></dt>
+<dt class="defitem"><a name="vrel_cset">vrel cset <i>g a value...</i></a></dt>
+<dt class="defitem"><a name="vrel_persistent">vrel persistent <i>driver cause g a mag</i></a></dt>
+<dt class="defitem"><a name="vrel_transient">vrel transient <i>driver cause g a mag</i></a></dt><dd>
+These subcommands are delegated to <a href="../mann/uram.html">uram(n)</a> as is.
+
+</dd>
+<dt class="defitem"><a name="vrel_mass">vrel mass ?<i>driver</i>?</a></dt><dd>
+
+This subcommand creates vertical relationship inputs <i>en masse</i>.
+The inputs are associated with the specified <i>driver</i>; if no
+driver is specified, one is generated automatically.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+<p>In addition to the specific commands listed above, mars_uram(1)
+supports most standard Tcl commands.
+
+</p>
+
+<h2><a name="cli">CLI</a></h2>
+<p>The mars_uram(1) command-line interface (CLI) provides the following
+conveniences:
+
+</p>
+
+<ul>
+  <li> Full command-line editing.  Use the left and right arrow keys
+       (or the mouse) to edit the text on the command-line before
+       executing it.
+
+  </li><li> Command-history.  Use the up and down arrow keys to retrieve
+       the previous commands to the command-line for execution.
+
+  </li><li> Command-completion.  Press the Tab key to expand a partial
+       command name into a full command name, e.g., type "st" and
+       press Tab to expand "st" into "step".
+
+  </li><li> Standard cut, copy, and paste.  Use Ctrl+X, Ctrl+C, and Ctrl+V
+       to cut, copy, and paste on the command line.  Use the mouse to
+       select older text in the shell (e.g., command outputs) and copy
+       it with Ctrl+C.
+</li></ul>
+
+<h2><a name="scripts">SCRIPTS</a></h2>
+<p>A mars_uram(1) script is simply a sequence of <a href="#commands">COMMANDS</a>
+placed on consecutive lines of a text file, e.g.,
+
+</p>
+
+<pre>
+    load mydata.uramdb
+    step
+</pre>
+<p>Use the <a class="iref" href="#call">call</a> command to execute a script:
+
+</p>
+
+<pre>
+    &gt; call myscript.tcl
+</pre>
+<p>mars_uram(1) scripts are in fact Tcl scripts, and can define
+procs, perform loops, and so forth.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>mars_uram(1) is the most recent in a series of similar tools that
+accompanied predecessors of <a href="../mann/uram.html">uram(n)</a>.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:48 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

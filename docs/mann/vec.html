@@ -1,0 +1,517 @@
+<html>
+<head>
+<title>mars 3.0.23: vec(n) -- Vector Operations, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>vec(n)</b> -- Vector Operations, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#vec_new">vec new <i>n ?initval?</i></a></li>
+<li><a class="iref" href="#vec_size">vec size <i>vector</i></a></li>
+<li><a class="iref" href="#vec_equal">vec equal <i>vec1 vec2</i></a></li>
+<li><a class="iref" href="#vec_add">vec add <i>vec1 vec2</i></a></li>
+<li><a class="iref" href="#vec_sub">vec sub <i>vec1 vec2</i></a></li>
+<li><a class="iref" href="#vec_scalarmul">vec scalarmul <i>vec constant</i></a></li>
+<li><a class="iref" href="#vec_normalize">vec normalize <i>vec</i></a></li>
+<li><a class="iref" href="#vec_format">vec format <i>vector</i> <i>fmtstring</i></a></li>
+<li><a class="iref" href="#vec_numerize">vec numerize <i>vector quality</i></a></li>
+<li><a class="iref" href="#vec_pprint">vec pprint <i>vector labels</i></a></li>
+<li><a class="iref" href="#vec_pprintf">vec pprintf <i>vector labels format</i></a></li>
+<li><a class="iref" href="#vec_pprintq">vec pprintq <i>vector labels quality</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>vec(n) defines a number of operations on Tcl vector.  A Tcl
+vector is just a Tcl list, indexed <i>i</i> = 0,..., <i>n-1</i>; this
+module doesn't distinguish between row and column vectors, which
+should more properly be represented using <a href="../mann/mat.html">mat(n)</a>.</p>
+
+<p>For example, the following code creates a 3-tuple:
+
+</p>
+
+<pre>
+set vector {1 2 3}
+</pre>
+<p>Vectors can be entered explicitly, as shown; alternatively, the
+<a class="iref" href="#vec_new">vec new</a> command can create a vector of arbitrary size.
+In general, the elements of a vector can be of any type.</p>
+
+<p>The elements of a vector are accessed using the standard Tcl commands
+<code>lindex</code> and <code>lset</code>:
+
+</p>
+
+<pre>
+# Print element i
+puts [lindex $vector $i]
+
+# Set element ito 7
+lset vector $i 7
+</pre>
+<p>Note that Tcl lists are represented internally as extensible arrays;
+consequently, access to vector elements is reasonably quick.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="vec_new">vec new <i>n ?initval?</i></a></dt><dd><p>
+
+Returns a new vector with <i>n</i> elements.  If
+<i>initval</i> is given, all elements will be set to it; otherwise all
+elements will contain the empty string.  For example, the following
+code creates a vector of six zeroes:
+
+</p><pre>
+set vector [vec new 6 0]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="vec_size">vec size <i>vector</i></a></dt><dd>
+
+Returns the number of elements in the vector.
+
+</dd>
+<dt class="defitem"><a name="vec_equal">vec equal <i>vec1 vec2</i></a></dt><dd>
+
+Returns 1 if the two vectors have the same size and
+corresponding elements are numerically equal, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="vec_add">vec add <i>vec1 vec2</i></a></dt><dd>
+
+Returns the sum of the two vectors.
+
+</dd>
+<dt class="defitem"><a name="vec_sub">vec sub <i>vec1 vec2</i></a></dt><dd>
+
+Returns the difference of the two vectors.
+
+</dd>
+<dt class="defitem"><a name="vec_scalarmul">vec scalarmul <i>vec constant</i></a></dt><dd>
+
+Returns the product of the vector and the scalar constant.
+
+</dd>
+<dt class="defitem"><a name="vec_normalize">vec normalize <i>vec</i></a></dt><dd><p>
+
+Given a vector of non-negative numbers not all zero, returns a
+vector of numbers between 0 and 1 which sum to 1.0.  The values are
+normalized by dividing by sum of the numbers in the vector.</p>
+
+<p>An error is thrown if the sum of the values is less than or
+equal to zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="vec_format">vec format <i>vector</i> <i>fmtstring</i></a></dt><dd>
+
+Returns a copy of the <i>vector</i> which each element formatted using
+the standard Tcl <span class="tt">format</span> command and the given format
+string.
+
+</dd>
+<dt class="defitem"><a name="vec_numerize">vec numerize <i>vector quality</i></a></dt><dd>
+
+Given a <i>vector</i> whose elements are symbols of the specified
+<i>quality</i> object, returns a vector in which all symbols have been
+converted to their numeric equivalents.  Any pre-existing numeric
+elements in the <i>vector</i> are retained.
+
+</dd>
+<dt class="defitem"><a name="vec_pprint">vec pprint <i>vector labels</i></a></dt><dd><p>
+
+Returns a pretty-printed text string of the elements in the
+<i>vector</i>.  <i>labels</i> is a list of <a class="iref" href="#vec_size">vec size</a>
+labels.  The vector elements are included "as is", with no
+additional formatting.</p>
+
+<p>For example, the command
+
+</p><pre>
+vec pprint {1 2 3} {A B C}
+</pre>
+<p>returns the following string:
+
+</p>
+
+<pre>
+A 1
+B 2
+C 3
+</pre>
+
+</dd>
+<dt class="defitem"><a name="vec_pprintf">vec pprintf <i>vector labels format</i></a></dt><dd><p>
+
+This is a variant of <a class="iref" href="#vec_pprint">vec pprint</a>; before the <i>vector</i> is
+pretty-printed, the elements are formatted using the standard Tcl
+command <code>format</code> and the specified <i>format</i> string.
+For example, the following code pretty-prints a numeric vector
+containing decimal numbers between 0.000 and 100.000:
+
+</p><pre>
+puts [vec pprintf $vector $labels "%7.3f"]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="vec_pprintq">vec pprintq <i>vector labels quality</i></a></dt><dd><p>
+
+This is a variant of <a class="iref" href="#vec_pprint">vec pprint</a>; the <i>vector</i> is
+assumed to contain numeric values of a <a href="../mann/quality.html">quality(n)</a> type.  The
+<i>quality</i> object is used to format each element as follows:
+
+</p><pre>
+&lt;shortname&gt;=&lt;value&gt;
+</pre>
+<p>The <i>value</i> is formatted using the <i>quality</i> object's
+<a href="../mann/quality.html#format">format</a> subcommand; the <i>shortname</i> is the
+short symbolic name corresponding to the <i>value</i>.
+
+</p>
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/mat.html">mat(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>vec(n) requires Tcl 8.5 or later.</p>
+
+<p>To use vec(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:59 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

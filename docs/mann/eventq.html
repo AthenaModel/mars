@@ -1,0 +1,692 @@
+<html>
+<head>
+<title>mars 3.0.23: eventq(n) -- Discrete Event Queue Manager, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>eventq(n)</b> -- Discrete Event Queue Manager, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#simulation_time">Simulation Time</a></li>
+
+    <li><a href="#event_types">Event Types</a></li>
+
+</ul>
+    
+
+    <li><a href="#database_schema">DATABASE SCHEMA</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#future_work">FUTURE WORK</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#eventq">eventq <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#advance">eventq advance <i>max_t</i></a></li>
+<li><a class="iref" href="#cancel">eventq cancel <i>id</i></a></li>
+<li><a class="iref" href="#changed">eventq changed</a></li>
+<li><a class="iref" href="#checkpoint">eventq checkpoint ?-saved?</a></li>
+<li><a class="iref" href="#define">eventq define <i>etype eargs body</i></a></li>
+<li><a class="iref" href="#destroy">eventq destroy <i>pattern</i></a></li>
+<li><a class="iref" href="#eventcount">eventq eventcount</a></li>
+<li><a class="iref" href="#etypes">eventq etypes</a></li>
+<li><a class="iref" href="#init">eventq init <i>db</i></a></li>
+<li><a class="iref" href="#now">eventq now</a></li>
+<li><a class="iref" href="#reschedule">eventq reschedule <i>id t</i></a></li>
+<li><a class="iref" href="#reset">eventq reset</a></li>
+<li><a class="iref" href="#restart">eventq restart</a></li>
+<li><a class="iref" href="#restore">eventq restore <i>state</i> ?-saved?</a></li>
+<li><a class="iref" href="#schedule">eventq schedule <i>etype t</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#size">eventq size</a></li>
+<li><a class="iref" href="#undo_cancel">eventq undo cancel <i>undoToken</i></a></li>
+<li><a class="iref" href="#undo_schedule">eventq undo schedule</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>eventq(n) defines an event queue mechanism for discrete event
+simulation.  The event queue manager allows the application define
+an arbitrary number of simulation event types, instances of each
+type may be scheduled, and executed at the appropriate time.</p>
+
+<p>The event queue itself is stored in an instance of
+<a href="../mann/sqldocument.html">sqldocument(n)</a>, which must be provided at initialization
+time.
+
+</p>
+
+<h2><a name="simulation_time">Simulation Time</a></h2>
+<p>eventq(n) expresses simulated time in integer ticks, starting at -1.
+The simulated time is updated as events execute, and is reset to -1
+on <a class="iref" href="#restart">restart</a>.  This allows events to be scheduled as of time 0.</p>
+
+<p>eventq(n) is designed to add discrete event simulation capability
+within an existing time-step simulation.  The <a class="iref" href="#advance">advance</a> method
+executes scheduled events up to and including a specified end time;
+this can be called by the parent simulation at each time step.</p>
+
+<p><b>Note</b>: eventq(n) doesn't use or advance any
+<a href="../mann/simclock.html">simclock(n)</a>; it presumes that the application will do so at
+each time step.
+
+</p>
+
+<h2><a name="event_types">Event Types</a></h2>
+<p>Each event type has a name, an argument list, and a body.  The
+arguments are specified when an event is scheduled; the body is
+executed when the event's execution time is reached.  The arguments
+are available in the body, rather like the arguments of standard Tcl
+procs.
+
+</p>
+
+<h2><a name="database_schema">DATABASE SCHEMA</a></h2>
+<p>eventq(n) stores the queued events in an <a href="../mann/sqldocument.html">sqldocument(n)</a>;
+eventq(n) is thus an <a href="../mani/sqlsection.html">sqlsection(i)</a> object.  The event IDs,
+execution times, and event types are stored in a single table,
+<b>eventq_queue</b>.  An additional table,
+<b>eventq_etype_<i>etype</i></b>, is defined for each event type;
+it contains the argument values for each instance of the event
+type <i>etype</i>.  Final, a view, <b>eventq_queue_<i>etype</i></b> is
+define for each event type <i>etype</i>; this view joins the master
+event table with the event type's argument table.</p>
+
+<p>It's expected that the application will query these tables to find
+events of interest; further, the application is welcome to directly
+update the argument values in the <b>eventq_etype_<i>etype</i></b> table.</p>
+
+<p>The schema looks as follows; as an example, an event type <b>dummy</b>
+with arguments <i>a</i> and <i>b</i> has been defined.
+
+</p>
+
+<pre>
+CREATE TABLE eventq_queue (
+    id    INTEGER PRIMARY KEY,   -- Event ID
+    t     INTEGER,               -- Activation Time
+    etype TEXT                   -- Event Type
+);
+
+CREATE INDEX eventq_index_queue ON eventq_queue(t, id);
+CREATE TABLE eventq_etype_dummy (
+    -- Event ID
+    id    INTEGER PRIMARY KEY
+
+    -- Event arguments
+    
+        ,a,b
+    
+);
+
+CREATE VIEW eventq_queue_dummy AS
+SELECT * 
+FROM eventq_queue JOIN eventq_etype_dummy USING (id)
+ORDER BY t, id;
+            
+</pre>
+
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="eventq">eventq <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The event queue is manipulated via the subcommands of the
+<a class="iref" href="#eventq">eventq</a> command, which are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="advance">eventq advance <i>max_t</i></a></dt><dd><p>
+
+Advances simulation time, executing all events with execution times
+less than or equal to <i>max_t</i>.  Once all such events have been
+executed, the command returns; the simulation time returned by
+<a class="iref" href="#now">now</a> is <i>max_t</i>.</p>
+
+<p>If there are multiple events scheduled for a particular time <i>t</i>,
+they are executed in the order scheduled.  <b>TBD:</b>  Eventually,
+we'll want to associate priorities with the various event types, and
+possibly with specific events.</p>
+
+<p>Executed events are deleted from the event queue, unless they
+<a class="iref" href="#reschedule">reschedule</a> themselves for a later time.
+
+</p>
+</dd>
+<dt class="defitem"><a name="cancel">eventq cancel <i>id</i></a></dt><dd><p>
+
+Cancels the event with the specified <i>id</i>.  The event is deleted
+from the event queue, and forgotten.</p>
+
+<p>Returns an "undo token", which may be used to undo the cancellation.
+See <a class="iref" href="#undo_cancel">undo cancel</a> for details.
+
+</p>
+</dd>
+<dt class="defitem"><a name="changed">eventq changed</a></dt><dd>
+
+Indicates whether the queue <a href="../mani/saveable.html">saveable(i)</a> data has changed
+or not.
+
+</dd>
+<dt class="defitem"><a name="checkpoint">eventq checkpoint ?-saved?</a></dt><dd><p>
+
+Returns the current state of the event queue in-memory data; the queue
+can later be restored to this state using <a class="iref" href="#restore">restore</a>.  See
+<a href="../mani/saveable.html">saveable(i)</a> for details.</p>
+
+<p>Note that the RDB must also be checkpointed as well.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="define">eventq define <i>etype eargs body</i></a></dt><dd><p>
+
+Defines a new event type called <i>etype</i>.  In general, the syntax
+of this command is similar to that of the standard Tcl
+<code>proc</code> command; an event can be thought of as a proc that
+can be scheduled for later execution.  The event type is
+scheduled with the arguments named in the <i>eargs</i> list; when the
+execution time is reached, the event's <i>body</i>, a Tcl script, will
+be called with the argument values just as a proc is.</p>
+
+<p><b>TBD:</b>  At this point, the <i>eargs</i> must be a simple list of
+argument names; at some later time, we may support default
+arguments and variable length argument lists as normal Tcl procs do.</p>
+
+<p>The type name and argument names must begin with a letter, and may
+contain letters, numbers, and underscores.</p>
+
+<p><b>Notes:</b>
+
+</p><ul>
+  <li> Event types may be defined before or after the
+       <a class="iref" href="#init">init</a> method is called.
+  </li><li> Event bodies may be redefined simply by calling <a class="iref" href="#define">define</a>
+       a second time with a new body; but the argument list must be
+       identical.
+</li></ul>
+<p>For example,
+
+</p>
+
+<pre>
+eventq define arrival {name} {
+    puts "$name has arrived!"
+}
+
+eventq schedule arrival 5 joe
+</pre>
+
+</dd>
+<dt class="defitem"><a name="destroy">eventq destroy <i>pattern</i></a></dt><dd>
+
+Destroys all event types whose names match a <code>glob</code>-style
+<i>pattern</i>.  When an event type is destroyed, all scheduled events
+of that type are deleted from the queue, and the event type's schema
+entries are deleted from the run-time database.
+
+</dd>
+<dt class="defitem"><a name="eventcount">eventq eventcount</a></dt><dd>
+
+Returns the number of events scheduled to date, including events which
+have been cancelled before execution.
+
+</dd>
+<dt class="defitem"><a name="etypes">eventq etypes</a></dt><dd>
+
+Returns a list of the names of the currently defined event types.
+
+</dd>
+<dt class="defitem"><a name="init">eventq init <i>db</i></a></dt><dd><p>
+
+Initializes the event queue, allowing events to be scheduled.  The
+<i>db</i> must be an instance of <a href="../mann/sqldocument.html">sqldocument(n)</a> (or the
+equivalent) which defines the eventq(n) schema.</p>
+
+<p>Note that event types may be defined both before and after the call to
+<a class="iref" href="#init">init</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="now">eventq now</a></dt><dd>
+
+Returns the event queue's current simulation time.
+
+</dd>
+<dt class="defitem"><a name="reschedule">eventq reschedule <i>id t</i></a></dt><dd><p>
+
+Reschedules the event with the specified event <i>id</i> to occur at
+time <i>t</i>, which must be in the future.</p>
+
+<p>Note that an event can reschedule itself.  An event <i>body</i> might
+contain a state machine, for example; each time the event occurs, it
+can determine the new state and reschedule itself until a later time.
+
+</p>
+</dd>
+<dt class="defitem"><a name="reset">eventq reset</a></dt><dd>
+
+Resets the event queue as of the current simulation time, i.e.,
+deletes all scheduled events while leaving the simulation time, the
+event counter, and so forth unchanged.
+
+</dd>
+<dt class="defitem"><a name="restart">eventq restart</a></dt><dd>
+
+Resets the event queue to time -1, deleting all scheduled events and
+resetting the event counter to 0.  Note that old event IDs will be
+reused in this case.
+
+</dd>
+<dt class="defitem"><a name="restore">eventq restore <i>state</i> ?-saved?</a></dt><dd><p>
+
+Restores the queue to a <i>checkpoint</i> produced by a previous call to
+<a class="iref" href="#checkpoint">checkpoint</a>.  See <a href="../mani/saveable.html">saveable(i)</a> for details.</p>
+
+<p>Note that the RDB must be restored as well.
+
+</p>
+</dd>
+<dt class="defitem"><a name="schedule">eventq schedule <i>etype t</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Schedules an event of type <i>etype</i> to be executed at time
+<i>t</i>, which must be a time in the future, i.e., strictly greater
+than <a class="iref" href="#now">now</a>.  Note that it is possible to schedule events to
+execute at time 0.  The <i>args</i> depend on the event type; all
+arguments specified for the type must be included.  See
+<a class="iref" href="#define">define</a> for an example.</p>
+
+<p>Returns the event ID of the newly scheduled event.
+
+</p>
+</dd>
+<dt class="defitem"><a name="size">eventq size</a></dt><dd>
+
+Returns the number of events in the queue.
+
+</dd>
+<dt class="defitem"><a name="undo_cancel">eventq undo cancel <i>undoToken</i></a></dt><dd><p>
+
+Undoes a previous cancellation of an event given the
+<i>undoToken</i> returned by <a class="iref" href="#cancel">cancel</a>.  The restored event will
+have the same data and event ID as it had before it was cancelled.</p>
+
+<p>It is an error to undo a cancellation after the event would have
+executed.  Beyond that, it is up to the application to make sure
+that undoing the cancellation makes sense.
+
+</p>
+</dd>
+<dt class="defitem"><a name="undo_schedule">eventq undo schedule</a></dt><dd>
+
+Undoes the most recent call to <a class="iref" href="#schedule">schedule</a>, decrementing
+the event counter.  It is an error if the most recently scheduled
+event has already been executed or cancelled.
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/sqldocument.html">sqldocument(n)</a>
+
+</p>
+
+<h2><a name="future_work">FUTURE WORK</a></h2>
+<p>The following enhancements have been considered:
+
+</p>
+
+<ul>
+  <li> The module should checkpoint its in-memory data directly to the
+       RDB.  This requires a change to JNEM's usual checkpoint/restore
+       protocol, however.
+
+  </li><li> The <b>eventq_queue</b> table should include a pretty-printed
+       copy of the arguments for each event, to make browsing the
+       overall event queue easier.  Either that, or we need to define
+       a view that effectively does so.
+
+  </li><li> The <a class="iref" href="#define">define</a> command should support default arguments
+       and variable-length argument lists, as <code>proc</code> does.
+
+  </li><li> It might be desirable to define events with large numbers of
+       arguments such that each argument is a separate column in the
+       <b>eventq_etype_<i>etype</i></b> table but the arguments are
+       passed as a dictionary to <a class="iref" href="#schedule">schedule</a>.
+</li></ul>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>eventq(n) requires Tcl 8.5 or later.</p>
+
+<p>To use eventq(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

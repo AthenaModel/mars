@@ -1,0 +1,523 @@
+<html>
+<head>
+<title>mars 3.0.23: notifier(n) -- Event Notification Manager, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>notifier(n)</b> -- Event Notification Manager, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#events">EVENTS</a></li>
+    
+
+    <li><a href="#substitutions">SUBSTITUTIONS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require util 1.0
+namespace import ::marsutil::notifier
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#notifier_bind">notifier bind ?<i>subject</i> ?<i>event</i> ?<i>object</i> ?<i>binding</i>????</a></li>
+<li><a class="iref" href="#notifier_forget">notifier forget <i>object</i></a></li>
+<li><a class="iref" href="#notifier_rename">notifier rename <i>object newname</i></a></li>
+<li><a class="iref" href="#notifier_send">notifier send <i>subject event</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#notifier_trace">notifier trace ?<i>cmd</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>notifier(n) allows objects to bind callbacks to events sent by other
+objects.  An object which sends an event is called a subject; a
+subject can send any number of distinct events.  Any number of objects
+can bind callbacks to a particular event sent by a particular subject.
+Event bindings can be queried and deleted.</p>
+
+<p>If a subject or object is destroyed, all related bindings can be
+deleted <i>en masse</i>.  In addition, if a subject or object's name
+changes, all related bindings can be updated.
+
+</p>
+
+<h2><a name="events">EVENTS</a></h2>
+<p>An event binding is defined by four things:
+
+</p>
+
+<ul class="ulp">
+  <li> A <b>subject</b>: the object which will be sending the event.
+       It will usually be an object name, i.e., a fully-qualified Tcl
+       command; however, "virtual" objects, i.e., objects which are
+       not represented as commands, can also be used.
+
+  </li><li> The <b>event</b> itself: an occurrence in the life of the
+       <b>subject</b> which other objects might care about.  An event
+       has a name, and might also have arguments.  Consistent with Tk
+       usage, event names typically appear in camel-case in angle
+       brackets, e.g., <code>&lt;MyEvent&gt;</code>, but this is not
+       required.  Each subject must document in some way the
+       names and arguments of the events it can send.
+
+  </li><li> An <b>object</b> which wishes to receive the event.  As for
+       subjects, this is usually a fully-qualified Tcl command name,
+       although this is not required.
+
+  </li><li> The <b>binding</b> proper, a command prefix to which the
+       event's arguments will be appended.
+</li></ul>
+<p>The subject can send an event using the <a class="iref" href="#notifier_send">notifier send</a>
+command.  When the event is sent, any bindings bound to that subject
+and event will be called, with the event's arguments appended.  Errors
+are handled by the <b>bgerror</b> command.  Note that the order in
+which the bindings are called is undefined.  If several objects have
+bindings on a single subject and event, and if one of those bindings
+throws an error, the others will still be called.</p>
+
+<p>Event bindings are created, updated, and queried using the
+<a class="iref" href="#notifier_bind">notifier bind</a> command.</p>
+
+<p>When an object that may be the subject or object of a binding is
+destroyed, its name should be passed to <a class="iref" href="#notifier_forget">notifier forget</a>,
+which will delete all bindings which reference it.
+
+</p>
+
+<h2><a name="substitutions">SUBSTITUTIONS</a></h2>
+<p>It is possible to reassign bindings from one subject or object
+to another object using the <a class="iref" href="#notifier_rename">notifier rename</a> command.
+For example, if an object's name is changed using Tcl's <b>rename</b>
+command, all bindings which reference that object can be updated to
+use the new name.  Similarly, if object B is wrapping object A, all
+of A's bindings can be updated to reference object B instead.</p>
+
+<p>Using <a class="iref" href="#notifier_rename">notifier rename</a> presents a problem if the bound
+callbacks reference the renamed object.  Consequently, the
+command bound to an event may include the following
+%-substitutions:
+
+</p>
+
+<ul class="ulp">
+<li> <span class="tt">%s</span> - The subject's name.
+</li><li> <span class="tt">%o</span> - The object's name.
+</li></ul>
+<p>When the callback is called, these substitutions will be replaced with
+the current subject and object names.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="notifier_bind">notifier bind ?<i>subject</i> ?<i>event</i> ?<i>object</i> ?<i>binding</i>????</a></dt><dd><p>
+
+This subcommand is used to query and define event bindings.
+
+</p><ul class="ulp">
+  <li><p> If called with all four arguments, the <i>subject</i>, the
+       <i>event</i>, the <i>object</i>, and the <i>binding</i>, it
+       either adds or deletes a binding.</p>
+
+<p>If <i>binding</i> is the empty string, the subcommand deletes
+       any existing binding for this <i>subject</i>, <i>event</i>, and
+       <i>object</i>.  Otherwise, the <i>binding</i> callback is bound to the
+       event, replacing any previous callback.
+       
+  </p>
+</li><li> If the <i>binding</i> is omitted altogether, the subcommand
+       returns the command which is bound to the <i>subject</i>
+       and <i>event</i> for this <i>object</i>.
+
+  </li><li> If the <i>object</i> is omitted as well, the subcommand
+       returns a list of the names of the objects
+       which are bound to that <i>subject</i> and <i>event</i>.
+
+  </li><li> If the <i>event</i> is omitted, the subcommand returns a
+       list of the names of the <i>subject</i>'s events that have active
+       bindings.
+
+  </li><li> Finally, if called with no arguments, the subcommand returns a
+       list of the names of the subjects that have active bindings.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="notifier_forget">notifier forget <i>object</i></a></dt><dd>
+
+Deletes any bindings for which <i>object</i> is either the subject or
+the object.  This subcommand is commonly used in object destructors to
+clean up all of an object's bindings.
+
+</dd>
+<dt class="defitem"><a name="notifier_rename">notifier rename <i>object newname</i></a></dt><dd><p>
+
+This subcommand tells the notifier that an <i>object</i> has changed its
+name.  All bindings involving the <i>object</i> as either the subject
+or object will be updated to reference the <i>newname</i> instead.</p>
+
+<p>This subcommand is useful if an object's name is changed using
+Tcl's <b>rename</b> command, or when bindings have been redirected
+from one object to another.  For example, if object A wraps object B,
+it can use this subcommand to take over B's bindings.  In this latter
+case, it will usually be necessary to tell object B to call itself
+A when sending events, i.e., when calling <a class="iref" href="#notifier_send">notifier send</a>.
+Conventionally, this is done by setting B's <code>-subject</code>
+option to A's name.
+
+</p>
+</dd>
+<dt class="defitem"><a name="notifier_send">notifier send <i>subject event</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Directs the notifier that the <i>event</i> has occurred in the
+<i>subject</i>.  The notifier then calls all callbacks bound to that
+<i>subject</i> and <i>event</i>, passing along the <i>args</i>, if
+any.  Note that there need be no bound callbacks.</p>
+
+<p>All callbacks will be called; any errors will be passed to
+<b>bgerror</b>.  This subcommand will return an error only if a bound
+callback returns an error and <b>bgerror</b> is not defined.</p>
+
+<p>The order of execution of the bindings is undefined, and should not be
+relied upon.  If the sequence of execution of a set of bindings is
+important, write one binding that does the whole job in the
+right order.
+
+</p>
+</dd>
+<dt class="defitem"><a name="notifier_trace">notifier trace ?<i>cmd</i>?</a></dt><dd><p>
+
+Sets/queries the notifier(n) trace command, which (if defined) is
+called each time an event is sent.  If given, <i>cmd</i> must
+be the prefix of a command expecting four additional arguments: the
+subject, the event, the event arguments, and a list of the objects
+which receive the event.  To disable tracing, pass an empty string as
+<i>cmd</i>.</p>
+
+<p>Tracing is disabled by default.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later and sqlite3 3.3 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

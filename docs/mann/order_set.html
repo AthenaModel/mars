@@ -1,0 +1,490 @@
+<html>
+<head>
+<title>mars 3.0.23: order_set(n) -- Order Set Class, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>order_set(n)</b> -- Order Set Class, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#order_set_create">::marsutil::order_set create <i>name</i> ?<i>baseClass_</i>? ?<i>autoVars_</i>?</a></li>
+<li><a class="iref" href="#order_set_new">::marsutil::order_set new ?<i>baseClass</i>?</a></li>
+<li><a class="iref" href="#define"><i>obj</i> define <i>order body</i></a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#names"><i>obj</i> names</a></li>
+<li><a class="iref" href="#exists"><i>obj</i> exists <i>order</i></a></li>
+<li><a class="iref" href="#validate"><i>obj</i> validate <i>order</i></a></li>
+<li><a class="iref" href="#class"><i>obj</i> class <i>order</i></a></li>
+<li><a class="iref" href="#parms"><i>obj</i> parms <i>order</i></a></li>
+<li><a class="iref" href="#title"><i>obj</i> title <i>order</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The <span class="tt">::marsutil::order_set</span> class is part of the Mars Order Processing
+framework, which includes <a href="../mann/order.html">order(n)</a>, <a href="../mann/order_set.html">order_set(n)</a>,
+<a href="../mann/order_flunky.html">order_flunky(n)</a>, and <a href="../mann/order_dialog.html">order_dialog(n)</a>.  See <a href="../mann/order.html">order(n)</a> 
+for an overview of the framework.</p>
+
+<p>An order_set(n) instance is used to define a collection of related order
+classes, which will all be subclasses of <a href="../mann/order.html">order(n)</a> or an equivalent.
+As part of defining the order classes, order_set(n) ensures that each
+class defines the required <a href="../mann/oohelpers.html#meta">meta</a>data and does some
+other load-time checks.
+
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>The following commands create instances of order_set(n):
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="order_set_create">::marsutil::order_set create <i>name</i> ?<i>baseClass_</i>? ?<i>autoVars_</i>?</a></dt><dd><p>
+
+Creates a new instance of <span class="tt">::marsutil::order_set</span>
+called <i>name</i>.  By default, orders defined using this class will have 
+<span class="tt">::marsutil::order</span> as their superclass; if <i>baseClass_</i> is given,
+it will be used instead.</p>
+
+<p>It is common for to <i>baseClass_</i> to define an instance variable or two
+that will be used by most or all orders.  Normally, each order class would
+have to declare this variable explicitly, which is tiresome.  If 
+<i>autoVars_</i> is given, it should be a list of instance variable names;
+each name will be automatically declared as a variable for each defined
+order class, thus bringing the variable into scope in all of the order
+class's methods.
+
+</p>
+</dd>
+<dt class="defitem"><a name="order_set_new">::marsutil::order_set new ?<i>baseClass</i>?</a></dt><dd>
+
+Creates a new instance of <span class="tt">::marsutil::order</span> with an arbitrary
+name.  By default, orders defined using this class will have 
+<span class="tt">::marsutil::order</span> as their superclass; if <i>baseClass</i> is given,
+it will be used instead.
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of order_set(n) has the following subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="define"><i>obj</i> define <i>order body</i></a></dt><dd><p>
+
+Defines a new order class for an order called <i>order</i>.  The new class's
+fully qualified name will be "<i>obj</i>::<i>order</i>".  The <i>body</i> is an 
+<span class="tt">oo::define</span> script for the new class; it will define the class's 
+<a href="../mann/oohelpers.html#meta">meta</a>data and methods.</p>
+
+<p>The new class will have the superclass specified when the order set was
+created.</p>
+
+<p>In addition to defining the new class, <a class="iref" href="#define">define</a> does the following:
+
+</p><ul>
+<li> Defines <a href="../mann/oohelpers.html#meta">meta</a> <span class="tt">name</span> to the be the unqualified
+    <i>order</i> name.
+
+</li><li> Defaults <a href="../mann/oohelpers.html#meta">meta</a> <span class="tt">title</span> to the order name.
+
+</li><li> Defaults <a href="../mann/oohelpers.html#meta">meta</a> <span class="tt">sendstates</span> to the 
+    empty list.
+
+</li><li> Defaults <a href="../mann/oohelpers.html#meta">meta</a> <span class="tt">form</span> to the empty string.
+
+</li><li> Defaults <a href="../mann/oohelpers.html#meta">meta</a> <span class="tt">parmtags</span> to the empty 
+     dictionary.
+
+</li><li> Defaults <a href="../mann/oohelpers.html#meta">meta</a> <span class="tt">monitor</span> to "on".
+
+</li><li> Declares the <a href="../mann/order.html">order(n)</a> instance variable <span class="tt">parms()</span> 
+    explicitly, so that it can be used without declaration in the 
+    class's methods.
+
+</li><li> If the class defines a <span class="tt">form</span>, creates the related 
+    <a href="../../../mars/docs/mann/dynaform.html">dynaform(n)</a> and checks it against the order's parameter
+    list.
+
+</li><li> Remembers the order class for later introspection.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt><dd>
+
+Resets the object, deleting all defined classes.  Note that created
+dynaforms are not destroyed, as <a href="../../../mars/docs/mann/dynaform.html">dynaform(n)</a> doesn't support
+that.
+
+</dd>
+<dt class="defitem"><a name="names"><i>obj</i> names</a></dt><dd>
+
+Returns a list of the unqualified names of the defined orders.
+
+</dd>
+<dt class="defitem"><a name="exists"><i>obj</i> exists <i>order</i></a></dt><dd>
+
+Returns 1 if there's an order called <i>order</i> in the set, and 0 
+otherwise.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>obj</i> validate <i>order</i></a></dt><dd>
+
+Validates the <i>order</i> name, converting it upper case and returning it,
+or throwing <b>INVALID</b> if the order isn't in the set.
+
+</dd>
+<dt class="defitem"><a name="class"><i>obj</i> class <i>order</i></a></dt><dd>
+
+Returns the order's full class name.
+
+</dd>
+<dt class="defitem"><a name="parms"><i>obj</i> parms <i>order</i></a></dt><dd>
+
+Returns a list of the names of the order's parameters.
+
+</dd>
+<dt class="defitem"><a name="title"><i>obj</i> title <i>order</i></a></dt><dd>
+
+Returns the order's title.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/order_flunky.html">order_flunky(n)</a>, <a href="../mann/order.html">order(n)</a>, <a href="../mann/order_dialog.html">order_dialog(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>order(n) requires Tcl 8.6 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

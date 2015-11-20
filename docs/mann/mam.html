@@ -1,0 +1,885 @@
+<html>
+<head>
+<title>mars 3.0.23: mam(n) -- Mars Affinity Model, V2, submodule of simlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mam(n)</b> -- Mars Affinity Model, V2, submodule of <a href="../mann/simlib.html">simlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#set/get_vs_configure/cget">Set/Get vs. Configure/Cget</a></li>
+
+    <li><a href="#undo_mechanisms">Undo Mechanisms</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require simlib 3.0.23
+namespace import ::simlib::mam
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#mam">mam <i>name</i></a></li>
+<li><a class="iref" href="#affinity"><i>mam</i> affinity <i>sid1 sid2</i></a></li>
+<li><a class="iref" href="#belief"><i>mam</i> belief <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#belief-position">-position <i>number</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#belief-emphasis">-emphasis <i>number</i></a></li>
+<li><a class="iref" href="#belief_cget"><i>mam</i> belief cget <i>sid tid option</i></a></li>
+<li><a class="iref" href="#belief_configure"><i>mam</i> belief configure <i>sid tid option value...</i></a></li>
+<li><a class="iref" href="#belief_get"><i>mam</i> belief get <i>sid tid</i> ?<i>attr</i>?</a></li>
+<li><a class="iref" href="#belief_set"><i>mam</i> belief set <i>sid tid attrdict</i></a></li>
+<li><a class="iref" href="#belief_set"><i>mam</i> belief set <i>sid tid attrdict</i></a></li>
+<li><a class="iref" href="#changed"><i>mam</i> changed</a></li>
+<li><a class="iref" href="#checkpoint"><i>mam</i> checkpoint ?-saved?</a></li>
+<li><a class="iref" href="#clear"><i>mam</i> clear</a></li>
+<li><a class="iref" href="#compute"><i>mam</i> compute</a></li>
+<li><a class="iref" href="#congruence"><i>mam</i> congruence <i>sid theta hook</i></a></li>
+<li><a class="iref" href="#dump"><i>mam</i> dump</a></li>
+<li><a class="iref" href="#playbox"><i>mam</i> playbox <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#playbox-gamma">-gamma <i>value</i></a></li>
+<li><a class="iref" href="#playbox_cget"><i>mam</i> playbox cget <i>option</i></a></li>
+<li><a class="iref" href="#playbox_configure"><i>mam</i> playbox configure <i>option value...</i></a></li>
+<li><a class="iref" href="#playbox_get"><i>mam</i> playbox get ?<i>attr</i>?</a></li>
+<li><a class="iref" href="#playbox_set"><i>mam</i> playbox set <i>attrdict</i></a></li>
+<li><a class="iref" href="#playbox_set"><i>mam</i> playbox set <i>attrdict</i></a></li>
+<li><a class="iref" href="#restore"><i>mam</i> restore <i>checkpoint</i> ?-saved?</a></li>
+<li><a class="iref" href="#system"><i>mam</i> system <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#system-name">-name <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#system-commonality">-commonality <i>value</i></a></li>
+<li><a class="iref" href="#system_add"><i>mam</i> system add <i>sid</i></a></li>
+<li><a class="iref" href="#system_cget"><i>mam</i> system cget <i>sid option</i></a></li>
+<li><a class="iref" href="#system_configure"><i>mam</i> system configure <i>sid option value...</i></a></li>
+<li><a class="iref" href="#system_delete"><i>mam</i> system delete <i>sid</i></a></li>
+<li><a class="iref" href="#system_exists"><i>mam</i> system exists <i>sid</i></a></li>
+<li><a class="iref" href="#system_get"><i>mam</i> system get <i>sid</i> ?<i>attr</i>?</a></li>
+<li><a class="iref" href="#system_id"><i>mam</i> system id <i>name</i></a></li>
+<li><a class="iref" href="#system_ids"><i>mam</i> system ids</a></li>
+<li><a class="iref" href="#system_set"><i>mam</i> system set <i>sid attrdict</i></a></li>
+<li><a class="iref" href="#system_set"><i>mam</i> system set <i>sid attrdict</i></a></li>
+<li><a class="iref" href="#system_undelete"><i>mam</i> system undelete <i>undoData</i></a></li>
+<li><a class="iref" href="#topic"><i>mam</i> topic <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#topic-name">-name <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#topic-affinity">-affinity <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#topic-relevance">-relevance <i>fraction</i></a></li>
+<li><a class="iref" href="#topic_add"><i>mam</i> topic add <i>tid</i></a></li>
+<li><a class="iref" href="#topic_cget"><i>mam</i> topic cget <i>tid option</i></a></li>
+<li><a class="iref" href="#topic_configure"><i>mam</i> topic configure <i>tid option value...</i></a></li>
+<li><a class="iref" href="#topic_delete"><i>mam</i> topic delete <i>tid</i></a></li>
+<li><a class="iref" href="#topic_exists"><i>mam</i> topic exists <i>tid</i></a></li>
+<li><a class="iref" href="#topic_get"><i>mam</i> topic get <i>tid</i> ?<i>attr</i>?</a></li>
+<li><a class="iref" href="#topic_id"><i>mam</i> topic id <i>name</i></a></li>
+<li><a class="iref" href="#topic_ids"><i>mam</i> topic ids</a></li>
+<li><a class="iref" href="#topic_set"><i>mam</i> topic set <i>tid attrdict</i></a></li>
+<li><a class="iref" href="#topic_set"><i>mam</i> topic set <i>tid attrdict</i></a></li>
+<li><a class="iref" href="#topic_undelete"><i>mam</i> topic undelete <i>undoData</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>mam(n) is an implementation of the Mars Affinity Model described in the
+<i>Mars Analyst's Guide</i>.  It allows the creation of belief systems and
+topics of belief, and computes the affinity between belief systems.
+
+</p>
+
+<h2><a name="set/get_vs_configure/cget">Set/Get vs. Configure/Cget</a></h2>
+<p>mam(n) supports both a dictionary-based <span class="tt">set</span>/<span class="tt">get</span>
+mechanism and an option-based <span class="tt">configure</span>/<span class="tt">cget</span> mechanism
+for all data.   The <span class="tt">set</span>/<span class="tt">get</span> mechanism is the lower-level
+API, and is provided for use by application orders and similar  client
+code; <span class="tt">configure</span>/<span class="tt">cget</span> mechanism is a wrapper around the
+<span class="tt">set</span>/<span class="tt">get</span> and yields more readable code when belief systems
+are modified or queried  directly.</p>
+
+<p>The two mechanisms use identical attribute names, except that the
+<span class="tt">configure</span>/<span class="tt">cget</span> mechanism uses option notation 
+(e.g., "<span class="tt">-position</span>" vs. "<span class="tt">position</span>").
+
+</p>
+
+<h2><a name="undo_mechanisms">Undo Mechanisms</a></h2>
+<p>mam(n) is designed to support an application undo stack.  The three
+of operations that can be undone are <span class="tt">add</span>,  
+<span class="tt">set</span>/<span class="tt">configure</span>, and <span class="tt">delete</span>.</p>
+
+<p>To undo an <span class="tt">add</span> of a system or a topic, simply delete the new
+entity.  For example,
+
+</p>
+
+<pre>
+    # Add a new system
+    set sid [$mam system add]
+
+    # Undo the addition
+    $mam system delete $sid
+</pre>
+<p>To undo a <span class="tt">set</span> or <span class="tt">configure</span>, save the old data before
+the change, and then restore it.  For example,
+
+</p>
+
+<pre>
+    # Save undo data:
+    set undoData [$mam system get $sid]
+
+    # Make the change
+    $mam system configure $sid -commonality 0.5
+
+    # Undo the change
+    $mam system set $sid $undoData
+</pre>
+<p>To undo a <span class="tt">delete</span> of a system or topic, use the related
+<span class="tt">undelete</span> command.  For example,
+
+</p>
+
+<pre>
+    # Delete a system
+    set undoData [$mam system delete $sid]
+
+    # Undo the deletion
+    $mam system undelete $undoData
+</pre>
+<p>Of course, these mechanisms are only guaranteed under normal "undo" 
+conditions, e.g., a belief system can be "undeleted" when that's the
+operation on the top of the undo stack.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="mam">mam <i>name</i></a></dt><dd>
+
+Creates a new mam(n) object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#mam">mam</a> returns the fully-qualified form of the
+<i>name</i>.
+
+</dd>
+</dl>
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Each instance of mam(n) provides the following subcommands for use by the
+application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="affinity"><i>mam</i> affinity <i>sid1 sid2</i></a></dt><dd>
+
+Returns the affinity of the belief system with ID <i>sid1</i> with 
+the belief system with ID <i>sid2</i>, recomputing the affinities if
+necessary.  The affinity is a number from -1.0 to 1.0.
+
+
+</dd>
+<dt class="defitem"><a name="belief"><i>mam</i> belief <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This family of commands is used for setting and querying the value of 
+belief attributes.  A belief is a belief system's position with respect
+to a topic; hence, beliefs are identified by the system's unique ID
+(the <i>sid</i>) and the topic's unique ID (the <i>tid</i>).</p>
+
+<p>mam(n) defines the following belief options:
+
+</p><dl>
+
+<dt class="defopt"><a name="belief-position">-position <i>number</i></a></dt><dd>
+
+Specifies the system's position with respect to the topic, a real number
+from -1.0 to +1.0. Defaults to 0.0. The client can use 
+<a href="../mann/simtypes.html#qposition">qposition</a> to validate position values.
+
+</dd>
+<dt class="defopt"><a name="belief-emphasis">-emphasis <i>number</i></a></dt><dd>
+
+Specifies the system's emphasis on agreement or disagreement with respect
+to this topic, where 0.0 represents a complete emphasis on disagreement and
+1.0 represents a complete emphasis on agreement. The default is 0.5. Note
+that the endpoints result in pathological results; clients will usually
+want to pick from the
+<a href="../mann/simtypes.html#qemphasis">qemphasis</a> symbols. Note that 
+<a href="../mann/simtypes.html#qemphasis">qemphasis</a> can be used to
+validate emphasis values.
+
+</dd>
+</dl>
+<p>The subcommands of <a class="iref" href="#belief">belief</a> are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="belief_cget"><i>mam</i> belief cget <i>sid tid option</i></a></dt><dd>
+
+Returns the value of the named <i>option</i> for the belief with the
+given <i>sid</i> and <i>tid</i>.
+
+</dd>
+<dt class="defitem"><a name="belief_configure"><i>mam</i> belief configure <i>sid tid option value...</i></a></dt><dd>
+
+Sets the values of the listed options for the belief with the given
+<i>sid</i> and <i>tid</i>.
+
+</dd>
+<dt class="defitem"><a name="belief_get"><i>mam</i> belief get <i>sid tid</i> ?<i>attr</i>?</a></dt><dd>
+
+Returns the value of the named attribute for the belief with the given
+<i>sid</i> and <i>tid</i>, if <i>attr</i> is given; otherwise, returns a
+dictionary of all of the belief's attributes and their values.
+
+</dd>
+<dt class="defitem"><a name="belief_set"><i>mam</i> belief set <i>sid tid attr value...</i></a></dt>
+<dt class="defitem"><a name="belief_set"><i>mam</i> belief set <i>sid tid attrdict</i></a></dt><dd>
+
+Sets the values of the named attributes for the belief with the
+given <i>sid</i> and <i>tid</i>.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="changed"><i>mam</i> changed</a></dt><dd>
+
+Returns 1 if the checkpointable data has changed since the last
+<a class="iref" href="#checkpoint">checkpoint</a>, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="checkpoint"><i>mam</i> checkpoint ?-saved?</a></dt><dd>
+
+Returns a checkpoint of this module's data.  If <b>-saved</b>
+is specified, the data is marked "unchanged".
+
+</dd>
+<dt class="defitem"><a name="clear"><i>mam</i> clear</a></dt><dd>
+
+Clears all data and resets the module to its initial state.
+
+</dd>
+<dt class="defitem"><a name="compute"><i>mam</i> compute</a></dt><dd>
+
+Computes all affinity values given current settings, and caches them.
+
+</dd>
+<dt class="defitem"><a name="congruence"><i>mam</i> congruence <i>sid theta hook</i></a></dt><dd><p>
+
+Computes and returns the congruence of a semantic <i>hook</i> with the
+belief system with ID <i>sid</i>.  The <i>hook</i> is a dictionary of topic
+IDs  and position numbers, and <i>theta</i> is the hook's equivalent of a
+belief system's commonality fraction.</p>
+
+<p>Congruence is essentially the affinity of the belief system for the
+hook, taking into account only the topics included in the hook.
+
+</p>
+</dd>
+<dt class="defitem"><a name="dump"><i>mam</i> dump</a></dt><dd>
+
+Returns a human-readable string containing all mam(n) data, for
+debugging.
+
+</dd>
+<dt class="defitem"><a name="playbox"><i>mam</i> playbox <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This family of commands is used for setting and querying the value of 
+playbox-wide attributes.</p>
+
+<p>mam(n) defines the following playbox-wide options:
+
+</p><dl>
+
+<dt class="defopt"><a name="playbox-gamma">-gamma <i>value</i></a></dt><dd>
+
+This is the playbox "commonality" dial; it controls the degree of
+implicit commonality among the entities in the playbox, that is, the
+number of implicit topics about which there is general (and
+passionate) agreement in the playbox. If -gamma is 0, there is no
+implicit commonality; only explicit topics are considered. If -gamma
+is 1.0 there are as many implicit topics as explicit topics; if 0.5,
+half as many; if 2.0, twice as many.  The value must be no less than 0.0; 
+default is 1.0.
+
+</dd>
+</dl>
+<p>The subcommands of <a class="iref" href="#playbox">playbox</a> are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="playbox_cget"><i>mam</i> playbox cget <i>option</i></a></dt><dd>
+
+Returns the value of the named option.
+
+</dd>
+<dt class="defitem"><a name="playbox_configure"><i>mam</i> playbox configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the listed options.
+
+</dd>
+<dt class="defitem"><a name="playbox_get"><i>mam</i> playbox get ?<i>attr</i>?</a></dt><dd>
+
+Returns the value of the named attribute, if given; otherwise,
+returns a dictionary of all of the playbox attributes and their
+values.
+
+</dd>
+<dt class="defitem"><a name="playbox_set"><i>mam</i> playbox set <i>attr value...</i></a></dt>
+<dt class="defitem"><a name="playbox_set"><i>mam</i> playbox set <i>attrdict</i></a></dt><dd>
+
+Sets the values of the named attributes.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="restore"><i>mam</i> restore <i>checkpoint</i> ?-saved?</a></dt><dd>
+
+Restores the state of the module given the <i>checkpoint</i>, 
+produced by a previous call to <a class="iref" href="#checkpoint">checkpoint</a>.  If 
+the <b>-saved</b> option is given, the module's contents will be
+marked "unchanged".
+
+</dd>
+<dt class="defitem"><a name="system"><i>mam</i> system <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This family of commands is used for setting and querying the value of 
+belief system attributes.</p>
+
+<p>mam(n) defines the following belief system options:
+
+</p><dl>
+
+<dt class="defopt"><a name="system-name">-name <i>name</i></a></dt><dd>
+
+This is the name of the belief system, for display to the user.  
+Names must be unique across belief systems.  The default name is
+"System <i>sid</i>".
+
+</dd>
+<dt class="defopt"><a name="system-commonality">-commonality <i>value</i></a></dt><dd>
+
+This is the belief system "commonality" dial; it specifies the extent of
+the system's participation in the dominant culture in the playbox. If 1.0,
+the system shares all of the implicit cultural commonality; if 0.0, none of
+it. Defaults to 1.0. Note that the effect of this option depends on the
+playbox <b>-gamma</b> value; see <a class="iref" href="#playbox">playbox</a>.
+
+</dd>
+</dl>
+<p>The subcommands of <a class="iref" href="#system">system</a> are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="system_add"><i>mam</i> system add <i>sid</i></a></dt><dd>
+
+Creates a new belief system with default settings and the given
+ID, and returns the ID.  The <i>sid</i> must not already be in use.
+
+</dd>
+<dt class="defitem"><a name="system_cget"><i>mam</i> system cget <i>sid option</i></a></dt><dd>
+
+Returns the value of the named <i>option</i> for the system with the
+given <i>sid</i>.
+
+</dd>
+<dt class="defitem"><a name="system_configure"><i>mam</i> system configure <i>sid option value...</i></a></dt><dd>
+
+Sets the values of the listed options for the system with the given
+<i>sid</i>.
+
+</dd>
+<dt class="defitem"><a name="system_delete"><i>mam</i> system delete <i>sid</i></a></dt><dd>
+
+Deletes the belief system with the given <i>sid</i>, and returns 
+a string of undo data that can be passed to <a class="iref" href="#system_undelete">system undelete</a>.
+
+</dd>
+<dt class="defitem"><a name="system_exists"><i>mam</i> system exists <i>sid</i></a></dt><dd>
+
+Returns 1 if there is a belief system with the given <i>sid</i>, and
+a 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="system_get"><i>mam</i> system get <i>sid</i> ?<i>attr</i>?</a></dt><dd>
+
+Returns the value of the named attribute for the system
+with the given <i>sid</i>, if <i>attr</i> is given; otherwise,
+returns a dictionary of all of the system's attributes and their
+values.
+
+</dd>
+<dt class="defitem"><a name="system_id"><i>mam</i> system id <i>name</i></a></dt><dd>
+
+Returns a belief system's ID given its <i>name</i>, or "" if there
+is no such belief system.
+
+</dd>
+<dt class="defitem"><a name="system_ids"><i>mam</i> system ids</a></dt><dd>
+
+Returns a list of the IDs of all existing belief systems.
+
+
+</dd>
+<dt class="defitem"><a name="system_set"><i>mam</i> system set <i>sid attr value...</i></a></dt>
+<dt class="defitem"><a name="system_set"><i>mam</i> system set <i>sid attrdict</i></a></dt><dd>
+
+Sets the values of the named attributes for the system with the
+given <i>sid</i>.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.
+
+</dd>
+<dt class="defitem"><a name="system_undelete"><i>mam</i> system undelete <i>undoData</i></a></dt><dd>
+
+Given an <i>undoData</i> string from <a class="iref" href="#system_delete">system delete</a>, undoes
+the deletion and returns the unique ID of the recreated belief system.
+Note that this command should only be used under normal "undo" conditions,
+i.e., when the deletion is the only change that's been made.
+
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="topic"><i>mam</i> topic <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This family of commands is used for setting and querying the value of 
+belief topic attributes.</p>
+
+<p>mam(n) defines the following topic options:
+
+</p><dl>
+
+<dt class="defopt"><a name="topic-name">-name <i>name</i></a></dt><dd>
+
+This is the name of the topic, for display to the user.  
+Names must be unique across topics.  The default name is
+"Topic <i>tid</i>".
+
+</dd>
+<dt class="defopt"><a name="topic-affinity">-affinity <i>flag</i></a></dt><dd>
+
+Specifies a numeric flag, 0 or 1. If 1 (the default), then beliefs on this
+topic will  be included in the computation of affinity; if 0, then it will
+be excluded.
+
+</dd>
+<dt class="defopt"><a name="topic-relevance">-relevance <i>fraction</i></a></dt><dd>
+
+Specifies the relevance of the topic as a fraction from 0.0 to 1.0 
+(the default). Positions on a topic have decreasing effect as the
+topic's relevance declines.
+
+</dd>
+</dl>
+<p>The subcommands of <a class="iref" href="#topic">topic</a> are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="topic_add"><i>mam</i> topic add <i>tid</i></a></dt><dd>
+
+Creates a new topic with default settings and the given
+ID, and returns the ID.  The <i>tid</i> must not already be in use.
+
+</dd>
+<dt class="defitem"><a name="topic_cget"><i>mam</i> topic cget <i>tid option</i></a></dt><dd>
+
+Returns the value of the named <i>option</i> for the topic with the
+given <i>tid</i>.
+
+</dd>
+<dt class="defitem"><a name="topic_configure"><i>mam</i> topic configure <i>tid option value...</i></a></dt><dd>
+
+Sets the values of the listed options for the topic with the given
+<i>tid</i>.
+
+</dd>
+<dt class="defitem"><a name="topic_delete"><i>mam</i> topic delete <i>tid</i></a></dt><dd>
+
+Deletes the topic with the given <i>tid</i>, and returns 
+a string of undo data that can be passed to <a class="iref" href="#topic_undelete">topic undelete</a>.
+
+</dd>
+<dt class="defitem"><a name="topic_exists"><i>mam</i> topic exists <i>tid</i></a></dt><dd>
+
+Returns 1 if there is a topic with the given <i>tid</i>, and
+a 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="topic_get"><i>mam</i> topic get <i>tid</i> ?<i>attr</i>?</a></dt><dd>
+
+Returns the value of the named attribute for the topic
+with the given <i>tid</i>, if <i>attr</i> is given; otherwise,
+returns a dictionary of all of the topic's attributes and their
+values.
+
+</dd>
+<dt class="defitem"><a name="topic_id"><i>mam</i> topic id <i>name</i></a></dt><dd>
+
+Returns a topic's ID given its <i>name</i>, or "" if there
+is no such topic.
+
+</dd>
+<dt class="defitem"><a name="topic_ids"><i>mam</i> topic ids</a></dt><dd>
+
+Returns a list of the IDs of all existing topics.
+
+</dd>
+<dt class="defitem"><a name="topic_set"><i>mam</i> topic set <i>tid attr value...</i></a></dt>
+<dt class="defitem"><a name="topic_set"><i>mam</i> topic set <i>tid attrdict</i></a></dt><dd>
+
+Sets the values of the named attributes for the topic with the
+given <i>tid</i>.  The attribute names and
+values may be specified as single argument, a dictionary, or as 
+individual names and values on the command line.
+
+</dd>
+<dt class="defitem"><a name="topic_undelete"><i>mam</i> topic undelete <i>undoData</i></a></dt><dd>
+
+Given an <i>undoData</i> string from <a class="iref" href="#topic_delete">topic delete</a>, undoes
+the deletion and returns the unique ID of the recreated topic.
+Note that this command should only be used under normal "undo" conditions,
+i.e., when the deletion is the only change that's been made.
+
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>The original implementation of mam(n) relied heavily of SQLite.  This
+is a pure-Tcl version that implements the saveable(i) interface.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

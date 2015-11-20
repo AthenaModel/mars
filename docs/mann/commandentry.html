@@ -1,0 +1,459 @@
+<html>
+<head>
+<title>mars 3.0.23: commandentry(n) -- Command Entry Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>commandentry(n)</b> -- Command Entry Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#commandentry">commandentry <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commandentry-history">-history <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commandentry-clearbtn">-clearbtn <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commandentry-returncmd">-returncmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commandentry-changecmd">-changecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commandentry-keycmd">-keycmd <i>cmd</i></a></li>
+<li><a class="iref" href="#set">$commandentry set <i>text</i></a></li>
+<li><a class="iref" href="#clear">$commandentry clear</a></li>
+<li><a class="iref" href="#get">$commandentry get</a></li>
+<li><a class="iref" href="#execute">$commandentry execute</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The commandentry(n) widget is a Tk entry widget customized to support
+a bash/tcsh-style command history, which is accessible by pressing
+the Up and Down arrow keys.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="commandentry">commandentry <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new commandentry(n) widget named <i>pathName</i>.</p>
+
+<p>The commandentry(n) widget may be created with the standard Tk entry
+widget options, plus the following commandentry-specific options:
+
+</p><dl>
+
+<dt class="defopt"><a name="commandentry-history">-history <i>num</i></a></dt><dd>
+
+Specifies the number of commands saved in the history.  Defaults to
+20.
+
+</dd>
+<dt class="defopt"><a name="commandentry-clearbtn">-clearbtn <i>flag</i></a></dt><dd><p>
+
+If true, the commandentry will have a "clear" button at its righthand
+end.  The button looks like a black circle with an "X" in it; it will
+be enabled when the widget contains any text, and disabled otherwise.
+Defaults to false.</p>
+
+<p>This option can only be set at creation time.
+
+</p>
+</dd>
+<dt class="defopt"><a name="commandentry-returncmd">-returncmd <i>cmd</i></a></dt><dd>
+
+Specifies a command that will be called when the text in the widget is
+executed, i.e., when the user presses &lt;Return&gt; or the application
+calls <a class="iref" href="#execute">execute</a>.  A single argument, the current content of
+the widget, will be appended to the command.
+
+</dd>
+<dt class="defopt"><a name="commandentry-changecmd">-changecmd <i>cmd</i></a></dt><dd>
+
+Specifies a command to be called when the contents of the widget
+changes due to user interaction.  A single argument, the new
+content of the widget, will be appended to the command.  Note that
+the <a class="iref" href="#set">set</a> and <a class="iref" href="#clear">clear</a> methods never cause the
+<code>-changecmd</code> to be called.
+
+</dd>
+<dt class="defopt"><a name="commandentry-keycmd">-keycmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command that will be called on every &lt;KeyRelease&gt;;
+event. The character code and the keysym will be appended to the
+command as two separate arguments.</p>
+
+<p>Note that the test <code>[string is print $char]</code> is useful for
+determining whether the user entered a real character or some other
+key.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="set">$commandentry set <i>text</i></a></dt><dd>
+
+Sets the contents to <i>text</i>.  The <code>-changecmd</code> will
+<b>not</b> be called.
+
+</dd>
+<dt class="defitem"><a name="clear">$commandentry clear</a></dt><dd>
+
+Clears the commandentry.  The <code>-changecmd</code> will <b>not</b>
+be called.
+
+</dd>
+<dt class="defitem"><a name="get">$commandentry get</a></dt><dd>
+
+Returns the current contents.
+
+</dd>
+<dt class="defitem"><a name="execute">$commandentry execute</a></dt><dd>
+
+Saves the current contents of the widget to the history stack, unless
+the widget is empty or the current contents matches the previous entry
+in the history stack; then calls the <code>-returncmd</code> with the
+current contents.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe,
+Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>6/23/2005 DJ Original package.
+6/02/2006 WHD General clean-up.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:50 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

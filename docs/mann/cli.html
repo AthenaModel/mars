@@ -1,0 +1,571 @@
+<html>
+<head>
+<title>mars 3.0.23: cli(n) -- Command-Line Interface Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>cli(n)</b> -- Command-Line Interface Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#keyboard_interface">Keyboard Interface</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#cli">cli <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-font">-font <i>font</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-height">-height <i>height</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-width">-width <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-foreground">-foreground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-background">-background <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-insertbackground">-insertbackground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-errorforeground">-errorforeground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-errorbackground">-errorbackground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-promptcmd">-promptcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-evalcmd">-evalcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-maxlines">-maxlines <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-maxhistory">-maxhistory <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cli-commandlist">-commandlist <i>names</i></a></li>
+<li><a class="iref" href="#configure">$cli configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$cli cget <i>option</i></a></li>
+<li><a class="iref" href="#clear">$cli clear</a></li>
+<li><a class="iref" href="#get">$cli get ?-displaychars? -- <i>index1</i> ?<i>index2...</i>?</a></li>
+<li><a class="iref" href="#append">$cli append <i>text</i> ?<i>style</i>?</a></li>
+<li><a class="iref" href="#inject">$cli inject <i>command</i></a></li>
+<li><a class="iref" href="#saveable">$cli saveable <i>subcommand</i> ?<i>args...</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/marsgui.html">marsgui(n)</a> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the cli(n) command-line interface
+widget, a terminal-like scrolling window in which commands can
+be typed.  Commands are assumed to have Tcl syntax.</p>
+
+<p>By default, cli(n) acts as a Tcl console, evaluating its input in
+the main interpreter's global scope; however, a different command
+evaluator can be substituted.</p>
+
+<p>cli(n) has the follow features:
+
+</p>
+
+<ul>
+  <li> Settable command prompt
+  </li><li> Settable command evaluator
+  </li><li> Resizeable scrollback buffer
+  </li><li> History stack with arrow key access, as in bash and tcsh
+  </li><li> Tab-completion of command names
+  </li><li> Programmatic interface for injecting commands as though they
+       were typed by hand.
+</li></ul>
+
+<h2><a name="keyboard_interface">Keyboard Interface</a></h2>
+<p>The cli(n) widget is intended to be used to enter commands and
+view their results via the keyboard.  It responds to the following
+special keystrokes:
+
+</p>
+
+<dl>
+<dt class="def">Return</dt><dd>
+Evaluates the current input as a command, if it is complete
+(i.e., no unbalanced parentheses); otherwise, it just inserts a
+newline.
+
+</dd>
+<dt class="def">Escape</dt><dd>
+Deletes the current user input.
+
+</dd>
+<dt class="def">Up-arrow</dt><dd>
+Deletes the current user input, replacing it with the
+previously executed command in the history stack.  The user can
+step through up to previous <code>-maxhistory</code> commands,
+after which it wraps again.
+
+</dd>
+<dt class="def">Down-arrow</dt><dd>
+The inverse of Up-arrow, steps downward through the history
+stack, clearing the user input when the beginning of the stack
+is reached.
+
+</dd>
+<dt class="def">Tab</dt><dd>
+Attempts to auto-complete the command being typed, based on
+the <code>-commandlist</code>.
+
+</dd>
+<dt class="def">Control-C</dt>
+<dt class="def">Control-X</dt>
+<dt class="def">Control-V</dt><dd>
+Cut, copy, and paste, as expected.  Only the current input can
+be edited, but any text can be copied.
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cli">cli <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#cli">cli</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#cli">cli</a> widget may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="cli-font">-font <i>font</i></a></dt>
+<dt class="defopt"><a name="cli-height">-height <i>height</i></a></dt>
+<dt class="defopt"><a name="cli-width">-width <i>width</i></a></dt>
+<dt class="defopt"><a name="cli-foreground">-foreground <i>color</i></a></dt>
+<dt class="defopt"><a name="cli-background">-background <i>color</i></a></dt>
+<dt class="defopt"><a name="cli-insertbackground">-insertbackground <i>color</i></a></dt><dd>
+
+These options are all identical to the Tk text widget options of the
+same names.
+
+</dd>
+<dt class="defopt"><a name="cli-errorforeground">-errorforeground <i>color</i></a></dt>
+<dt class="defopt"><a name="cli-errorbackground">-errorbackground <i>color</i></a></dt><dd>
+
+These colors are used for error messages in place of
+<span class="tt">-foreground</span> and <span class="tt">-background</span>.
+
+</dd>
+<dt class="defopt"><a name="cli-promptcmd">-promptcmd <i>cmd</i></a></dt><dd>
+
+By default, cli(n)'s command prompt is "&gt;".  If a different prompt
+is desired, set this option to a command which returns the desired
+prompt.  cli(n) will not add any arguments to the command.
+
+</dd>
+<dt class="defopt"><a name="cli-evalcmd">-evalcmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to use to evaluate user input.  <i>cmd</i> must be
+a command prefix for a command which expects one additional argument,
+the input to be evaluated.</p>
+
+<p>The result of calling <i>cmd</i> will be written to the cli(n)
+widget whether it's a normal return or an error return; in the latter
+case, the text will be written using the <span class="tt">-errorforeground</span> and
+<span class="tt">-errorbackground</span> colors.
+
+</p>
+</dd>
+<dt class="defopt"><a name="cli-maxlines">-maxlines <i>num</i></a></dt><dd>
+
+Specifies the maximum number of lines of text to keep in the
+scrollback buffer.  Defaults to 500.
+
+</dd>
+<dt class="defopt"><a name="cli-maxhistory">-maxhistory <i>num</i></a></dt><dd>
+
+Specifies the number of commands to keep in the history stack.
+Defaults to 100.
+
+</dd>
+<dt class="defopt"><a name="cli-commandlist">-commandlist <i>names</i></a></dt><dd>
+
+Specifies a list of the names of the valid commands; this is used to
+support Tab-completion.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$cli configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget">$cli cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="clear">$cli clear</a></dt><dd>
+
+Deletes all text from the widget and prompts for the next command.
+
+</dd>
+<dt class="defitem"><a name="get">$cli get ?-displaychars? -- <i>index1</i> ?<i>index2...</i>?</a></dt><dd>
+
+Gets the text from the CLI.  The command is delegated to the
+underlying Tk <a href="../../../tk/docs/mann/text.html">text(n)</a> widget.
+
+</dd>
+<dt class="defitem"><a name="append">$cli append <i>text</i> ?<i>style</i>?</a></dt><dd><p>
+
+Appends text to the bottom of the widget in the specified style.
+The only style currently defined is "error".</p>
+
+<p>This subcommand may be used by the processed user commands to
+write output to the widget; however, it's usually better just to
+return the desired text and allow the widget to output it.
+
+</p>
+</dd>
+<dt class="defitem"><a name="inject">$cli inject <i>command</i></a></dt><dd>
+
+Injects a command into the widget following the prompt as though the
+user had typed it, replacing any previous user input, and executes the
+command as though the user had pressed Return.  This subcommand is
+intended to be used by menu items and other GUI elements; it should
+not be called while cli(n) is executing a user's command.
+
+</dd>
+<dt class="defitem"><a name="saveable">$cli saveable <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+cli(n) implements the <a href="../mani/saveable.html">saveable(i)</a> interface as subcommands of
+this method.  When checkpointed, it saves its complete command history.
+When restored, it <a class="iref" href="#clear">clear</a>s itself, and restore the command
+history.  The cli(n) never indicates that it needs to be saved, as
+saving the command history is a convenience rather than a requirement.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

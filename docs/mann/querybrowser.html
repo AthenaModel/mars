@@ -1,0 +1,512 @@
+<html>
+<head>
+<title>mars 3.0.23: querybrowser(n) -- SQL Query Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>querybrowser(n)</b> -- SQL Query Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#querybrowser">querybrowser <i>win ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-borderwidth">-borderwidth <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-relief">-relief <i>relief</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-height">-height <i>height</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-width">-width <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-selectmode">-selectmode <i>mode</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-db">-db <i>db</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-reloadon">-reloadon <i>eventList</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#querybrowser-selectioncmd">-selectioncmd <i>cmd</i></a></li>
+<li><a class="iref" href="#cget"><i>win</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>win</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#clear"><i>win</i> clear</a></li>
+<li><a class="iref" href="#curselection"><i>win</i> curselection</a></li>
+<li><a class="iref" href="#get"><i>win</i> get <i>indexList</i></a></li>
+<li><a class="iref" href="#get"><i>win</i> get <i>indexList</i></a></li>
+<li><a class="iref" href="#query_get"><i>win</i> query get</a></li>
+<li><a class="iref" href="#query_set"><i>win</i> query set <i>sql</i></a></li>
+<li><a class="iref" href="#reload"><i>win</i> reload</a></li>
+<li><a class="iref" href="#selection"><i>win</i> selection <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#toolbar"><i>win</i> toolbar</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines the <code>::marsgui::querybrowser</code>, which
+allows the user to enter an arbitrary SQL query and browse the results.
+The widget consists of an <a href="../mann/sqlbrowser.html">sqlbrowser(n)</a> widget in a paned
+window with a <a href="../mann/texteditor.html">texteditor(n)</a> widget.  Queries are entered in
+the <a href="../mann/texteditor.html">texteditor(n)</a> and the results are shown in the browser.</p>
+
+<p>querybrowser(n) turns the query into a view that is browsed by the
+browser.  The SQLite3 authorizer mechanism is used to prevent the user
+from affecting the contents of the database with a careless or malicious
+query.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="querybrowser">querybrowser <i>win ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#querybrowser">querybrowser</a> widget named <i>win</i>.</p>
+
+<p>The <a class="iref" href="#querybrowser">querybrowser</a> widget may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="querybrowser-borderwidth">-borderwidth <i>width</i></a></dt>
+<dt class="defopt"><a name="querybrowser-relief">-relief <i>relief</i></a></dt>
+<dt class="defopt"><a name="querybrowser-height">-height <i>height</i></a></dt>
+<dt class="defopt"><a name="querybrowser-width">-width <i>width</i></a></dt><dd>
+
+These options are delegated to the hull ttk::frame widget.
+
+</dd>
+<dt class="defopt"><a name="querybrowser-selectmode">-selectmode <i>mode</i></a></dt><dd>
+
+This option is delegated to the underlying <a href="../mann/sqlbrowser.html">sqlbrowser(n)</a>
+widget.
+
+</dd>
+<dt class="defopt"><a name="querybrowser-db">-db <i>db</i></a></dt><dd>
+
+<b>Read-only after creation.</b>
+Specifies the name of the <a href="../mann/sqldocument.html">sqldocument(n)</a> object (or equivalent)
+in which the SQLite3 data resides.
+
+</dd>
+<dt class="defopt"><a name="querybrowser-reloadon">-reloadon <i>eventList</i></a></dt><dd><p>
+
+Causes the browser to subscribe to any number of <a href="../mann/notifier.html">notifier(n)</a>
+events, and reload its contents when any of them are received.  The
+<i>eventList</i> must be a list of <a href="../mann/notifier.html">notifier(n)</a> subjects and
+events.  For example, the following option causes the browser to
+reload whenever the <b>&lt;Reset&gt;</b> event is received from
+the <b>::sim</b> object.
+
+</p><pre>
+    querybrowser .browser             \
+        ...                         \
+        -reloadon { ::sim &lt;Reset&gt; }
+</pre>
+<p>If the value of <b>-reloadon</b> is changed, the previous bindings will be
+unbound; and all bindings will be unbound when the browser is destroyed.
+
+</p>
+
+</dd>
+<dt class="defopt"><a name="querybrowser-selectioncmd">-selectioncmd <i>cmd</i></a></dt><dd>
+
+Specifies a command that is called whenever the querybrowser(n)'s
+selection has changed (or might have changed).
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>win</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>win</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>win</i> clear</a></dt><dd>
+
+Deletes all rows from the browser.
+
+</dd>
+<dt class="defitem"><a name="curselection"><i>win</i> curselection</a></dt><dd>
+
+Returns a list of the row indices of the selected rows, or the empty list
+if no rows are selected.
+
+</dd>
+<dt class="defitem"><a name="get"><i>win</i> get <i>first last</i></a></dt>
+<dt class="defitem"><a name="get"><i>win</i> get <i>indexList</i></a></dt><dd><p>
+
+Retrieves the data from one or more rows in the browser.</p>
+
+<p>The first form of the command returns a list whose elements are all of the
+items (i.e., row contents) between <i>first</i> and <i>last</i>, inclusive.
+The value returned by the second form depends on the number of elements in
+the list <i>indexList</i>: if the latter contains exactly one index then the
+return value is the item indicated by that index (or an empty
+string if the index refers to a non-existent item); otherwise the command
+returns the list of all of the items corresponding to the indices
+specified by <i>indexList</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="query_get"><i>win</i> query get</a></dt><dd>
+
+Returns the text of the SQL query from the query editor pane.
+
+</dd>
+<dt class="defitem"><a name="query_set"><i>win</i> query set <i>sql</i></a></dt><dd>
+
+Sets the text of the SQL query in the editor pane, and executes it.
+
+</dd>
+<dt class="defitem"><a name="reload"><i>win</i> reload</a></dt><dd>
+
+Asks the querybrowser(n) to clear its contents and reload all the data
+from the database for the current query.
+
+</dd>
+<dt class="defitem"><a name="selection"><i>win</i> selection <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This method is delegated to the underlying tablelist(n) widget.  Note that
+if this method is used to change the selection, the <b>-selectioncmd</b>
+will <i>not</i> be called.
+
+</dd>
+<dt class="defitem"><a name="toolbar"><i>win</i> toolbar</a></dt><dd>
+
+Returns a ttk::frame into which the caller can add toolbar buttons and
+other controls.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>querybrowser(n) requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

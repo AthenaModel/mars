@@ -1,0 +1,622 @@
+<html>
+<head>
+<title>mars 3.0.23: gtclient(n) -- Game Truth Client, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>gtclient(n)</b> -- Game Truth Client, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#example">EXAMPLE</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::gtclient
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#gtclient">gtclient <i>name ?options?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gtclient-logger">-logger <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gtclient-logcomponent">-logcomponent <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gtclient-refreshstartcmd">-refreshstartcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gtclient-refreshendcmd">-refreshendcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gtclient-completecmd">-completecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gtclient-db">-db <i>name</i></a></li>
+<li><a class="iref" href="#cget">$gtclient cget <i>option</i></a></li>
+<li><a class="iref" href="#configure">$gtclient configure <i>option value...</i></a></li>
+<li><a class="iref" href="#startrefresh">$gtclient startrefresh</a></li>
+<li><a class="iref" href="#endrefresh">$gtclient endrefresh</a></li>
+<li><a class="iref" href="#set">$gtclient set <i>name value</i> ?<i>name value...</i>?</a></li>
+<li><a class="iref" href="#unset">$gtclient unset <i>name</i> ?<i>name</i>...?</a></li>
+<li><a class="iref" href="#clear">$gtclient clear</a></li>
+<li><a class="iref" href="#complete">$gtclient complete</a></li>
+<li><a class="iref" href="#get">$gtclient get <i>name</i></a></li>
+<li><a class="iref" href="#var">$gtclient var <i>name</i></a></li>
+<li><a class="iref" href="#watch">$gtclient watch <i>name command</i></a></li>
+<li><a class="iref" href="#class">$gtclient class <i>class table idcolumn</i></a></li>
+<li><a class="iref" href="#update">$gtclient update <i>class id</i> ?<i>dict</i>?</a></li>
+<li><a class="iref" href="#delete">$gtclient delete <i>class id</i></a></li>
+<li><a class="iref" href="#onupdate">$gtclient onupdate <i>class prefix</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>gtclient(n) defines an API which allows a 
+<a href="../mann/commclient.html">commclient(n)</a> to handle game truth published via
+<a href="../mann/gtserver.html">gtserver(n)</a>/<a href="../mann/commserver.html">commserver(n)</a>.  See the
+<a href="#example">EXAMPLE</a>, below, for how to hook up the gtclient(n)
+to the <a href="../mann/commclient.html">commclient(n)</a> object.</p>
+
+<p>Once a gtclient(n) object is created and connected to
+the <a href="../mann/commclient.html">commclient(n)</a>, it will receive all game truth published by
+the <a href="../mann/gtserver.html">gtserver(n)</a>.  Other modules in the application can
+retrieve game truth values at any time using the <a class="iref" href="#get">get</a>
+method, and can also register a variety of callbacks for handling
+updates as they occur.</p>
+
+<p>Note that the gtclient(n) API is designed to match the message protocol
+used by <a href="../mann/gtserver.html">gtserver(n)</a>; see the <a href="../mann/gtserver.html">gtserver(n)</a> man page
+for details of the protocol.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="gtclient">gtclient <i>name ?options?</i></a></dt><dd><p>
+
+Creates a new gtclient(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#gtclient">gtclient</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a class="iref" href="#gtclient">gtclient</a> may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="gtclient-logger">-logger <i>name</i></a></dt><dd>
+
+The name of the <a href="../mann/logger.html">logger(n)</a> object to use to log gtclient(n)
+activity.
+
+</dd>
+<dt class="defopt"><a name="gtclient-logcomponent">-logcomponent <i>name</i></a></dt><dd>
+
+The component name to pass to the <code>-logger</code> object when
+logging messages; defaults to "gt".
+
+</dd>
+<dt class="defopt"><a name="gtclient-refreshstartcmd">-refreshstartcmd <i>command</i></a></dt><dd>
+
+If defined, the <code>-refreshstartcmd</code> is called in the global scope
+on <a class="iref" href="#startrefresh">startrefresh</a>, before the refresh begins.
+
+</dd>
+<dt class="defopt"><a name="gtclient-refreshendcmd">-refreshendcmd <i>command</i></a></dt><dd>
+
+If defined, the <code>-refreshendcmd</code> is called in the global scope
+on <a class="iref" href="#endrefresh">endrefresh</a>, before any watchers are called.
+
+</dd>
+<dt class="defopt"><a name="gtclient-completecmd">-completecmd <i>command</i></a></dt><dd>
+
+If defined, the <code>-completecmd</code> is called in the global
+scope whenever <a class="iref" href="#complete">complete</a> method is received.
+
+</dd>
+<dt class="defopt"><a name="gtclient-db">-db <i>name</i></a></dt><dd>
+
+Defines the workstation database that stores game truth objects that are 
+received from the <a href="../mann/gtserver.html">gtserver(n)</a>.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#gtclient">gtclient</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget">$gtclient cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure">$gtclient configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="startrefresh">$gtclient startrefresh</a></dt><dd>
+
+Indicates the beginning of a game truth refresh.  Watchers will not be
+called until the refresh is complete.
+
+</dd>
+<dt class="defitem"><a name="endrefresh">$gtclient endrefresh</a></dt><dd>
+
+Indicates the end of a game truth refresh.  The
+<code>-refreshendcmd</code> will be called, if defined, followed by
+all defined watcher callbacks.
+
+</dd>
+<dt class="defitem"><a name="set">$gtclient set <i>name value</i> ?<i>name value...</i>?</a></dt><dd><p>
+
+Saves the named game truth variables with the specified values,
+and calls any watcher callbacks (see <a class="iref" href="#watch">watch</a>, below).</p>
+
+<p>Note that if this method is called during a refresh, the watchers will
+not be called until the refresh is over.
+
+</p>
+</dd>
+<dt class="defitem"><a name="unset">$gtclient unset <i>name</i> ?<i>name</i>...?</a></dt><dd>
+
+Unsets the named game truth variables.  The variables are erased from
+the gtclient(n)'s memory.
+
+</dd>
+<dt class="defitem"><a name="clear">$gtclient clear</a></dt><dd>
+
+Unsets all game truth variables.
+
+</dd>
+<dt class="defitem"><a name="complete">$gtclient complete</a></dt><dd>
+
+Notifies the client that the current set of game truth variables is
+consistent and complete; if defined, the <code>-completecmd</code>
+is called.
+
+</dd>
+<dt class="defitem"><a name="get">$gtclient get <i>name</i></a></dt><dd>
+
+Returns the value of the named game truth variable.
+
+</dd>
+<dt class="defitem"><a name="var">$gtclient var <i>name</i></a></dt><dd>
+
+Returns the fully-qualified variable name associated with the
+named game truth variable, for use as a <code>-textvariable</code>.
+
+</dd>
+<dt class="defitem"><a name="watch">$gtclient watch <i>name command</i></a></dt><dd><p>
+
+Defines a watcher callback on the named game truth variable; whenever
+the variable's value is updated, the new value will be append to
+<i>command</i> and the result evaluated in the global scope.  All
+defined watchers are also called after each refresh, immediately
+after the <code>-refreshendcmd</code>.</p>
+
+<p>To delete a watcher, set it to the empty string.
+
+</p>
+</dd>
+<dt class="defitem"><a name="class">$gtclient class <i>class table idcolumn</i></a></dt><dd>
+
+Defines a class of simulation object that will be created, updated and perhaps 
+deleted. Each class has a corresponding <i>table</i> in the workstation database.
+This table is the one that has rows created, updated or deleted. The
+<i>idcolumn</i> specifies which column in the table is the key column.
+
+</dd>
+<dt class="defitem"><a name="update">$gtclient update <i>class id</i> ?<i>dict</i>?</a></dt><dd>
+
+Receives a simulation object with the supplied <i>class</i> from a  
+<a href="../mann/gtserver.html">gtserver(n)</a>.  If an object with the supplied <i>id</i> already exists, 
+the workstation database is updated with the information in the dict. Otherwise
+the workstation database has a new record created that has the supplied id
+and data in the supplied dict.
+A call is made to the callback supplied in the <a class="iref" href="#onupdate">onupdate</a> 
+command, if there is one. The callback has appended to it "update $id $dict".
+
+</dd>
+<dt class="defitem"><a name="delete">$gtclient delete <i>class id</i></a></dt><dd>
+
+Receives a delete message from the <a href="../mann/gtserver.html">gtserver(n)</a> with the supplied
+<i>class</i> and <i>id</i>. A call is made to the callback supplie in the 
+<a class="iref" href="#onupdate">onupdate</a> command, if there is one. The callback has appended to it
+"delete $id $dict", where <i>dict</i> is queried from the workstation database.
+. The item is then removed from the workstation database.
+
+</dd>
+<dt class="defitem"><a name="onupdate">$gtclient onupdate <i>class prefix</i></a></dt><dd><p>
+
+Defines a callback that should be made whenever the client receives a create, 
+update or delete message from the <a href="../mann/gtserver.html">gtserver(n)</a>. 
+The callback has appended
+to it the string "create", "update" or "delete" along with the id and dict for
+the object.</p>
+
+<p>To delete an onpudate command set it to the empty string.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="example">EXAMPLE</a></h2>
+<p>The gtclient(n) is initialized as follows.  Note that if the
+application has a single gtclient(n), it is conventionally called
+<code>::gt</code>, as shown; however, any name will do, provided that
+the <a href="../mann/commclient.html">commclient(n)</a>'s alias is "gt". 
+
+</p>
+
+<pre>
+# FIRST, create the gtclient(n) object
+gtclient ::gt \
+    -logger ::log \
+    -refreshendcmd [list puts "Got a refresh!"] \
+    -db ::wsdb
+
+# NEXT, initialize some variables to known values, so that the labels
+# they'll be attached to will show something.
+gt set zulu "??????????????"
+
+# NEXT, define a class that can be created, updated or deleted
+gt class foo fooTable id
+
+# NEXT, define a callback for this class of object
+gt onupdate foo [list UpdatedFoo]
+
+# NEXT, insert an object into the workstation database
+gt create foo 9 {bar 1 name "Fred" id 9}
+
+# NEXT, update an existing object
+gt update foo 9 {name "Wilma"}
+
+# NEXT, delete an object from the database
+gt delete foo 9
+
+# NEXT, define watchers
+gt watch somevar [list SomevarWatcher]
+
+# NEXT, create the commclient(n) object
+commclient ::cc \
+   -logger ::log \
+   -logcomponent cc \
+   -server ...
+
+# NEXT, hook the gtclient(n) to the commclient(n):
+cc alias gt ::gt
+</pre>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/commserver.html">commserver(n)</a>, <a href="../mann/commclient.html">commclient(n)</a>, <a href="../mann/gtserver.html">gtserver(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

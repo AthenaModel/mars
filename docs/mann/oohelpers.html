@@ -1,0 +1,483 @@
+<html>
+<head>
+<title>mars 3.0.23: oohelpers(n) -- TclOO Convenience Package, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>oohelpers(n)</b> -- TclOO Convenience Package, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#general_commands">GENERAL COMMANDS</a></li>
+    
+
+    <li><a href="#classdefinition_commands">CLASS-DEFINITION COMMANDS</a></li>
+    
+
+    <li><a href="#body_commands">BODY COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#isa">isa <i>cls obj</i></a></li>
+<li><a class="iref" href="#isancestor">isancestor <i>parent child</i></a></li>
+<li><a class="iref" href="#meta">meta <i>name value</i></a></li>
+<li><a class="iref" href="#metadict">metadict <i>name dict</i></a></li>
+<li><a class="iref" href="#typemethod">typemethod <i>method arglist body</i></a></li>
+<li><a class="iref" href="#mymethod">mymethod <i>method</i> ?<i>args...</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The oohelpers(n) package contains commands that make using TclOO a bit 
+easier.
+
+</p>
+
+<h2><a name="general_commands">GENERAL COMMANDS</a></h2>
+<p>This module defines the following commands to be used with TclOO classes
+and objects.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="isa">isa <i>cls obj</i></a></dt><dd>
+
+Returns 1 if <i>obj</i> is an instance of <i>cls</i> or one of its subclasses,
+and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="isancestor">isancestor <i>parent child</i></a></dt><dd>
+
+Returns 1 if <i>parent</i> is an ancestor class of the <i>child</i> class
+(including being a direct superclass), and 0 otherwise.
+
+</dd>
+</dl>
+
+<h2><a name="classdefinition_commands">CLASS-DEFINITION COMMANDS</a></h2>
+<p>This module defines the following commands to be used in class definitions or
+with <code>oo::define</code>:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="meta">meta <i>name value</i></a></dt><dd><p>
+
+Defines a class metadata variable, a constant <i>value</i> that can be retrieved
+from the class object and from its instances by calling the method of the
+same <i>name</i>.  For example,
+
+</p><pre class="example">
+oo::class create myclass {
+    meta title "The Class's Title"
+}
+</pre>
+<p>is equivalent to
+
+</p>
+
+<pre class="example">
+oo::class create myclass {
+    self method title {} {
+        return "The Class's Title"
+    }
+    method title {} {
+        return [[self class] title]
+    }
+}
+</pre>
+
+</dd>
+<dt class="defitem"><a name="metadict">metadict <i>name dict</i></a></dt><dd><p>
+
+Defines a class metadata variable whose value is a dictionary.  Such
+variables are just like normal <a class="iref" href="#meta">meta</a> variables, except that the
+automatically generated methods have an optional <i>key</i> argument, allowing
+for dictionary look ups. For example,
+
+</p><pre class="example">
+oo::class create myclass {
+    meta lookup { 
+        A 4.0
+        B 3.0
+        C 2.0
+        D 1.0
+        F 0.0
+    }
+}
+
+set dict [myclass lookup]
+set points [myclass lookup B]
+
+set obj [myclass new]
+set dict [$obj lookup]
+set points [$obj lookup B]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="typemethod">typemethod <i>method arglist body</i></a></dt><dd><p>
+
+<b>Deprecated.</b> In class definitions, the syntax "<span class="tt">self method</span>" is
+equivalent to "<span class="tt">typemethod</span>" as defined here.</p>
+
+<p>Defines a method on the class's class object.  In other words,
+
+</p><pre class="example">
+oo::class create myclass {
+    typemethod init {} { ... }
+}
+</pre>
+<p>is equivalent to
+
+</p>
+
+<pre class="example">
+oo::class create myclass
+oo::objdefine myclass {
+    typemethod init {} { ... }
+}
+</pre>
+
+
+</dd>
+</dl>
+
+<h2><a name="body_commands">BODY COMMANDS</a></h2>
+<p>This module defines the following commands for use in method bodies
+(including constructor and destructor bodies):
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="mymethod">mymethod <i>method</i> ?<i>args...</i>?</a></dt><dd>
+
+Returns a command prefix consisting of a call to the current object's
+named <i>method</i> plus any additional arguments.  The command prefix
+can be called by other objects even if the method is unexported.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.6 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

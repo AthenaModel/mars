@@ -1,0 +1,510 @@
+<html>
+<head>
+<title>mars 3.0.23: order_dialog(n) -- Order Dialog Manager, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>order_dialog(n)</b> -- Order Dialog Manager, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#notifier_events">NOTIFIER EVENTS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#order_dialog_enter">order_dialog enter <i>options...</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-appname">-appname <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-flunky">-flunky <i>flunky</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-helpcmd">-helpcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-master">-master <i>master</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-order">-order <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-parmdict">-parmdict <i>parmdict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#order_dialog enter-refreshon">-refreshon <i>events</i></a></li>
+<li><a class="iref" href="#order_dialog_puck">order_dialog puck <i>tagdict</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#enter"><i>pathName</i> enter <i>parmdict</i></a></li>
+<li><a class="iref" href="#OrderEntry"><code>&lt;OrderEntry&gt;</code> <i>tags</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>order_dialog(n) is responsible for creating and managing dialog boxes
+for orders defined using <a href="../mann/order.html">order(n)</a>.</p>
+
+<p>order_dialog(n)'s dialogs are built around the <a href="../mann/dynaview.html">dynaview(n)</a> 
+widget, which is based on turn on the <a href="../mann/dynaform.html">dynaform(n)</a> form
+specification included in the order's metadata.  See the 
+<a href="../mann/dynaform.html">dynaform(n)</a> man page for information on the standard field
+types and on how to define custom field types.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>order_dialog(n) provides the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="order_dialog_enter">order_dialog enter <i>options...</i></a></dt><dd><p>
+
+Pops up an order dialog given the options.  This is the standard way to
+pop up an order dialog.  The options are the same as for the dialog 
+widget, with the addition of <span class="tt">-parmdict</span>.
+
+</p><dl>
+
+<dt class="defopt"><a name="order_dialog enter-appname">-appname <i>string</i></a></dt><dd>
+
+Specifies the name of the application, to be used in the title bar of
+the order dialog.
+
+</dd>
+<dt class="defopt"><a name="order_dialog enter-flunky">-flunky <i>flunky</i></a></dt><dd>
+
+The instance of <a href="../mann/order_flunky.html">order_flunky(n)</a> (or a subclass) that is responsible
+for managing order execution for the dialog.
+
+</dd>
+<dt class="defopt"><a name="order_dialog enter-helpcmd">-helpcmd <i>cmd</i></a></dt><dd>
+
+If given, the dialog will have a context-sensitive help button.  The
+<i>cmd</i> should be a command prefix taking one additional argument,
+the name of the order.  The command should then make help available for
+that order.
+
+</dd>
+<dt class="defopt"><a name="order_dialog enter-master">-master <i>master</i></a></dt><dd>
+
+Specifies the master window for the dialog, i.e., the application window
+with which it is associated.
+
+</dd>
+<dt class="defopt"><a name="order_dialog enter-order">-order <i>name</i></a></dt><dd>
+
+The name of the order, e.g., "MY:ORDER".  The order must be known to the
+<span class="tt">-flunky</span> and must have non-empty <span class="tt">form</span> metadata.
+
+</dd>
+<dt class="defopt"><a name="order_dialog enter-parmdict">-parmdict <i>parmdict</i></a></dt><dd>
+
+The initial parameter dictionary.  It will be used to populate the dialog.
+
+</dd>
+<dt class="defopt"><a name="order_dialog enter-refreshon">-refreshon <i>events</i></a></dt><dd><p>
+
+The value of this option is a list of <a href="../mann/notifier.html">notifier(n)</a>
+subjects and events that should cause the dialog to refresh its contents.</p>
+
+<p>The state of an order dialog often depends on the state of the
+application.  As the application state changes, for example, the
+content of pulldowns might change, thus necessitating a refresh.
+
+</p>
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="order_dialog_puck">order_dialog puck <i>tagdict</i></a></dt><dd><p>
+
+This command allows the user to fill in fields in the current
+order dialog by clicking on elements of the GUI.  The <i>tagdict</i>
+is a dictionary of tag names and values that reflects the entity on
+which the user clicked.  If the current field in the topmost order dialog 
+is tagged with one of the tags in the <i>tagdict</i>, the field will be
+set to the tag's value.</p>
+
+<p>Field tags are set using the <a href="../mann/order.html">order(n)</a>
+<span class="tt">parmtag</span> metadata value.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of order_dialog(n) provides the following public
+methods; however, there should rarely be any need for other modules to
+use them.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of the specified options.
+
+</dd>
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+Returns a dictionary of the values of the dialog's fields, by
+parameter name.
+
+</dd>
+<dt class="defitem"><a name="enter"><i>pathName</i> enter <i>parmdict</i></a></dt><dd>
+
+Sets the values of one or more of the dialog's fields given a
+dictionary of the parameter names and values.  Downstream fields are
+refreshed as appropriate.
+
+</dd>
+</dl>
+
+<h2><a name="notifier_events">NOTIFIER EVENTS</a></h2>
+<p>Each instance of order_dialog(n) sends the following events from 
+subject <span class="tt">::marsgui::order_dialog</span>:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="OrderEntry"><code>&lt;OrderEntry&gt;</code> <i>tags</i></a></dt><dd><p>
+
+An order dialog contains a field for each order parameter.  When a
+given field receives the focus, this event is sent with
+<i>tags</i> set to the parameter's <span class="tt">parmtags</span> as defined in the
+order's metadata, or "<span class="tt">null</span>" if none.  When no field has the focus, or the
+dialog is closed, this event is sent with <i>tags</i> set to the
+empty string.</p>
+
+<p>This allows GUI components to configure themselves so that the
+appropriate kind of object can be selected by clicking on the
+component, e.g., a neighborhood can be selected by clicking on the
+map.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

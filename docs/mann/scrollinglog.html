@@ -1,0 +1,521 @@
+<html>
+<head>
+<title>mars 3.0.23: scrollinglog(n) -- File Logging Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>scrollinglog(n)</b> -- File Logging Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#scrollinglog">scrollinglog <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-showloglist">-showloglist <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-logcmd">-logcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-loglevel">-loglevel <i>level</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-title">-title <i>title</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-updateinterval">-updateinterval <i>milliseconds</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-autowidth">-autowidth <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-format">-format <i>formatlist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-parsecmd">-parsecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-tags">-tags <i>tagslist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-showtitle">-showtitle <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-font">-font <i>font</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-height">-height <i>height</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-width">-width <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-foreground">-foreground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-background">-background <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-insertbackground">-insertbackground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-insertwidth">-insertwidth <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-borderwidth">-borderwidth <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-relief">-relief <i>relief</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-defaultappdir">-defaultappdir <i>appdir</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-formattext">-formattext <i>val</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-logpattern">-logpattern <i>glob_pattern</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-rootdir">-rootdir <i>directory</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scrollinglog-showapplist">-showapplist <i>boolean</i></a></li>
+<li><a class="iref" href="#configure">$scrollinglog configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$scrollinglog cget <i>option</i></a></li>
+<li><a class="iref" href="#load">$scrollinglog load <i>filename</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines the <code>::marsgui::scrollinglog</code>
+widget, which is used to browse periodically updated text files in the
+manner of <code>tail -f</code>.  By default, the widget is configured
+to browse <a href="../mann/logger.html">logger(n)</a> debugging logs; however, the columns,
+file parsing, and highlight colors can be configured to support many
+different formats of text file.</p>
+
+<p>scrollinglog(n) combines the display capabilities of the
+<a href="../mann/logdisplay.html">logdisplay(n)</a> widget with the search and filtering
+capabilities of the <a href="../mann/finder.html">finder(n)</a> and <a href="../mann/filter.html">filter(n)</a> widgets
+in one convenient package.  A <a href="../mann/loglist.html">loglist(n)</a> widget can be
+optionally included.</p>
+
+<p>A combobox is provided to filter based on log level.  The select log
+level and higher levels will be displayed.  The levels provided are in
+accordance with those supported by <a href="../mann/logger.html">logger(n)</a>.</p>
+
+<p>An auto-scroll/scroll-lock selection button is provided in
+the upper right-hand corner.  In the scroll-lock position, the
+contents will remain fixed and under the user's control.  In addition,
+an enabled scroll-lock will prohibit <a class="iref" href="#load">load</a> from loading
+the file contents.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="scrollinglog">scrollinglog <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#scrollinglog">scrollinglog</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#scrollinglog">scrollinglog</a> widget may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="scrollinglog-showloglist">-showloglist <i>boolean</i></a></dt><dd>
+
+When true, enables the inclusion of a <a href="../mann/loglist.html">loglist(n)</a> widget to the left
+of the <a href="../mann/logdisplau.html">logdisplau(n)</a> widget.  When enabled the
+<a href="../mann/loglist.html">loglist(n)</a> will be configured according to these options:
+<code>-defaultappdir</code>, <code>-formattext</code>,
+<code>-logpattern</code>, <code>-rootdir</code>, 
+<code>-parsecmd</code> and <code>-updateinterval</code>. 
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-logcmd">-logcmd <i>command</i></a></dt><dd>
+
+Defines a command the <a class="iref" href="#scrollinglog">scrollinglog</a> can call if it needs to
+output a message.  One argument will be appended to the command, the
+message to be output.
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-loglevel">-loglevel <i>level</i></a></dt><dd>
+
+Defines the maximum log verbosity level to display.  The value of
+<i>level</i> must be one of fatal, warning, normal, detail or debug.
+See <a href="../mann/logger.html">logger(n)</a> of marsutil for more information on log
+levels.
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-title">-title <i>title</i></a></dt><dd>
+
+<b>Obsolete.</b>  This option no longer has any effect.
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-updateinterval">-updateinterval <i>milliseconds</i></a></dt><dd>
+
+Determines how often the <a class="iref" href="#scrollinglog">scrollinglog</a> will perform automatic
+updates when auto-scroll is enabled. 
+Defaults to 1000 (i.e., one second).
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-autowidth">-autowidth <i>boolean</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-format">-format <i>formatlist</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-parsecmd">-parsecmd <i>cmd</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-tags">-tags <i>tagslist</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-showtitle">-showtitle <i>boolean</i></a></dt><dd>
+
+These options are all identical to the matching <a href="../mann/logdisplay.html">logdisplay(n)</a>
+options; they are configured by default to support <a href="../mann/logger.html">logger(n)</a>
+log files.  See the <a href="../mann/logdisplay.html">logdisplay(n)</a> man page and the
+scrollinglog(n) code to see how to customize them for other formats.
+If <code>-showloglist</code> is true, the <code>-parsecmd</code> and
+<code>-showtitle</code> options will also be used to configure the
+loglist according to <a href="../mann/loglist.html">loglist(n)</a>.
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-font">-font <i>font</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-height">-height <i>height</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-width">-width <i>width</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-foreground">-foreground <i>color</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-background">-background <i>color</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-insertbackground">-insertbackground <i>color</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-insertwidth">-insertwidth <i>color</i></a></dt><dd>
+
+These options are all identical to the Tk text widget options of the
+same names.
+
+</dd>
+<dt class="defopt"><a name="scrollinglog-borderwidth">-borderwidth <i>width</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-relief">-relief <i>relief</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-defaultappdir">-defaultappdir <i>appdir</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-formattext">-formattext <i>val</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-logpattern">-logpattern <i>glob_pattern</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-rootdir">-rootdir <i>directory</i></a></dt>
+<dt class="defopt"><a name="scrollinglog-showapplist">-showapplist <i>boolean</i></a></dt><dd>
+
+These options are all identical to the matching <a href="../mann/loglist.html">loglist(n)</a>
+options; they are configured by default to support <a href="../mann/logger.html">logger(n)</a>
+log files.  See the <a href="../mann/loglist.html">loglist(n)</a> man page and the
+scrollinglog(n) code to see how to customize them for other formats.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$scrollinglog configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget">$scrollinglog cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="load">$scrollinglog load <i>filename</i></a></dt><dd>
+
+Tells <a class="iref" href="#scrollinglog">scrollinglog</a> to display the named file unless
+scroll-lock is currently enabled.  In this case, the file name is
+cached for later use.
+
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

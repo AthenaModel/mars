@@ -1,0 +1,529 @@
+<html>
+<head>
+<title>mars 3.0.23: htmlviewer(n) -- HTML Viewer Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>htmlviewer(n)</b> -- HTML Viewer Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#style_management">Style Management</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#bugs">BUGS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#htmlviewer">htmlviewer <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlviewer-hovercmd">-hovercmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlviewer-hyperlinkcmd">-hyperlinkcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlviewer-isvisitedcmd">-isvisitedcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlviewer-defstyles">-defstyles <i>css</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlviewer-styles">-styles <i>css</i></a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>html</i></a></li>
+<li><a class="iref" href="#setanchor"><i>pathName</i> setanchor <i>anchor</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines a simple wrapper around the Tkhtml 3.0 HTML
+rendering widget.  The wrapper adds standard bindings and
+additional commands.  All features of the underlying Tkhtml 3.0 widget are
+available to the programmer.</p>
+
+<p>The Tkhtml 3.0 widget, as shipped, is fairly bare-bones; a number of
+things need to be added.  In particular, this wrapper:
+
+</p>
+
+<ul class="ulp">
+  <li> Adds standard bindings supporting clicking on a link, scrolling
+       the widget using the keyboard, selecting text, and so forth.
+
+  </li><li> Handles in-line <code>&lt;style&gt;...&lt;/style&gt;</code>
+       tags.
+
+  </li><li> Sets "link" and "visited" flags on links, so that they get
+       colored the way the CSS says they should.
+
+  </li><li> Defines some additional CSS settings, so that the displayed
+       HTML looks nice.
+
+  </li><li> Adds two useful methods, <a class="iref" href="#set">set</a> and <a class="iref" href="#setanchor">setanchor</a>.
+</li></ul>
+
+<h2><a name="style_management">Style Management</a></h2>
+<p>The Tkhtml 3.0 widget supports Cascading Style Sheets spec (CSS 2.1).  The
+widget itself has an internal set of styles that are truly part of the 
+implementation of the widget and should not be touched; they can be
+retrieved via the <span class="tt">tkhtml::htmlstyle</span> command or by retrieving
+the value of the <span class="tt">-defaultstyle</span> option on a bare Tkhtml 3.0 widget.</p>
+
+<p>Style sheets are cumulative, and htmlviewer(n) supports the inclusion of
+several layers of additional styles.  Each layer augments and overrides
+the previous layer.  The layers are applied in this order:
+
+</p>
+
+<ul class="ulp">
+<li> Tkhtml 3.0's basic styles, which provide the basic look and feel of
+     the widget.
+
+</li><li> htmlviewer(n)'s default styles, which are defined in 
+     <span class="tt">lib/marsgui/htmlviewer.css</span>.  These styles tweak the default 
+     appearance to give a nicer look, and also include some standard
+     classes.  See the file for details.
+
+</li><li> The CSS styles provided by the <span class="tt">-defstyles</span> option; if set, these
+     completely replace the styles set in <span class="tt">lib/marsgui/htmlviewer.css</span>.
+     This is primarily useful in development, as it allows the developer to
+     change htmlviewer(n)'s default styles without modify the widget code
+     itself.
+
+</li><li> The CSS styles provided by the <span class="tt">-styles</span> option.  Applications 
+     will usually use this option to add application-specific styles.
+
+</li><li> The CSS styles provided by any <code>&lt;style&gt;</code>...<code>&lt;/style&gt;</code> elements
+     in the header of the HTML page itself.
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="htmlviewer">htmlviewer <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#htmlviewer">htmlviewer</a> widget named <i>pathName</i>.  The
+options are as described in the Tkhtml 3.0 man page, with the exception
+of <span class="tt">-defaultstyle</span> and the addition of the following:
+
+</p><dl>
+
+<dt class="defopt"><a name="htmlviewer-hovercmd">-hovercmd <i>command</i></a></dt><dd>
+
+The <i>command</i> is called with two additional arguments when the
+mouse is over something of interest in the displayed page: the type of
+the thing the mouse is over, either <b>href</b> or <b>image</b>, and
+a URL.  Relative URLs are <b>not</b> resolved; use
+<a href="../mann/myagent.html">myagent(n)</a>'s <a href="../mann/myagent.html#resolve">resolve</a> method or similar to
+produce an absolute URL.
+
+
+</dd>
+<dt class="defopt"><a name="htmlviewer-hyperlinkcmd">-hyperlinkcmd <i>command</i></a></dt><dd>
+
+The <i>command</i> is called with one additional argument, the URL,
+when the user clicks on a link.  Relative URLs are <b>not</b> resolved; use
+<a href="../mann/myagent.html">myagent(n)</a>'s <a href="../mann/myagent.html#resolve">resolve</a> method or similar to
+produce an absolute URL.
+
+</dd>
+<dt class="defopt"><a name="htmlviewer-isvisitedcmd">-isvisitedcmd <i>command</i></a></dt><dd><p>
+
+When an HTML page is parsed, this <i>command</i> is called once for
+each link in the page.  It is called with one additional argument,
+the link's URL.  The command should return 1 if the URL has been
+visited, and 0 otherwise.</p>
+
+<p>Relative URLs are <b>not</b> resolved; use
+<a href="../mann/myagent.html">myagent(n)</a>'s <a href="../mann/myagent.html#resolve">resolve</a> method or similar to
+produce an absolute URL.
+
+</p>
+</dd>
+<dt class="defopt"><a name="htmlviewer-defstyles">-defstyles <i>css</i></a></dt><dd>
+
+Specifies a CSS style sheet to replace the widget's default styles.
+See <a href="#style_management">Style Management</a> for more about CSS style sheets.
+
+</dd>
+<dt class="defopt"><a name="htmlviewer-styles">-styles <i>css</i></a></dt><dd>
+
+Specifies a CSS style sheet to add to the widget's default styles.
+See <a href="#style_management">Style Management</a> for more about CSS style sheets.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Instances of <a href="../mann/htmlviewer.html">htmlviewer(n)</a> widget support all instance
+subcommands defined in the Tkhtml 3.0 man page.  In addition,
+the following commands are defined.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>html</i></a></dt><dd>
+
+Displays the <i>html</i> text in the viewer, replacing any
+previous content.
+
+</dd>
+<dt class="defitem"><a name="setanchor"><i>pathName</i> setanchor <i>anchor</i></a></dt><dd>
+
+Scrolls the displayed page to the named anchor, or to the top if there
+is no such anchor.
+
+
+</dd>
+</dl>
+
+
+<h2><a name="bugs">BUGS</a></h2>
+<p>The Tkhtml 3.0 widget is incomplete, and is no longer maintained.  It
+is also, alas, currently the best alternative for displaying HTML text
+in Tk programs.  This section documents the known issues.</p>
+
+<p><b>Improperly nested tables cause a hard crash.</b>
+If a <code>&lt;table&gt;</code> element contains another
+<code>&lt;table&gt;</code> element at its top level, i.e, not
+in a table cell, Tkhtml 3.0 will crash:
+
+</p>
+
+<pre>
+&lt;table&gt;&lt;table&gt;
+<i>table rows</i>
+&lt;/table&gt;&lt;/table&gt;
+</pre>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>New package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+

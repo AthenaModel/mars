@@ -1,0 +1,806 @@
+<html>
+<head>
+<title>mars 3.0.23: cmsheet(n) -- cellmodel(n) Sheet Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>cmsheet(n)</b> -- cellmodel(n) Sheet Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#mapping_cells">Mapping Cells</a></li>
+
+</ul>
+    
+
+    <li><a href="#options">OPTIONS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#bindings">BINDINGS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#cmsheet">cmsheet <i>pathName</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#cget"><i>win</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>win</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cell"><i>win</i> cell <i>index</i></a></li>
+<li><a class="iref" href="#empty"><i>win</i> empty <i>rc0 rc1</i></a></li>
+<li><a class="iref" href="#index"><i>win</i> index <i>index</i></a></li>
+<li><a class="iref" href="#mapcell"><i>win</i> mapcell <i>rc cellname tag</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mapcell-changecmd">-changecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mapcell-formatcmd">-formatcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mapcell-validatecmd">-validatecmd <i>cmd</i></a></li>
+<li><a class="iref" href="#map"><i>win</i> map <i>rc indx jndx pattern tag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#mapcol"><i>win</i> mapcol <i>rc indx pattern tag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#maprow"><i>win</i> maprow <i>rc jndx pattern tag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#see"><i>win</i> see <i>index</i></a></li>
+<li><a class="iref" href="#refresh"><i>win</i> refresh</a></li>
+<li><a class="iref" href="#tag"><i>win</i> tag <i>subcommand args...</i></a></li>
+<li><a class="iref" href="#textcell"><i>win</i> textcell <i>rc text</i> ?<i>tag</i> ?<i>options...</i>??</a></li>
+<li><a class="iref" href="#textcol"><i>win</i> textcol <i>rc textlist</i> ?<i>tag</i> ?<i>options...</i>??</a></li>
+<li><a class="iref" href="#textrow"><i>win</i> textrow <i>rc textlist</i> ?<i>tag</i> ?<i>options...</i>??</a></li>
+<li><a class="iref" href="#width"><i>win</i> width <i>args...</i></a></li>
+<li><a class="iref" href="#window"><i>win</i> window <i>args...</i></a></li>
+<li><a class="iref" href="#xview"><i>win</i> xview <i>args</i></a></li>
+<li><a class="iref" href="#yview"><i>win</i> yview <i>args</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The cmsheet(n) widget is a Tktable mapped to a
+<a href="../mann/cellmodel.html">cellmodel(n)</a> model.  The client maps particular
+<a href="../mann/cellmodel.html">cellmodel(n)</a> cells to rows, columns, 
+and regions in the Tktable; thereafter, edits in editable
+cells will cause the cell model to recompute and display
+the updated information.</p>
+
+<p>For the most part this man page stands alone; however, it will be
+useful to review the Tktable documentation, with particular reference
+to cell indices, tags, and embedded windows.
+
+</p>
+
+<h2><a name="mapping_cells">Mapping Cells</a></h2>
+<p>To use cmsheet(n), first define a <a href="../man5/cellmodel.html">cellmodel(5)</a> model, and
+load it into an instance of <a href="../mann/cellmodel.html">cellmodel(n)</a>.  Next, create an
+instance of cmsheet(n), and link it to the cell model using the
+<b>-cellmodel</b> option.  Finally, use <a class="iref" href="#mapcell">mapcell</a> and its peers
+to map particular cell model cells into the sheet's table layout.
+Constant cells will be editable by default; formula cells will not.</p>
+
+<p>Note that cells can be re-mapped dynamically.  For example, consider a
+parameter that can be computed by the application or entered
+by the user.  The cell model can have two cells, one a formula and one
+a constant, and the application can map one or the other as desired.
+
+</p>
+
+<h2><a name="options">OPTIONS</a></h2>
+<p>The widget has the following options.
+
+</p>
+
+<dl>
+<dt class="defopt"><a name="yview-browsecommand">-browsecommand <i>cmd</i></a></dt><dd>
+
+Specifies a command to be called when the user browses to a different 
+cell in the cmsheet(n).  See the TkTable documentation for more details, 
+this option is delegated to it.
+
+</dd>
+<dt class="defopt"><a name="yview-cellmodel">-cellmodel <i>cmd</i></a></dt><dd>
+
+The name of an instance of <a href="../mann/cellmodel.html">cellmodel(n)</a>.  Note that multiple
+cmsheet(n) widgets can be mapped to a single instance of
+<a href="../mann/cellmodel.html">cellmodel(n)</a>.
+
+</dd>
+<dt class="defopt"><a name="yview-changecmd">-changecmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to be called whenever a cell is successfully edited.
+The <i>cmd</i> must be a command prefix taking two additional arguments,
+the name of the cell in the <a href="../mann/cellmodel.html">cellmodel(n)</a> and the new value of 
+the cell.</p>
+
+<p>This command can be overridden for particular cells using
+the <b>-changecmd</b> option on <a class="iref" href="#mapcell">mapcell</a> and its peers.
+
+</p>
+</dd>
+<dt class="defopt"><a name="yview-colorigin">-colorigin <i>num</i></a></dt><dd>
+
+The numeric index of the first column in the sheet.  The option
+defaults to 0, but it is common to redefine it so that the
+<b>-titlecols</b> have negative indices and the first data column has
+index 0.  For example, if <b>-titlecols</b> is 1, then this would be
+set to -1.
+
+</dd>
+<dt class="defopt"><a name="yview-cols">-cols <i>columns</i></a></dt><dd>
+
+The total number of columns of data in the table, including title
+columns.
+
+</dd>
+<dt class="defopt"><a name="yview-font">-font <i>font</i></a></dt><dd>
+
+The default font; cell options can override this for specific
+cells.
+
+</dd>
+<dt class="defopt"><a name="yview-formatcmd">-formatcmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to format cell model values for display.  The
+<i>cmd</i> must be a command prefix taking one additional argument, the
+value to format, and returning the formatted output.</p>
+
+<p>This command can be overridden for particular cells using
+the <b>-formatcmd</b> option on <a class="iref" href="#mapcell">mapcell</a> and its peers.
+
+</p>
+</dd>
+<dt class="defopt"><a name="yview-height">-height <i>rows</i></a></dt><dd>
+
+The number of visible rows in the table.  If the value is 0, then the
+widget will attempt to display all <b>-rows</b> rows.
+
+</dd>
+<dt class="defopt"><a name="yview-maxheight">-maxheight <i>pixels</i></a></dt><dd>
+
+The maximum height of the widget in pixels; the user must scroll to
+see any content that doesn't fit in this space.  Defaults to the
+height of the screen.
+
+</dd>
+<dt class="defopt"><a name="yview-maxwidth">-maxwidth <i>pixels</i></a></dt><dd>
+
+The maximum width of the widget in pixels; the user must scroll to
+see any content that doesn't fit in this space.  Defaults to the
+width of the screen.
+
+</dd>
+<dt class="defopt"><a name="yview-refreshcmd">-refreshcmd <i>cmd</i></a></dt><dd>
+
+A Tcl script that is called whenever the widget has just refreshed its
+contents.  The command is usually used to update Tktable tag
+configurations so as to change the appearance of particular cells.
+For example, it can change the color problem cells to red.
+
+</dd>
+<dt class="defopt"><a name="yview-roworigin">-roworigin <i>num</i></a></dt><dd>
+
+The numeric index of the first row in the sheet.  The option
+defaults to 0, but it is common to redefine it so that the
+<b>-titlerows</b> have negative indices and the first data column has
+index 0.  For example, if <b>-titlerows</b> is 1, then this would be
+set to -1.
+
+</dd>
+<dt class="defopt"><a name="yview-rows">-rows <i>rows</i></a></dt><dd>
+
+The total number of rows of data in the table, including title
+rows.
+
+</dd>
+<dt class="defopt"><a name="yview-solvecmd">-solvecmd <i>cmd</i></a></dt><dd>
+
+The cmsheet(n) calls command to recompute the <b>-cellmodel</b>
+whenever the user enters a valid input in a cell.  By default, the
+cmsheet(n) will simply recompute the entire cell model; this command
+can be used to limit the computation to particular pages of the cell
+model.
+
+</dd>
+<dt class="defopt"><a name="yview-state">-state <i>state</i></a></dt><dd>
+
+If set to <b>normal</b> (the default) editable cells are editable; if
+set to <b>disabled</b>, they are not.  Note that this has no effect on
+programmatic updates to the widget.  Defaults to <b>normal</b>.
+
+</dd>
+<dt class="defopt"><a name="yview-titlecols">-titlecols <i>num</i></a></dt><dd>
+
+The number of title columns.  Title columns do not scroll, and are
+tagged with the <b>title</b> tag.  Defaults to 0.
+
+</dd>
+<dt class="defopt"><a name="yview-titlerows">-titlerows <i>num</i></a></dt><dd>
+
+The number of title rows.  Title rows do not scroll, and are
+tagged with the <b>title</b> tag.  Defaults to 0.
+
+</dd>
+<dt class="defopt"><a name="yview-validatecmd">-validatecmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to call to validate user input.  The command
+should be a prefix to which will be added two arguments, the Tktable
+"r,c" index of the edited cell, and the edited value.  The command
+must either return the (possibly modified) value, or throw an error
+with error code <b>INVALID</b>.  Note that if the table cell is mapped
+to a <a href="../mann/cellmodel.html">cellmodel(n)</a> cell, you can retrieve the cell name using
+the <a class="iref" href="#cell">cell</a> method.</p>
+
+<p>By default, cmsheet(n) requires all entered values to be valid real
+numbers.</p>
+
+<p>This command can be overridden for particular cells using
+the <b>-validatecmd</b> option on <a class="iref" href="#mapcell">mapcell</a> and its peers.
+
+</p>
+</dd>
+<dt class="defopt"><a name="yview-width">-width <i>columns</i></a></dt><dd>
+
+The number of visible columns in the table.  If the value is 0, then the
+widget will attempt to display all <b>-cols</b> columns.
+
+</dd>
+<dt class="defopt"><a name="yview-xscrollcommand">-xscrollcommand <i>cmd</i></a></dt><dd>
+
+The usual Tk X-scrollbar command.
+
+</dd>
+<dt class="defopt"><a name="yview-yscrollcommand">-yscrollcommand <i>cmd</i></a></dt><dd>
+
+The usual Tk Y-scrollbar command.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cmsheet">cmsheet <i>pathName</i> ?<i>options...</i>?</a></dt><dd>
+
+Creates a new cmsheet(n) widget named <i>pathName</i>.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>win</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>win</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.  Most changes will be
+displayed automatically; however, for some it might be necessary
+to <a class="iref" href="#refresh">refresh</a> the widget.
+
+</dd>
+<dt class="defitem"><a name="cell"><i>win</i> cell <i>index</i></a></dt><dd>
+
+Given a Tktable cell index, returns the name of the
+<a href="../mann/cellmodel.html">cellmodel(n)</a> cell that is mapped to it, or "" if none.
+
+</dd>
+<dt class="defitem"><a name="empty"><i>win</i> empty <i>rc0 rc1</i></a></dt><dd>
+
+Tells the cmsheet(n) that the rectangle of cells with upper-left
+corner specified by Tktable index <i>rc0</i> and lower-right corner
+specified by Tktable index <i>rc1</i> contain no data and should be
+tagged with the <b>empty</b> tag.  By default, empty cells are flat
+and have the default GUI background color; however, this can be
+changed using the <a class="iref" href="#tag">tag</a> command.
+
+</dd>
+<dt class="defitem"><a name="index"><i>win</i> index <i>index</i></a></dt><dd>
+
+Given a Tktable cell index or a <a href="../mann/cellmodel.html">cellmodel(n)</a> cell name,
+returns the Tktable "r,c" index of the cell.
+
+</dd>
+<dt class="defitem"><a name="mapcell"><i>win</i> mapcell <i>rc cellname tag</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Maps the <a href="../mann/cellmodel.html">cellmodel(n)</a> cell named <i>cellname</i> to the
+Tktable cell with index <i>rc</i>.  The Tktable cell will display the
+value of the cell model cell.  If the cell model cell is a constant,
+then by default the Tktable cell will be editable; otherwise not.  The
+Tktable cell will be tagged with the named <i>tag</i>; if <i>tag</i>
+is <b>%cell</b>, then it will tagged with the <i>cellname</i>.  In
+either case, the tag can then be configured with a variety of
+<i>options</i>.  In addition to the Tktable tag options (see the
+Tktable documentation), cmsheet(n) provides the following:
+
+</p><dl>
+
+<dt class="defopt"><a name="mapcell-changecmd">-changecmd <i>cmd</i></a></dt><dd>
+Specifies a command to be called whenever the cell is successfully edited.
+The <i>cmd</i> must be a command prefix taking two additional arguments,
+the name of the cell in the <a href="../mann/cellmodel.html">cellmodel(n)</a> and the new value of 
+the cell.
+
+</dd>
+<dt class="defopt"><a name="mapcell-formatcmd">-formatcmd <i>cmd</i></a></dt><dd>
+
+The <i>cmd</i> is a command prefix taking one argument, the cell value
+to be formatted. Whenever the mapped cell's value is to be displayed,
+this command will be used to format it for display.
+
+</dd>
+<dt class="defopt"><a name="mapcell-validatecmd">-validatecmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to call to validate user input.  The command
+should be a prefix to which will be added two arguments, the Tktable
+"r,c" index of the edited cell, and the edited value.  The command
+must either return the (possibly modified) value, or throw an error
+with error code <b>INVALID</b>.  Note that if the table cell is mapped
+to a <a href="../mann/cellmodel.html">cellmodel(n)</a> cell, you can retrieve the cell name using
+the <a class="iref" href="#cell">cell</a> method.</p>
+
+<p>By default, cmsheet(n) requires all entered values to be valid real
+numbers.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="map"><i>win</i> map <i>rc indx jndx pattern tag</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Maps a set of cell model cells to a rectangular region of the sheet.
+The set of cell model cells is defined by two <a href="../man5/cellmodel.html">cellmodel(5)</a>
+indices, <i>indx</i> and <i>jndx</i>, and a <i>pattern</i>.  The cells
+will be mapped to the table starting at index <i>rc</i>.  The
+<i>tag</i> and <i>options</i> are defined as for <a class="iref" href="#mapcell">mapcell</a>.</p>
+
+<p>Consider the following cell model:
+
+</p><pre>
+    index i {a b c}
+    index j {a b c}
+
+    forall i {
+        forall j {
+           let X.$i.$j = 0.0
+        }
+    }
+</pre>
+<p>This model defines a set of cells, <b>X.a.a</b>, <b>X.a.b</b>, and so
+on.  The following command maps these nine cells to a 3x3 region of
+the sheet, with upper-left-corner at 1,1.  The values will be editable
+(since the cells are constant cells, rather than formulas) and
+formatted with two decimal places:
+
+</p>
+
+<pre>
+    $win map 1,1 i j X.%i.%j %cell \
+        -formatcmd {format %.2f}
+</pre>
+<p>The <b>i</b> values will be mapped to the rows, and the <b>j</b>
+values to the columns.</p>
+
+<p>Note that <a href="../man5/cellmodel.html">cellmodel(5)</a> index names, <b>i</b> and <b>j</b>,
+appear as placeholders in the <i>pattern</i>, prefixed with "%".
+<a class="iref" href="#map">map</a> determines the cell names by replacing the placeholders
+with each of the given index's values.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="mapcol"><i>win</i> mapcol <i>rc indx pattern tag</i> ?<i>options...</i>?</a></dt><dd>
+
+The <a class="iref" href="#mapcol">mapcol</a> method is similar to <a class="iref" href="#map">map</a>, but maps cells
+down a single column.  Thus, it has only one index, <i>indx</i>.
+
+</dd>
+<dt class="defitem"><a name="maprow"><i>win</i> maprow <i>rc jndx pattern tag</i> ?<i>options...</i>?</a></dt><dd>
+
+The <a class="iref" href="#maprow">maprow</a> method is similar to <a class="iref" href="#map">map</a>, but maps cells
+along a single row.  Thus, it has only one index, <i>jndx</i>.
+
+</dd>
+<dt class="defitem"><a name="see"><i>win</i> see <i>index</i></a></dt><dd>
+
+Scrolls the table so that the specified <i>index</i> is visible.  The
+<i>index</i> map be a Tktable index or the name of a mapped cell model
+cell.
+
+</dd>
+<dt class="defitem"><a name="refresh"><i>win</i> refresh</a></dt><dd>
+
+Reloads, formats, and displays all mapped values from the underlying
+cell model.
+
+</dd>
+<dt class="defitem"><a name="tag"><i>win</i> tag <i>subcommand args...</i></a></dt><dd><p>
+
+This command is used to define, configure, and query Tktable tags;
+The <a class="iref" href="#mapcell">mapcell</a> and <a class="iref" href="#textcell">textcell</a> methods, and their peers,
+use this command internally when mapping text and cells.  It is
+sometimes useful to use it explicitly, e.g., to change cell colors in
+the <b>-refreshcmd</b>.</p>
+
+<p>The command is delegated to the underlying Tktable widget; see the
+Tktable documentation for details.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="textcell"><i>win</i> textcell <i>rc text</i> ?<i>tag</i> ?<i>options...</i>??</a></dt><dd>
+
+Places the <i>text</i> in the cell with Tktable index <i>rc</i>.  (Note
+that it is not allowed to write text to a Tktable cell mapped to a
+cellmodel cell).  If desired, the <i>text</i> can be styled with a
+<i>tag</i>, and that tag can be configured with any desired Tktable
+tag <i>options</i>.  See the Tktable documentation for the available
+options.
+
+</dd>
+<dt class="defitem"><a name="textcol"><i>win</i> textcol <i>rc textlist</i> ?<i>tag</i> ?<i>options...</i>??</a></dt><dd>
+
+Like <a class="iref" href="#textcell">textcell</a>, but writes successive elements from list
+<i>textlist</i> down the cells in a column starting at index <i>rc</i>.
+
+</dd>
+<dt class="defitem"><a name="textrow"><i>win</i> textrow <i>rc textlist</i> ?<i>tag</i> ?<i>options...</i>??</a></dt><dd>
+
+Like <a class="iref" href="#textcell">textcell</a>, but writes successive elements from list
+<i>textlist</i> along the cells in a row starting at index <i>rc</i>.
+
+</dd>
+<dt class="defitem"><a name="width"><i>win</i> width <i>args...</i></a></dt><dd>
+
+Use this command to set or query column widths.  See the Tktable
+documentation for more information.
+
+</dd>
+<dt class="defitem"><a name="window"><i>win</i> window <i>args...</i></a></dt><dd>
+
+Use this command to embed widgets in table cells.  See the Tktable
+documentation for more information.
+
+</dd>
+<dt class="defitem"><a name="xview"><i>win</i> xview <i>args</i></a></dt>
+<dt class="defitem"><a name="yview"><i>win</i> yview <i>args</i></a></dt><dd>
+
+These are the usual Tk scrolling commands.  See the Tktable
+documentation if need be, but they work just like the equivalent
+commands on the standard Tk widgets.
+
+</dd>
+</dl>
+
+<h2><a name="bindings">BINDINGS</a></h2>
+<p>TBD.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl/Tk 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

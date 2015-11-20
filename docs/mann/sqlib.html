@@ -1,0 +1,697 @@
+<html>
+<head>
+<title>mars 3.0.23: sqlib(n) -- SQLite Utilities, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>sqlib(n)</b> -- SQLite Utilities, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#sqlib_clear">sqlib clear <i>db</i></a></li>
+<li><a class="iref" href="#sqlib_saveas">sqlib saveas <i>db filename</i></a></li>
+<li><a class="iref" href="#sqlib_compare">sqlib compare <i>db1 db2</i></a></li>
+<li><a class="iref" href="#sqlib_tables">sqlib tables <i>db</i></a></li>
+<li><a class="iref" href="#sqlib_schema">sqlib schema <i>db</i> ?<i>table</i>?</a></li>
+<li><a class="iref" href="#sqlib_query">sqlib query <i>db sql</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib query-mode">-mode mc|list|csv|json</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib query-channel">-channel <i>chan</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib query-filename">-filename <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib query-labels">-labels <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib query-maxcolwidth">-maxcolwidth <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib query-headercols">-headercols <i>num</i></a></li>
+<li><a class="iref" href="#sqlib_mat">sqlib mat <i>db table iname jname ename</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib mat-ikeys">-ikeys <i>keys</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib mat-jkeys">-jkeys <i>keys</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib mat-defvalue">-defvalue <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqlib mat-returnkeys">-returnkeys <i>flag</i></a></li>
+<li><a class="iref" href="#sqlib_insert">sqlib insert <i>db table dict</i></a></li>
+<li><a class="iref" href="#sqlib_replace">sqlib replace <i>db table dict</i></a></li>
+<li><a class="iref" href="#sqlib_grab">sqlib grab ?-insert? <i>db</i> <i>table condition</i> ?<i>table condition...</i>?</a></li>
+<li><a class="iref" href="#sqlib_ungrab">sqlib ungrab <i>db data</i></a></li>
+<li><a class="iref" href="#sqlib_fklist">sqlib fklist <i>db table</i> ?-indirect?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>sqlib(n) defines a number of utility commands for use with
+SQLite database files.</p>
+
+<p>SQLite databases are accessed through a command created via the
+<code>sqlite3</code> command; the sqlib(n) commands take such a
+database access command as their first argument.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="sqlib_clear">sqlib clear <i>db</i></a></dt><dd>
+
+Deletes all persistent and temporary schema elements (tables, indices,
+views, triggers) from the database with the fully qualified handle
+<i>db</i>.  SQLite3 special tables (e.g., <b>sqlite_sequence</b>)
+cannot usually be dropped, but all entries are deleted.  Databases
+attached to <i>db</i> using the "DATABASE ATTACH" SQL statement are
+ignored.
+
+</dd>
+<dt class="defitem"><a name="sqlib_saveas">sqlib saveas <i>db filename</i></a></dt><dd><p>
+
+Saves a copy of the persistent contents of the database with
+the fully qualified handle <i>db</i>.  The copy will be saved as a new
+database file with the specified <i>filename</i>.  It's an error if a
+file with that name already exists.</p>
+
+<p>Temporary tables and databases attached to <i>db</i> using the "DATABASE
+ATTACH" SQL statement are ignored.</p>
+
+<p><b>Warning:</b> if the <i>db</i> is in the middle of a transaction,
+the transaction will be committed before the copy is saved, and a new
+transaction will begin.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sqlib_compare">sqlib compare <i>db1 db2</i></a></dt><dd><p>
+
+Compares the persistent contents of <i>db1</i> and <i>db2</i>, both of
+which should be fully-qualified database handles.  First the schemas
+are compared, followed by the data in the tables.  (Note that this can
+be a lengthy process if the databases are large.)  Returns a string
+describing the first difference found, or the empty string if no
+differences are found.</p>
+
+<p>Temporary tables and databases attached to <i>db</i> using the "DATABASE
+ATTACH" SQL statement are ignored.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sqlib_tables">sqlib tables <i>db</i></a></dt><dd>
+
+Returns a list of the names of the tables defined in the
+SQLite database with the fully-qualified handle <i>db</i>.  The list
+includes all accessible tables, including SQLite3 internal tables
+(except for <b>sqlite_master</b> and <b>sqlite_temp_master</b>),
+temporary tables, and tables in databases attached to <i>db</i>
+using the "DATABASE ATTACH" SQL statement.
+
+</dd>
+<dt class="defitem"><a name="sqlib_schema">sqlib schema <i>db</i> ?<i>table</i>?</a></dt><dd><p>
+
+Returns the SQL CREATE statements used to define all tables,
+views, and indices in database <i>db</i>.  If <i>table</i> is specified,
+it may be a table/view/index name, or a glob pattern; in this
+case the output is restricted to those tables, views, and indices
+whose names match <i>table</i>.</p>
+
+<p>The output includes all persistent and temporary tables, indices,
+views, and triggers in the database.  Entities in databases attached
+to <i>db</i> using the "DATABASE ATTACH" SQL statement are ignored.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sqlib_query">sqlib query <i>db sql</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Performs an arbitrary <i>sql</i> query on database <i>db</i>,
+formatting any results appropriately for display.  Newlines
+in data values are escaped, and long text strings are truncated.</p>
+
+<p><i>sql</i> can contain any SQL statements understood by SQLite, but in
+practice there's no reason to use this command except for SELECT
+queries.</p>
+
+<p><b>Note:</b> as of Mars 2.17, the <i>sql</i> query can reference
+variables in the caller's context, as it can for the normal
+SQLite3 <code>eval</code> subcommand.</p>
+
+<p>The command supports the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="sqlib query-mode">-mode mc|list|csv|json</a></dt><dd><p>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.</p>
+
+<p>When <b>-mode</b> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.</p>
+
+<p>When <b>-mode</b> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.</p>
+
+<p>When <b>-mode</b> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.</p>
+
+<p>When <b>-mode</b> is <b>json</b>, the output is a set of JSON objects,
+one per record. Each object contains the name/value pairs of a row
+from the database.  The output is properly formatted with commas
+between each object and the entirety of the output enclosed in 
+brackets (<b>[</b> and <b>]</b>).
+
+
+</p>
+</dd>
+<dt class="defopt"><a name="sqlib query-channel">-channel <i>chan</i></a></dt><dd>
+
+When this option is supplied, the output is directed to the specified
+channel.  The channel can be a file, a socket or <b>stdout</b>.
+Note that if the -filename option is also supplied, it overrides this
+option.
+
+
+</dd>
+<dt class="defopt"><a name="sqlib query-filename">-filename <i>name</i></a></dt><dd>
+
+When this option is supplied, the output of the query is directed to
+the file specified.  It is an error if the file cannot be opened or
+written to.  This option will override the -channel option if it is 
+also specified.
+
+
+</dd>
+<dt class="defopt"><a name="sqlib query-labels">-labels <i>list</i></a></dt><dd>
+
+Normally <a class="iref" href="#sqlib_query">sqlib query</a> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.  <b>Note:</b> 
+This option is ignored when <b>-mode</b> is <b>json</b>.
+
+
+</dd>
+<dt class="defopt"><a name="sqlib query-maxcolwidth">-maxcolwidth <i>chars</i></a></dt><dd><p>
+
+Sets the maximum column width, in characters, when <b>-mode</b> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".</p>
+
+<p>If <b>-maxcolwidth</b> is set to 0, values will not be
+truncated; this is often a Bad Thing, as it can result in extremely
+wide output.
+
+</p>
+</dd>
+<dt class="defopt"><a name="sqlib query-headercols">-headercols <i>num</i></a></dt><dd>
+
+Sets the number of header columns.  When <b>-mode</b> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".  
+
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="sqlib_mat">sqlib mat <i>db table iname jname ename</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Extracts a <a href="../mann/mat.html">mat(n)</a> matrix from a <i>table</i> in database
+<i>db</i>.  The values in the table's <i>iname</i> column define the
+rows of the matrix, the values in the table's <i>jname</i> column
+define the columns, and the <i>ename</i> column provides the elements
+of the matrix.</p>
+
+<p>The command supports the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="sqlib mat-ikeys">-ikeys <i>keys</i></a></dt><dd><p>
+
+<i>keys</i> is a list of the values from the <i>iname</i> column
+which should be included in the matrix; the rows of the matrix will
+have the same order as the <i>keys</i>.  <i>keys</i> may be a subset
+of the values which appear in that column.</p>
+
+<p>If <i>keys</i> is not given, each unique value in the <i>iname</i>
+column will have a row in the matrix, in order by first appearance.
+
+</p>
+</dd>
+<dt class="defopt"><a name="sqlib mat-jkeys">-jkeys <i>keys</i></a></dt><dd><p>
+
+<i>keys</i> is a list of the values from the <i>jname</i> column
+which should be included in the matrix; the columns of the matrix will
+have the same order as the <i>keys</i>.  <i>keys</i> may be a subset
+of the values which appear in that column.</p>
+
+<p>If <i>keys</i> is not given, each unique value in the <i>jname</i>
+column will have a column in the matrix, in order by first appearance.
+
+</p>
+</dd>
+<dt class="defopt"><a name="sqlib mat-defvalue">-defvalue <i>value</i></a></dt><dd>
+
+The matrix will be initialized with the specified <i>value</i>, or
+with the empty string if <code>-defvalue</code> is omitted.
+
+</dd>
+<dt class="defopt"><a name="sqlib mat-returnkeys">-returnkeys <i>flag</i></a></dt><dd>
+
+Normally, the command returns the desired matrix.  If the <i>flag</i>
+is true, then the command will return a list of three elements:
+the matrix, the list of row keys, and the list of column keys.  This
+option is usually used when <code>-ikeys</code> or <code>-jkeys</code>
+is omitted, since they order of the rows and columns in the matrix
+might otherwise be obscure.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="sqlib_insert">sqlib insert <i>db table dict</i></a></dt><dd><p>
+
+Inserts the contents of dictionary <i>dict</i> into the <i>db</i> as a
+row in the named <i>table</i>.  The dictionary keys must be the same
+as the column names in the table.  <b>It's an error if a row already
+exists with the same key column values.</b></p>
+
+<p>This will be less efficient than an explicit "INSERT INTO" with
+hardcoded column names, but where performance isn't an issue it wins
+on maintainability.</p>
+
+<p>Compare to <a class="iref" href="#sqlib_replace">sqlib replace</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sqlib_replace">sqlib replace <i>db table dict</i></a></dt><dd><p>
+
+Inserts the contents of dictionary <i>dict</i> into the <i>db</i> as a
+row in the named <i>table</i>.  The dictionary keys must be the same
+as the column names in the table.  <b>If there's already a row with
+matching key columns, it will be replaced.</b></p>
+
+<p>This will be less efficient than an explicit "INSERT OR REPLACE INTO"
+with hardcoded column names, but where performance isn't an issue it
+wins on maintainability.</p>
+
+<p>Compare to <a class="iref" href="#sqlib_insert">sqlib insert</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sqlib_grab">sqlib grab ?-insert? <i>db</i> <i>table condition</i> ?<i>table condition...</i>?</a></dt><dd><p>
+
+Grabs a collection of rows from one or more tables in the 
+database, and returns them to the user as one value.  The grabbed data
+can later be restored to the database using <a class="iref" href="#sqlib_ungrab">sqlib ungrab</a>.
+For example, an operation that updates rows in the database might
+grab the rows prior to the change so that the original values can
+be restored afterwards.</p>
+
+<p>The returned value is called a "grab data set".  It is a flat list
+structure {<i>tableSpec values tableSpec values...</i>} where
+<i>tableSpec</i> identifies the table and <i>values</i> is a flat list of
+column values for all of the grabbed rows from the table.  As returned
+by <a class="iref" href="#sqlib_grab">sqlib grab</a>, the <i>tableSpec</i> is simply the name of the
+table; if the optional <code>-insert</code> option is included, 
+however, it will be a list {<i>tableName</i> INSERT}.  The
+INSERT tag tells <a class="iref" href="#sqlib_ungrab">sqlib ungrab</a> to use INSERT to put the data
+in the table rather than UPDATE.</p>
+
+<p>NULL values are retrieved as the SQLite3 "nullvalue", which defaults
+to the empty string.</p>
+
+<p>For example,
+
+</p><pre>
+    set data [sqlib grab $db table1 {x=5} table2 {y=10}]
+</pre>
+<p>will grab all rows from table1 where x = 5, and all rows from
+table2 where y = 10.</p>
+
+<p>The result of calling <a class="iref" href="#sqlib_grab">sqlib grab</a> can be passed to
+the <a class="iref" href="#sqlib_ungrab">sqlib ungrab</a> command to put the rows
+back in the database.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="sqlib_ungrab">sqlib ungrab <i>db data</i></a></dt><dd><p>
+
+Given a "grab data set" produced by <a class="iref" href="#sqlib_grab">sqlib grab</a> or some
+other command, this command puts the data back into the database
+using either UPDATE or INSERT, as determined by the optional
+INSERT tag in each table's table specification.  For example, the
+following code grabs rows from the database, modifies them, and
+then restores the original values.
+
+</p><pre>
+    set data [sqlib grab $db table1 {x=5} table2 {y=10}]
+    ...
+    # Code that updates the grabbed rows.
+    ...
+    sqlib ungrab $db $data
+</pre>
+<p>If the <code>-insert</code> tag is included in the <a class="iref" href="#sqlib_grab">sqlib grab</a> 
+call, this command can also be used to re-insert deleted rows.</p>
+
+<p>Note that the schemas of the relevant tables should not be altered
+between grabbing and ungrabbing, or the ungrabbing will have
+unpredictable results.</p>
+
+<p>Whether updating or inserting, values that match the 
+SQLite3 "nullvalue" will be inserted as NULL.  When updating, however,
+it is assumed that key columns do not contain NULL.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="sqlib_fklist">sqlib fklist <i>db table</i> ?-indirect?</a></dt><dd>
+
+Returns a list of the tables with foreign keys that reference the
+specified <i>table</i>, excluding <i>table</i> itself.  If the
+<code>-indirect</code> option is included, the list also includes the
+tables that depend indirectly on <i>table</i>.  It is an error if
+<i>table</i> is unknown.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>sqlib(n) requires Tcl 8.5 or later, and SQLite 3.2 or later.</p>
+
+<p>To use sqlib(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

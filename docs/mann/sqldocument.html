@@ -1,0 +1,1047 @@
+<html>
+<head>
+<title>mars 3.0.23: sqldocument(n) -- SQL Document Management, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>sqldocument(n)</b> -- SQL Document Management, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#schema">SCHEMA</a></li>
+    
+
+    <li><a href="#sql_functions">SQL FUNCTIONS</a></li>
+    
+
+    <li><a href="#collating_sequences">COLLATING SEQUENCES</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+
+
+<ul class="itemlist">
+<li><a class="iref" href="#dictget">dictget(<i>dict</i>,<i>key</i>)</a></li>
+<li><a class="iref" href="#error">error(<i>errmsg</i>,...)</a></li>
+<li><a class="iref" href="#format">format(<i>fmtstring</i>, <i>args...</i>)</a></li>
+<li><a class="iref" href="#joinlist">joinlist(<i>list</i>, <i>delimiter</i>)</a></li>
+<li><a class="iref" href="#nonempty">nonempty(<i>arg</i>,...)</a></li>
+<li><a class="iref" href="#now">now(?<i>offset</i>?)</a></li>
+<li><a class="iref" href="#percent">percent(<i>frac</i>)</a></li>
+<li><a class="iref" href="#timestr">timestr(<i>ticks</i>, ?<i>offset</i>?)</a></li>
+<li><a class="iref" href="#tozulu">tozulu(<i>ticks</i>, ?<i>offset</i>?)</a></li>
+<li><a class="iref" href="#wallclock">wallclock()</a></li>
+<li><a class="iref" href="#DICT">DICT</a></li>
+<li><a class="iref" href="#sqldocument">sqldocument <i>name</i> ?<i>option value...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-autotrans">-autotrans <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-clock">-clock <i>simclock</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-commitcmd">-commitcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-explaincmd">-explaincmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-foreignkeys">-foreignkeys <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-readonly">-readonly <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-rollback">-rollback <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sqldocument-subject">-subject <i>name</i></a></li>
+<li><a class="iref" href="#sqldocument_sqlsection">sqldocument sqlsection <i>subcommand</i></a></li>
+<li><a class="iref" href="#clear">$db clear</a></li>
+<li><a class="iref" href="#close">$db close</a></li>
+<li><a class="iref" href="#commit">$db commit</a></li>
+<li><a class="iref" href="#dbfile">$db dbfile</a></li>
+<li><a class="iref" href="#delete">$db delete ?-grab? <i>table condition</i> ?<i>table condition</i>...?</a></li>
+<li><a class="iref" href="#eval">$db eval <i>query</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#explain">$db explain <i>query</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#fklist">$db fklist <i>table</i> ?-indirect?</a></li>
+<li><a class="iref" href="#grab">$db grab ?-insert? <i>table condition</i> ?<i>table condition...</i>?</a></li>
+<li><a class="iref" href="#insert">$db insert <i>table dict</i></a></li>
+<li><a class="iref" href="#islocked">$db islocked <i>table</i></a></li>
+<li><a class="iref" href="#isopen">$db isopen</a></li>
+<li><a class="iref" href="#lock">$db lock <i>tables</i></a></li>
+<li><a class="iref" href="#mat">$db mat <i>table iname jname ename</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#monitor">$db monitor <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#monitor_add">$db monitor add <i>table keynames</i></a></li>
+<li><a class="iref" href="#monitor_remove">$db monitor remove <i>table</i></a></li>
+<li><a class="iref" href="#monitor_script">$db monitor script <i>body</i></a></li>
+<li><a class="iref" href="#monitor_transaction">$db monitor transaction <i>body</i></a></li>
+<li><a class="iref" href="#open">$db open ?<i>filename</i>?</a></li>
+<li><a class="iref" href="#query">$db query <i>sql</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#register">$db register <i>section</i></a></li>
+<li><a class="iref" href="#replace">$db replace <i>table dict</i></a></li>
+<li><a class="iref" href="#safeeval">$db safeeval <i>args...</i></a></li>
+<li><a class="iref" href="#safequery">$db safequery <i>args...</i></a></li>
+<li><a class="iref" href="#saveas">$db saveas <i>filename</i></a></li>
+<li><a class="iref" href="#schema">$db schema ?<i>table</i>?</a></li>
+<li><a class="iref" href="#sections">$db sections</a></li>
+<li><a class="iref" href="#tables">$db tables</a></li>
+<li><a class="iref" href="#ungrab">$db ungrab <i>data</i></a></li>
+<li><a class="iref" href="#unlock">$db unlock <i>tables</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/sqldocument.html">sqldocument(n)</a> is a Tcl wrapper around SQLite3 database
+objects.  It provides access to all features of an SQLite3 database
+object; in addition:
+
+</p>
+
+<ul>
+  <li> By default, sqldocument(n) implements a commit-on-demand policy.
+       That is, updates to the database are accumulated until an
+       explicit commit is requested, instead of being committed
+       immediately.  This improves performance when many independent
+       transactions are done in rapid succession, at the expense of
+       concurrent access (which JNEM does not need).  This behavior
+       is controlled by the <code>-autotrans</code> option.
+
+  </li><li> By default, sqldocument(n) disables SQLite3's rollback
+       capability, resulting in a performance gain.  If the ability to
+       roll back transactions is required, set <code>-rollback</code>
+       to "on".
+
+  </li><li> Checking of foreign key constraints is enabled automatically
+       (<b>PRAGMA foreign_keys=on;</b>).  To disable foreign keys,
+       set <code>-foreignkeys</code> to "off".
+
+  </li><li> Modules which adhere to the <a href="../mani/sqlsection.html">sqlsection(i)</a> interface
+       can be registered with an instance of <a href="../mann/sqldocument.html">sqldocument(n)</a>,
+       thus including their schema and function definitions in all
+       databases subsequently created using that instance.
+
+  </li><li> A number of useful operations from <a href="../mann/sqlib.html">sqlib(n)</a> are
+       provided as subcommands.
+</li></ul>
+
+<p><b>NOTE:</b> The SQLite3 database file is closed when the
+sqldocument(n) object is destroyed--but updates are not committed.
+Call <a class="iref" href="#close">close</a> explicitly!
+
+</p>
+
+<h2><a name="schema">SCHEMA</a></h2>
+<p>At present, sqldocument(n) adds no definitions of its own to the database
+schema; if it did, they would appear here.
+
+</p>
+
+<pre>
+
+</pre>
+
+<h2><a name="sql_functions">SQL FUNCTIONS</a></h2>
+<p>sqldocument(n) defines the following standard SQL functions, which
+may be used in addition to those defined by SQLite3:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="dictget">dictget(<i>dict</i>,<i>key</i>)</a></dt><dd>
+
+This function retrieves the <i>key</i>'s value from the <i>dict</i>,
+or the empty string if the <i>key</i> is not found.  It is
+useful for doing queries against a column whose value is a Tcl
+dictionary.
+
+</dd>
+<dt class="defitem"><a name="error">error(<i>errmsg</i>,...)</a></dt><dd>
+
+This function maps to the standard Tcl <code>error(n)</code> command.
+It's useful for throwing errors in queries (e.g., in lock triggers).
+
+</dd>
+<dt class="defitem"><a name="format">format(<i>fmtstring</i>, <i>args...</i>)</a></dt><dd><p>
+
+This function maps to the standard Tcl <code>format(n)</code> command.
+It's useful for formatting retrieved values during queries.  For
+example,
+
+</p><pre>
+  $db query {
+     SELECT id,format('%5.1f',magnitude) FROM nsat_levels
+  }
+</pre>
+
+</dd>
+<dt class="defitem"><a name="joinlist">joinlist(<i>list</i>, <i>delimiter</i>)</a></dt><dd><p>
+
+This function maps to the standard Tcl <code>join(n)</code> command.
+It's useful for formatting list-valued database columns.  For example,
+
+</p><pre>
+  $db query {
+     SELECT FED_ID,joinlist(DETAILS, ', ') FROM absits
+  }
+</pre>
+
+</dd>
+<dt class="defitem"><a name="nonempty">nonempty(<i>arg</i>,...)</a></dt><dd>
+
+Returns the value of the first argument which is neither NULL nor the
+empty string, or the empty string if no argument is non-empty.  This
+is a Tcl-friendly equivalent to COALESCE() which treats empty strings
+like NULLs.
+
+</dd>
+<dt class="defitem"><a name="now">now(?<i>offset</i>?)</a></dt><dd>
+
+If <code>-clock</code> is specified, then <a class="iref" href="#now">now</a> will be
+defined, and will return the current simulation time in ticks.  If
+<i>offset</i> is given, it's an offset in integer ticks; it will be
+added to the current simulation time, and returned.
+
+</dd>
+<dt class="defitem"><a name="percent">percent(<i>frac</i>)</a></dt><dd>
+Displays the fraction as a percentage.  If the fraction
+is at least 0.005, displays it as an integer percentage, e.g.,
+1%, 10%, 25%.  If the fraction is &lt;= 0.005 but greater than
+0.0, displays it as "~0%".
+
+
+</dd>
+<dt class="defitem"><a name="timestr">timestr(<i>ticks</i>, ?<i>offset</i>?)</a></dt>
+<dt class="defitem"><a name="tozulu">tozulu(<i>ticks</i>, ?<i>offset</i>?)</a></dt><dd><p>
+
+If <code>-clock</code> is specified, then <a class="iref" href="#timestr">timestr</a> and
+<a class="iref" href="#tozulu">tozulu</a> will be
+defined.  Given a simulation time as <i>ticks</i> plus an optional
+<i>offset</i>, returns the resulting simulation time as a
+human-readable time string; the format depends on the particular
+<a href="../mani/simclock.html">simclock(i)</a> object assigned to <code>-clock</code>.</p>
+
+<p><b>Note: The <a class="iref" href="#tozulu">tozulu</a> form is deprecated.</b>
+
+</p>
+</dd>
+<dt class="defitem"><a name="wallclock">wallclock()</a></dt><dd>
+
+Returns the wall-clock time in Unix seconds.
+
+</dd>
+</dl>
+
+<h2><a name="collating_sequences">COLLATING SEQUENCES</a></h2>
+<p>This module defines the following additional collation sequences for
+use when defining or querying database tables:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="DICT">DICT</a></dt><dd><p>
+
+The <b>DICT</b> collating sequence causes a column to be sorted in
+dictionary order, as defined by the <a href="../../../tcl/docs/mann/lsort.html">lsort(n)</a> command's
+<b>-dictionary</b> option.  This is useful for columns that contain
+an embedded number, as it makes "N10" sort after "N9" rather than
+between "N1" and "N2".</p>
+
+<p>This collating sequence should be used sparingly, as its
+implementation is rather slow.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="sqldocument">sqldocument <i>name</i> ?<i>option value...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#sqldocument">sqldocument</a> object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#sqldocument">sqldocument</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>After the object is created, a database file must still
+be <a class="iref" href="#open">open</a>ed, and (if so desired) it must also be
+<a class="iref" href="#clear">clear</a>ed.</p>
+
+<p>The object may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="sqldocument-autotrans">-autotrans <i>boolean</i></a></dt><dd>
+
+If <b>on</b>, the default, the sqldocument(n) always has an open
+transaction; changes are not committed until <a class="iref" href="#commit">commit</a> is
+called.  If <b>off</b>, the application can batch queries into
+transactions as it chooses, and <a class="iref" href="#commit">commit</a> has no effect.
+
+</dd>
+<dt class="defopt"><a name="sqldocument-clock">-clock <i>simclock</i></a></dt><dd>
+
+<b>Readonly.</b> The <i>simclock</i> must be a <a href="../mani/simclock.html">simclock(i)</a>
+object.  If this option is given, the <a class="iref" href="#now">now</a> and
+<a class="iref" href="#timestr">timestr</a> SQL functions will be defined.
+
+</dd>
+<dt class="defopt"><a name="sqldocument-commitcmd">-commitcmd <i>command</i></a></dt><dd>
+
+If specified, this command is called after the database is committed but 
+before a new transaction is begun. This is most useful when the
+<b>-autotrans</b> option is <b>on</b> since it gives the ability to perform
+some task while the database is not locked due to an open transaction.
+
+
+</dd>
+<dt class="defopt"><a name="sqldocument-explaincmd">-explaincmd <i>command</i></a></dt><dd>
+
+If specified, the <i>command</i> is a command prefix to be called by 
+<a class="iref" href="#explain">explain</a> with two additional arguments: the query, and the
+result of using SQLite's "EXPLAIN QUERY PLAN" on the query.
+
+</dd>
+<dt class="defopt"><a name="sqldocument-foreignkeys">-foreignkeys <i>boolean</i></a></dt><dd>
+
+Explicitly enables or disables foreign key checking, according to the
+value of the <i>boolean</i> flag.  Foreign key checking is
+<b>on</b> by default.  See <b>PRAGMA foreign_keys</b> in the SQLite3
+documentation for more information.
+
+</dd>
+<dt class="defopt"><a name="sqldocument-readonly">-readonly <i>boolean</i></a></dt><dd>
+
+If <b>yes</b>, the sqldocument(n) object can be used to read an existing
+database, but cannot change it in any way; any attempt to write to it
+will throw an error.
+
+</dd>
+<dt class="defopt"><a name="sqldocument-rollback">-rollback <i>boolean</i></a></dt><dd>
+
+If <b>on</b>, transactions can be rolled back instead of committed.
+If <b>off</b>, the default, they cannot.
+
+</dd>
+<dt class="defopt"><a name="sqldocument-subject">-subject <i>name</i></a></dt><dd>
+
+The sqldocument(n) will send out <a href="../mann/notifier.html">notifier(n)</a> events when the
+<a class="iref" href="#monitor">monitor</a> API is used.  By default, the instance name is used
+as the subject of the events.  If this option's value is not empty,
+it is used as the subject instead.  This is useful when
+the sqldocument(n) is wrapped by another object, as is frequently the
+case.  The appropriate subject is then the wrapper rather than the
+sqldocument(n) itself.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="sqldocument_sqlsection">sqldocument sqlsection <i>subcommand</i></a></dt><dd><p>
+
+sqldocument(n) is itself an <a href="../mani/sqlsection.html">sqlsection(i)</a>, as it defines
+schema entities (see <a href="#schema">SCHEMA</a>) and SQL functions (see
+<a href="#sql_functions">SQL FUNCTIONS</a>).  See <a href="../mani/sqlsection.html">sqlsection(i)</a> for a description
+of this method's subcommands.</p>
+
+<p>sqldocument(n) is the only sqlsection(i) registered automatically with
+all instances.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>The created sqldocument(n) object has the following subcommands; in
+addition, it supports all of the methods of an SQLite3 database
+object (except as overridden here).
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="clear">$db clear</a></dt><dd>
+
+Initializes the contents of the database, deleting any existing
+data and re-defining the schema.
+
+</dd>
+<dt class="defitem"><a name="close">$db close</a></dt><dd>
+
+Closes the database, first committing any updates.  The database
+cannot be accessed again unless it is first <a class="iref" href="#open">open</a>ed
+explicitly.
+
+</dd>
+<dt class="defitem"><a name="commit">$db commit</a></dt><dd>
+
+Saves all pending updates.  If <code>-autotrans</code> is off, this
+command has no effect.
+
+</dd>
+<dt class="defitem"><a name="dbfile">$db dbfile</a></dt><dd>
+
+Returns the name of the last-opened database file, or "" if none.
+
+</dd>
+<dt class="defitem"><a name="delete">$db delete ?-grab? <i>table condition</i> ?<i>table condition</i>...?</a></dt><dd><p>
+
+Deletes the rows from each <i>table</i> that match the associated
+<i>condition</i>, where <i>condition</i> is a boolean SQL expression
+that may include variable references.  If the <code>-grab</code>
+option is included, the call returns a <a class="iref" href="#grab">grab</a> data set of all
+of the deleted rows, including those from cascading and triggered
+deletes; the table specifications in the dataset include the "INSERT"
+tag, so that <a class="iref" href="#ungrab">ungrab</a> will use INSERT rather than UPDATE to
+insert the rows into the database.</p>
+
+<p>With <code>-grab</code>, the command is intended to capture deleted
+row data so that cascading and triggered
+deletes can be easily undone using <a class="iref" href="#ungrab">ungrab</a>.  For example,
+
+</p><pre>
+    # Delete an entry, plus cascading deletes, and save the undo data.
+    set data [$db delete -grab table1 {id=$id}]
+    ...
+    # Undo the deletion, restoring all deleted data.
+    $db ungrab $data
+</pre>
+<p>Note that this command does not support <a class="iref" href="#grab">grab</a>'s
+<code>-tcl</code> option.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="eval">$db eval <i>query</i> ?<i>args...</i>?</a></dt><dd>
+
+This is simply the standard SQLite3 "eval" subcommand.  See the
+SQLite3 documentation for details.
+
+</dd>
+<dt class="defitem"><a name="explain">$db explain <i>query</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#explain">explain</a> method is intended to function identically to 
+SQLite's standard <a class="iref" href="#eval">eval</a> method, except that it will run
+"EXPLAIN QUERY PLAN" on the query and call the
+<code>-explaincmd</code> prior to actually executing the query.</p>
+
+<p>This feature is for use by the developer as an aid to improving
+performance: set the <code>-explaincmd</code> when creating the
+instance of <a class="iref" href="#sqldocument">sqldocument</a>; then, in order to tune a
+particular query, replace the call to <a class="iref" href="#eval">eval</a> with a call to
+<a class="iref" href="#explain">explain</a>.  When optimization is complete, replace
+<a class="iref" href="#explain">explain</a> with <a class="iref" href="#eval">eval</a> once again.
+
+</p>
+</dd>
+<dt class="defitem"><a name="fklist">$db fklist <i>table</i> ?-indirect?</a></dt><dd>
+
+Returns a list of the tables with foreign keys that reference the
+specified <i>table</i>, excluding <i>table</i> itself.  If the
+<code>-indirect</code> option is included, the list also includes the
+tables that depend indirectly on <i>table</i>.  It is an error if
+<i>table</i> is unknown.
+
+</dd>
+<dt class="defitem"><a name="grab">$db grab ?-insert? <i>table condition</i> ?<i>table condition...</i>?</a></dt><dd><p>
+
+Grabs a collection of rows from one or more tables in the 
+database, and returns them to the user as one value.  The grabbed data
+can later be restored to the database using <a class="iref" href="#ungrab">ungrab</a>.
+For example, an operation that updates rows in the database might
+grab the rows prior to the change so that the original values can
+be restored afterwards.</p>
+
+<p>The returned value is called a "grab data set".  It is a flat list
+structure {<i>tableSpec values tableSpec values...</i>} where
+<i>tableSpec</i> identifies the table and <i>values</i> is a flat list of
+column values for all of the grabbed rows from the table.  As returned
+by <a class="iref" href="#grab">grab</a>, the <i>tableSpec</i> is simply the name of the
+table; if the optional <code>-insert</code> option is included, 
+however, it will be a list {<i>tableName</i> INSERT}.  The
+INSERT tag tells <a class="iref" href="#ungrab">ungrab</a> to use INSERT to put the data
+in the table rather than UPDATE.</p>
+
+<p>NULL values are retrieved as the SQLite3 "nullvalue", which defaults
+to the empty string.</p>
+
+<p>For example,
+
+</p><pre>
+    set data [$db grab table1 {x=5} table2 {y=10}]
+</pre>
+<p>will grab all rows from table1 where x = 5, and all rows from
+table2 where y = 10.</p>
+
+<p>The result of calling <a class="iref" href="#grab">grab</a> can be passed to
+the <a class="iref" href="#ungrab">ungrab</a> command to put the rows
+back in the database.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="insert">$db insert <i>table dict</i></a></dt><dd><p>
+
+Inserts the contents of dictionary <i>dict</i> into the database as a
+row in the named <i>table</i>.  The dictionary keys must be the same
+as the column names in the table.  <b>It's an error if a row already
+exists with the same key column values.</b></p>
+
+<p>This will be less efficient than an explicit "INSERT INTO" with
+hardcoded column names, but where performance isn't an issue it wins
+on maintainability.</p>
+
+<p>Compare to <a class="iref" href="#replace">replace</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="islocked">$db islocked <i>table</i></a></dt><dd>
+
+Returns 1 if the named table exists and is <a class="iref" href="#lock">lock</a>ed, and 0
+otherwise.
+
+</dd>
+<dt class="defitem"><a name="isopen">$db isopen</a></dt><dd>
+
+Returns 1 if a database file is open, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="lock">$db lock <i>tables</i></a></dt><dd><p>
+
+Locks one more database tables, where <i>tables</i> is a list of the
+table names.  Locked tables are effectively read-only; attempts to
+update, insert, or delete rows will fail until the table
+is <a class="iref" href="#unlock">unlock</a>ed again.  Note that locked tables can
+still be dropped in their entirety.</p>
+
+<p>The tables to be locked must exist, and may be either persistent or
+temporary.  Note that tables in "attached" databases cannot be locked
+using this mechanism.</p>
+
+<p>Locking a table that is already locked is <b>not</b> an error; the table
+simply remains locked.
+
+</p>
+</dd>
+<dt class="defitem"><a name="mat">$db mat <i>table iname jname ename</i> ?<i>options...</i>?</a></dt><dd>
+
+Extracts a <a href="../mann/mat.html">mat(n)</a> matrix from the database; the arguments and
+options are as for <a href="../mann/sqlib.html">sqlib(n)</a>'s <a href="../mann/sqlib.html#sqlib_mat">sqlib mat</a> method.
+
+</dd>
+<dt class="defitem"><a name="monitor">$db monitor <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#monitor">monitor</a> family of commands is used to monitor changes to
+RDB tables, row by row.  The subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="monitor_add">$db monitor add <i>table keynames</i></a></dt><dd>
+
+Requests monitoring of the specified <i>table</i>.  The
+<i>keynames</i> argument should a list of one or more column names;
+these are the columns used to identify the modified rows.
+
+</dd>
+<dt class="defitem"><a name="monitor_remove">$db monitor remove <i>table</i></a></dt><dd>
+
+Disables monitoring for the specified <i>table</i>.
+
+</dd>
+<dt class="defitem"><a name="monitor_script">$db monitor script <i>body</i></a></dt><dd><p>
+
+This command executes <i>body</i> as a Tcl script, while monitoring
+changes to all monitored tables. Before <i>body</i> is executed,
+monitoring is enabled for all of the requested tables; after <i>body</i> is
+executed, a <a href="../mann/notifier.html">notifier(n)</a> event is sent for every
+monitored database row that changed, and monitoring is disabled
+again.  Note that monitoring is disabled and notifications are
+sent even if <i>body</i> throws an error.</p>
+
+<p>Each notifier event will have the scenariodb(n) object as its
+subject and the table name (quoted in angle brackets) as its event.
+The event will have two arguments: the operation (<b>update</b> or
+<b>delete</b>) and a key value indicating the row that changed.</p>
+
+<p>For example, if the <b>rel_fg</b> table is monitored and the
+relationship for group G1's relationship with G2 is modified, the
+following event will be sent:
+
+</p><pre>
+    notifier send $db &lt;rel_fg&gt; update {G1 G2}
+</pre>
+<p>Note the the operation is <b>update</b> even when a new record is
+added.  In practice, both new records and updated records are handled
+much the same way by the GUI, and it is difficult to get SQLite3 to be
+precise about whether a change is an addition or an update.  (SQLite3
+can distinguish clearly between an INSERT statement and an UPDATE
+statement; but an INSERT OR REPLACE can do either an insert or
+an update, and there's no easy way to tell which.)</p>
+
+<p>In addition, if at least one <b>update</b> or <b>delete</b> event has
+been sent, the database will also send one final event:
+
+</p>
+
+<pre>
+    notifier send $db &lt;Monitor&gt;
+</pre>
+<p>Calls to <a class="iref" href="#monitor_script">monitor script</a> and <a class="iref" href="#monitor_transaction">monitor transaction</a>
+can be nested.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="monitor_transaction">$db monitor transaction <i>body</i></a></dt><dd><p>
+
+This command is essentially the same as <a class="iref" href="#monitor_script">monitor script</a>,
+except that it executes <i>body</i> in the context of an
+SQL transaction, using SQLite3's "transaction" subcommand.</p>
+
+<p>Calls to <a class="iref" href="#monitor_transaction">monitor transaction</a> and <a class="iref" href="#monitor_script">monitor script</a>
+can be nested.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="open">$db open ?<i>filename</i>?</a></dt><dd><p>
+
+Opens (but does not <a class="iref" href="#clear">clear</a>) a database file with the specified
+<i>filename</i>.  If <i>filename</i> is missing, <a class="iref" href="#open">open</a> will
+re-open the previously-opened database file, if any.</p>
+
+<p>Call <a class="iref" href="#clear">clear</a> explicitly to initialize the database.</p>
+
+<p>All temporary schema definitions and all SQL function definitions from
+all registered <a href="../mani/sqlsection.html">sqlsection(i)</a> modules will be defined in
+the database as soon as it is <a class="iref" href="#open">open</a>ed.  The persistent schema
+definitions will be not be defined in a newly created database until
+it is <a class="iref" href="#clear">clear</a>ed.
+
+</p>
+</dd>
+<dt class="defitem"><a name="query">$db query <i>sql</i> ?<i>options...</i>?</a></dt><dd>
+
+Queries the database and returns the results formatted for
+display.  The options are as for <a href="../mann/sqlib.html">sqlib(n)</a>'s
+<a href="../mann/sqlib.html#query">query</a> method.
+
+</dd>
+<dt class="defitem"><a name="register">$db register <i>section</i></a></dt><dd>
+
+Registers an <a href="../mani/sqlsection.html">sqlsection(i)</a> module with this instance, where
+<i>section</i> is the fully-qualified name of the module.  Once
+registered, the <i>section</i>'s definitions will be included as
+appropriate on <a class="iref" href="#open">open</a> and <a class="iref" href="#clear">clear</a>.
+
+</dd>
+<dt class="defitem"><a name="replace">$db replace <i>table dict</i></a></dt><dd><p>
+
+Inserts the contents of dictionary <i>dict</i> into the database as a
+row in the named <i>table</i>.  The dictionary keys must be the same
+as the column names in the table.  <b>If there's already a row with
+matching key columns, it will be replaced.</b></p>
+
+<p>This will be less efficient than an explicit "INSERT OR REPLACE INTO" with
+hardcoded column names, but where performance isn't an issue it wins
+on maintainability.</p>
+
+<p>Compare to <a class="iref" href="#insert">insert</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="safeeval">$db safeeval <i>args...</i></a></dt><dd>
+
+This subcommand is just like "eval", but is
+prevented from changing the contents of the database.  It is
+intended for use in commands accessible to the user of the
+application.
+
+</dd>
+<dt class="defitem"><a name="safequery">$db safequery <i>args...</i></a></dt><dd>
+
+This subcommand is just like <a class="iref" href="#query">query</a>, but is
+prevented from changing the contents of the database.
+
+</dd>
+<dt class="defitem"><a name="saveas">$db saveas <i>filename</i></a></dt><dd>
+
+Saves a copy of the persistent contents of the database to a new
+database file called <i>filename</i>.  It's an error if there is
+already a file with that <i>filename</i>.
+
+</dd>
+<dt class="defitem"><a name="schema">$db schema ?<i>table</i>?</a></dt><dd>
+
+Returns the SQL schema for the specified <i>table</i>, or for the
+database as a whole.  The output includes both persistent and
+temporary definitions.  The <i>table</i> may contain wildcards.
+
+</dd>
+<dt class="defitem"><a name="sections">$db sections</a></dt><dd>
+
+Returns a list of the names of the <a href="../mani/sqlsection.html">sqlsection(i)</a>
+modules registered with this instance.
+
+</dd>
+<dt class="defitem"><a name="tables">$db tables</a></dt><dd>
+
+Returns the names of the tables defined in the current database,
+including temporary tables and tables defined in attached
+databases.
+
+</dd>
+<dt class="defitem"><a name="ungrab">$db ungrab <i>data</i></a></dt><dd><p>
+
+Given a "grab data set" produced by <a class="iref" href="#grab">grab</a> or <a class="iref" href="#delete">delete</a>,
+this command puts the data back into the database using either UPDATE
+or INSERT, as determined by the optional INSERT tag in each table's
+specification in the data set.  For example, the following code grabs
+rows from the database, modifies them, and then restores the original
+values.
+
+</p><pre>
+    set data [$db grab table1 {x=5} table2 {y=10}]
+    ...
+    # Code that updates the grabbed rows.
+    ...
+    $db ungrab $data
+</pre>
+<p>If the INSERT tag is included in a table spec, this command
+can also be used to re-insert deleted rows.</p>
+
+<p>Note that the schemas of the relevant tables should not be altered
+between grabbing and ungrabbing, or the ungrabbing will have
+unpredictable results.</p>
+
+<p>Whether updating or inserting, values that match the 
+SQLite3 "nullvalue" will be inserted as NULL.  When updating, however,
+it is assumed that key columns do not contain NULL.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="unlock">$db unlock <i>tables</i></a></dt><dd><p>
+
+Unlocks one more <a class="iref" href="#lock">lock</a>ed database tables, where <i>tables</i>
+is a list of the table names.  Once unlocked, the tables are
+once again read-write, and rows can be updated, inserted, or deleted.</p>
+
+<p>Unlocking a table that isn't locked is <b>not</b> an error; the table
+simply remains unlocked.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+

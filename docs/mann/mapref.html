@@ -1,0 +1,517 @@
+<html>
+<head>
+<title>mars 3.0.23: mapref(n) -- Generic map projection, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mapref(n)</b> -- Generic map projection, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#map_coordinates">Map Coordinates</a></li>
+
+    <li><a href="#map_reference_strings">Map Reference Strings</a></li>
+
+    <li><a href="#zoom_factors">Zoom Factors</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::mapref
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#mapref">mapref <i>name ?options?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mapref-height">-height <i>pixels</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mapref-width">-width <i>pixels</i></a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#box"><i>obj</i> box</a></li>
+<li><a class="iref" href="#c2m"><i>object</i> c2m <i>zoom cx cy</i></a></li>
+<li><a class="iref" href="#c2ref"><i>object</i> c2ref <i>zoom cx cy</i></a></li>
+<li><a class="iref" href="#dim"><i>obj</i> dim</a></li>
+<li><a class="iref" href="#m2c"><i>object</i> m2c <i>zoom mx my....</i></a></li>
+<li><a class="iref" href="#m2ref"><i>obj</i> m2ref <i>mx my...</i></a></li>
+<li><a class="iref" href="#ref2c"><i>object</i> ref2c <i>zoom ref...</i></a></li>
+<li><a class="iref" href="#ref2m"><i>obj</i> ref2m <i>ref...</i></a></li>
+<li><a class="iref" href="#ref_validate"><i>obj</i> ref validate <i>ref...</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>Instances of the <a href="../mann/mapref.html">mapref(n)</a> type are map
+<a href="../mani/projection.html">projection(i)</a> objects suitable for use with
+<a href="../mann/mapcanvas.html">mapcanvas(n)</a>.  <a href="../mann/mapref.html">mapref(n)</a> implements a 
+non-geographic map projection for arbitrary map images.
+
+</p>
+
+<h2><a name="map_coordinates">Map Coordinates</a></h2>
+<p>Map units are defined by dividing the longer of the image's
+pixel width or height into 1000 equal segments numbered 0 to 999.  The
+longer of the shorter of the two sides is referenced with the same
+units; so a 2000x1000 map would have dimensions 999x499 in map units.</p>
+
+<p>Map units are double-precision floating point numbers.
+
+</p>
+
+<h2><a name="map_reference_strings">Map Reference Strings</a></h2>
+<p>A <a href="../mann/mapref.html">mapref(n)</a> map reference string is a six-digit alphanumeric
+string which encodes the map coordinates.  A coordinate's hundred's place
+is converted to a letter A-K (skipping I), and the decimal fraction is
+rounded.  Thus, (123.4, 567.8) is encoded as "<code>B23F68</code>".
+
+</p>
+
+<h2><a name="zoom_factors">Zoom Factors</a></h2>
+<p>Note that the <a href="../mann/mapcanvas.html">mapcanvas(n)</a> can display a given map
+at a variety of zoom factors.  The zoom factor is an integer number
+between 1 and 300, interpeted as a percentage.  At a zoom factor of
+200, for example, there are twice as many pixels in each direction.
+The conversion between canvas coordinates and map coordinates must
+take the zoom factor into account.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="mapref">mapref <i>name ?options?</i></a></dt><dd><p>
+
+Creates a new mapref(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#mapref">mapref</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a class="iref" href="#mapref">mapref</a> may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="mapref-height">-height <i>pixels</i></a></dt><dd>
+
+Sets the height of the map in pixels, at a zoom factor of 100%.
+
+</dd>
+<dt class="defopt"><a name="mapref-width">-width <i>pixels</i></a></dt><dd>
+
+Sets the width of the map in pixels, at a zoom factor of 100%.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#mapref">mapref</a> object has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="box"><i>obj</i> box</a></dt><dd>
+
+Returns the bounding box of the map in map units.
+
+</dd>
+<dt class="defitem"><a name="c2m"><i>object</i> c2m <i>zoom cx cy</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map coordinate pair as a list of two coordinates
+<i>mx</i> and <i>my</i>.
+
+</dd>
+<dt class="defitem"><a name="c2ref"><i>object</i> c2ref <i>zoom cx cy</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map reference string.
+
+</dd>
+<dt class="defitem"><a name="dim"><i>obj</i> dim</a></dt><dd>
+
+Returns the dimensions of the map in map units.
+
+</dd>
+<dt class="defitem"><a name="m2c"><i>object</i> m2c <i>zoom mx my....</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and one or more map coordinate pairs
+<i>mx</i> and <i>my</i>, returns a list of canvas 
+coordinate pairs as a flat list of coordinates <i>cx cy...</i>.
+
+</dd>
+<dt class="defitem"><a name="m2ref"><i>obj</i> m2ref <i>mx my...</i></a></dt><dd>
+
+Given one or more map coordinate pairs <i>mx</i> and <i>my</i>, returns a
+list of one or map reference strings.  Each coordinate is a separate
+argument.
+
+</dd>
+<dt class="defitem"><a name="ref2c"><i>object</i> ref2c <i>zoom ref...</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and one or more map reference strings,
+returns a list of canvas coordinate pair as a flat list of coordinates
+<i>cx cy...</i>. 
+
+</dd>
+<dt class="defitem"><a name="ref2m"><i>obj</i> ref2m <i>ref...</i></a></dt><dd>
+
+Given one or more map reference strings as arguments, returns a
+corresponding list of <i>mx</i> and <i>my</i> map coordinates.
+
+</dd>
+<dt class="defitem"><a name="ref_validate"><i>obj</i> ref validate <i>ref...</i></a></dt><dd>
+
+Given one or more map reference strings as arguments, validates
+each. Throws an error with <code>-errorcode</code> <b>INVALID</b> if
+any reference string is invalid.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mani/projection.html">projection(i)</a>, <a href="../mann/mapcanvas.html">mapcanvas(n)</a>
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

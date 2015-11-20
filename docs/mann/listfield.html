@@ -1,0 +1,479 @@
+<html>
+<head>
+<title>mars 3.0.23: listfield(n) -- Multi-selection List Entry Field, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>listfield(n)</b> -- Multi-selection List Entry Field, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#listfield">listfield <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-height">-height <i>rows</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-itemdict">-itemdict <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-showkeys">-showkeys <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-state">-state <i>state</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-stripe">-stripe <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listfield-width">-width <i>chars</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The listfield(n) widget is <a href="../mani/field.html">field(i)</a> data entry field for
+selecting multiple entries from a list of choices.  The available
+choices are shown in two columns; arrow buttons are used to move
+items from the "omitted" list to the "included" list.</p>
+
+<p>The choices are specified by setting the <b>-itemdict</b> option.
+The value of the widget is a list of the dictionary keys of the
+items in the "included" list.  The dictionary values are displayed
+in the two item columns, optionally prefixed by the keys.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="listfield">listfield <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#listfield">listfield</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options:
+
+</p><dl>
+
+<dt class="defopt"><a name="listfield-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <a class="iref" href="#set">set</a>.  The new value is appended
+to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="listfield-height">-height <i>rows</i></a></dt><dd>
+
+The height of the "include" and "omit" lists, in rows.
+
+</dd>
+<dt class="defopt"><a name="listfield-itemdict">-itemdict <i>dict</i></a></dt><dd>
+
+The items from which the user can choose, specified as a dictionary of
+keys and values.  The dictionary values are displayed in the "include"
+and "omit" lists, optionally prefixed by the keys (see
+<b>-showkeys</b>); the <a class="iref" href="#get">get</a> and <a class="iref" href="#set">set</a> methods
+return and accept a list of keys.
+
+</dd>
+<dt class="defopt"><a name="listfield-showkeys">-showkeys <i>flag</i></a></dt><dd>
+
+If true (the default), the text shown for each item in the item lists is
+"<i>key</i>: <i>value</i>".  Otherwise only the <b>-itemdict</b> values are
+displayed.
+
+</dd>
+<dt class="defopt"><a name="listfield-state">-state <i>state</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  listfield(i) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.
+
+</dd>
+<dt class="defopt"><a name="listfield-stripe">-stripe <i>flag</i></a></dt><dd>
+
+If true (the default) the even items in each list are striped with a
+distinctive background color.  This is useful if item values might
+wrap to multiple lines.
+
+</dd>
+<dt class="defopt"><a name="listfield-width">-width <i>chars</i></a></dt><dd>
+
+The width in text characters of each of the item lists.
+
+
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>listfield(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Sets the value of one or more of the object's
+options.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Returns the field's current value.
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>value</i></a></dt><dd><p>
+
+From <a href="../mani/field.html">field(i)</a>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <a class="iref" href="#set">set</a> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.</p>
+
+<p>If the <i>value</i> contains an element that isn't a valid
+<code>-itemdict</code> key, that element is ignored.  This allows the
+field to be used with data values that have become invalid due to
+changes elsewhere in the system.
+
+</p>
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,880 @@
+<html>
+<head>
+<title>mars 3.0.23: tabletext(n) -- Text to SQL table processor, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>tabletext(n)</b> -- Text to SQL table processor, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#basic_syntax">BASIC SYNTAX</a></li>
+    <ul>
+
+    <li><a href="#table_syntax">Table Syntax</a></li>
+
+    <li><a href="#records_and_keys">Records and Keys</a></li>
+
+    <li><a href="#data_fields">Data Fields</a></li>
+
+</ul>
+    
+
+    <li><a href="#schema_definition">SCHEMA DEFINITION</a></li>
+    <ul>
+
+    <li><a href="#matching_the_sql_schema">Matching the SQL Schema</a></li>
+
+    <li><a href="#required_fields">Required Fields</a></li>
+
+    <li><a href="#default_values">Default Values</a></li>
+
+    <li><a href="#field_validators">Field Validators</a></li>
+
+    <li><a href="#table_and_record_validation">Table and Record Validation</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#tabletext">tabletext <i>name ?options?</i></a></li>
+<li><a class="iref" href="#table">$tt table <i>name</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#table-tablevalidator">-tablevalidator cmd</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#table-recordvalidator">-recordvalidator <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#table-dependson">-dependson <i>list</i></a></li>
+<li><a class="iref" href="#field">$tt field <i>table field</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#field-key">-key</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#field-unique">-unique</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#field-required">-required</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#field-validator">-validator <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#field-default">-default</a></li>
+<li><a class="iref" href="#clear">$tt clear <i>db</i></a></li>
+<li><a class="iref" href="#get_default">$tt get default <i>table field</i></a></li>
+<li><a class="iref" href="#loadfile">$tt loadfile <i>db dbfile</i> ?<i>preamble</i>?</a></li>
+<li><a class="iref" href="#load">$tt load <i>db dbtext</i> ?<i>preamble</i>?</a></li>
+<li><a class="iref" href="#validate">$tt validate <i>subcommand</i> ?<i>args</i>? <i>db table value</i></a></li>
+<li><a class="iref" href="#validate_vtype">$tt validate vtype <i>vtype db table value</i></a></li>
+<li><a class="iref" href="#validate_foreign">$tt validate foreign <i>otherTable field db table value</i></a></li>
+<li><a class="iref" href="#writefile">$tt writefile <i>db outfile infile</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>tabletext(n) is a tool for translating between SQL tables and matching
+text files.  At present it can read a text file, validate its content,
+and populate SQL tables using the data; at a later time, it may gain
+the capability to output SQL tables as text files.</p>
+
+<p>tabletext(n) is used as follows:
+
+</p>
+
+<ul>
+  <li> First, an instance of tabletext(n) is created.
+
+  </li><li> Next, the <a class="iref" href="#table">table</a> and <a class="iref" href="#field">field</a> methods are used to
+       define the table schemas, and to associate validators with the
+       tables and fields.  The chosen table and field names must match
+       SQLite table definitions exactly.
+
+  </li><li> The <a class="iref" href="#clear">clear</a> method can be used to clear old data
+       from the SQLite database for the tables known to the
+       tabletext(n) instance.
+
+  </li><li> The <a class="iref" href="#loadfile">loadfile</a> and <a class="iref" href="#load">load</a> methods can be used to
+       parse input text and populate the SQLite tables.
+       
+</li></ul>
+
+<h2><a name="basic_syntax">BASIC SYNTAX</a></h2>
+<p>A tabletext(n) input file is a text file which defines the contents of
+a number of SQL tables.  This section describes the file's syntax,
+which is independent of the chosen schema.</p>
+
+<p>The file may contain comments and <b>table</b> statements. A comment
+is a line of text beginning with the "#" character:
+
+</p>
+
+<pre>
+# This is a comment.
+</pre>
+
+<h2><a name="table_syntax">Table Syntax</a></h2>
+<p>A <b>table</b> statement defines the content of a single
+database table; each table consists of zero or more records.  The
+<b>table</b> statement has this syntax:
+
+</p>
+
+<pre>
+<b>table</b> <i>tableName</i> {
+    <i>record</i>
+    <i>record</i>
+        .
+        .
+        .
+}
+</pre>
+<p>For example,
+
+</p>
+
+<pre>
+table employees {
+    <i>record</i>
+    <i>record</i>
+        .
+        .
+        .
+}
+</pre>
+
+<h2><a name="records_and_keys">Records and Keys</a></h2>
+<p>The records of each table are identified by the table's key fields.
+Each record in the <b>employees</b> table, for example, might be
+keyed on the employee's badge number.  Other tables might have
+multiple key fields.</p>
+
+<p>Each record is defined by a <b>record</b> statement, which has this syntax:
+
+</p>
+
+<pre>
+<b>table</b> <i>tableName</i> {
+    <b>record</b> <i>keyName</i> <i>keyValue</i> ... {
+         <i>field</i>
+         <i>field</i>
+         .
+         .
+         .
+    }
+    .
+    .
+    .
+}
+</pre>
+<p>For example,
+
+</p>
+
+<pre>
+table employees {
+    record badge_number 10034 {
+         <i>field</i>
+         <i>field</i>
+         .
+         .
+         .
+    }
+
+    .
+    .
+    .
+}
+</pre>
+
+<h2><a name="data_fields">Data Fields</a></h2>
+<p>In addition to its key field or fields, most tables also have one or
+more data fields.  Data field values are defined using the <b>field</b>
+statement, which has this syntax:
+
+</p>
+
+<pre>
+<b>table</b> <i>tableName</i> {
+    <b>record</b> <i>keyName</i> <i>keyValue</i> ... {
+         <b>field</b> <i>fieldName</i> <i>fieldValue</i>
+         <b>field</b> <i>fieldName</i> <i>fieldValue</i>
+         .
+         .
+         .
+    }
+    .
+    .
+    .
+}
+</pre>
+<p>Field values containing whitespace must be quoted with double
+quotes or curly brackets.  By convention, double quotes are used
+for short strings and curly brackets for structured values
+(e.g., lists) and for text which spills onto more than one line.</p>
+
+<p>For example,
+
+</p>
+
+<pre>
+table employees {
+    record badge_number 10034 {
+         field name      "John Doe"
+         field mail_stop 144-210
+         .
+         .
+         .
+    }
+
+    .
+    .
+    .
+}
+</pre>
+
+<h2><a name="schema_definition">SCHEMA DEFINITION</a></h2>
+<p>The tabletext(n) schema defines the tables that can appear in the
+input, the fields which can appear in those tables, constraints on the
+tables and fields, and validation functions to perform additional
+validation and consistency checks.
+
+</p>
+
+<h2><a name="matching_the_sql_schema">Matching the SQL Schema</a></h2>
+<p>In general, the tabletext(n) schema is derived from the SQL schema for
+the tables of interest.</p>
+
+<p>For example, the SQL schema for a table of employee records might look
+something like this:
+
+</p>
+
+<pre>
+CREATE TABLE employees (
+    badge_number INTEGER       -- The employee's badge number
+        PRIMARY KEY,
+    name         TEXT,         -- The employee's full name
+    mail_stop    TEXT,         -- The employee's mail stop
+    .
+    .
+    .
+);
+</pre>
+<p>The matching tabletext(n) schema must use the same table and field names:
+
+</p>
+
+<pre>
+set tt [tabletext %AUTO%]
+
+$tt table employees
+$tt field employees badge_number -key
+$tt field employees name
+$tt field employees mail_stop
+</pre>
+<p>The "$tt" object can now be used to parse employee data from a file
+with the syntax shown in <a href="#basic_syntax">BASIC SYNTAX</a>.  However, little
+validation is done, beyond ensuring that the badge number is unique
+for each employee.
+
+</p>
+
+<h2><a name="required_fields">Required Fields</a></h2>
+<p>There are several options which can be used to constrain field values.
+For example, the employee's name is a required field, and we'd like it
+to be unique.  We can specify that as follows:
+
+</p>
+
+<pre>
+$tt field employees name -required -unique
+</pre>
+
+<h2><a name="default_values">Default Values</a></h2>
+<p>Some fields may have default values.  These are usually entered in
+the SQL schema; then, a record which does not explicitly specify a
+value for that field will get the default value.</p>
+
+<p>For example, suppose that most employees share a single mail stop:
+
+</p>
+
+<pre>
+CREATE TABLE employees (
+    badge_number INTEGER       -- The employee's badge number
+        PRIMARY KEY,
+    name         TEXT,         -- The employee's full name
+    mail_stop    TEXT          -- The employee's mail stop
+        DEFAULT '144-210',
+    .
+    .
+    .
+);
+</pre>
+
+<h2><a name="field_validators">Field Validators</a></h2>
+<p>You can also specify a field validator, a function which will ensure
+that the field's value is valid.  For example, badge numbers must not
+only be unique; they must also be five-digit integers, possibly
+with leading zeros.  Field validators are Tcl commands which expect
+three arguments: the name of the SQLite database object, the name of
+the current table, and the field value.  A validator has two jobs:
+
+</p>
+
+<ul>
+  <li> Throw an error if the value is invalid.
+  </li><li> Return the value in canonical form.
+</li></ul>
+<p>For example, a badge number validator might look like this:
+
+</p>
+
+<pre>
+proc BadgeValidator {db table value} {
+    # FIRST, validate the value and throw an error if it is invalid
+    require {[string is integer -strict $value]} \
+        "Value is not an integer: \"$value\""
+
+    # NEXT, put it in canonical form
+    return [format "%05d" $value]
+}
+</pre>
+<p>You'd add this validator to the schema as follows:
+
+</p>
+
+<pre>
+$tt field employees badge_number -key \
+    -validator BadgeValidator
+</pre>
+
+<h2><a name="table_and_record_validation">Table and Record Validation</a></h2>
+<p>Similarly, you can define table and record validators as options on
+the <a class="iref" href="#table">table</a> method, and you can specify that one table depends
+on one or more other tables.  A record validator is a proc that is
+called after each record is defined; it can check cross-field
+constraints.  A table validator is a proc that is called after the
+table is defined; it can check cross-record constraints and even
+insert additional records into the database.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="tabletext">tabletext <i>name ?options?</i></a></dt><dd>
+
+Creates a new tabletext(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#tabletext">tabletext</a> returns the fully-qualified form of the
+<i>name</i>.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#tabletext">tabletext</a> object has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="table">$tt table <i>name</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Adds a table called <i>name</i> to the schema.  The call may include
+the following validation options:
+
+</p><dl>
+
+<dt class="defopt"><a name="table-tablevalidator">-tablevalidator cmd</a></dt><dd><p>
+
+Defines a command to be called after all of the table's records have
+been defined.  If the table does not appear in the input, the
+validator will be called after all input has been read.  The validator
+can check cross-record constraints, add records to the table, and so
+forth.  If it detects a problem, it should throw an error.</p>
+
+<p><i>cmd</i> is a command prefix to which two arguments will be added,
+the name of the SQLite database object, and the name of the table.
+Any return value is ignored.
+
+</p>
+</dd>
+<dt class="defopt"><a name="table-recordvalidator">-recordvalidator <i>cmd</i></a></dt><dd><p>
+
+Defines a command to be called after each record is read from the
+input and added to the SQL table, to check cross-field constraints.
+If the command detects a problem, it should throw an error.
+Any return value is ignored.</p>
+
+<p><i>cmd</i> is a command prefix to which three arguments will be added,
+the name of the SQLite database object, the name of the table, and
+the "ROWID" of the record in the SQL table.  The "ROWID" is used to
+retrieve the record data, i.e.,
+
+</p><pre>
+proc MyRecordValidator {db table rowid} {
+    $db eval "SELECT * FROM $table WHERE ROWID=\$rowid" row {
+        # Validate the constraints
+        .
+        .
+        .
+    }
+}
+</pre>
+
+</dd>
+<dt class="defopt"><a name="table-dependson">-dependson <i>list</i></a></dt><dd>
+
+This option is used to specify that the table depends on one or more
+other tables; <i>list</i> is a list of their names.  If this table
+appears in the input before any of the listed tables, an error is
+thrown.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="field">$tt field <i>table field</i> ?<i>options...</i>?</a></dt><dd><p>
+
+This method defines a new field for a previously defined table.
+<i>table</i> is the table name, and <i>field</i> is the field name;
+these must match the names in the SQLite database schema.  The options
+are used to define additional validation constraints.
+
+</p><dl>
+
+<dt class="defopt"><a name="field-key">-key</a></dt><dd>
+
+This field is (a component of) the primary key.  Taken together, the
+values of the fields marked as <code>-key</code>'s must be unique for
+each record.
+
+</dd>
+<dt class="defopt"><a name="field-unique">-unique</a></dt><dd>
+
+Each record must have a unique value for this field.  This option is
+used only for data fields; keys are unique by definition.
+
+</dd>
+<dt class="defopt"><a name="field-required">-required</a></dt><dd>
+
+Each record in the input must explicitly specify a value for this
+field; there is no default value.
+
+</dd>
+<dt class="defopt"><a name="field-validator">-validator <i>cmd</i></a></dt><dd><p>
+
+Defines a field validator.  The validator is called for each
+"field" statement in the input; see <a href="#field_validators">Field Validators</a> for an
+example.</p>
+
+<p><i>cmd</i> is a command prefix to which three arguments will be added:
+the name of the SQLite database object, the table name, and the value
+to validate.  The command must:
+
+</p><ul>
+  <li> Throw an error if the value is invalid.
+
+  </li><li> Return the value in canonical form (however the application
+       defines that).  For example, <a href="../mann/enum.html">enum(n)</a> values can be
+       expressed case-insensitively using short names, long names, or
+       index numbers; the database usually contains the short
+       name with the precise case used in the enum definition.
+</li></ul>
+
+</dd>
+<dt class="defopt"><a name="field-default">-default</a></dt><dd>
+
+This is the default value for the field.  If the text does not specify
+a field value, this value will be used instead.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="clear">$tt clear <i>db</i></a></dt><dd>
+
+Deletes all records from known tables in SQLite database <i>db</i>.
+The table schema, at least, must already be defined in <i>db</i>, as
+tabletext(n) doesn't know the SQL schema.  SQLite tables not included
+in the tabletext(n) schema will not be touched.
+
+</dd>
+<dt class="defitem"><a name="get_default">$tt get default <i>table field</i></a></dt><dd>
+
+Returns the -default value for the specified field.
+The empty string will be returned if -default was not specified with
+<a class="iref" href="#field">field</a>.
+
+</dd>
+<dt class="defitem"><a name="loadfile">$tt loadfile <i>db dbfile</i> ?<i>preamble</i>?</a></dt><dd><p>
+
+Reads input text from a file named <i>dbfile</i>, parses it, and loads
+the data into tables in SQLite database <i>db</i>.  The SQLite tables
+are <a class="iref" href="#clear">clear</a>ed first.</p>
+
+<p>If the <i>preamble</i> is specified, it contains text that is parsed
+before the text in the <i>dbfile</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="load">$tt load <i>db dbtext</i> ?<i>preamble</i>?</a></dt><dd>
+
+This method is identical to <a class="iref" href="#loadfile">loadfile</a>, except that the input
+text is read from the string <i>dbtext</i>, rather than from a
+file.
+
+</dd>
+<dt class="defitem"><a name="validate">$tt validate <i>subcommand</i> ?<i>args</i>? <i>db table value</i></a></dt><dd><p>
+
+These methods are for use as field <b>-validator</b> commands. Each one may
+have arguments which proceed the standard <i>db</i>, <i>table</i>, and
+<i>value</i> arguments; these are specified by the schema as part of the
+<b>-validator</b>.
+
+</p><dl>
+
+
+<dt class="defitem"><a name="validate_vtype">$tt validate vtype <i>vtype db table value</i></a></dt><dd>
+
+Validates a field given a validation type object.  The <i>vtype</i>
+must have a <b>validate</b> subcommand that takes one argument, the value
+to validate, and returns the value if valid and throws an error otherwise.
+Ideally, the <b>validate</b> subcommand should throw error code
+<b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="validate_foreign">$tt validate foreign <i>otherTable field db table value</i></a></dt><dd>
+
+Verifies that the value being validated appears in the <i>field</i> column
+in some record in the <i>otherTable</i>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="writefile">$tt writefile <i>db outfile infile</i></a></dt><dd>
+
+Writes the contents of tables, records and fields back out to a file specified
+as <i>outfile</i>. The supplied database object <i>db</i> is used as the source
+of the data. <i>infile</i> is the name of the file used to initially populate
+<i>db</i> and is written to <i>outfile</i>'s header.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package, moved to Mars from JNEM.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

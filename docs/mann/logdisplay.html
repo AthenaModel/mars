@@ -1,0 +1,669 @@
+<html>
+<head>
+<title>mars 3.0.23: logdisplay(n) -- Log Display Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>logdisplay(n)</b> -- Log Display Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#entry_format">ENTRY FORMAT</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require gui  1.0
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#logdisplay">logdisplay <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-tags">-tags <i>tagslist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-parsecmd">-parsecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-filtercmd">-filtercmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-msgcmd">-msgcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-format">-format <i>formatlist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-showtitle">-showtitle <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-autoupdate">-autoupdate <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-updateinterval">-updateinterval <i>milliseconds</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-autoscroll">-autoscroll <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-autowidth">-autowidth <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logdisplay-foundcmd">-foundcmd <i>cmd</i></a></li>
+<li><a class="iref" href="#field">$logdisplay field <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#field_list">$logdisplay field list</a></li>
+<li><a class="iref" href="#field_show">$logdisplay field show <i>fields</i></a></li>
+<li><a class="iref" href="#field_hide">$logdisplay field hide <i>fields</i></a></li>
+<li><a class="iref" href="#field_isshown">$logdisplay field isshown <i>field</i></a></li>
+<li><a class="iref" href="#find">$logdisplay find <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#format">$logdisplay format <i>text</i></a></li>
+<li><a class="iref" href="#load">$logdisplay load <i>filename</i> <i>?showend?</i></a></li>
+<li><a class="iref" href="#redisplay">$logdisplay redisplay</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>logdisplay(n) is a widget for displaying log files.  It places few
+constraints on the format of the files, allowing the application to
+define parsing, filtering, and formatting details.  It does assume
+that each log entry consists of one or more fields which can easily
+be displayed in columns.  The final field in each entry can consist
+of multiple lines of data as flattened by <a href="../mann/logger.html">logger(n)</a>; such
+data will be displayed appropriately.</p>
+
+<p>The widget has many options, including the ability to automatically
+check for new log entries.</p>
+
+<p>The <a href="../mann/scrollinglog.html">scrollinglog(n)</a> widget combines logdisplay(n) with
+<a href="../mann/filter.html">filter(n)</a> and <a href="../mann/finder.html">finder(n)</a> in a convenient package;
+most users will find <a href="../mann/scrollinglog.html">scrollinglog(n)</a> to be the more useful widget.
+
+</p>
+
+<h2><a name="entry_format">ENTRY FORMAT</a></h2>
+<p>The logdisplay(n) widget can deal with log data in any format that can
+be read incrementally by <a href="../mann/logreader.html">logreader(n)</a>; the application must
+provide a <code>-parsecmd</code> which will parse a text string
+representing a block of zero or more log entries into a list of
+log entries.  Each parsed log entry will be a list with the
+following structure:
+
+</p>
+
+<pre>
+    &lt;field&gt; [&lt;field&gt;...] &lt;tag&gt;
+</pre>
+<p>That is, one or more fields followed by a display tag.  Each
+entry must have exactly the same number of fields.
+The fields represent the data to be displayed; the tag determines
+how the logdisplay(n) displays it (i.e., color, font, etc.).</p>
+
+<p>The valid tags are specified by the <code>-tags</code> option.  The
+fields are defined by the <code>-format</code> option.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="logdisplay">logdisplay <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#logdisplay">logdisplay</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#logdisplay">logdisplay</a> widget contains a <a href="../mann/rotext.html">rotext(n)</a> widget;
+it may be created with any of the <a href="../mann/rotext.html">rotext(n)</a> widget's options,
+plus the following logdisplay(n)-specific options:
+
+</p><dl>
+
+<dt class="defopt"><a name="logdisplay-tags">-tags <i>tagslist</i></a></dt><dd><p>
+
+A list of text widget tag names and their configuration data.  Each
+entry is a list consisting of a tag name followed text(n) tag
+configuration options and values:
+ 
+</p><pre>
+    &lt;tag name&gt; &lt;option&gt; &lt;data&gt; ...
+</pre>
+<p>The <code>-parsecmd</code> includes a tag name with each parsed entry;
+the entry will be tagged with the tag name and hence displayed with
+the tag options specified here.</p>
+
+<p>If a parsed entry uses a tag that isn't included in
+<code>-tags</code>, the entry will be displayed using the default font
+and color settings.</p>
+
+<p>For example,
+
+</p>
+
+<pre>
+    -tags {
+        {fatal   -background red} 
+        {warning -background yellow}
+    }
+</pre>
+
+</dd>
+<dt class="defopt"><a name="logdisplay-parsecmd">-parsecmd <i>cmd</i></a></dt><dd>
+
+A parsing command used to parse the contents of a log file into the
+proper format.  The <i>parsecmd</i> will be passed a single argument,
+the text string to be parsed; this string will represent a block of
+zero or more log entries.  It must return a list of parsed log
+entries; see <a href="#entry_format">ENTRY FORMAT</a> for more details.
+
+</dd>
+<dt class="defopt"><a name="logdisplay-filtercmd">-filtercmd <i>cmd</i></a></dt><dd>
+
+A command used to filter log entries, i.e., to indicate whether the
+entry should be displayed or not according to the application's
+filtering criteria.  It is executed for each log entry which might
+be displayed.  It will be called with a single log entry (as
+defined in <a href="#entry_format">ENTRY FORMAT</a>) appended as a single argument.
+It must return 1 if the entry should be displayed, and 0 if not.
+
+</dd>
+<dt class="defopt"><a name="logdisplay-msgcmd">-msgcmd <i>cmd</i></a></dt><dd>
+
+A command for reporting messages to the user; if defined, <i>cmd</i>
+will be called with a message appended to it as a single argument
+whenever logdisplay(n) wishes to report a message.
+
+</dd>
+<dt class="defopt"><a name="logdisplay-format">-format <i>formatlist</i></a></dt><dd><p>
+
+Specifies the display format for log entries.  There must be
+an entry in <i>formatlist</i> for each field in a parsed log entry
+(see <a href="#entry_format">ENTRY FORMAT</a>), and the order of the entries in
+<i>formatlist</i> must match the order of the fields in a parsed log
+entry.</p>
+
+<p>Each entry in <i>formatlist</i> must be a list of the form:
+
+</p><pre>
+    &lt;field name>  &lt;field width>  &lt;display flag>
+</pre>
+<p>The <i>field name</i> identifies the field.</p>
+
+<p>The <i>field width</i> is the display width of the field in monospace
+characters; field values are truncated to the <i>field width</i>.
+For the last field only the width may be 0, in which case no
+truncation is ever done on that field.</p>
+
+<p>The last field may also contain newlines represented as "\n"; in
+this case each line is formatted to align properly with the left side
+of the column and each line is truncated to <i>field width</i>, or not
+if it's 0.</p>
+
+<p>The <i>display flag</i> indicates whether or not to display the field
+initially.</p>
+
+<p>This option is read-only after widget creation.</p>
+
+<p>For example,
+
+</p>
+
+<pre>
+    -format {
+        {t     17 no}
+        {zulu  12 yes}
+        {v      7 yes}
+        {c      7 yes}
+        {m      0 yes}
+    }
+</pre>
+
+</dd>
+<dt class="defopt"><a name="logdisplay-showtitle">-showtitle <i>boolean</i></a></dt><dd><p>
+
+If set, the widget will display the name of the current log file on a
+button at the top of the widget.  Clicking the button will cause the
+widget to look for new entries in the current file.  Defaults to false.</p>
+
+<p>This option is read-only after widget creation.
+
+</p>
+</dd>
+<dt class="defopt"><a name="logdisplay-autoupdate">-autoupdate <i>boolean</i></a></dt><dd>
+
+If true, the widget will automatically look for new log entries in the
+current file every <code>-updateinterval</code> milliseconds.  Defaults
+to "off".
+
+</dd>
+<dt class="defopt"><a name="logdisplay-updateinterval">-updateinterval <i>milliseconds</i></a></dt><dd>
+
+Specifies the interval between automatic updates in milliseconds
+when <code>-autoupdate</code> is true.
+Defaults to 1000 (i.e., one second).
+
+</dd>
+<dt class="defopt"><a name="logdisplay-autoscroll">-autoscroll <i>boolean</i></a></dt><dd>
+
+If set, the logdisplay automatically scrolls to show new entries as they are
+appended.
+
+</dd>
+<dt class="defopt"><a name="logdisplay-autowidth">-autowidth <i>boolean</i></a></dt><dd>
+
+If true, column widths will be widened to match the text they contain
+(except for the final column, which is a special case).  Defaults to
+false.
+
+</dd>
+<dt class="defopt"><a name="logdisplay-foundcmd">-foundcmd <i>cmd</i></a></dt><dd><p>
+
+This option is used to link a logdisplay(n) widget with a finder(n)
+widget, or any other widget which supports the "found" half of the
+find/found protocol.  It specifies a command which will be called when
+the widget's find status is updated.  It will be called with two
+additional arguments, both integers: the number of instances of the
+target string which have been found (or 0 if there are none) and
+the index (0 to N-1) of the instance which is currently highlighted
+(or -1 if no instance is highlighted).</p>
+
+<p>See <a href="../mann/finder.html">finder(n)</a> for an example.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="field">$logdisplay field <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This method provides access to the field definitions.
+
+</p><dl>
+
+<dt class="defitem"><a name="field_list">$logdisplay field list</a></dt><dd>
+
+Returns a list of the field names.
+
+</dd>
+<dt class="defitem"><a name="field_show">$logdisplay field show <i>fields</i></a></dt><dd>
+
+Sets the display flag for each field listed in <i>fields</i>, and
+redisplays the widget's contents.  The display flags of other fields
+are not affected.
+
+</dd>
+<dt class="defitem"><a name="field_hide">$logdisplay field hide <i>fields</i></a></dt><dd>
+
+Clears the display flag for each field listed in <i>fields</i>, and
+redisplays the widget's contents.  The display flags of other fields
+are not affected.
+
+</dd>
+<dt class="defitem"><a name="field_isshown">$logdisplay field isshown <i>field</i></a></dt><dd>
+
+Returns the <i>field</i>'s display flag setting, true or false.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="find">$logdisplay find <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#find">find</a> method, along with the <code>-foundcmd</code>
+callback, implements the logdisplay(n) widget's half of the find/found
+protocol.  It is used to search for and highlight text strings.</p>
+
+<p>This functionality is provided by the underlying <a href="../mann/rotext.html">rotext(n)</a>
+widget; see <a href="../mann/rotext.html">rotext(n)</a> for further information on the
+<a class="iref" href="#find">find</a> method.
+
+</p>
+</dd>
+<dt class="defitem"><a name="format">$logdisplay format <i>text</i></a></dt><dd>
+
+Returns the formated version of the raw log entry contained in <i>text</i>.
+All active filtering mechanisms are considered when performing the
+formatting.  This command is useful to any client that needs a
+formatted version of <i>text</i> but doesn't have a need to display
+it.
+
+</dd>
+<dt class="defitem"><a name="load">$logdisplay load <i>filename</i> <i>?showend?</i></a></dt><dd>
+
+Loads the specified log file into the widget.  If <i>filename</i>
+matches the name of the current logfile then the widget will read and
+display any new entries from the file.  If <i>filename</i> is "" then
+the display is cleared.  When the optional <i>showend</i> is true, the
+most recent contents or acitve match will be displayed regardless of
+the -autoscroll option.
+
+</dd>
+<dt class="defitem"><a name="redisplay">$logdisplay redisplay</a></dt><dd>
+
+Causes the widget to redisplay its contents.  This is usually done
+to force a redisplay after changing the filter criteria.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/scrollinglog.html">scrollinglog(n)</a>, <a href="../mann/loglist.html">loglist(n)</a>, <a href="../man1/jnem_log.html">jnem_log(1)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>7/5/2005	Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,759 @@
+<html>
+<head>
+<title>mars 3.0.23: parmset(n) -- Parameter Set Manager, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>parmset(n)</b> -- Parameter Set Manager, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#masters_and_slaves">MASTERS AND SLAVES</a></li>
+    <ul>
+
+    <li><a href="#defining_a_master">Defining a Master</a></li>
+
+    <li><a href="#defining_a_slave">Defining a Slave</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#notifier_events">NOTIFIER EVENTS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::parmset
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#parmset">parmset <i>name</i> ?<i>options</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parmset-subject">-subject <i>subject</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parmset-notifycmd">-notifycmd <i>command</i></a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#changed"><i>obj</i> changed</a></li>
+<li><a class="iref" href="#checkpoint"><i>obj</i> checkpoint ?-saved?</a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#define"><i>obj</i> define <i>name vtype defvalue docstring</i></a></li>
+<li><a class="iref" href="#docstring"><i>obj</i> docstring <i>name</i></a></li>
+<li><a class="iref" href="#get"><i>obj</i> get <i>name</i></a></li>
+<li><a class="iref" href="#getdefault"><i>obj</i> getdefault <i>name</i></a></li>
+<li><a class="iref" href="#into"><i>obj</i> into <i>master</i></a></li>
+<li><a class="iref" href="#islocked"><i>obj</i> islocked <i>name</i></a></li>
+<li><a class="iref" href="#items"><i>obj</i> items</a></li>
+<li><a class="iref" href="#list"><i>obj</i> list ?<i>pattern</i>?</a></li>
+<li><a class="iref" href="#load"><i>obj</i> load <i>filename</i> ?-safe?</a></li>
+<li><a class="iref" href="#lock"><i>obj</i> lock <i>pattern</i></a></li>
+<li><a class="iref" href="#locked"><i>obj</i> locked ?<i>pattern</i>?</a></li>
+<li><a class="iref" href="#manpage"><i>obj</i> manpage</a></li>
+<li><a class="iref" href="#manlinks"><i>obj</i> manlinks</a></li>
+<li><a class="iref" href="#names"><i>obj</i> names ?<i>pattern</i>?</a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#restore"><i>obj</i> restore <i>checkpoint</i> ?-saved?</a></li>
+<li><a class="iref" href="#save"><i>obj</i> save <i>filename</i></a></li>
+<li><a class="iref" href="#serialize"><i>obj</i> serialize <i>stype</i></a></li>
+<li><a class="iref" href="#set"><i>obj</i> set <i>parm value</i></a></li>
+<li><a class="iref" href="#setdefault"><i>obj</i> setdefault <i>parm value</i></a></li>
+<li><a class="iref" href="#subset"><i>obj</i> subset <i>name docstring</i></a></li>
+<li><a class="iref" href="#type"><i>obj</i> type <i>name</i></a></li>
+<li><a class="iref" href="#unlock"><i>obj</i> unlock <i>pattern</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>parmset(n) defines an object that allows clients to define sets
+of typed parameters, edit them, save them to a file, and load them
+again.  Parameter values are validated on load and edit, and
+<a href="../man1/jnem_man.html">jnem_man(1)</a>-style documentation can be generated
+automatically for inclusion in a man page.</p>
+
+<p>Parameter names must begin with a letter (upper or lower case) and
+may include letters, numbers, underscores, hyphens, and periods.  Periods
+indicate hierarchy; parameter <b>a.b</b> belongs to parameter subset
+<b>a</b>.  Subsets may be nested arbitrarily deeply; parameter
+<b>x.y.z</b> belongs to subset <b>x.y</b>, which in turn belongs
+to subset <b>x</b>.  Thus, collections can be defined within the
+parameter set.  Subsets must be defined explicitly before any
+subsets or parameters they contain.</p>
+
+<p>The file format is simple:
+
+</p>
+
+<pre>parm <i>parm</i> <i>value</i></pre>
+<p>It has Tcl syntax, so that complicated values containing newlines
+can be entered using braces, as usual.  The file can contain Tcl 
+comments, but there's not much point, as the file is often produced
+by software.</p>
+
+<p>This module defines the parmset(n) type; to define a parameter set,
+create an instance of parmset(n); then define the parameters using
+the <a class="iref" href="#define">define</a> method.</p>
+
+<p>parmset(n) is a <a href="../mani/saveable.html">saveable(i)</a> object.
+
+</p>
+
+<h2><a name="masters_and_slaves">MASTERS AND SLAVES</a></h2>
+<p>Often a larger library or application which defines its own parmset
+database will include components that also define their own parmsets.
+In this case the application is called the master and the components
+are called the slaves.</p>
+
+<p>Past versions of parmset(n) allowed each module to define a static 
+global parmset; these could then be linked into a master/slave relationship
+such that all changes to the master or the slave were echoed in the 
+other.  Thus, all instances of each module could reliably use the same
+data.  This model turned out to be a problem, however; if you have
+two instances of a library, you might reasonably want to set parameters
+differently in each instance.  Consequently, parmset(n) now supports
+a different model.
+
+</p>
+
+<h2><a name="defining_a_master">Defining a Master</a></h2>
+<p>A master will define its own parmset(n) instance, and define the parameters
+it needs.  If a slave component has a parmset(n), the master can clone 
+the slave's parameter definitions into its own parmset(n) using the <a class="iref" href="#into">into</a> 
+subcommand.  No permanent link is created between the two parmsets; but 
+the master has all of the definitions contained in the slave.
+
+</p>
+
+<h2><a name="defining_a_slave">Defining a Slave</a></h2>
+<p>Each slave module should define a global parmset containing its default
+parameter definitions.</p>
+
+<p>Each slave module should be a type-with-instances; and each instance should
+have a -parmset option.  By default, the value of the <span class="tt">-parmset</span> option
+is the module's own global parmset.  If the slave is included in a master,
+however, the master will clone the parameter definitions from the slave's
+global parmset into its own, and then configure an instance of the slave
+to use its own <span class="tt">-parmset</span>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="parmset">parmset <i>name</i> ?<i>options</i>?</a></dt><dd><p>
+
+Creates a new parmset(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#parmset">parmset</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a class="iref" href="#parmset">parmset</a> may be created with the following option:
+
+</p><dl>
+
+<dt class="defopt"><a name="parmset-subject">-subject <i>subject</i></a></dt><dd>
+
+Specifies the subject for the <code>&lt;Update&gt;</code> notifier event.  The 
+subject defaults to the object's name.
+
+</dd>
+<dt class="defopt"><a name="parmset-notifycmd">-notifycmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> prefixed to be called exactly once for 
+each call to the <a class="iref" href="#set">set</a>, <a class="iref" href="#setdefault">setdefault</a>, <a class="iref" href="#load">load</a>, 
+<a class="iref" href="#reset">reset</a> and <a class="iref" href="#restore">restore</a>, provided that the call doesn't 
+return an error.  The command will be called with one additional
+argument, the name of the modified parameter for <a class="iref" href="#set">set</a>
+and <a class="iref" href="#setdefault">setdefault</a>, and the empty string otherwise.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#parmset">parmset</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="changed"><i>obj</i> changed</a></dt><dd>
+
+Returns 1 if the parmset's contents have been changed since the
+previous "<a class="iref" href="#checkpoint">checkpoint</a> <code>-saved</code>" or
+"<a class="iref" href="#restore">restore</a> <code>-saved</code>".
+
+</dd>
+<dt class="defitem"><a name="checkpoint"><i>obj</i> checkpoint ?-saved?</a></dt><dd><p>
+
+Returns a string which contains the parmset's current state; this
+string can be used to <a class="iref" href="#restore">restore</a> the parmset's state at a
+later time.  The string contains only the parameters which differ from
+the default values.</p>
+
+<p>If <code>-saved</code> is given, clears the <a class="iref" href="#changed">changed</a> flag.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="define"><i>obj</i> define <i>name vtype defvalue docstring</i></a></dt><dd><p>
+
+Defines a new parameter called <i>name</i>.  If <i>name</i> belongs to a
+a subset, i.e., if <i>name</i> contains one or more periods,
+then the parent subset must already be defined.</p>
+
+<p><i>vtype</i> is the
+parameter's type; it must be a type-validation type, i.e., a command
+which has a <i>validate</i> method which validates values of the type.
+Snit provides a basic set of type-validation types, and the facilities
+to build new ones.  In addition, instances of <a href="../mann/enum.html">enum(n)</a>,
+<a href="../mann/quality.html">quality(n)</a>, and <a href="../mann/range.html">range(n)</a> are also valid
+type-validation types.</p>
+
+<p><i>defvalue</i> is the parameter's default value, which must be valid.</p>
+
+<p><i>docstring</i> is a brief text string documenting the parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="docstring"><i>obj</i> docstring <i>name</i></a></dt><dd>
+
+Returns the documentation string for the named parameter or subset.
+
+</dd>
+<dt class="defitem"><a name="get"><i>obj</i> get <i>name</i></a></dt><dd>
+
+Retrieves the value of the named parameter.
+
+</dd>
+<dt class="defitem"><a name="getdefault"><i>obj</i> getdefault <i>name</i></a></dt><dd>
+
+Retrieves the default value of the named parameter.
+
+</dd>
+<dt class="defitem"><a name="into"><i>obj</i> into <i>master</i></a></dt><dd>
+
+Copies all of the parmset's parameter definitions into <i>master</i>, which
+must be another parmset.
+
+</dd>
+<dt class="defitem"><a name="islocked"><i>obj</i> islocked <i>name</i></a></dt><dd>
+
+Returns 1 if the named parameter is locked, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="items"><i>obj</i> items</a></dt><dd>
+
+Returns a list of the subsets and parameters, with their item types.
+For example, if the parmset contains
+one subset, <b>a</b>, and one parameter, <b>a.b</b>, then
+<a class="iref" href="#items">items</a> will return the list <b>a subset a.b parm</b>.  The
+order of the list is the same as for <a class="iref" href="#names">names</a>, except that
+subset names are included.
+
+</dd>
+<dt class="defitem"><a name="list"><i>obj</i> list ?<i>pattern</i>?</a></dt><dd><p>
+
+Returns a human-readable list of parameters whose names match
+the specified wildcard pattern, with their values.  The order
+is the same as for <a class="iref" href="#names">names</a>.  If no <i>pattern</i> is
+specified, all parameters will be returned.</p>
+
+<p>Note that the return value is a valid Tcl dictionary.
+
+</p>
+</dd>
+<dt class="defitem"><a name="load"><i>obj</i> load <i>filename</i> ?-safe?</a></dt><dd><p>
+
+Loads the parameter set from the named file, and calls
+the <code>-notifycmd</code> on success.</p>
+
+<p>When -safe is not specified, the behavior is as follows: If there is an error
+reading the file, the existing data is untouched.  Parameters not
+found in the file will be reset to their default values.
+When -safe is specified, only valid parameter/value pairs will be
+loaded; Any unknown parameters or bad values will be ignored. Parameters not
+found in the file will be reset to their default values. 
+
+</p>
+</dd>
+<dt class="defitem"><a name="lock"><i>obj</i> lock <i>pattern</i></a></dt><dd>
+
+Locks all parameters whose name matchs the glob <i>pattern</i>.  The
+value of a locked parameter may not be changed; attempts to do so will
+cause an error to be thrown.  However, calls to
+<a class="iref" href="#set">set</a>, <a class="iref" href="#setdefault">setdefault</a>, and <a class="iref" href="#load">load</a> are accepted if
+they specify the parameter's current value, thus leaving it
+unchanged.  The <a class="iref" href="#reset">reset</a> command will reset all <b>unlocked</b>
+parameters to their default values, leaving locked parameters alone.
+
+</dd>
+<dt class="defitem"><a name="locked"><i>obj</i> locked ?<i>pattern</i>?</a></dt><dd>
+
+Returns a list of locked parameter names, grouped by subset, in order of
+definition, which match the specified wildcard pattern; if no
+<i>pattern</i> is specified, the names of all locked parameters
+will be returned.
+
+</dd>
+<dt class="defitem"><a name="manpage"><i>obj</i> manpage</a></dt><dd><p>
+
+Returns documentation for the parameter set in the form of a
+<a href="../man5/jnem_man.html">jnem_man(5)</a> definition list.  It can be included in a man
+page as follows:
+
+</p><pre>&lt;expand [myparmset manpage]&gt;</pre>
+<p>(Where <b>myparmset</b> is the name of the parameter set object, of course.)
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="manlinks"><i>obj</i> manlinks</a></dt><dd><p>
+
+Returns a table-of-contents list of links for the parameters defined
+in the parameter set.  When used with <a class="iref" href="#manpage">manpage</a>, it creates a
+dynamic tree-structured table-of-contents for the parameter entries
+in which the subsets can be expanded and closed again.  This makes it
+much easier to drill down to the desired parameter.</p>
+
+<p>It can be included in a man page as follows:
+
+</p><pre>&lt;expand [myparmset manlinks]&gt;</pre>
+<p>(Where <b>myparmset</b> is the name of the parameter set object, of
+course.)  It should usually replace the <b>itemlist</b> macro in the
+synopsis section of the man page.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="names"><i>obj</i> names ?<i>pattern</i>?</a></dt><dd>
+
+Returns a list of the parameter names, grouped by subset, in order of
+definition, which match the specified wildcard pattern; if no
+<i>pattern</i> is specified, all names will be returned.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt><dd><p>
+
+Resets all parameter values to their defaults, and calls
+the <code>-notifycmd</code>.</p>
+
+<p>This command does not reset the values of locked parameters.  The
+<a class="iref" href="#locked">locked</a> command will return the names of all locked
+parameters, so that they can be unlocked and re-locked if need be.
+
+</p>
+</dd>
+<dt class="defitem"><a name="restore"><i>obj</i> restore <i>checkpoint</i> ?-saved?</a></dt><dd>
+
+Restores the parmset's state back to the saved <i>checkpoint</i>, and calls
+the <code>-notifycmd</code>.  If <code>-saved</code> is specified,
+clears the <a class="iref" href="#changed">changed</a> flag; otherwise it sets it.
+
+</dd>
+<dt class="defitem"><a name="save"><i>obj</i> save <i>filename</i></a></dt><dd>
+
+Saves the parameter set to a file; if the file already exists, it
+is copied to "<i>filename</i>.bak".  Parameters whose current values
+are defaulted will not be saved
+
+</dd>
+<dt class="defitem"><a name="serialize"><i>obj</i> serialize <i>stype</i></a></dt><dd>
+
+Returns the contents of the parmset in one of two serialized formats 
+depending on <i>stype</i>. If <code>huddle</code> is passed in, raw
+huddle is returned, if <code>json</code> is passed in, an array of JSON
+objects is returned. Included in the output is the parameter name, id, 
+current value, default value and documentation string. Note that for
+parameter subsets, the empty string is returned for default and current
+values.
+
+</dd>
+<dt class="defitem"><a name="set"><i>obj</i> set <i>parm value</i></a></dt><dd><p>
+
+Sets the value of the named parameter, which must be valid, and calls
+the <code>-notifycmd</code> on success.</p>
+
+<p>Returns the new <i>value</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="setdefault"><i>obj</i> setdefault <i>parm value</i></a></dt><dd><p>
+
+Sets both the default and current values of the parameter, and calls
+the <code>-notifycmd</code> on success.</p>
+
+<p><a class="iref" href="#setdefault">setdefault</a> is usually used when defining a parameter set with a
+repeated collection of parameters for multiple entities of
+the same type.  The parameters for each entity can be created
+with generic defaults, and then the defaults can be tweaked
+individually as needed.</p>
+
+<p>Returns the new <i>value</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="subset"><i>obj</i> subset <i>name docstring</i></a></dt><dd>
+
+Defines and documents a new parameter subset.  If the new subset has a
+a parent subset, i.e., if <i>name</i> contains one or more periods,
+then the parent subset must already be defined.
+
+</dd>
+<dt class="defitem"><a name="type"><i>obj</i> type <i>name</i></a></dt><dd>
+
+Returns the validation type for the named parameter.
+
+</dd>
+<dt class="defitem"><a name="unlock"><i>obj</i> unlock <i>pattern</i></a></dt><dd>
+
+Unlocks all parameters whose name matches the glob <i>pattern</i>
+(if, indeed, they were locked).
+
+</dd>
+</dl>
+
+<h2><a name="notifier_events">NOTIFIER EVENTS</a></h2>
+<p>parmset(n) sends out the <code>&lt;Update&gt;</code> <a href="../mann/notifier.html">notifier(n)</a> event each time
+the contents of the parmset changes, i.e., every time the 
+<span class="tt">-notifycmd</span> callback is called.  The event has the same argument
+as the <span class="tt">-notifycmd</span>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+<ul>
+<li>Original package from JNEM.<br>
+</li><li>3/10/2015: Replaced master/slave mechanism with <a class="iref" href="#into">into</a>.
+</li></ul> 
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

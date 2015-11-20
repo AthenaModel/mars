@@ -1,0 +1,818 @@
+<html>
+<head>
+<title>mars 3.0.23: form(n) -- Text Data Entry Field, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>form(n)</b> -- Text Data Entry Field, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#field_sets">Field Sets</a></li>
+
+    <li><a href="#standard_field_types">Standard Field Types</a></li>
+
+</ul>
+    
+
+    <li><a href="#layout_specification">LAYOUT SPECIFICATION</a></li>
+    <ul>
+
+    <li><a href="#layout_commands">Layout Commands</a></li>
+
+    <li><a href="#specifying_rows_and_columns">Specifying Rows and Columns</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#at_field">at <i>r,c</i> field <i>field</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#at_label">at <i>r,c</i> label <i>field</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#at_labelfield">at <i>r,c</i> labelfield <i>field</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#at_text">at <i>r,c</i> text <i>string</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#at_labelframe">at <i>r,c</i> labelframe <i>label spec</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#form">form <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#form-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#form-currentcmd">-currentcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#form-state">-state <i>state</i></a></li>
+<li><a class="iref" href="#form_register">form register <i>ftype widget</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#clear"><i>pathName</i> clear</a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#context"><i>pathName</i> context <i>fields...</i></a></li>
+<li><a class="iref" href="#disabled"><i>pathName</i> disabled <i>fields...</i></a></li>
+<li><a class="iref" href="#field"><i>pathName</i> field <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#field_create"><i>pathName</i> field create <i>field label ftype</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#field_names"><i>pathName</i> field names</a></li>
+<li><a class="iref" href="#field_cget"><i>pathName</i> field cget <i>field option</i></a></li>
+<li><a class="iref" href="#field_configure"><i>pathName</i> field configure <i>field option...</i></a></li>
+<li><a class="iref" href="#field_ftype"><i>pathName</i> field ftype <i>field</i></a></li>
+<li><a class="iref" href="#field_current"><i>pathName</i> field current</a></li>
+<li><a class="iref" href="#field_win"><i>pathName</i> field win <i>field</i></a></li>
+<li><a class="iref" href="#field_get"><i>pathName</i> field get <i>field</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#invalid"><i>pathName</i> invalid <i>fields...</i></a></li>
+<li><a class="iref" href="#layout"><i>pathName</i> layout ?<i>spec</i>?</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>key value...</i></a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>key value...</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The form(n) widget is a <a href="../../../tk/docs/mann/ttk_frame.html">ttk_frame(n)</a> configured to display
+data entry forms: collections of labels, text strings, and
+<a href="../mani/field.html">field(i)</a> data entry widgets.</p>
+
+<p>The first step in using the form(n) widget is to <a class="iref" href="#form_register">form register</a> all
+application specific <a href="../mani/field.html">field(i)</a> widget types.  (The
+<a href="../mani/field.html">field(i)</a> widgets provided by <a href="../mann/marsgui.html">marsgui(n)</a> are
+registered automatically.</p>
+
+<p>Next, the application using the <a class="iref" href="#field_create">field create</a> method to
+create fields in the form.  Each field has a symbolic name, a
+text label, and a registered field type; the caller may also pass
+widget options directly to the field.</p>
+
+<p>Next, the application asks the form(n) to <a class="iref" href="#layout">layout</a> the fields.
+By default, labels and fields will be layed out in two parallel
+columns; however, the caller can also specify a
+<a href="#layout_specification">layout spec</a> for more
+complicated layouts.</p>
+
+<p>The fields in the form(n) are referenced by their symbolic names, not
+by their window names; and they are usually managed as a group.  For
+example, the form(n) has a value of its own, a dictionary of the field
+values keyed on the symbolic names, and sets of fields can be marked
+as being contextual, disabled or invalid.
+
+</p>
+
+<h2><a name="field_sets">Field Sets</a></h2>
+<p>Every field in the form can be in any or all of three sets:
+<a class="iref" href="#invalid">invalid</a>, <a class="iref" href="#disabled">disabled</a>, and <a class="iref" href="#context">context</a>.  How a
+field is displayed and how it behaves depend on the sets it is in.</p>
+
+<p>A field not in any of the sets behaves normally: the user can edit
+the value.</p>
+
+<p>When a field's value is known to be invalid, the client can move the
+field to the <a class="iref" href="#invalid">invalid</a> set.  The field is still editable, but
+the field's label turns red to indicate that there's a problem.</p>
+
+<p>A field can be <a class="iref" href="#disabled">disabled</a> by the application.  A disabled field
+cannot be edited by the user, and its label is grayed out.  The field
+widget's <code>-state</code> is set to <b>disabled</b>.</p>
+
+<p>The application can also mark a field as a <a class="iref" href="#context">context</a> field.
+A context field cannot be edited, but the field's label remains black.
+This set is used for fields that display contextual data for other
+fields in the form: data that is for the user to see but not to edit.
+
+</p>
+
+<h2><a name="standard_field_types">Standard Field Types</a></h2>
+<p>The following field types are defined as part of <a href="../mann/marsgui.html">marsgui(n)</a>:
+
+</p>
+
+<table>
+<tr>
+<th>Field Type</th> <th>Widget Type</th> <th>Options</th>
+</tr>
+
+<tr>
+<td><b>disp</b></td>
+<td><code>::marsgui::dispfield</code></td>
+<td>n/a</td>
+</tr>
+
+<tr>
+<td><b>enum</b></td>
+<td><code>::marsgui::enumfield</code></td>
+<td>n/a</td>
+</tr>
+
+<tr>
+<td><b>key</b></td>
+<td><code>::marsgui::keyfield</code></td>
+<td>n/a</td>
+</tr>
+
+<tr>
+<td><b>list</b></td>
+<td><code>::marsgui::listfield</code></td>
+<td>n/a</td>
+</tr>
+
+<tr>
+<td><b>newkey</b></td>
+<td><code>::marsgui::newkeyfield</code></td>
+<td>n/a</td>
+</tr>
+
+<tr>
+<td><b>range</b></td>
+<td><code>::marsgui::rangefield</code></td>
+<td>n/a</td>
+</tr>
+
+<tr>
+<td><b>text</b></td>
+<td><code>::marsgui::textfield</code></td>
+<td>n/a</td>
+</tr>
+
+</table>
+
+<h2><a name="layout_specification">LAYOUT SPECIFICATION</a></h2>
+<p>By default, the form is layed out in two parallel columns.  The left
+column contains a field label and the right column the field
+itself.</p>
+
+<p>For more complex layouts, the caller must specify a layout
+specification, or "layout spec".  The spec is a Tcl-formatted script
+that contains commands indicating how to lay out each label and field.
+(The <a href="../../../tk/docs/mann/grid.html">grid(n)</a> geometry manager is used under the
+covers.)
+
+</p>
+
+<h2><a name="layout_commands">Layout Commands</a></h2>
+<p>The layout commands are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="at_field">at <i>r,c</i> field <i>field</i> ?<i>options...</i>?</a></dt><dd>
+
+Places the named <i>field</i> at row <i>r</i>, column <i>c</i>.
+The <i>options</i>, if given, are passed along to the
+<a href="../../../tk/docs/mann/grid.html">grid(n)</a> command.  For example, one can make the field
+span two columns using "<code>-columnspan 2</code>".
+
+</dd>
+<dt class="defitem"><a name="at_label">at <i>r,c</i> label <i>field</i> ?<i>options...</i>?</a></dt><dd>
+
+Places the named <i>field</i>'s label at row <i>r</i>, column
+<i>c</i>, applying any <i>options</i> to the <a href="../../../tk/docs/mann/grid.html">grid(n)</a>
+command.
+
+</dd>
+<dt class="defitem"><a name="at_labelfield">at <i>r,c</i> labelfield <i>field</i> ?<i>options...</i>?</a></dt><dd>
+
+Places the named <i>field</i>'s label at row <i>r</i>, column
+<i>c</i>, and the field itself at row <i>r</i>, column <i>c</i>+1,
+just as though <a class="iref" href="#at_label">at label</a> and <a class="iref" href="#at_field">at field</a> were called
+individually.  The <i>options</i> are applyed to the field.
+
+</dd>
+<dt class="defitem"><a name="at_text">at <i>r,c</i> text <i>string</i> ?<i>options...</i>?</a></dt><dd>
+
+Places the specified text <i>string</i> at row <i>r</i>, column
+<i>c</i>, and applies the <i>options</i> if any.
+
+</dd>
+<dt class="defitem"><a name="at_labelframe">at <i>r,c</i> labelframe <i>label spec</i> ?<i>options...</i>?</a></dt><dd>
+
+Places a <a href="../../../tk/docs/mann/ttk_labelframe.html">ttk_labelframe(n)</a> widget at row <i>r</i>, column
+<i>c</i>.  The frame is labeled with the given <i>label</i>, and
+contains the elements indicated by the <i>spec</i>.  The
+<i>options</i> are applied when gridding the frame into its parent.
+
+</dd>
+</dl>
+
+
+<h2><a name="specifying_rows_and_columns">Specifying Rows and Columns</a></h2>
+<p>Rows and columns are indexed starting at 0, as is usual for the
+<a href="../../../tk/docs/mann/grid.html">grid(n)</a> geometry manager, and are specified in the layout
+commands as integers.  Thus, to layout a field at 0,0, enter:
+
+</p>
+
+<pre>
+    at 0,0 field myfield
+</pre>
+<p>In addition, the codes "<b>=</b>" and "<b>+</b>" can be used, where
+"<b>=</b>" means "use the same index as before", and "<b>+</b>" means
+"increment the previous index by one."  For example, the standard
+layout of two parallel columns can be specified as follows:
+
+</p>
+
+<pre>
+    at 0,0 labelfield <i>field1</i>
+    at +,= labelfield <i>field2</i>
+    at +,= labelfield <i>field3</i>
+       .
+       .
+       .
+</pre>
+<p>Note that the <a class="iref" href="#at_labelfield">at labelfield</a> command increments the column by
+one automatically; thus, if you wanted two sets of parallel columns
+you could do this:
+
+</p>
+
+<pre>
+    at 0,0 labelfield <i>field1</i>;  at =,+ labelfield <i>field2</i>
+    at +,0 labelfield <i>field3</i>;  at =,+ labelfield <i>field4</i>
+       .
+       .
+       .
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="form">form <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#form">form</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options:
+
+</p><dl>
+
+<dt class="defopt"><a name="form-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called whenever a field's value
+changes, for any reason whatsoever (including explicit calls
+to <a class="iref" href="#set">set</a>).  A list of the names of the fields whose values
+actually changed is appended to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="form-currentcmd">-currentcmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called whenever a new field receives the
+focus.  The name of the field receiving the focus is appended to the
+<i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="form-state">-state <i>state</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  form(n) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.  If the state is
+<b>disabled</b> then all fields in the form(n) are disabled; if the
+state <b>normal</b> then fields are enabled or disabled
+individually.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="form_register">form register <i>ftype widget</i> ?<i>options...</i>?</a></dt><dd>
+
+Registers a field type with form(n), for use in individual
+forms.  The <i>ftype</i> is a symbolic name for the field type; e.g.,
+the <i>ftype</i> for the <a href="../mann/enumfield.html">enumfield(n)</a> widget is <b>enum</b>.
+The <i>widget</i> is the fully-qualified name of the widget type,
+e.g., <b>::marsgui::enumfield</b>.  Any number of widget
+<i>options</i> and values can be specified as well; this allows one
+<i>widget</i> type to provide two or more distinct field types.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>form(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>pathName</i> clear</a></dt><dd>
+
+Deletes all fields from the form(n).
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="context"><i>pathName</i> context <i>fields...</i></a></dt><dd><p>
+
+Tells the form(n) that the named <i>fields</i> should be marked
+as context fields (i.e., <code>-state</code> is <b>disabled</b>, but
+the field label is not grayed out); all others should be marked as
+normal, non-context fields.
+The list of fields can be specified as a single argument, or as
+individual field names on the command line.</p>
+
+<p>If the first element in the list of <i>fields</i> is "<b>+</b>", then
+the named fields are marked in addition to any that were
+previously marked.  If the first element is "<b>-</b>", then the
+named fields will no longer be marked, leaving any other marked
+fields alone.
+
+</p>
+</dd>
+<dt class="defitem"><a name="disabled"><i>pathName</i> disabled <i>fields...</i></a></dt><dd><p>
+
+Tells the form(n) that the named <i>fields</i> should be disabled
+(i.e., <code>-state</code> is <b>disabled</b>); all others should be
+enabled (i.e., <code>-state</code> is <b>normal</b>).
+The list of fields can be specified as a single argument, or as
+individual field names on the command line.</p>
+
+<p>If the first element in the list of <i>fields</i> is "<b>+</b>", then
+the named fields are disabled in addition to any that were
+previously disabled.  If the first element is "<b>-</b>", then the
+named fields will no longer be disabled, leaving any other disabled
+fields alone.</p>
+
+<p>When a field is disabled, its label appears grayed out.
+
+</p>
+</dd>
+<dt class="defitem"><a name="field"><i>pathName</i> field <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The subcommands of the <a class="iref" href="#field">field</a> method are used to deal with
+individual fields in the form(n).
+
+</p><dl>
+
+<dt class="defitem"><a name="field_create"><i>pathName</i> field create <i>field label ftype</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a field in the form.  The field has symbolic name <i>field</i>
+and text label <i>label</i>, and is of registered field type
+<i>ftype</i>.  The field widget is created with the options specified
+when it is registered, plus any additional <i>options</i> specified
+here.  Note that the caller should not set the field's
+<code>-changecmd</code> or <code>-state</code> options, as these are
+managed by the form(n) itself.</p>
+
+<p>Once all fields are created, the <a class="iref" href="#layout">layout</a> method is used to
+make them appear in the form(n).
+
+</p>
+</dd>
+<dt class="defitem"><a name="field_names"><i>pathName</i> field names</a></dt><dd>
+
+Returns a list of the symbolic names of the fields in the order of creation.
+
+</dd>
+<dt class="defitem"><a name="field_cget"><i>pathName</i> field cget <i>field option</i></a></dt><dd>
+
+Returns the value of named <i>field</i> widget's <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="field_configure"><i>pathName</i> field configure <i>field option...</i></a></dt><dd>
+
+Configures the specified option values for the <i>field</i> widget.
+As noted above, the caller should not set the field's
+<code>-changecmd</code> or <code>-state</code> options, as these are
+managed by the form(n) itself.
+
+</dd>
+<dt class="defitem"><a name="field_ftype"><i>pathName</i> field ftype <i>field</i></a></dt><dd>
+
+Returns the named <i>field</i>'s field type.
+
+</dd>
+<dt class="defitem"><a name="field_current"><i>pathName</i> field current</a></dt><dd>
+
+Returns the name of the field that has the input focus.
+
+</dd>
+<dt class="defitem"><a name="field_win"><i>pathName</i> field win <i>field</i></a></dt><dd>
+
+Returns the window name of the <i>field</i>'s actual widget. This
+command should be used sparingly.
+
+</dd>
+<dt class="defitem"><a name="field_get"><i>pathName</i> field get <i>field</i></a></dt><dd>
+
+Returns the value currently displayed in the named <i>field</i>.
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+Returns the form's current value, a dictionary of symbolic field
+names and field values. The dictionary will contain the fields in the
+order in which they were created.
+
+</dd>
+<dt class="defitem"><a name="invalid"><i>pathName</i> invalid <i>fields...</i></a></dt><dd><p>
+
+Tells the form(n) that the named <i>fields</i> contain invalid
+values; the remainder contain valid values.  Marking a field
+invalid causes the label associated with the field to turn
+red.  The list of fields can be specified as a single argument, or as
+individual field names on the command line.</p>
+
+<p>If the first element in the list of <i>fields</i> is "<b>+</b>", then
+the named fields are marked invalid in addition to any that were
+previously marked invalid.  If the first element is "<b>-</b>", then the
+named fields will no longer be marked invalid, leaving any other invalid
+fields alone.
+
+</p>
+</dd>
+<dt class="defitem"><a name="layout"><i>pathName</i> layout ?<i>spec</i>?</a></dt><dd>
+
+Lays out out the currently defined fields so that they are visible.
+See <a href="#layout_specification">LAYOUT SPECIFICATION</a> for details on layout specs.
+
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>dict</i></a></dt>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>key value...</i></a></dt><dd>
+
+Explicitly sets the form's field values given a dictionary of
+symbolic field names and field values, and calls
+the <code>-changecmd</code> if at least one field's value has actually
+changed, i.e., successive calls to <a class="iref" href="#set">set</a> with the same
+<i>dict</i> will result in at most one call to the
+<code>-changecmd</code>.  It isn't necessary for the <i>dict</i> to
+contain an entry for every field.
+
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

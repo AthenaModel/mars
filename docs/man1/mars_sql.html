@@ -1,0 +1,471 @@
+<html>
+<head>
+<title>mars 3.0.23: mars_sql(1) -- SQLite Database Tool, submodule of mars(1)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mars_sql(1)</b> -- SQLite Database Tool, submodule of <a href="../man1/mars.html">mars(1)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#menus">MENUS</a></li>
+    <ul>
+
+    <li><a href="#file_menu">File Menu</a></li>
+
+    <li><a href="#edit_menu">Edit Menu</a></li>
+
+    <li><a href="#view_menu">View Menu</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#mars_sql">mars sql <i>db_file</i> [-create]</a></li>
+<li><a class="iref" href="#.mode">.mode ?newMode?</a></li>
+<li><a class="iref" href="#.schema">.schema ?<i>table</i>?</a></li>
+<li><a class="iref" href="#.tables">.tables</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="mars_sql">mars sql <i>db_file</i> [-create]</a></dt>
+</dl>
+<p>mars_sql(1) is a browser for SQLite database files.  It allows the
+user to view the database schema and enter arbitrary queries,
+including updates and deletes.</p>
+
+<p>When invoked with the name of an SQLite database file,
+mars_sql(1) opens the file using an
+<a href="../mann/sqldocument.html">sqldocument(n)</a> object, and pops up a command-line interface.
+Any SQL statement may be entered
+and executed.  Statements can extend onto multiple lines, and
+must end with a semi-colon.  The dialect of SQL is SQL-92 as
+implemented by <a href="http://sqlite.org/docs.html">SQLite</a>;
+<a href="../mann/sqldocument.html">sqldocument(n)</a> adds a number of new SQL functions.</p>
+
+<p>If the -create option is specified, the named SQLite database file will
+be created.  If -create is used with a filename that already exists,
+the command will be rejected.</p>
+
+<p>If the name of the database is the special name ":memory:"
+then a new database is created in memory.  In this case the -create
+option has no meaning.</p>
+
+<p>In addition to SQL statements, mars_sql(1) also accepts a number of
+special commands; see <a href="#commands">COMMANDS</a> for details.</p>
+
+<p>The result of SELECT queries will be displayed in either Multicolumn
+or List mode.  Multicolumn mode displays the results in tabular form,
+with one line of text per record and field names at the top of each
+column; long values are truncated.  List mode displays each record
+individually, with field labels and values in two parallel columns.
+The default is Multicolumn mode; the mode may be changed from the
+<b>View</b> menu or via the <a class="iref" href="#.mode">.mode</a> command.</p>
+
+<p>By default, all entered queries are executed.  If "explain" mode is
+enabled from the <b>View</b> menu or the toolbar, SQLite's "EXPLAIN
+QUERY PLAN" statement will be used to retrieve information about the
+tables and indexes used.
+
+</p>
+
+<h2><a name="menus">MENUS</a></h2>
+<p>mars_sql(1) provides the following menus:
+
+</p>
+
+<h2><a name="file_menu">File Menu</a></h2>
+    
+
+<dl>
+  <dt class="def">Exit</dt><dd>
+   Terminates the application.
+</dd>
+</dl>
+
+<h2><a name="edit_menu">Edit Menu</a></h2>
+    
+
+<dl>
+  <dt class="def">Cut</dt><dd>
+   Cuts selected text to the clipboard.
+
+  </dd>
+<dt class="def">Copy</dt><dd>
+   Copies selected text to the clipboard.
+
+  </dd>
+<dt class="def">Paste</dt><dd>
+   Pastes the text from the clipboard.
+
+  </dd>
+<dt class="def">Select All</dt><dd>
+   Selects all text in the current widget.
+</dd>
+</dl>
+
+<h2><a name="view_menu">View Menu</a></h2>
+    
+
+<dl>
+  <dt class="def">Multicolumn Mode</dt><dd>
+   Selects multicolumn output mode (<b>.mode mc</b>).
+
+  </dd>
+<dt class="def">List Mode</dt><dd>
+   Selects list output mode (<b>.mode list</b>).
+
+  </dd>
+<dt class="def">Execute Mode</dt><dd>
+   Executes SQL queries as usual.
+
+  </dd>
+<dt class="def">Explain Mode</dt><dd>
+   Outputs a description of the tables and indices used by
+       a query without actually executing it.  (This is equivalent to
+       beginning the query with the words "EXPLAIN QUERY PLAN".)
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>By default, all command input is assumed to be SQL.  mars_sql(1) also
+supports a number of special commands, all of which begin with
+".".  Special commands have Tcl syntax.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name=".mode">.mode ?newMode?</a></dt><dd>
+
+By default, returns the current output mode, <b>mc</b> (multicolumn)
+or <b>list</b>.  If <i>newMode</i> is given, sets the mode accordingly.
+
+</dd>
+<dt class="defitem"><a name=".schema">.schema ?<i>table</i>?</a></dt><dd>
+
+By default, returns the SQL CREATE statements used to define all
+tables, views, and indices in the database.  If given, <i>table</i>
+may the name of a specific table, view, or index; or a glob pattern.
+Either way, the output will include only the matching tables, views,
+and indices.
+
+</dd>
+<dt class="defitem"><a name=".tables">.tables</a></dt><dd>
+
+Returns a list of the names of the tables defined in the database.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Imported from JNEM's jnem_sql(1), and then modified.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:48 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

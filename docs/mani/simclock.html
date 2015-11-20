@@ -1,0 +1,409 @@
+<html>
+<head>
+<title>mars 3.0.23: simclock(i) -- Simulation Clock Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>simclock(i)</b> -- Simulation Clock Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 1.0
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#asString">$simclock asString ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#configure-t0">-t0 <i>string</i></a></li>
+<li><a class="iref" href="#now">$simclock now ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#toString">$simclock toString <i>ticks</i> ?<i>offset</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A simclock(i) is an object that tracks simulated time.  The
+simulated time is a number in integer ticks, beginning with 0 at
+simulation start, and incrementing by one or more ticks with each
+time step.  In addition to tracking simulated time, a simclock(i)
+also provides for the conversion between integer ticks and some
+human-readable string value.  For <a href="../mann/simclock.html">simclock(n)</a>, for example,
+the integer ticks can correspond to a wide range of wallclock time
+intervals, and are converted to and from <a href="../mann/zulu.html">zulu(n)</a> time
+strings.</p>
+
+<p>Many library modules (<a href="../mann/sqldocument.html">sqldocument(n)</a>, <a href="../mann/logger.html">logger(n)</a>)
+know how to make use of a simclock(i) if one is available.  The
+purpose of this man page is to document the features such an object
+needs to have for this purposes.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>Every simclock(i) object provides at least the following
+subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="asString">$simclock asString ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time as a human-readable time
+string.  If given, <i>offset</i> should be an offset in ticks; it is
+added to the returned time.  The string format returned is up to the
+implementation.
+
+</dd>
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd><p>
+
+Sets the value of one or more of the object's options.  The object
+will have at least this option:
+
+</p><dl>
+
+<dt class="defopt"><a name="configure-t0">-t0 <i>string</i></a></dt><dd>
+
+Sets the simulation start date ("T-zero") to <i>string</i>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="now">$simclock now ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time in ticks.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.
+
+</dd>
+<dt class="defitem"><a name="toString">$simclock toString <i>ticks</i> ?<i>offset</i>?</a></dt><dd>
+
+Converts a simulation time in integer <i>ticks</i> into a
+human-readable time string.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the specified time.
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/simclock.html">simclock(n)</a>
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Interface derived from the <a href="../mann/simclock.html">simclock(n)</a> API, modified to
+be agnostic about the implemented string format.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

@@ -1,0 +1,900 @@
+<html>
+<head>
+<title>mars 3.0.23: cellmodel(5) -- Cell Model</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>cellmodel(5)</b> -- Cell Model
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#cells">Cells</a></li>
+
+    <li><a href="#formulas">Formulas</a></li>
+
+    <li><a href="#pages">Pages</a></li>
+
+    <li><a href="#cyclic_vs_acyclic_pages">Cyclic vs. Acyclic Pages</a></li>
+
+    <li><a href="#copying_pages">Copying Pages</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#functions">FUNCTIONS</a></li>
+    
+
+    <li><a href="#macros">MACROS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#let">let <i>name</i> = <i>formula</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#let-value">-value <i>initialValue</i></a></li>
+<li><a class="iref" href="#let">let <i>name</i> = <i>formula</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#let-value">-value <i>initialValue</i></a></li>
+<li><a class="iref" href="#letsym">letsym <i>name</i> = <i>formula</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#letsym-value">-value <i>initialValue</i></a></li>
+<li><a class="iref" href="#page">page <i>name</i></a></li>
+<li><a class="iref" href="#copypage">copypage <i>page</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#copypage-except">-except <i>cells</i></a></li>
+<li><a class="iref" href="#initfrom">initfrom <i>page</i> ?<i>page...</i>?</a></li>
+<li><a class="iref" href="#function">function <i>name arglist body</i></a></li>
+<li><a class="iref" href="#index">index <i>name indexlist</i></a></li>
+<li><a class="iref" href="#forall">forall <i>index script</i></a></li>
+<li><a class="iref" href="#define">define <i>name arglist</i> ?<i>initbody</i>? <i>template</i></a></li>
+<li><a class="iref" href="#case">case(<i>condition1,value1,condition2,value2</i>,...)</a></li>
+<li><a class="iref" href="#epsilon">epsilon()</a></li>
+<li><a class="iref" href="#fif">fif(<i>condition, value1,</i> ?<i>value2</i>?)</a></li>
+<li><a class="iref" href="#format">format(<i>fmt,value,...</i>)</a></li>
+<li><a class="iref" href="#ediff">ediff(<i>a,b</i>)</a></li>
+<li><a class="iref" href="#sum">sum <i>index formula</i></a></li>
+<li><a class="iref" href="#prod">prod <i>index formula</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A <i>cell model</i> consists of one or more named <i>cells</i>, each
+of which has a numeric value.  A cell's value can be defined as a
+numeric constant, or as a formula.  <i>Solving</i> a cell model means
+to compute the values of all cells with formulas, iterating if
+necessary until the solution is found.  As such, a cell model can be
+thought of as a spreadsheet model in which cell names are used instead
+of row and column indices.</p>
+
+<p>Cell models are defined using the cellmodel(5) language, which is
+defined in this man page.  The <a href="../mann/cellmodel.html">cellmodel(n)</a> module contains
+code for the definition and solution of cell models.
+
+</p>
+
+<h2><a name="cells">Cells</a></h2>
+<p>Cells are defined using the <a class="iref" href="#let">let</a> command:
+
+</p>
+
+<pre>
+    let A = 5
+    let B = 7
+    let C = {[A] + [B]}
+</pre>
+
+<h2><a name="formulas">Formulas</a></h2>
+<p>The value of a cell can be a constant or a formula.  Formulas are
+simply Tcl expressions.  Cell values are retrieved by using the cell's
+name as a Tcl command:
+
+</p>
+
+<pre>
+    let A = 5
+    let B = 7
+    let C = {[A] + [B]}
+</pre>
+<p>All of the standard Tcl math operators and functions are available;
+see also <a href="#functions">FUNCTIONS</a>.  In addition, formulas can be defined
+using <a href="#macros">MACROS</a>.
+
+</p>
+
+<h2><a name="pages">Pages</a></h2>
+<p>Just as a spreadsheet can contain multiple worksheets, a cell model
+can contain multiple pages.  Every cell model begins with a page
+called the <b>null</b> page; the model may add additional named
+pages.</p>
+
+<p>Each page is associated with a Tcl namespace.  The <b>null</b> page is
+associated with the global namespace, and each named page has a
+namespace of the same name as a child of the global namespace.  Every
+formula is evaluated in the context of its page's namespace.  Thus,
+A formula on a given page may refer to cells defined on the same page
+by name, and to cells defined on previous pages by qualifying the cell
+name with the page name.  (See <a href="#formulas">Formulas</a>.)  Cells defined on
+the <b>null</b> page can be referred to on any page without
+qualification.</p>
+
+<p>New pages are created using the <a class="iref" href="#page">page</a> command.
+
+</p>
+
+<pre>
+    # These cells are defined on the null page.
+    let A = 5
+    let B = 7
+    
+    page P
+    
+    # C is defined on page P, but can refer to A and B without
+    # qualification.
+    let C = {[A] + [B]}
+    
+    page Q
+    
+    # D and E are defined on page Q, and must refer to cells on
+    # page P explicitly.
+    
+    let D = {[A] + [P::C]}
+    let E = {[D] + [P::C]}
+</pre>
+<p>A cell model's pages are solved in order of definition, starting with
+the <b>null</b> page.  Thus, a page can refer to cells on previous
+pages, but not to cells on subsequent pages.</p>
+
+<p>Within a page, cells may be defined in any order; it isn't necessary
+for a cell to be defined after the cells it references from the same
+page.
+
+</p>
+
+<h2><a name="cyclic_vs_acyclic_pages">Cyclic vs. Acyclic Pages</a></h2>
+<p>If a page contains two or more cells whose formulas refer to each
+other in a circular fashion, the page is said to be <i>cyclic</i>:
+
+</p>
+
+<pre>
+    let A = {[B] + 1}
+    let B = {[A] - 6}
+</pre>
+<p>When a page is cyclic, <a href="../mann/cellmodel.html">cellmodel(n)</a> will attempt to converge
+to a solution using the Gauss-Seidel algorithm; note that there might
+not be a valid solution.</p>
+
+<p>If a page contains no circular definitions, it is said to be
+<i>acyclic</i>.  In this case, <a href="../mann/cellmodel.html">cellmodel(n)</a> will solve the
+formulas on the page in the most efficient order, regardless of the
+order in which they are defined.
+
+</p>
+
+<h2><a name="copying_pages">Copying Pages</a></h2>
+<p>It's possible to copy cell definitions onto a new page from a previous
+page using the <a class="iref" href="#copypage">copypage</a> command.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>A cell model specification is a Tcl script that uses the following
+commands to define the cell model.  (Other standard Tcl commands may
+be used as well.)
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="let">let <i>name</i> = <i>constant</i></a></dt>
+<dt class="defitem"><a name="let">let <i>name</i> = <i>formula</i> ?<i>options...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#let">let</a> command defines a new <b>number</b> cell on the
+current page.  The cell <i>name</i> must begin with a letter, and can
+contain letters, digits, underscores, and internal periods.  The
+formula must be a single token; thus, formulas containing whitespace
+must be braced:
+
+</p><pre>
+    let A = 5             ;# Constant cell
+    let B = 7             ;# Constant cell
+    let C = {[A] + [B]}   ;# Formula cell
+</pre>
+<p>At present, only one option is defined, and it's of use only for
+formula cells:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="let-value">-value <i>initialValue</i></a></dt><dd><p>
+
+This option allows the model to assign a formula cell's initial value
+explicitly.</p>
+
+<p>Every cell has a numeric value at all times.  Before the model has
+been solved, a formula cell's value defaults to 0.  This is fine, on
+acyclic pages; on cyclic pages, however, at least one cell will be
+referenced before its value has been computed.  Because convergence
+often depends on having a good starting point, it's useful to be able
+to specify the cell's initial value explicitly.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="letsym">letsym <i>name</i> = <i>formula</i> ?<i>options...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#letsym">letsym</a> command defines a new <b>symbol</b> cell on the
+current page.  The cell <i>name</i> must begin with a letter, and can
+contain letters, digits, underscores, and internal periods.  The
+formula must be a single token; thus, formulas must be braced:
+
+</p><pre>
+    letsym A = {"Constant String"}
+    let    B = 7                   
+    letsym C = {[B] &lt; 10 ? "Under 10" : "Over 10"}
+</pre>
+<p>At present, only one option is defined:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="letsym-value">-value <i>initialValue</i></a></dt><dd>
+
+This option allows the model to assign the cell's initial value
+explicitly.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="page">page <i>name</i></a></dt><dd>
+
+Creates a new page called <i>name</i>; subsequent cells will be
+defined on this page.  The <i>name</i> must begin with a letter, and
+may contains letters, digits, and underscores.
+
+</dd>
+<dt class="defitem"><a name="copypage">copypage <i>page</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Copies cell definitions from the named <i>page</i> to the current
+page.  Formula cells are copied as is; constant cells are copied as
+formulas referring to the constant value on the copied page.  For
+example,
+
+</p><pre>
+    page A
+
+    let X = 5
+    let Y = {2*[X]}
+
+    page B
+    copypage A
+</pre>
+<p>will result in the following cell definitions:
+
+</p>
+
+<pre>
+    A::X = 5
+    A::Y = 10 &lt;= 2*[X]
+    B::X = 5  &lt;= [A::X]
+    B::Y = 10 &lt;= 2*[X]
+</pre>
+<p>Thus, changing the value of A::Y will change the values of both
+A::Y and B::Y.</p>
+
+<p>Copied cell definitions can be overridden using the <a class="iref" href="#let">let</a>
+command.</p>
+
+<p>The following options are defined:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="copypage-except">-except <i>cells</i></a></dt><dd><p>
+
+Specifies a list of cell names to exclude when using the <b>-copy</b>
+option.  The new page will not contain the excluded cells.</p>
+
+<p>The cell names should not be qualified.  For example,
+
+</p><pre>
+    copypage P -except {C1 C2 C3}
+</pre>
+<p>will copy the definitions from page P, except for the definitions of
+cells P::C1, P::C2, and P::C3.
+
+</p>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="initfrom">initfrom <i>page</i> ?<i>page...</i>?</a></dt><dd><p>
+
+Causes the cells on the current page to be initialized from the named
+<i>page</i> or pages whenever the current page's cells are to be solved.</p>
+
+<p>Every cell in the model has a default value, as specified by the
+<code>-value</code> option when the cell is defined.  When the model
+is first loaded or reset, every cell will
+have this value.  If a page is solved repeatedly subsequently, each
+cell on the page will begin with the value computed the last time.</p>
+
+<p>Sometimes, though, it's desirable to start a page with the values from
+some other page or pages.  For example, suppose there are two pages, A
+and B.  B uses <a class="iref" href="#copypage">copypage</a> to copy A's formulas, and then
+modifies a few of them.  The intent is that B should take A's results,
+and then modify them.  For this to work, B must not only have A's
+formulas; it must also use A's results as its starting point.
+
+</p>
+</dd>
+<dt class="defitem"><a name="function">function <i>name arglist body</i></a></dt><dd>
+
+Defines a function for use in formulas.  Note that a function is
+simply a Tcl <a href="../../../tcl/docs/mann/proc.html">proc(n)</a> that the formula interpreter sees as
+a function.  It can take any number of arguments, and should return a
+single value.  The body can contain a small subset of the standard Tcl
+commands: <a href="../../../tcl/docs/mann/expr.html">expr(n)</a>, <a href="../../../tcl/docs/mann/set.html">set(n)</a>,
+<a href="../../../tcl/docs/mann/if.html">if(n)</a>, and <a href="../../../tcl/docs/mann/return.html">return(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="index">index <i>name indexlist</i></a></dt><dd><p>
+
+Defines an index for use with the <a class="iref" href="#sum">sum</a> and <a class="iref" href="#prod">prod</a>
+macros.  For example, if you want to sum over cells A.$i where i is in
+the set {1 2 3}, you'd define the index <code>i</code> like this:
+
+</p><pre>
+    index i {1 2 3}
+</pre>
+
+</dd>
+<dt class="defitem"><a name="forall">forall <i>index script</i></a></dt><dd><p>
+
+Includes a <i>script</i> of cellmodel(5) commands for all values of
+the named <i>index</i>.  For example,
+
+</p><pre>
+    index i {a b c}
+
+    forall i {
+        let X.$i = {[Y.$i] + [Z.$i]}
+    }
+</pre>
+<p>The <i>index</i> can also be specified as a pair {<i>ivar index</i>};
+in this case, the variable name need not be the same as the index
+name.  For example,
+
+</p>
+
+<pre>
+    index letters {a b c}
+
+    forall {i letters} {
+        let X.$i = {[Y.$i] + [Z.$i]}
+    }
+</pre>
+
+
+</dd>
+<dt class="defitem"><a name="define">define <i>name arglist</i> ?<i>initbody</i>? <i>template</i></a></dt><dd><p>
+
+The <a class="iref" href="#define">define</a> command defines a macro that may be used in
+formula definitions.  Macros have names and argument lists, like Tcl
+procs, but their body is a <i>template</i> string that can contain variable
+references and calls to other macros.  The optional <i>initbody</i>
+can compute variables based on the arguments; these variables and the
+arguments can appear in the template string.</p>
+
+<p>For example, the following macro returns the formula for the
+sum of squares of two variables A.i, given their indices:
+
+</p><pre>
+    define ssq {i j} {[A.$i]**2 + [A.$j]**2}
+</pre>
+<p>Note that the text in square brackets is <b>not</b> interpolated as a
+command; square brackets are reserved for cell value references, which
+are evaluated when the model is solved.  Macros, by comparison, are
+evaluated when the model is defined.</p>
+
+<p>See <a href="#macros">MACROS</a> for more information on how to use macros, and for
+a list of predefined macros.
+
+</p>
+
+</dd>
+</dl>
+
+<h2><a name="functions">FUNCTIONS</a></h2>
+<p>Cell model formulas may contain the following functions, in addition
+to the standard Tcl <a href="../../../tcl/docs/mann/mathfunc.html">mathfunc(n)</a> functions; plus, new
+functions may be defined using the <a class="iref" href="#function">function</a> command.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="case">case(<i>condition1,value1,condition2,value2</i>,...)</a></dt><dd><p>
+
+The case() function evaluates all of its arguments.  Then, if
+<i>condition1</i> is true (i.e., non-zero) it returns <i>value1</i>;
+otherwise, if <i>condition2</i> is true it returns <i>value2</i>; and
+so on.  If none of the conditions evaluate to true, the function
+returns 0.  For example, 
+
+</p><pre>
+    let sign = {
+        case([A] &lt;  0, -1,
+             [A] == 0,  0,
+             [A] &gt;  0,  1)
+    }
+</pre>
+<p>To do an "else" case, use "true" as the condition:
+
+</p>
+
+<pre>
+    let sign = {
+        case([A] &lt;  0, -1,
+             [A] == 0,  0,
+             true,      1)
+    }
+</pre>
+
+
+</dd>
+<dt class="defitem"><a name="epsilon">epsilon()</a></dt><dd>
+
+The epsilon() function returns the epsilon value used to control
+convergence (the <a href="../mann/cellmodel.html">cellmodel(n)</a> object's <b>-epsilon</b>
+option).  It is usually specified as a negative power of 10, i.e.,
+.0001; the number of zeroes is then the number of significant digits
+in the converged outputs.
+
+</dd>
+<dt class="defitem"><a name="fif">fif(<i>condition, value1,</i> ?<i>value2</i>?)</a></dt><dd><p>
+
+The fif() function evaluates the <i>condition</i>; if it is true, it
+returns <i>value1</i> and if not, <i>value2</i>.  If <i>value2</i> is
+omitted, it defaults to 0.0.  For example, 
+
+</p><pre>
+    let sign = {
+        fif([A] &gt;=  0, 1, -1)
+    }
+</pre>
+
+</dd>
+<dt class="defitem"><a name="format">format(<i>fmt,value,...</i>)</a></dt><dd>
+
+Formats the <i>value</i> or values given the <i>fmt</i> string,
+just as <a href="../../../tcl/docs/mann/format.html">format(n)</a> does.  This can be used in
+<b>symbol</b> formulas (see <a class="iref" href="#letsym">letsym</a>); it can also be used to
+round numeric values to a specified number of decimals places.
+
+</dd>
+<dt class="defitem"><a name="ediff">ediff(<i>a,b</i>)</a></dt><dd>
+
+This function computes and returns the difference <i>a - b</i>.  If
+the difference is smaller than the the number of significant digits,
+as specified by <a class="iref" href="#epsilon">epsilon</a>, then this function returns 0.0.
+
+</dd>
+</dl>
+
+<h2><a name="macros">MACROS</a></h2>
+<p>A cellmodel(5) macro is a command that returns a formula or part of a
+formula.  Macros are evaluated when the model is being
+loaded.  They are usually used to define multiple formulas
+that have the same pattern.  Macros are created using the
+<a class="iref" href="#define">define</a> command.</p>
+
+<p>A macro can be used to create all or part of a cell's formula:
+
+</p>
+
+<pre>
+    define ssq {i j} {[A.$i]**2 + [A.$j]**2}
+    
+    let SumOfSquares = [ssq 1 2]              ;#      [A.1]**2 + [A.2]**2
+    let TwiceSum     = {2 * (&lt;:ssq 1 2:&gt;)}    ;# 2 * ([A.1]**2 + [A.2]**2)
+</pre>
+<p>In "SumOfSquares", the macro is called as a normal Tcl command at file
+scope.  It simply returns the desired formula.  In "TwiceSum", the
+macro is embedded in a formula.  Because square brackets denote cell
+references, macros are delimited by "&lt;:" and ":&gt;".  The text returned
+by the macro is simply substituted into the formula.</p>
+
+<p>Care is required when using macros.  For example, compare these two
+formulas, each using the "ssq" macro defined above:
+
+</p>
+
+<pre>
+    let Good  = {2*(&lt;:ssq 1 2:&gt;)}    ;# 2*([A.1]**2 + [A.2]**2)
+    let Bad   = {2*&lt;:ssq 1 2:&gt;}      ;# 2*[A.1]**2 + [A.2]**2
+</pre>
+<p>The former is almost certainly what you're looking for; the latter is
+almost certainly a mistake.  Consequently, <code>ssq</code> should
+probably be defined as follows:
+
+</p>
+
+<pre>
+    define ssq {i j} {([A.$i]**2 + [A.$j]**2)}
+</pre>
+<p>In addition to user-defined macros, cell models may also use the
+following:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="sum">sum <i>index formula</i></a></dt><dd><p>
+
+This macro returns a formula that's the sum of <i>formula</i> over the
+named <a class="iref" href="#index">index</a>.  For
+example, suppose you have cells A.1, A.2,...,A.5.  Then, the two
+following cell definitions are equivalent:
+
+</p><pre>
+    index i {1 2 3 4 5}
+
+    let Sum = {([A.1] + [A.2] + [A.3] + [A.4] + [A.5])}
+    let Sum = {&lt;:sum i {[A.$i]}:&gt;}
+</pre>
+<p>Note the summation formula is parenthesized automatically.</p>
+
+<p>The <i>index</i> can also be specified as a pair {<i>ivar index</i>};
+in this case, the variable name need not be the same as the index
+name.  For example,
+
+</p>
+
+<pre>
+    index numbers {1 2 3 4 5}
+
+    let Sum = {&lt;:sum {i numbers} {[A.$i]}:&gt;}
+</pre>
+
+</dd>
+<dt class="defitem"><a name="prod">prod <i>index formula</i></a></dt><dd><p>
+
+This macro returns a formula that's the product of <i>formula</i> over the
+named <a class="iref" href="#index">index</a>.  For
+example, suppose you have cells A.1, A.2,...,A.5.  Then, the two
+following cell definitions are equivalent:
+
+</p><pre>
+    index i {1 2 3 4 5}
+
+    let Product = {([A.1])*([A.2])*([A.3])*([A.4])*([A.5])}
+    let Product = {&lt;:prod i {[A.$i]}:&gt;}
+</pre>
+<p>Note that the factors are parenthesized automatically.</p>
+
+<p>The <i>index</i> can also be specified as a pair {<i>ivar index</i>};
+in this case, the variable name need not be the same as the index
+name.  For example,
+
+</p>
+
+<pre>
+    index numbers {1 2 3 4 5}
+
+    let Product = {&lt;:prod {i numbers} {[A.$i]}:&gt;}
+</pre>
+
+</dd>
+</dl>
+
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:48 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

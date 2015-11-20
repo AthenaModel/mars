@@ -1,0 +1,478 @@
+<html>
+<head>
+<title>mars 3.0.23: texteditorwin(n) -- Simple Text Editor Window, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>texteditorwin(n)</b> -- Simple Text Editor Window, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#texteditorwin">texteditorwin <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-height">-height <i>height</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-width">-width <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-background">-background <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-foreground">-foreground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-font">-font <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-title">-title <i>title</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-initialdir">-initialdir <i>dir</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#texteditorwin-filetypes">-filetypes <i>typelist</i></a></li>
+<li><a class="iref" href="#configure"><i>win</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget"><i>win</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#load"><i>win</i> load <i>filename</i></a></li>
+<li><a class="iref" href="#open"><i>win</i> open ?<i>filename</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/marsgui.html">marsgui(n)</a> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::texteditorwin, a simple text editor
+window which can be popped up to edit files in any Tk application.</p>
+
+<p>The text editor has the following features:
+
+</p>
+
+<ul>
+  <li> Multiple edit windows
+  </li><li> Cut, Copy, Paste, and Undo.
+  </li><li> New Window, Open File, Save File, Save File As.
+</li></ul>
+<p>texteditorwin(n) is based on the <a href="../mann/texteditor.html">texteditor(n)</a> editing widget.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="texteditorwin">texteditorwin <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new toplevel texteditorwin window named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#texteditorwin">texteditorwin</a> widget has all the options of the
+standard Tk "toplevel" widget; in addition, it has the following:
+
+</p><dl>
+
+<dt class="defopt"><a name="texteditorwin-height">-height <i>height</i></a></dt><dd>
+
+Sets the height of the editor in lines of text.
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-width">-width <i>width</i></a></dt><dd>
+
+Sets the width of the editor in columns of text.
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-background">-background <i>color</i></a></dt><dd>
+
+Sets the background color of the editor pane.
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-foreground">-foreground <i>color</i></a></dt><dd>
+
+Sets the foreground color of the editor pane.
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-font">-font <i>color</i></a></dt><dd>
+
+Sets the text font.
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-title">-title <i>title</i></a></dt><dd>
+
+Sets the window title; the name of the current file is added
+automatically.  The title defaults to "Text Editor" appended to
+the title of the application's main window, ".".
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-initialdir">-initialdir <i>dir</i></a></dt><dd>
+
+Sets the <code>-initialdir</code> passed to <code>tk_getOpenFile</code>
+and <code>tk_getSaveFile</code>.
+
+</dd>
+<dt class="defopt"><a name="texteditorwin-filetypes">-filetypes <i>typelist</i></a></dt><dd>
+
+Sets the list of file types (<code>-filetypes</code>) passed to
+<code>tk_getOpenFile</code> and <code>tk_getSaveFile</code>.  See
+the Tk manpages for the format.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure"><i>win</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget"><i>win</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="load"><i>win</i> load <i>filename</i></a></dt><dd><p>
+
+Loads the named file into the editor.  The file will not be
+loaded if the current file needs to be saved.</p>
+
+<p>The named file need not exist; if it does not, a blank document
+will be created, but the file name will be saved for when the
+file is saved.
+
+</p>
+</dd>
+<dt class="defitem"><a name="open"><i>win</i> open ?<i>filename</i>?</a></dt><dd>
+
+Called with a file name, this subcommand is equivalent to
+<a class="iref" href="#load">load</a>.  Called without a file name, prompts the user
+to select a file to open.  Note that no file can be opened
+if the current file needs to be saved.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl/Tk 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

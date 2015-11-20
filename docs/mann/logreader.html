@@ -1,0 +1,448 @@
+<html>
+<head>
+<title>mars 3.0.23: logreader(n) -- Log File Reader, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>logreader(n)</b> -- Log File Reader, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#logreader">logreader <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#logreader-parsecmd">-parsecmd <i>cmd</i></a></li>
+<li><a class="iref" href="#get">$logreader get <i>file</i></a></li>
+<li><a class="iref" href="#newentries">$logreader newentries <i>file</i></a></li>
+<li><a class="iref" href="#close">$logreader close</a></li>
+<li><a class="iref" href="#filename">$logreader filename</a></li>
+<li><a class="iref" href="#isfileopen">$logreader isfileopen</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A logreader(n) object reads and parses a log file given a user-defined
+parsing function.  There are two ways to use a logreader:
+
+</p>
+
+<ul>
+  <li> The <a class="iref" href="#get">get</a> method returns the parsed contents of an
+       entire log file given the file name.
+
+  </li><li> The <a class="iref" href="#newentries">newentries</a> method allows the application to
+       periodically retrieve new entries from an active log file.
+</li></ul>
+<p>logreader(n) places few requirements on either the log file or the
+parsing function. It assumes that:
+
+</p>
+
+<ul>
+  <li> Log file entries are written atomically--i.e., that it need not
+       worry about reading a partial entry from the disk.
+
+  </li><li> A newline character at the end of the file can be ignored.
+</li></ul>
+<p>A log file with newlines between entries will meet these requirements,
+provided that it is output as a line-buffered file:
+
+</p>
+
+<pre>
+    set channel [open $filename w]
+    fconfigure $channel -buffering line
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="logreader">logreader <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#logreader">logreader</a> component named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#logreader">logreader</a> widget may be created with the following option:
+
+</p><dl>
+
+<dt class="defopt"><a name="logreader-parsecmd">-parsecmd <i>cmd</i></a></dt><dd>
+
+A parsing command used to parse the contents of a log file into the proper
+application specific format.  It will be passed one argument, a chunk
+of zero or more entries from the log file.  The input may be parsed in
+any way desired by the application.  Required.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="get">$logreader get <i>file</i></a></dt><dd>
+
+Returns the parsed content of the named <i>file</i>, as parsed by the
+<code>-parsecmd</code>.
+
+</dd>
+<dt class="defitem"><a name="newentries">$logreader newentries <i>file</i></a></dt><dd>
+
+Given a new <i>file</i> name, reads all entries from the file and
+returns the parsed content, leaving the file open.  Subsequent calls
+parse and return any new entries; if there are none,
+<code>-parsecmd</code> will be called on the empty string.  When
+<a class="iref" href="#newentries">newentries</a> is called on a different file, the current file is
+closed and the new file is opened.
+
+</dd>
+<dt class="defitem"><a name="close">$logreader close</a></dt><dd>
+
+Explicitly closes the current log file, if any.
+
+</dd>
+<dt class="defitem"><a name="filename">$logreader filename</a></dt><dd>
+
+Returns the name of the most recently read log file, as it was passed
+to <a class="iref" href="#get">get</a> or <a class="iref" href="#newentries">newentries</a>.
+
+</dd>
+<dt class="defitem"><a name="isfileopen">$logreader isfileopen</a></dt><dd>
+
+Returns 1 if the current file is open, else 0.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsutil(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsutil(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe, Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>07/05/2005 DJ Original package.</p>
+
+<p>06/05/2006 WHD Minor clean-up.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

@@ -1,0 +1,830 @@
+<html>
+<head>
+<title>mars 3.0.23: simclock(n) -- Simulation Clock, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>simclock(n)</b> -- Simulation Clock, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#representation_of_simulated_time">Representation of Simulated Time</a></li>
+
+    <li><a href="#advancing_time">Advancing Time</a></li>
+
+    <li><a href="#time_specification_strings">Time Specification Strings</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+::marsutil::simclock <i>name</i> ?<i>options...</i>?
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#simclock">::marsutil::simclock <i>name ?options?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-tick">-tick <i>tickSpec</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-t0">-t0 <i>zulutime</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-zuluvar">-zuluvar <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-advancecmd">-advancecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-requestcmd">-requestcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-ratiovar">-ratiovar <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-actualratiovar">-actualratiovar <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-logger">-logger <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#simclock-logcomponent">-logcomponent <i>component</i></a></li>
+<li><a class="iref" href="#ticktype">ticktype validate <i>value</i></a></li>
+<li><a class="iref" href="#actualratio"><i>obj</i> actualratio</a></li>
+<li><a class="iref" href="#advance"><i>obj</i> advance <i>t</i></a></li>
+<li><a class="iref" href="#asDays"><i>obj</i> asDays ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#asHours"><i>obj</i> asHours ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#asMinutes"><i>obj</i> asMinutes ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#asString"><i>obj</i> asString ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#asZulu"><i>obj</i> asZulu ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#fromDays"><i>obj</i> fromDays <i>days</i></a></li>
+<li><a class="iref" href="#fromHours"><i>obj</i> fromHours <i>hours</i></a></li>
+<li><a class="iref" href="#fromMinutes"><i>obj</i> fromMinutes <i>minutes</i></a></li>
+<li><a class="iref" href="#fromZulu"><i>obj</i> fromZulu <i>zulutime</i></a></li>
+<li><a class="iref" href="#fromTimeSpec"><i>obj</i> fromTimeSpec <i>spec</i></a></li>
+<li><a class="iref" href="#timespec_validate"><i>obj</i> timespec validate <i>spec</i></a></li>
+<li><a class="iref" href="#past_validate"><i>obj</i> past validate <i>spec</i></a></li>
+<li><a class="iref" href="#future_validate"><i>obj</i> future validate <i>spec</i></a></li>
+<li><a class="iref" href="#grant"><i>obj</i> grant <i>ticks</i></a></li>
+<li><a class="iref" href="#isactive"><i>obj</i> isactive</a></li>
+<li><a class="iref" href="#now"><i>obj</i> now ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#ratio"><i>obj</i> ratio ?<i>rat</i>?</a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#start"><i>obj</i> start ?<i>ticks</i>?</a></li>
+<li><a class="iref" href="#step"><i>obj</i> step <i>ticks</i></a></li>
+<li><a class="iref" href="#stop"><i>obj</i> stop</a></li>
+<li><a class="iref" href="#tick"><i>obj</i> tick</a></li>
+<li><a class="iref" href="#toDays"><i>obj</i> toDays <i>ticks</i> ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#toHours"><i>obj</i> toHours <i>ticks</i> ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#toMinutes"><i>obj</i> toMinutes <i>ticks</i> ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#toString"><i>obj</i> toString <i>ticks</i> ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#toZulu"><i>obj</i> toZulu <i>ticks</i> ?<i>offset</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>simclock(n) defines a simulation clock type.</p>
+
+<p>A simclock(n) can run in two modes, active and passive.  In passive
+mode, the simclock(n) simply tracks the current simulation time and
+makes it available in a variety of forms (e.g., minutes, hours,
+days).  In active mode, the simclock(n) will advance simulation time
+in steps at a rate determined by a "game ratio", e.g., 10 simulated
+minutes per real-time minute.
+
+</p>
+
+<h2><a name="representation_of_simulated_time">Representation of Simulated Time</a></h2>
+<p>Simumulated time, or "sim time", is represented as an integer number
+of ticks since time 0.  The tick size is specified using the <b>-tick</b>
+option, and can be any integer number of minutes, hours, or days.
+Time can only be advanced by one or more ticks.</p>
+
+<p>A simclock(n) can convert between ticks and minutes, hours, and 
+days.  It can also convert the current sim time to the number of
+minutes, hours, or days since time 0.</p>
+
+<p>In addition, the <b>-t0</b> option specifies the "start date", a 
+zulu-time string for the specific time and date corresponding to
+time 0.  Consequently, the simclock(n) can convert between
+sim times in ticks and zulu-time strings.
+
+</p>
+
+<h2><a name="advancing_time">Advancing Time</a></h2>
+<p>In passive mode, time must be advanced manually, by calling the
+simclock(n)'s <a class="iref" href="#advance">advance</a>, <a class="iref" href="#step">step</a>, or <a class="iref" href="#tick">tick</a>
+methods.  Note that <a class="iref" href="#tick">tick</a> calls the <code>-advancecmd</code>,
+where <a class="iref" href="#advance">advance</a> and <a class="iref" href="#step">step</a> do <b>not</b>.</p>
+
+<p>In active mode, time advances automatically.  To enter active mode,
+call the simclock(n)'s <a class="iref" href="#start">start</a> method; then, set the desired
+game <a class="iref" href="#ratio">ratio</a>.  Time will begin to advance at that ratio.  At
+each time tick, the simclock(n)'s <code>-advancecmd</code> will be
+called.  The simclock(n)'s <code>-requestcmd</code> and
+<a class="iref" href="#grant">grant</a> method can be used to request and receive permission to
+advance time from some other object.  To stop advancing time, set the
+<a class="iref" href="#ratio">ratio</a> back to zero, or call the simclock(n)'s
+<a class="iref" href="#stop">stop</a> method.</p>
+
+<p>Note that active mode requires use of the Tcl event loop; time can
+only advance automatically while the application is in the event
+loop.
+
+</p>
+
+<h2><a name="time_specification_strings">Time Specification Strings</a></h2>
+<p>To ease user input, simclock(n) supports time specification strings,
+or "time specs".  A time spec consists of a base time, specified in
+one of a number of ways, with an optional positive or negative offset
+in ticks.  The time spec can be validated and translated into
+ticks.</p>
+
+<p>The base time can be specified in the following ways:
+
+</p>
+
+<ul>
+  <li> As a zulu-time string.
+  </li><li> As a sim time in integer ticks.
+  </li><li> As the string <b>T0,</b> which translates to 0 ticks.
+  </li><li> As the string <b>NOW</b>, which translates to the current simulation
+       time in ticks.
+</li></ul>
+<p>Thus, the following are all valid time specs:
+
+</p>
+
+<ul>
+  <li> <b>NOW</b>: the current simulation time.
+  </li><li> <b>NOW+10</b>: Ten ticks from now.
+  </li><li> <b>NOW-10</b>: Ten ticks ago.
+  </li><li> <b>100000ZJAN09</b>: Midnight (UTC) on January 10, 2009
+  </li><li> <b>100000ZJAN09-30</b>: 30 ticks prior to 100000ZJAN09.
+</li></ul>
+<p>If the base time is omitted, it is presumed to be the current
+simulation time; thus <b>+30</b> means 30 ticks from now and
+<b>-30</b> means 30 ticks ago.  Note that <b>+30</b> and
+<b>30</b> are two different times; the former is 30 ticks from now,
+and the latter is sim time 30.</p>
+
+<p>See also the <a class="iref" href="#fromTimeSpec">fromTimeSpec</a>, <a class="iref" href="#timespec_validate">timespec validate</a>,
+<a class="iref" href="#past_validate">past validate</a> and <a class="iref" href="#future_validate">future validate</a> commands.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="simclock">::marsutil::simclock <i>name ?options?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#simclock">simclock</a> object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#simclock">simclock</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a class="iref" href="#simclock">simclock</a> object may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="simclock-tick">-tick <i>tickSpec</i></a></dt><dd><p>
+
+Sets the simclock(n)'s  tick interval.  The tick specification,
+<i>tickSpec</i>, is a list of two elements, a positive integer and the
+desired units, e.g.,
+
+</p><ul>
+  <li> <code>-tick {1 minute}</code>
+  </li><li> <code>-tick {5 minutes}</code>
+  </li><li> <code>-tick {1 hour}</code>
+  </li><li> <code>-tick {4 hours}</code>
+  </li><li> <code>-tick {1 day}</code>
+  </li><li> <code>-tick {7 days}</code>
+</li></ul>
+<p>The valid units are <b>minutes</b>, <b>hours</b>, and <b>seconds</b>;
+the final "s" in each unit name is optional.</p>
+
+<p>The <b>tick</b> option's value can only be set when the current sim
+time is 0; once time has been advanced, the tick size can no longer be
+changed.
+
+</p>
+
+</dd>
+<dt class="defopt"><a name="simclock-t0">-t0 <i>zulutime</i></a></dt><dd>
+
+Sets the simulation start date to <i>zulutime</i>.  The default start
+date ("T-zero") is "010000ZJAN70".
+
+</dd>
+<dt class="defopt"><a name="simclock-zuluvar">-zuluvar <i>name</i></a></dt><dd>
+
+Specifies the name of a variable which will be updated with the
+current simulation time as a <a href="../mann/zulu.html">zulu(n)</a> time string whenever
+the simulation time changes.  Note that setting the variable's
+value explicitly has no effect on the <a class="iref" href="#simclock">simclock</a> object.
+
+</dd>
+<dt class="defopt"><a name="simclock-advancecmd">-advancecmd <i>cmd</i></a></dt><dd>
+
+The <i>cmd</i> will be called with no arguments on each time advance
+while the simclock(n) is in active mode, and when <a class="iref" href="#tick">tick</a> is
+called in passive mode.  The simulation time will have
+already been updated and (in active mode) the actual game ratio
+measured.  When a <code>-requestcmd</code> is defined, the
+<code>-advancecmd</code> will be called by <a class="iref" href="#grant">grant</a>.
+
+</dd>
+<dt class="defopt"><a name="simclock-requestcmd">-requestcmd <i>cmd</i></a></dt><dd><p>
+
+If this option is defined, then when the simclock(n) is in active mode
+it will request permission to advance time prior to each advance by
+calling <i>cmd</i> with one additional argument, the time (in ticks)
+to which it wishes to advance.  In <i>cmd</i>, the application may:
+
+</p><ul>
+  <li> <b>Return normally</b>, indicating that the request will be granted.
+       In this case it is the application's responsibility to call the
+       simclock(n)'s <a class="iref" href="#grant">grant</a> method either immediately, prior
+       to returning from <i>cmd</i>, or at some future time.
+
+  </li><li> <b>Defer the request</b>, by returning the <b>break</b> return
+       code.  (<code>return -code break</code>).  This tells
+       simclock(n) that a transient state prevents the request from
+       being granted at the moment, but to keep trying.
+
+  </li><li> <b>Throw an error</b>, indicating that an unexpected error
+       occurred.  simclock(n) will log the error and keep trying.
+</li></ul>
+
+</dd>
+<dt class="defopt"><a name="simclock-ratiovar">-ratiovar <i>name</i></a></dt><dd>
+
+Whenever the desired game ratio is set or changed, the variable called
+<i>name</i> receives the new value.
+
+</dd>
+<dt class="defopt"><a name="simclock-actualratiovar">-actualratiovar <i>name</i></a></dt><dd>
+
+Whenever the actual game ratio is measured or reset, the variable
+called <i>name</i> receives the new value.  If the actual game ratio
+has not yet been measured, then <i>name</i> will be set to "???".
+
+</dd>
+<dt class="defopt"><a name="simclock-logger">-logger <i>cmd</i></a></dt><dd>
+
+Specifies the name of a <a href="../mann/logger.html">logger(n)</a> or equivalent object, to be
+used to log status while in active mode.
+
+</dd>
+<dt class="defopt"><a name="simclock-logcomponent">-logcomponent <i>component</i></a></dt><dd>
+
+Specifies the object's <i>component</i> name, to use when logging to
+its <code>-logger</code>.  Defaults to <b>clock</b>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="ticktype">ticktype validate <i>value</i></a></dt><dd>
+
+Throws an error if <i>value</i> is not a valid <b>-tick</b> value.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="actualratio"><i>obj</i> actualratio</a></dt><dd>
+
+<b>Active Mode.</b>  Returns the measured game ratio value, or "???"
+if no measurement is available.
+
+</dd>
+<dt class="defitem"><a name="advance"><i>obj</i> advance <i>t</i></a></dt><dd>
+
+<b>Passive Mode.</b>  Manually advances simulation time to <i>t</i>
+ticks in response to some external time update.  Returns the new
+simulation time in ticks.  Does <b>not</b> call the
+<code>-advancecmd</code>.
+
+</dd>
+<dt class="defitem"><a name="asDays"><i>obj</i> asDays ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time in decimal days.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.
+
+</dd>
+<dt class="defitem"><a name="asHours"><i>obj</i> asHours ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time in decimal hours.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.
+
+</dd>
+<dt class="defitem"><a name="asMinutes"><i>obj</i> asMinutes ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time in minutes.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.
+
+</dd>
+<dt class="defitem"><a name="asString"><i>obj</i> asString ?<i>offset</i>?</a></dt>
+<dt class="defitem"><a name="asZulu"><i>obj</i> asZulu ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time as a <a href="../mann/zulu.html">zulu(n)</a> time
+string.  If given, <i>offset</i> should be an offset in ticks; it is
+added to the returned time.
+
+</dd>
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Retrieve the value of any of the object's options.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure ?<i>option value...</i>?</a></dt><dd>
+
+Set any of the object's options.
+
+</dd>
+<dt class="defitem"><a name="fromDays"><i>obj</i> fromDays <i>days</i></a></dt><dd>
+
+Converts a simulation time in decimal <i>days</i> to a simulation time
+in ticks; fractional ticks are rounded to the nearest integer.
+
+</dd>
+<dt class="defitem"><a name="fromHours"><i>obj</i> fromHours <i>hours</i></a></dt><dd>
+
+Converts a simulation time in decimal <i>hours</i> to a simulation time
+in ticks; fractional ticks are rounded to the nearest integer.
+
+</dd>
+<dt class="defitem"><a name="fromMinutes"><i>obj</i> fromMinutes <i>minutes</i></a></dt><dd>
+
+Converts a simulation time in decimal <i>minutes</i> to a simulation time
+in ticks; fractional ticks are rounded to the nearest integer.
+
+</dd>
+<dt class="defitem"><a name="fromZulu"><i>obj</i> fromZulu <i>zulutime</i></a></dt><dd>
+
+Converts a <a href="../mann/zulu.html">zulu(n)</a> time string into a simulation time
+in ticks; fractional ticks are rounded to the nearest integer.
+
+</dd>
+<dt class="defitem"><a name="fromTimeSpec"><i>obj</i> fromTimeSpec <i>spec</i></a></dt><dd>
+
+Converts a time specification string, <i>spec</i>, into a sim time in
+ticks.
+
+</dd>
+<dt class="defitem"><a name="timespec_validate"><i>obj</i> timespec validate <i>spec</i></a></dt><dd>
+
+Validates the <i>spec</i> and returns the corresponding sim time in
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
+
+</dd>
+<dt class="defitem"><a name="past_validate"><i>obj</i> past validate <i>spec</i></a></dt><dd>
+
+Validates the <i>spec</i> as a time between <b>T0</b> and <b>NOW</b>
+(inclusive) and returns the corresponding sim time in
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
+
+</dd>
+<dt class="defitem"><a name="future_validate"><i>obj</i> future validate <i>spec</i></a></dt><dd>
+
+Validates the <i>spec</i> as a time no earlier than <b>NOW</b>
+and returns the corresponding sim time in
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
+
+</dd>
+<dt class="defitem"><a name="grant"><i>obj</i> grant <i>ticks</i></a></dt><dd><p>
+
+<b>Active Mode.</b> This method, when used in conjunction with
+<code>-requestcmd</code>, allows the simclock(n) to request permission
+to advance time.  For example, the <code>-requestcmd</code> might ask
+the federation for permission to advance time; when permission is
+received, then or later, the application can call <a class="iref" href="#grant">grant</a> to
+allow the request to proceed.  The <i>ticks</i> argument is the time
+for which permission was requested.</p>
+
+<p>Note that <a class="iref" href="#grant">grant</a> calls the <code>-advancecmd</code> directly.
+
+</p>
+</dd>
+<dt class="defitem"><a name="isactive"><i>obj</i> isactive</a></dt><dd>
+
+Returns 1 if the simclock(n) is in active mode, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="now"><i>obj</i> now ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time in ticks.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.
+
+</dd>
+<dt class="defitem"><a name="ratio"><i>obj</i> ratio ?<i>rat</i>?</a></dt><dd>
+
+<b>Active Mode.</b> Queries/sets the current game ratio, which is a
+floating point number greater than or equal to zero or the literal
+string <b>auto</b>. If the game ratio is 0.0, simulation time will not
+advance.  If the game ratio is 1.0, simulation time will advance at a
+rate of at most 1 minute per wallclock minute.  If the game ratio is
+<b>auto</b>, the simclock(n) will request a new time advance
+immediately after each time advance is granted; that is, it will not
+artificially limit the speed of the simulation.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt><dd>
+
+Resets simulation time to 0 ticks.  In addition, the simclock(n) is
+returned to passive mode and the game ratio is set to 0.
+
+</dd>
+<dt class="defitem"><a name="start"><i>obj</i> start ?<i>ticks</i>?</a></dt><dd><p>
+
+<b>Active Mode.</b>  Enters active mode, allowing the simclock(n) to
+run on its own.  Optionally, sets the current simulation time to
+<i>ticks</i>.  Note that simulated time will not advance unless the
+application enters the Tcl event loop.</p>
+
+<p>Note: if the game ratio was previously set to something other than
+0.0, the simclock will request a time advance during the
+<a class="iref" href="#start">start</a> call. 
+
+</p>
+</dd>
+<dt class="defitem"><a name="step"><i>obj</i> step <i>ticks</i></a></dt><dd>
+
+<b>Passive Mode.</b> Manually advances simulation time by the
+specified number of <i>ticks</i> in response to some external time
+update.  Returns the new simulation time in ticks.  Does <b>not</b> call the
+<code>-advancecmd</code>.
+
+</dd>
+<dt class="defitem"><a name="stop"><i>obj</i> stop</a></dt><dd>
+
+<b>Active Mode.</b>  Returns the simclock(n) to passive mode; time
+will no longer advance.  The game ratio is reset to 0.
+
+</dd>
+<dt class="defitem"><a name="tick"><i>obj</i> tick</a></dt><dd>
+
+<b>Passive Mode.</b> Manually advances simulation time by one tick,
+calling the <code>-advancecmd</code> (if any).
+
+</dd>
+<dt class="defitem"><a name="toDays"><i>obj</i> toDays <i>ticks</i> ?<i>offset</i>?</a></dt><dd>
+
+Converts a simulation time in ticks into decimal days.  If given,
+<i>offset</i> should be an offset in ticks; it is added to the
+specified time.
+
+</dd>
+<dt class="defitem"><a name="toHours"><i>obj</i> toHours <i>ticks</i> ?<i>offset</i>?</a></dt><dd>
+
+Converts a simulation time in <i>ticks</i> into decimal
+hours.  If given, <i>offset</i> should be an offset in ticks; it is added to
+the specified time.
+
+</dd>
+<dt class="defitem"><a name="toMinutes"><i>obj</i> toMinutes <i>ticks</i> ?<i>offset</i>?</a></dt><dd>
+
+Converts a simulation time in <i>ticks</i> into decimal
+minutes.  If given, <i>offset</i> should be an offset in ticks; it is added to
+the specified time.
+
+</dd>
+<dt class="defitem"><a name="toString"><i>obj</i> toString <i>ticks</i> ?<i>offset</i>?</a></dt>
+<dt class="defitem"><a name="toZulu"><i>obj</i> toZulu <i>ticks</i> ?<i>offset</i>?</a></dt><dd>
+
+Converts a simulation time in integer <i>ticks</i> into a
+<a href="../mann/zulu.html">zulu(n)</a> time string.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the specified time.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/zulu.html">zulu(n)</a>
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>zulu(n) requires Tcl 8.5 or later.</p>
+
+<p>To use zulu(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

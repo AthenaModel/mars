@@ -1,0 +1,380 @@
+<html>
+<head>
+<title>mars 3.0.23: mars_log(1) -- Mars Log Browser, submodule of mars(1)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mars_log(1)</b> -- Mars Log Browser, submodule of <a href="../man1/mars.html">mars(1)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#mars_log">mars log [logdir]</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="mars_log">mars log [logdir]</a></dt>
+</dl>
+
+<p><a href="../man1/mars_log.html">mars_log(1)</a> is the Mars log browser application, used to
+examine, filter, and search log files written using
+<a href="../mann/logger.html">logger(n)</a>.</p>
+
+<p>By default, mars_log(1) browses the logs in the
+<code>./log</code> directory. If desired, some other
+log directory may be specified on the command line, e.g.,
+
+</p>
+
+<pre>
+    $ mars log ~/test/log/mars_gram
+</pre>
+<p>It's common for a log directory to have subdirectories for a number
+of applications; mars_log(1) automatically looks to see whether the
+logs are in <i>logdir</i> or in subdirectories of <i>logdir</i>.</p>
+
+<p>The browser has three main components, the list of application names
+(that is, the subdirectories of the log directory, if any), the
+list of log files and the log display.
+The log list displays all files having a .log suffix in the
+currently selected application directory.
+Assuming that these logs will sort chronologically by
+name, the list displays them oldest to latest, top to bottom.</p>
+
+<p>By default, mars_log(1) automatically updates once a second to show the
+latest log entries from the selected application.  This
+automatic update can be disabled by pressing the scroll lock button
+on the tool bar, or by selecting the View / Scroll Lock menu item.
+scroll-lock position.</p>
+
+<p>Selecting an application or log file automatically updates the log list
+and the selected log file.</p>
+
+<p>The user may customize the display using the View menu.  Scroll lock
+can be enabled and disabled, as can the various fields of each log entry.
+By default all fields are shown, except for the wall-clock time.</p>
+
+<p>The maximum verbosity to be displayed is selected using the verbosity
+pull-down at the left of the tool bar.</p>
+
+<p>The Filter box, marked with a strainer icon, is used to filter entries
+for or against a text target.  Click on the strainer icon for options.</p>
+
+<p>The Finder box, marked with a magnifying glass icon, is used to search
+for particular text strings in the body of the log.  Click on the
+magnifying glass icon for options.</p>
+
+<p>The VCR buttons at the right end of the Finder box step through the
+instances of the search text in the current log. The up and down arrows in
+the Finder box are used to search back through the previous log files. When
+searching through the logs, the search target is matched against individual
+fields.  A "Multi-column Searchback" option is also provided in the
+Finder's magnifying glass menu.  This allows the search text to span
+multiple columns; however, enabling this option slows down the
+search considerably and should be used sparingly.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe, Will Duquette, Jon Stinzel
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:48 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+

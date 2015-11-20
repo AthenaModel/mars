@@ -1,0 +1,655 @@
+<html>
+<head>
+<title>mars 3.0.23: order_flunky(n) -- Order Execution Manager, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>order_flunky(n)</b> -- Order Execution Manager, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#customization">Customization</a></li>
+
+    <li><a href="#send_states">Send States</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#order_flunky_create">::marsutil::order_flunky create <i>name</i> ?<i>orderSet_</i>?</a></li>
+<li><a class="iref" href="#order_flunky_new">::marsutil::order_flunky new ?<i>orderSet_</i>?</a></li>
+<li><a class="iref" href="#available"><i>obj</i> available <i>name</i></a></li>
+<li><a class="iref" href="#canredo"><i>obj</i> canredo</a></li>
+<li><a class="iref" href="#canundo"><i>obj</i> canundo</a></li>
+<li><a class="iref" href="#class"><i>obj</i> class <i>name</i></a></li>
+<li><a class="iref" href="#execute"><i>obj</i> execute <i>mode order</i></a></li>
+<li><a class="iref" href="#exists"><i>obj</i> exists <i>name</i></a></li>
+<li><a class="iref" href="#make"><i>obj</i> make <i>name</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#mode"><i>obj</i> mode</a></li>
+<li><a class="iref" href="#names"><i>obj</i> names</a></li>
+<li><a class="iref" href="#_onExecute"><i>obj</i> _onExecute <i>order</i></a></li>
+<li><a class="iref" href="#_onRedo"><i>obj</i> _onRedo <i>order</i></a></li>
+<li><a class="iref" href="#_onUndo"><i>obj</i> _onUndo <i>order</i></a></li>
+<li><a class="iref" href="#redo"><i>obj</i> redo</a></li>
+<li><a class="iref" href="#redotext"><i>obj</i> redotext</a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#send"><i>obj</i> send <i>mode name</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#senddict"><i>obj</i> senddict <i>mode name parmdict</i></a></li>
+<li><a class="iref" href="#state"><i>obj</i> state ?<i>state</i>?</a></li>
+<li><a class="iref" href="#transaction"><i>obj</i> transaction <i>narrative script</i></a></li>
+<li><a class="iref" href="#undo"><i>obj</i> undo</a></li>
+<li><a class="iref" href="#undotext"><i>obj</i> undotext</a></li>
+<li><a class="iref" href="#validate"><i>obj</i> validate <i>name</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The <span class="tt">::marsutil::order_flunky</span> class is part of the Mars Order Processing
+framework, which includes <a href="../mann/order.html">order(n)</a>, <a href="../mann/order_set.html">order_set(n)</a>,
+<a href="../mann/order_flunky.html">order_flunky(n)</a>, and <a href="../mann/order_dialog.html">order_dialog(n)</a>.  
+See <a href="../mann/order.html">order(n)</a> for an overview of the framework.</p>
+
+<p>An order_flunky(n) instance manages execution of instances of particular
+orders drawn from an <a href="../mann/order_set.html">order_set(n)</a>, i.e., orders manipulating the
+data for a particular application.   It handles validation and execution
+of orders and maintains the undo/redo stack.  In addition, it manages the
+"send state", which is a way of easily controlling which orders are 
+available at different times in the client's lifecycle.
+
+</p>
+
+<h2><a name="customization">Customization</a></h2>
+<p>Clients can use an instance of <span class="tt">::marsutil::order_flunky</span> directly;
+ or they can customize it by subclassing.  order_flunky(n) is designed
+ to be customized in the following ways:
+
+</p>
+
+<ul>
+<li> The flunky creates instances of a desired order class using 
+    <a class="iref" href="#make">make</a>.  If the <a href="../mann/order.html">order(n)</a>-derived base class requires
+    additional configuration, <a class="iref" href="#make">make</a> can be overridden to provide it,
+    either by adding arguments to the <span class="tt">create</span> command or by 
+    explicitly configuring the instance after it's created.
+
+</li><li> The flunky executes orders (whether created internally or by the
+    client) by passing them to its <a class="iref" href="#execute">execute</a> method.  A subclass
+    can override this method, wrapping it with code to log the order, do
+    other tracing, or enable and disable monitoring.
+</li></ul>
+
+<h2><a name="send_states">Send States</a></h2>
+<p>Different orders are available at different times in the lifetime of a 
+running application or library within that application.  The framework 
+helps with this by defining the notion of a "send state".  Each order 
+class can be associated with one or more send states (e.g., "PREP", 
+"PAUSED", "RUNNING").  The flunky can be notified of the application
+or library's current state via its <a class="iref" href="#state">state</a> method.  An order is 
+considered to be <a class="iref" href="#available">available</a> if the flunky's send state is one of
+those listed for the order; if it is not available, it cannot be sent.</p>
+
+<p>An order class's send states are specified using the <span class="tt">sendstates</span> 
+<a href="../mann/oohelpers.html#meta">meta</a>data item; see <a href="../mann/order.html">order(n)</a>.  Usually it is
+a list of the valid states.  If it is "*", then the order is valid in
+every state.</p>
+
+<p>If send states are not useful in a given library or application, then
+simply don't define send states for any of the orders or the flunky.</p>
+
+<p>The developer can choose any send state names he likes; the names have
+no meaning to <a href="../mann/order_flunky.html">order_flunky(n)</a>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>The following commands create instances of order_flunky(n):
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="order_flunky_create">::marsutil::order_flunky create <i>name</i> ?<i>orderSet_</i>?</a></dt><dd>
+
+Creates a new instance of <span class="tt">::marsutil::order_flunky</span>
+called <i>name</i>.  It manages orders from the classes known to the 
+<i>orderSet_</i>, which must be an <a href="../mann/order_set.html">order_set(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="order_flunky_new">::marsutil::order_flunky new ?<i>orderSet_</i>?</a></dt><dd>
+
+Creates a new instance of <span class="tt">::marsutil::order_flunky</span>
+with an automatically generated name..  It manages orders from the 
+classes known to the <i>orderSet_</i>, which must be an <a href="../mann/order_set.html">order_set(n)</a> 
+object.
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of order_flunky(n) has the following subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="available"><i>obj</i> available <i>name</i></a></dt><dd>
+
+Returns 1 if the named order is available, and 0 otherwise.  An order class
+is available if it is compatible with the current send <a class="iref" href="#state">state</a>.
+See <a href="#send_states">Send States</a> for more information.
+
+</dd>
+<dt class="defitem"><a name="canredo"><i>obj</i> canredo</a></dt><dd>
+
+Returns 1 if there's an order or transaction 
+on the redo stack, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="canundo"><i>obj</i> canundo</a></dt><dd>
+
+Returns 1 if there's an order or transaction on the undo stack, and 
+0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="class"><i>obj</i> class <i>name</i></a></dt><dd>
+
+Returns the full class name of the order class associated with the
+given order <i>name</i>.
+
+</dd>
+<dt class="defitem"><a name="execute"><i>obj</i> execute <i>mode order</i></a></dt><dd><p>
+
+Executes the <i>order</i> instance under the given <i>mode</i>.  The <i>order</i>
+must already be <a class="iref" href="#available">available</a> and <a href="../mann/order.html#valid">valid</a>; it is handled
+as an unexpected error if it is not.</p>
+
+<p>The <i>mode</i> indicates how the order should be handled.  If it is
+<b>normal</b> the order will be logged normally, and will be placed on the
+undo stack if it is successful.  If it is <b>gui</b> and the application
+has a significant user interface, the order may interact with the GUI, e.g.,
+to pop up a confirmation dialog; <b>gui</b> is otherwise like <i>normal</i>.</p>
+
+<p>If the <i>mode</i> is private, the order is not logged or added to the 
+undo stack.</p>
+
+<p><b>Note:</b> the caller maintains ownership of the order object passed
+in; the flunky makes a copy to put on the undo stack.
+
+</p>
+</dd>
+<dt class="defitem"><a name="exists"><i>obj</i> exists <i>name</i></a></dt><dd>
+
+Returns 1 if the flunky has on order with the given name, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="make"><i>obj</i> make <i>name</i> ?<i>args</i>?</a></dt><dd>
+
+Creates an instance of the order with the given <i>name</i>, passing the
+arguments to the constructor, and returns the new instance command.
+
+</dd>
+<dt class="defitem"><a name="mode"><i>obj</i> mode</a></dt><dd>
+
+While the flunky is executing an order, this method will return the 
+execution mode, <b>gui</b>, <b>normal</b>, or <b>private</b>.  Because the 
+flunky passes itself to the orders as it executes them, they can use this
+to customize their behavior.
+
+</dd>
+<dt class="defitem"><a name="names"><i>obj</i> names</a></dt><dd>
+
+Returns a list of the names of the orders known to the flunky.
+
+</dd>
+<dt class="defitem"><a name="_onExecute"><i>obj</i> _onExecute <i>order</i></a></dt><dd>
+
+This unexported method is called immediately after <i>order</i> is executed
+the first time.  It is a hook for use by subclasses.
+
+</dd>
+<dt class="defitem"><a name="_onRedo"><i>obj</i> _onRedo <i>order</i></a></dt><dd>
+
+This unexported method is called immediately after <i>order</i> is redone.  
+It is a hook for use by subclasses.
+
+</dd>
+<dt class="defitem"><a name="_onUndo"><i>obj</i> _onUndo <i>order</i></a></dt><dd>
+
+This unexported method is called immediately after <i>order</i> is undone.  
+It is a hook for use by subclasses.
+
+</dd>
+<dt class="defitem"><a name="redo"><i>obj</i> redo</a></dt><dd>
+
+Redoes the order or transaction at the top of the redo stack, and pushes
+it onto the undo stack.
+
+</dd>
+<dt class="defitem"><a name="redotext"><i>obj</i> redotext</a></dt><dd>
+
+Returns the narrative for the order or transaction at the top of the
+redo stack, or "" if there is nothing to redo.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt><dd><p>
+
+Resets the flunky, clearing the undo and redo stacks.</p>
+
+<p>This should be done when the send <a class="iref" href="#state">state</a> changes.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="send"><i>obj</i> send <i>mode name</i> ?<i>option value...</i>?</a></dt><dd>
+
+Creates an instance of order <i>name</i>, gives it the caller's 
+parameter values (which it reads from the command in option notation), 
+and executes it with the mode <a class="iref" href="#mode">mode</a>, just as for <a class="iref" href="#execute">execute</a>.
+If the order is rejected, it throws <b>REJECT</b> with a detailed
+human-readable error message.
+
+</dd>
+<dt class="defitem"><a name="senddict"><i>obj</i> senddict <i>mode name parmdict</i></a></dt><dd>
+
+Creates an instance of order <i>name</i>, gives it the caller's 
+parameter dictionary <i>parmdict</i>, and executes it with the mode 
+<a class="iref" href="#mode">mode</a>, just as for <a class="iref" href="#execute">execute</a>.
+If the order is rejected, it throws <b>REJECT</b> with an error dictionary,
+as returned by <a href="../mann/order.html">order(n)</a>'s <a href="../mann/order.html#errdict">errdict</a> method.
+
+</dd>
+<dt class="defitem"><a name="state"><i>obj</i> state ?<i>state</i>?</a></dt><dd><p>
+
+Sets/queries the flunky's "send state".</p>
+
+<p>From the standpoint of 
+the undo/redo mechanism, it is wise to <a class="iref" href="#reset">reset</a> the undo/redo
+stacks when the state changes.  If the state is changed by an order
+which cannot be undone (as is often the case) then this will happen
+automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="transaction"><i>obj</i> transaction <i>narrative script</i></a></dt><dd><p>
+
+Usually orders are executed, undone, and redone as individuals.  
+Sometimes, however, it is easiest to implement a specific user action
+as a collection of orders.  Since it's a single action from the 
+user's point of view, it should be handled atomically, causing one
+entry on the undo or redo stack.</p>
+
+<p>The <a class="iref" href="#transaction">transaction</a> method handles this.  It executes its
+<i>script</i>, accumulating sent orders into a transaction object. When the
+transaction is complete, the transaction object is put on the 
+undo stack.</p>
+
+<p>If there are any errors during the transaction, the successfully sent 
+orders are undone automatically; it's all or nothing.</p>
+
+<p>The <i>narrative</i> is used as the <a class="iref" href="#undotext">undotext</a> and <a class="iref" href="#redotext">redotext</a> for
+the transaction.</p>
+
+<p>Notes:
+
+</p><ul>
+<li> Transactions can be nested; the orders will be treated as a single
+     transaction.  The outermost transaction's narrative will be used.
+
+</li><li> Orders cannot be undone or redone during a transaction.
+
+</li><li> Only undoable orders can be included in a transaction; an order that
+     isn't undoable would clear the undo stack and make using a 
+     transaction pointless.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="undo"><i>obj</i> undo</a></dt><dd>
+
+Undoes the order or transaction at the top of the undo stack, and pushes
+it onto the redo stack.
+
+</dd>
+<dt class="defitem"><a name="undotext"><i>obj</i> undotext</a></dt><dd>
+
+Returns the narrative for the order or transaction at the top of the
+undo stack, or "" if there is nothing to undo.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>obj</i> validate <i>name</i></a></dt><dd>
+
+Validates an order <i>name</i>, returning it in canonical form if the order
+is known, and throwing <b>INVALID</b> with a suitable error message if not.
+
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/order_set.html">order_set(n)</a>, <a href="../mann/order.html">order(n)</a>, <a href="../mann/order_dialog.html">order_dialog(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>order(n) requires Tcl 8.6 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

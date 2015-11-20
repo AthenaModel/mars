@@ -1,0 +1,593 @@
+<html>
+<head>
+<title>mars 3.0.23: marsmisc(n) -- Miscellaneous Commands, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>marsmisc(n)</b> -- Miscellaneous Commands, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#types">TYPES</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#authors">AUTHORS</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#commafmt">commafmt <i>value ?options...?</i> </a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commafmt-places">-places <i>num</i></a></li>
+<li><a class="iref" href="#discrete">discrete <i>vec</i></a></li>
+<li><a class="iref" href="#echo">echo <i>args</i></a></li>
+<li><a class="iref" href="#gettimeofday">gettimeofday</a></li>
+<li><a class="iref" href="#hexquote">hexquote <i>text</i></a></li>
+<li><a class="iref" href="#let">let <i>varname expression</i></a></li>
+<li><a class="iref" href="#moneyfmt">moneyfmt <i>value</i></a></li>
+<li><a class="iref" href="#moneyscan">moneyscan <i>value</i></a></li>
+<li><a class="iref" href="#moneysort">moneysort <i>a b</i></a></li>
+<li><a class="iref" href="#optval">optval <i>varname option</i> ?<i>defvalue</i>?</a></li>
+<li><a class="iref" href="#percent">percent <i>frac</i></a></li>
+<li><a class="iref" href="#pickfrom">pickfrom <i>list</i></a></li>
+<li><a class="iref" href="#poisson">poisson <i>rate</i></a></li>
+<li><a class="iref" href="#restrict">restrict <i>varname vtype defval</i></a></li>
+<li><a class="iref" href="#roundrange">roundrange <i>min max</i></a></li>
+<li><a class="iref" href="#wildToRegexp">wildToRegexp <i>pattern</i></a></li>
+<li><a class="iref" href="#count">count validate <i>value</i></a></li>
+<li><a class="iref" href="#hexcolor">hexcolor validate <i>value</i></a></li>
+<li><a class="iref" href="#identifier">identifier validate <i>value</i></a></li>
+<li><a class="iref" href="#ipaddress">ipaddress validate <i>value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>marsutil(n) is a package of low-level infrastructure code of various
+kinds. Most commands are implemented in Tcl; some are also implemented
+in the libMarsutil.so extension, which is loaded automatically.  A
+few exist only in the extension.  The entry for commands with fast
+versions will so indicate.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="commafmt">commafmt <i>value ?options...?</i> </a></dt><dd><p>
+
+Formats numbers as integers with commas inserted every three digits. This
+command has the following option:
+
+</p><dl>
+
+<dt class="defopt"><a name="commafmt-places">-places <i>num</i></a></dt><dd>
+
+Specifies the number of decimal places to be displayed. If there are fewer
+decimal places than in <i>num</i> then zeroes are padded to the end. If 
+there are more then rounding takes place. If not supplied, the default for 
+<i>num</i> is zero.
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="discrete">discrete <i>vec</i></a></dt><dd>
+
+Does a random draw from a discrete probability distribution given a
+vector which defines the distribution, i.e., a vector of numbers
+between 0.0 and 1.0, summing to 1.0.  Returns a number <i>n</i>
+where 0 &le; n &lt; <i>N</i>, where <i>N</i> is the length of
+<i>vec</i>.
+
+</dd>
+<dt class="defitem"><a name="echo">echo <i>args</i></a></dt><dd>
+
+Given some arguments, echo them to stdout.
+
+</dd>
+<dt class="defitem"><a name="gettimeofday">gettimeofday</a></dt><dd>
+
+Returns the current wall-clock time in decimal seconds as a
+double-precision floating point value.  If the binary extension is
+available, the fraction part will have microsecond resolution;
+otherwise it will always be ".0".  <b>NOTE:</b> microsecond resolution
+is now available from the "clock" command; we should begin to use it.
+
+</dd>
+<dt class="defitem"><a name="hexquote">hexquote <i>text</i></a></dt><dd>
+
+Returns a string in which all characters in <i>text</i> have been
+replaced with their hex escape sequences, e.g., nulls are replaced
+with "\x00".  This allows strings containing binary data to be
+printed normally.  The original string can be retrieved using
+the standard Tcl <code>subst</code> command.
+
+</dd>
+<dt class="defitem"><a name="let">let <i>varname expression</i></a></dt><dd><p>
+
+Evaluates <i>expression</i> in the caller's context, and assigns the
+result to the variable named <i>varname</i>.  That is to say, the
+following two commands are equivalent:
+
+</p><pre>
+  set x [expr {$x + 1}]
+  let x {$x + 1}
+</pre>
+<p>The <i>let</i> command adds a runtime penalty, but increases the
+clarity of the code remarkably.</p>
+
+<p>The binary extension includes a fast version of this command, which is
+used by preference; in this case the runtime penalty is negligible.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="moneyfmt">moneyfmt <i>value</i></a></dt><dd><p>
+
+Formats numbers for display in minimal space; it is especially useful
+for outputs that can span a wide range, e.g., from pennies to
+trillions of dollars.  In particular:
+
+</p><ul>
+  <li> Numbers with an absolute value less than 10,000 are formatted
+       with two decimal places and a comma (if needed), e.g.,
+       "1,234.56", "99.95", "100.00".
+
+  </li><li> Numbers greater than 10,000 but less than a million are
+       formatted as integers with a comma, e.g., "12,345",
+       "999,999".
+
+  </li><li> Numbers in the millions, billions, and trillions are formatted
+       with three decimal places and a suffix, e.g., "1.234M",
+       "12.345B", "123.456T".
+
+  </li><li> Numbers in the quadrillions and up are formatted as some large,
+       uncomma'd number of trillions, e.g., "1234.567T".  We can
+       address this again if ever seriously becomes an issue.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="moneyscan">moneyscan <i>value</i></a></dt><dd>
+
+Converts numbers as formatted by <a class="iref" href="#moneyfmt">moneyfmt</a> back into standard
+real values: commas are stripped, and if the value ends in "M", "B",
+or "T" it is multiplied by the appropriate factor.
+
+</dd>
+<dt class="defitem"><a name="moneysort">moneysort <i>a b</i></a></dt><dd>
+
+Compares two values <i>a</i> and <i>b</i> formatted by <a class="iref" href="#moneyfmt">moneyfmt</a>
+and returns -1 if <i>a</i> &lt; <i>b</i>, 0 if <i>a</i> == <i>b</i>,
+and +1 if <i>a</i> &gt; <i>b</i>.
+
+</dd>
+<dt class="defitem"><a name="optval">optval <i>varname option</i> ?<i>defvalue</i>?</a></dt><dd>
+
+Extracts an <i>option</i> and its value from a list stored in a
+variable called <i>varname</i>, returning the value.  If the
+<i>option</i> is not found in the list, returns <i>defvalue</i>, or
+the empty string if <i>defvalue</i> is not specified.
+
+</dd>
+<dt class="defitem"><a name="percent">percent <i>frac</i></a></dt><dd>
+
+Displays the fraction as a percentage.  If the fraction
+is at least 0.005, displays it as an integer percentage, e.g.,
+1%, 10%, 25%.  If the fraction is &lt;= 0.005 but greater than
+0.0, displays it as "~0%".
+
+
+</dd>
+<dt class="defitem"><a name="pickfrom">pickfrom <i>list</i></a></dt><dd>
+
+Chooses an item randomly from the list, and returns it.  All
+choices are equally likely.
+
+</dd>
+<dt class="defitem"><a name="poisson">poisson <i>rate</i></a></dt><dd><p>
+
+Does a random draw from a Poisson distribution, returning a random number
+of events seen in a unit of time, where <i>rate</i> is the expected
+number of events in a unit of time.  Thus, the following command
+samples the number of events during a particular minute of time given
+a rate in events/day:
+
+</p><pre>
+   set num [poisson [expr {$eventsPerDay / 1440.0}]]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="restrict">restrict <i>varname vtype defval</i></a></dt><dd><p>
+
+Restricts the value of the variable named <i>varname</i> to be a
+valid value of validation type <i>vtype</i>.  If the variable's value
+is empty, or if it isn't valid, the variable's value is set to the
+default value <i>defval</i>.  Otherwise, the variable's value is set
+to the canonicalized value returned by the validation type's 
+<code>validate</code> method.</p>
+
+<p>This command is useful in contexts where input errors must be
+silently tolerated (i.e., in URL processing).
+
+</p>
+</dd>
+<dt class="defitem"><a name="roundrange">roundrange <i>min max</i></a></dt><dd>
+
+Given a range of numbers (<i>min, max</i>), rounds <i>min</i> down and
+<i>max</i> up by a power of ten appropriate for the size of the
+interval.  This command is useful when generating min and max bounds
+for a data plot based on the data to be plotted.
+
+</dd>
+<dt class="defitem"><a name="wildToRegexp">wildToRegexp <i>pattern</i></a></dt><dd>
+
+Converts a wildcard match pattern (? matches any 1 character, * matches
+any number of characters) to a regular expression pattern by dereferencing
+all regexp significant characters and making the proper substitutions
+for "?" (".") and "*" (".*").  Returns the converted pattern.
+
+</dd>
+</dl>
+
+<h2><a name="types">TYPES</a></h2>
+<p>marsutil(n) also defines the following types
+for use in input validation; most of these are based on the
+Snit type-validation types (e.g., snit::integer).  Each
+type has a <b>validate</b> method which throws an error if
+the value is not of the desired type.  Where appropriate,
+the Snit base type is given.
+
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="count">count validate <i>value</i></a></dt><dd>
+
+A count is a non-negative integer.  (snit::integer)
+
+</dd>
+<dt class="defitem"><a name="hexcolor">hexcolor validate <i>value</i></a></dt><dd>
+
+Validates the <i>value</i> as an acceptable Tk color in 24-bit or 48-bit
+hex notation, and returns it in the form
+"<code>#<i>RRGGBB</i></code>" or 
+"<code>#<i>RRRRGGGGBBBB</i></code>".
+
+</dd>
+<dt class="defitem"><a name="identifier">identifier validate <i>value</i></a></dt><dd>
+
+An identifier is any non-empty string consisting only of ASCII
+letters, numbers, and underscores. (snit::stringtype)
+
+</dd>
+<dt class="defitem"><a name="ipaddress">ipaddress validate <i>value</i></a></dt><dd>
+
+An ipaddress is an IP address of the form <i>x.y.z.w</i>, where
+each component is an integer ranging from 0 to 255.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.6 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="authors">AUTHORS</a></h2>
+<p>Will Duquette, Dave Jaffe, Jon Stinzel, Dave Hanks
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Originally implemented for JNEM as util(n).  Migrated to Mars in
+September, 2008.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

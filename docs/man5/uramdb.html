@@ -1,0 +1,1440 @@
+<html>
+<head>
+<title>mars 3.0.23: uramdb(5) -- URAM Database File Format</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>uramdb(5)</b> -- URAM Database File Format
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#basic_syntax">BASIC SYNTAX</a></li>
+    <ul>
+
+    <li><a href="#table_syntax">Table Syntax</a></li>
+
+    <li><a href="#records_and_keys">Records and Keys</a></li>
+
+    <li><a href="#fields">Fields</a></li>
+
+</ul>
+    
+
+    <li><a href="#concerns">CONCERNS</a></li>
+    
+
+    <li><a href="#tables">TABLES</a></li>
+    <ul>
+
+    <li><a href="#uramdb_a">uramdb_a</a></li>
+
+    <li><a href="#uramdb_n">uramdb_n</a></li>
+
+    <li><a href="#uramdb_mn">uramdb_mn</a></li>
+
+    <li><a href="#uramdb_civ_g">uramdb_civ_g</a></li>
+
+    <li><a href="#uramdb_frc_g">uramdb_frc_g</a></li>
+
+    <li><a href="#uramdb_org_g">uramdb_org_g</a></li>
+
+    <li><a href="#uramdb_hrel">uramdb_hrel</a></li>
+
+    <li><a href="#uramdb_vrel">uramdb_vrel</a></li>
+
+    <li><a href="#uramdb_sat">uramdb_sat</a></li>
+
+    <li><a href="#uramdb_coop">uramdb_coop</a></li>
+
+</ul>
+    
+
+    <li><a href="#database_schema">DATABASE SCHEMA</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+</ul>
+
+
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>uramdb(5) defines a database format used for initializing
+instances of <a href="../mann/uram.html">uram(n)</a>.  Note that <a href="../mann/uram.html">uram(n)</a> does not
+require that uramdb(5) be used; it is a convenience for testing and
+development.</p>
+
+<p><a href="../mann/uramdb.html">uramdb(n)</a> parses uramdb(5) files into SQL tables in
+an <a href="../mann/sqldocument.html">sqldocument(n)</a> database.
+run-time database.  The syntax of the file mirrors the SQL
+<a href="#database_schema">DATABASE SCHEMA</a>. 
+
+</p>
+
+<h2><a name="basic_syntax">BASIC SYNTAX</a></h2>
+<p>A uramdb(5) file is a text file which defines the contents of a number
+of SQL tables.  This section describes the file's syntax; see
+<a href="#tables">TABLES</a> for an example of each uramdb(5) table.</p>
+
+<p>The uramdb(5) file may contain comments and <b>table</b>
+statements. A comment is a line of text beginning with the "#"
+character:
+
+</p>
+
+<pre>
+# This is a comment.
+</pre>
+
+<h2><a name="table_syntax">Table Syntax</a></h2>
+<p>A <b>table</b> statement defines the content of a single
+database table; each table consists of zero or more records.  The
+<b>table</b> statement has this syntax:
+
+</p>
+
+<pre>
+<b>table</b> <i>tableName</i> {
+    <i>record</i>
+    <i>record</i>
+        .
+        .
+        .
+}
+</pre>
+
+<h2><a name="records_and_keys">Records and Keys</a></h2>
+<p>The records of each table are identified by the table's key fields.
+Each record in the <b>uramdb_civ_g</b> table, for example, defines a single
+civilian group; the key field, <b>g</b>, is the name of the group.  This
+name must be unique for each record in the table.  Some tables
+have two or even three key fields.  The <b>uramdb_hrel</b> table, for
+example, contains the horizontal relationship values; it has
+two keys, <b>f</b> and <b>g</b>, each of which is the name of a
+group.</p>
+
+<p>Each record is defined by a <b>record</b> statement, which has this syntax:
+
+</p>
+
+<pre>
+<b>table</b> <i>tableName</i> {
+    <b>record</b> <i>keyName</i> <i>keyValue</i> ... {
+         <i>field</i>
+         <i>field</i>
+         .
+         .
+         .
+    }
+    .
+    .
+    .
+}
+</pre>
+
+<h2><a name="fields">Fields</a></h2>
+<p>In addition to its key field or fields, most tables also have one or
+more data fields.  Field values are defined using the <b>field</b>
+statement, which has this syntax:
+
+</p>
+
+<pre>
+<b>table</b> <i>tableName</i> {
+    <b>record</b> <i>keyName</i> <i>keyValue</i> ... {
+         <b>field</b> <i>fieldName</i> <i>fieldValue</i>
+         <b>field</b> <i>fieldName</i> <i>fieldValue</i>
+         .
+         .
+         .
+    }
+    .
+    .
+    .
+}
+</pre>
+<p>Field values containing whitespace must be quoted with double
+quotes or curly brackets.  By convention, double quotes are used
+for short strings and curly brackets for structured values
+(e.g., lists) and for text which spills onto more than one line.
+See the example for each of the uramdb(5) <a href="#tables">TABLES</a> to see what
+each form looks like in practice.
+
+</p>
+
+<h2><a name="concerns">CONCERNS</a></h2>
+<p>One of the tables (<b>uramdb_sat</b>) depend on the
+following sets of concerns; the symbolic name of each concern is
+shown in parentheses.
+
+</p>
+
+<dl>
+  <dt class="def">Autonomy (AUT)</dt><dd>
+   Does the group feel it can maintain order and govern itself 
+       with a stable government and a viable economy?
+
+  </dd>
+<dt class="def">Quality of Life (QOL)</dt><dd>
+   QOL includes the physical plants that provide services, 
+       including water, power, public transportation, commercial 
+       markets, hospitals, etc. and those things associated with 
+       these services such as sanitation, health, education, 
+       employment, food, clothing, and shelter.
+
+  </dd>
+<dt class="def">Culture (CUL)</dt><dd>
+   Does the group feel that its culture and religion, 
+       including cultural and religious sites and artifacts, 
+       are respected or denigrated? 
+
+  </dd>
+<dt class="def">Physical Safety (SFT)</dt><dd>
+   Do members of the group fear for their lives, both from 
+       hostile attack and from collateral damage from CF activities?
+       This fear includes environmental concerns such as life 
+       threatening disease, starvation, and dying of thirst.
+</dd>
+</dl>
+
+<h2><a name="tables">TABLES</a></h2>
+    
+
+<h2><a name="uramdb_a">uramdb_a</a></h2>
+<p>This table defines actors within the playbox.  URAM tracks
+vertical relationships of groups with actors.</p>
+
+<p><b>Constraints:</b>
+
+</p>
+
+<ul>
+  <li> The table must define at least one actor.
+</li></ul>
+
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>a</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A symbolic name for the actor.  The name may
+consist of uppercase letters, digits, and underscores only--no white
+space or other punctuation.
+</td>
+</tr>
+
+</table>
+<p>For example,
+
+</p>
+
+<pre>
+table uramdb_a {
+    record a JOE {}
+    record a BOB {}
+}
+</pre>
+
+
+<h2><a name="uramdb_n">uramdb_n</a></h2>
+<p>This table defines neighborhoods within the playbox.  URAM tracks
+civilian satisfaction within each neighborhood for the groups who
+live there.  Table <b>uramdb_mn</b> describes the relationships between
+the different neighborhoods.</p>
+
+<p><b>Constraints:</b>
+
+</p>
+
+<ul>
+  <li> The table must define at least one neighborhood.
+</li></ul>
+
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>n</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A symbolic name for the neighborhood.  The name may
+consist of uppercase letters, digits, and underscores only--no white
+space or other punctuation.
+</td>
+</tr>
+
+</table>
+<p>For example,
+
+</p>
+
+<pre>
+table uramdb_n {
+    record n N1 {}
+    record n N2 {}
+}
+</pre>
+
+<h2><a name="uramdb_mn">uramdb_mn</a></h2>
+<p>This table contains neighborhood proximities.</p>
+
+<p>This table has two keys, <b>m</b> (the name of the first
+neighborhood) and <b>n</b> (the name of the second
+neighborhood). If the table is omitted from the uramdb(5) input,
+the <a href="../mann/sqldocument.html">sqldocument(n)</a> table will be populated with default
+values for all pairs of neighborhoods. 
+
+</p>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>m</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The first neighborhood name, as defined in the
+<b>uramdb_n</b> table.
+</td>
+</tr>
+
+<tr>
+<td>n</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The second neighborhood name, as defined in the
+<b>uramdb_n</b> table.
+</td>
+</tr>
+
+<tr>
+<td>proximity</td>
+<td>
+HERE if <b>m</b> == <b>n</b>,
+REMOTE otherwise</td>
+<td><p>
+The value is the proximity of neighborhood <b>n</b> to neighborhood
+<b>m</b> from the point of view of residents of <b>m</b>.  The
+<b>proximity</b> measures the psychological distance between the
+neighborhoods, as perceived by the residents.  Proximity can have any
+of the following <a href="../mann/simtypes.html#eproximity">eproximity</a> values:
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>HERE</tt></td>
+<td>Here</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>NEAR</tt></td>
+<td>Near</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>FAR</tt></td>
+<td>Far</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>REMOTE</tt></td>
+<td>Remote</td>
+</tr>
+</table>
+<p>Note that proximity need not be symmetric.
+</p>
+
+</td>
+</tr>
+
+
+</table>
+<p>The following example states that all neighborhoods are <b>REMOTE</b>
+from each other, except for those explicitly mentioned as being
+<b>NEAR</b>.
+
+</p>
+
+<pre>
+table uramdb_mn {
+    record m N1 n N2 {
+        field proximity      NEAR
+    }
+
+    record m N2 n N1 {
+        field proximity      NEAR
+    }
+}
+
+</pre>
+
+<h2><a name="uramdb_civ_g">uramdb_civ_g</a></h2>
+<p>The <b>uramdb_civ_g</b> table defines the complete set of civilian groups.
+The table has a single key field, the group name, <b>g</b>.</p>
+
+<p><b>Constraints:</b>
+
+</p>
+
+<ul>
+  <li> The table must contain at least one group.
+  </li><li> Group names must be unique across all group types.
+</li></ul>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A symbolic name for the group.  The name may
+consist of uppercase letters, digits, and underscores only--no white
+space or other punctuation.
+</td>
+</tr>
+
+<tr>
+<td>n</td>
+<td>n/a</td>
+<td>
+The neighborhood in which the group resides,
+as defined in the <b>uramdb_n</b> table.
+</td>
+</tr>
+
+
+<tr>
+<td>pop</td>
+<td>n/a</td>
+<td>
+The population of the group.
+</td>
+</tr>
+
+</table>
+<p>The following example defines a CIV group.
+
+</p>
+
+<pre>
+table uramdb_civ_g {
+    record g SUNB {
+        field n   N1
+        field pop 10000
+    }
+
+    .
+    .
+    .
+}
+</pre>
+
+<h2><a name="uramdb_frc_g">uramdb_frc_g</a></h2>
+<p>The <b>uramdb_frc_g</b> table defines the complete set of force groups.
+The table has a single key field, the group name, <b>g</b>.</p>
+
+<p><b>Constraints:</b>
+
+</p>
+
+<ul>
+  <li> The table must contain at least one group.
+  </li><li> Group names must be unique across all group types.
+</li></ul>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A symbolic name for the group.  The name may
+consist of uppercase letters, digits, and underscores only--no white
+space or other punctuation.
+</td>
+</tr>
+</table>
+<p>The following example defines a FRC group.
+
+</p>
+
+<pre>
+table uramdb_frc_g {
+    record g BLUE { }
+
+    .
+    .
+    .
+
+}
+</pre>
+
+<h2><a name="uramdb_org_g">uramdb_org_g</a></h2>
+<p>The <b>uramdb_org_g</b> table defines the complete set of force groups.
+The table has a single key field, the group name, <b>g</b>.</p>
+
+<p><b>Constraints:</b>
+
+</p>
+
+<ul>
+  <li> Group names must be unique across all group types.
+</li></ul>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A symbolic name for the group.  The name may
+consist of uppercase letters, digits, and underscores only--no white
+space or other punctuation.
+</td>
+</tr>
+</table>
+<p>The following example defines an ORG group.
+
+</p>
+
+<pre>
+table uramdb_org_g {
+    record g USAID { }
+
+    .
+    .
+    .
+
+}
+</pre>
+
+<h2><a name="uramdb_hrel">uramdb_hrel</a></h2>
+<p>This table contains the horizontal relationship data for all pairs of
+groups.</p>
+
+<p>This table has two keys, <b>f</b> (the name of the first
+group) and <b>g</b> (the name of the second group).  If the
+table is omitted from the uramdb(5) input, the <a href="../mann/sqldocument.html">sqldocument(n)</a>
+table will be populated with default values for all pairs
+of groups.
+
+</p>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>f</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The first group name, as defined in any of the
+group tables.
+</td>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The second group name, as defined in any of the
+group tables.
+</td>
+</tr>
+
+<tr>
+<td>hrel</td>
+<td>
+1.0 if <b>f</b> == <b>g</b>, and
+0.0 otherwise.</td>
+<td><p>
+The relationship between the two groups from group <b>f</b>'s point
+of view (the relationship need not be symmetric).  The value is a
+<a href="../mann/simtypes.html#qaffinity">qaffinity</a> value and may range from
+-1.0 to +1.0. The
+following symbolic constants may be used during data entry:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>SUPPORT</tt>&nbsp;</td>
+<td>Supports</td>
+<td>&nbsp;0.8</td>
+<td>&nbsp;0.7 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>LIKE</tt>&nbsp;</td>
+<td>Likes</td>
+<td>&nbsp;0.4</td>
+<td>&nbsp;0.2 &lt; <i>value</i> &lt;= 0.7</td>
+</tr>
+<tr class="tr-even">
+<td><tt>INDIFF</tt>&nbsp;</td>
+<td>Is Indifferent To</td>
+<td>&nbsp;0.0</td>
+<td>&nbsp;-0.2 &lt; <i>value</i> &lt;= 0.2</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>DISLIKE</tt>&nbsp;</td>
+<td>Dislikes</td>
+<td>&nbsp;-0.4</td>
+<td>&nbsp;-0.7 &lt; <i>value</i> &lt;= -0.2</td>
+</tr>
+<tr class="tr-even">
+<td><tt>OPPOSE</tt>&nbsp;</td>
+<td>Opposes</td>
+<td>&nbsp;-0.8</td>
+<td>&nbsp;-1.0 &lt; <i>value</i> &lt;= -0.7</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+</table>
+<p>For example,
+
+</p>
+
+<pre>
+table uramdb_hrel {
+    record f SUNB g SHIA {
+        field hrel -0.3
+    }
+    .
+    .
+    .
+}
+</pre>
+
+<h2><a name="uramdb_vrel">uramdb_vrel</a></h2>
+<p>This table contains the vertical relationship data for all groups
+with all actors.</p>
+
+<p>This table has two keys, <b>g</b> (the name of the
+group) and <b>a</b> (the name of the actor).  If the
+table is omitted from the uramdb(5) input, the <a href="../mann/sqldocument.html">sqldocument(n)</a>
+table will be populated with default values for all pairs
+of groups.
+
+</p>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>f</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The first group name, as defined in any of the
+group tables.
+</td>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The second group name, as defined in any of the
+group tables.
+</td>
+</tr>
+
+<tr>
+<td>vrel</td>
+<td>0.0</td>
+<td><p>
+The relationship between the group and actor from the group's point
+of view.  The value is a
+<a href="../mann/simtypes.html#qaffinity">qaffinity</a> value and may range from
+-1.0 to +1.0. The
+following symbolic constants may be used during data entry:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>SUPPORT</tt>&nbsp;</td>
+<td>Supports</td>
+<td>&nbsp;0.8</td>
+<td>&nbsp;0.7 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>LIKE</tt>&nbsp;</td>
+<td>Likes</td>
+<td>&nbsp;0.4</td>
+<td>&nbsp;0.2 &lt; <i>value</i> &lt;= 0.7</td>
+</tr>
+<tr class="tr-even">
+<td><tt>INDIFF</tt>&nbsp;</td>
+<td>Is Indifferent To</td>
+<td>&nbsp;0.0</td>
+<td>&nbsp;-0.2 &lt; <i>value</i> &lt;= 0.2</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>DISLIKE</tt>&nbsp;</td>
+<td>Dislikes</td>
+<td>&nbsp;-0.4</td>
+<td>&nbsp;-0.7 &lt; <i>value</i> &lt;= -0.2</td>
+</tr>
+<tr class="tr-even">
+<td><tt>OPPOSE</tt>&nbsp;</td>
+<td>Opposes</td>
+<td>&nbsp;-0.8</td>
+<td>&nbsp;-1.0 &lt; <i>value</i> &lt;= -0.7</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+</table>
+<p>For example,
+
+</p>
+
+<pre>
+table uramdb_vrel {
+    record g SUNB a JOE {
+        field vrel -0.3
+    }
+    .
+    .
+    .
+}
+</pre>
+
+
+<h2><a name="uramdb_sat">uramdb_sat</a></h2>
+<p>This table contains the initial satisfaction data for all civilian
+groups and all concerns.</p>
+
+<p>This table has two keys, <b>g</b> (the group name) and
+<b>c</b> (the concern name, see <a href="#concerns">CONCERNS</a>).  If the table is
+omitted from the uramdb(5) input, the <a href="../mann/sqldocument.html">sqldocument(n)</a> table
+will be populated with default values for all valid combinations of
+group and concern.
+
+</p>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A civilian group name, as defined in the
+<b>uramdb_civ_g</b> table.
+</td>
+</tr>
+
+<tr>
+<td>c</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  A concern name, as defined in
+<a href="#concerns">CONCERNS</a>.
+</td>
+</tr>
+
+<tr>
+<td>sat</td>
+<td>0.0</td>
+<td><p>
+The initial satisfaction at time 0.0, a numeric or symbolic
+<a href="../mann/simtypes.html#qsat">qsat</a> value:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>VS</tt>&nbsp;</td>
+<td>Very Satisfied</td>
+<td>&nbsp;80.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>S</tt>&nbsp;</td>
+<td>Satisfied</td>
+<td>&nbsp;40.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>A</tt>&nbsp;</td>
+<td>Ambivalent</td>
+<td>&nbsp;0.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>D</tt>&nbsp;</td>
+<td>Dissatisfied</td>
+<td>&nbsp;-40.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>VD</tt>&nbsp;</td>
+<td>Very Dissatisfied</td>
+<td>&nbsp;-80.0</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+<tr>
+<td>saliency</td>
+<td>1.0</td>
+<td><p>
+The saliency (importance) of this concern to this group, a numeric or
+symbolic <a href="../mann/simtypes.html#qsaliency">qsaliency</a> value:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>CR</tt>&nbsp;</td>
+<td>Crucial</td>
+<td>&nbsp;1.000</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>VI</tt>&nbsp;</td>
+<td>Very Important</td>
+<td>&nbsp;0.850</td>
+</tr>
+<tr class="tr-even">
+<td><tt>I</tt>&nbsp;</td>
+<td>Important</td>
+<td>&nbsp;0.700</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>LI</tt>&nbsp;</td>
+<td>Less Important</td>
+<td>&nbsp;0.550</td>
+</tr>
+<tr class="tr-even">
+<td><tt>UN</tt>&nbsp;</td>
+<td>Unimportant</td>
+<td>&nbsp;0.400</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>NG</tt>&nbsp;</td>
+<td>Negligible</td>
+<td>&nbsp;0.000</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+</table>
+<p>For example,
+
+</p>
+
+<pre>
+table uramdb_sat {
+    record g SUNB c AUT {
+        field sat      -61
+        field saliency 1
+    }
+
+    record g SUNB c CUL {
+        field sat      -30
+        field saliency 1
+    }
+
+    .
+    .
+    .
+}
+</pre>
+
+
+<h2><a name="uramdb_coop">uramdb_coop</a></h2>
+<p>This table contains the initial cooperation data for each CIV
+group/FRC group pair.</p>
+
+<p>This table has two keys, <b>f</b> (the name of the civilian
+group) and <b>g</b> (the name of the force group).  If the
+table is omitted from the uramdb(5) input, the <a href="../mann/sqldocument.html">sqldocument(n)</a>
+table will be populated with default values for all pairs
+of groups.
+
+</p>
+
+<table>
+<tr>
+<th>Field</th> <th>Default</th> <th>Description</th>
+</tr>
+
+<tr>
+<td>f</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The civilian group name, as defined in the
+<b>uramdb_civ_g</b> table.
+</td>
+</tr>
+
+<tr>
+<td>g</td>
+<td>n/a</td>
+<td>
+<b>Key Field.</b>  The force group name, as defined in the
+<b>uramdb_frc_g</b> table.
+</td>
+</tr>
+
+<tr>
+<td>coop</td>
+<td>
+50.0</td>
+<td><p>
+The probability that group <b>f</b> will cooperate with (provide
+information to) group <b>g</b>.  The value is a
+<a href="../mann/simtypes.html#qcooperation">qcooperation</a> value and may range from
+-100.0 to +100.0.  The
+following symbolic constants may be used during data entry:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>AC</tt>&nbsp;</td>
+<td>Always Cooperative</td>
+<td>&nbsp;100.0</td>
+<td>&nbsp;99.9 &lt; <i>value</i> &lt;= 100.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>VC</tt>&nbsp;</td>
+<td>Very Cooperative</td>
+<td>&nbsp;90.0</td>
+<td>&nbsp;80.0 &lt; <i>value</i> &lt;= 99.9</td>
+</tr>
+<tr class="tr-even">
+<td><tt>C</tt>&nbsp;</td>
+<td>Cooperative</td>
+<td>&nbsp;70.0</td>
+<td>&nbsp;60.0 &lt; <i>value</i> &lt;= 80.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>MC</tt>&nbsp;</td>
+<td>Marginally Cooperative</td>
+<td>&nbsp;50.0</td>
+<td>&nbsp;40.0 &lt; <i>value</i> &lt;= 60.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>U</tt>&nbsp;</td>
+<td>Uncooperative</td>
+<td>&nbsp;30.0</td>
+<td>&nbsp;20.0 &lt; <i>value</i> &lt;= 40.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>VU</tt>&nbsp;</td>
+<td>Very Uncooperative</td>
+<td>&nbsp;10.0</td>
+<td>&nbsp;1.0 &lt; <i>value</i> &lt;= 20.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>NC</tt>&nbsp;</td>
+<td>Never Cooperative</td>
+<td>&nbsp;0.0</td>
+<td>&nbsp;0.0 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+</table>
+<p>For example,
+
+</p>
+
+<pre>
+table uramdb_coop {
+    record f SUNB g BLUE {
+        field coop 25.0
+    }
+
+    record f SUNB g OPFOR {
+        field coop 75.0
+    }
+    .
+    .
+    .
+}
+</pre>
+
+
+<h2><a name="database_schema">DATABASE SCHEMA</a></h2>
+<p>The <a href="../mann/uramdb.html">uramdb(n)</a> parser defines the following SQL schema which
+will receive the <a href="../man5/uramdb.html">uramdb(5)</a> data:
+
+</p>
+
+<pre class="listing">
+<span class="linenum">0001</span> ------------------------------------------------------------------------
+<span class="linenum">0002</span> -- TITLE: 
+<span class="linenum">0003</span> --   uramdb.sql
+<span class="linenum">0004</span> --
+<span class="linenum">0005</span> -- PACKAGE:
+<span class="linenum">0006</span> --   simlib(n) -- Simulation Infrastructure Package
+<span class="linenum">0007</span> --
+<span class="linenum">0008</span> -- PROJECT:
+<span class="linenum">0009</span> --   Mars Simulation Infrastructure Library
+<span class="linenum">0010</span> --
+<span class="linenum">0011</span> -- AUTHOR:
+<span class="linenum">0012</span> --   Will Duquette
+<span class="linenum">0013</span> --
+<span class="linenum">0014</span> -- DESCRIPTION:
+<span class="linenum">0015</span> --   SQL Schema for the uramdb(n) module.
+<span class="linenum">0016</span> --
+<span class="linenum">0017</span> ------------------------------------------------------------------------
+<span class="linenum">0018</span> 
+<span class="linenum">0019</span> 
+<span class="linenum">0020</span> CREATE TABLE uramdb_c (
+<span class="linenum">0021</span>     -- Concern names
+<span class="linenum">0022</span>     c    TEXT PRIMARY KEY          -- Symbolic name
+<span class="linenum">0023</span> );
+<span class="linenum">0024</span> 
+<span class="linenum">0025</span> CREATE TABLE uramdb_a (
+<span class="linenum">0026</span>     -- Actor names
+<span class="linenum">0027</span>     a    TEXT PRIMARY KEY          -- Symbolic name
+<span class="linenum">0028</span> );
+<span class="linenum">0029</span> 
+<span class="linenum">0030</span> CREATE TABLE uramdb_n (
+<span class="linenum">0031</span>     -- Neighborhood names
+<span class="linenum">0032</span>     n    TEXT PRIMARY KEY          -- Symbolic name
+<span class="linenum">0033</span> );
+<span class="linenum">0034</span> 
+<span class="linenum">0035</span> CREATE TABLE uramdb_g (
+<span class="linenum">0036</span>     -- FRC group names and data
+<span class="linenum">0037</span>     g     TEXT PRIMARY KEY,        -- Symbolic group name
+<span class="linenum">0038</span>     gtype TEXT                     -- CIV, FRC, ORG   
+<span class="linenum">0039</span> );
+<span class="linenum">0040</span> 
+<span class="linenum">0041</span> CREATE TABLE uramdb_civ_g (
+<span class="linenum">0042</span>     -- CIV group names and data
+<span class="linenum">0043</span>     g    TEXT PRIMARY KEY,         -- Symbolic group name
+<span class="linenum">0044</span>     n    TEXT,                     -- Nbhood of reference
+<span class="linenum">0045</span>     pop  INTEGER DEFAULT 0 
+<span class="linenum">0046</span> );
+<span class="linenum">0047</span> 
+<span class="linenum">0048</span> CREATE TABLE uramdb_frc_g (
+<span class="linenum">0049</span>     -- FRC group names and data
+<span class="linenum">0050</span>     g    TEXT PRIMARY KEY          -- Symbolic group name
+<span class="linenum">0051</span> );
+<span class="linenum">0052</span> 
+<span class="linenum">0053</span> CREATE TABLE uramdb_org_g (
+<span class="linenum">0054</span>     -- ORG group names and data
+<span class="linenum">0055</span>     g    TEXT PRIMARY KEY          -- Symbolic group name
+<span class="linenum">0056</span> );
+<span class="linenum">0057</span> 
+<span class="linenum">0058</span> 
+<span class="linenum">0059</span> CREATE TABLE uramdb_mn (
+<span class="linenum">0060</span>     -- Pairwise neighborhood data
+<span class="linenum">0061</span>     m          TEXT,                     -- Symbolic nbhood name
+<span class="linenum">0062</span>     n          TEXT,                     -- Symbolic nbhood name
+<span class="linenum">0063</span> 
+<span class="linenum">0064</span>     proximity  TEXT DEFAULT 'REMOTE',    -- eproximity
+<span class="linenum">0065</span>     
+<span class="linenum">0066</span>     PRIMARY KEY (m, n)
+<span class="linenum">0067</span> );
+<span class="linenum">0068</span> 
+<span class="linenum">0069</span> CREATE TABLE uramdb_hrel (
+<span class="linenum">0070</span>     -- HREL: group-to-group horizontal relationships
+<span class="linenum">0071</span>     f      TEXT,                     -- Symbolic group name
+<span class="linenum">0072</span>     g      TEXT,                     -- Symbolic group name
+<span class="linenum">0073</span> 
+<span class="linenum">0074</span>     hrel   DOUBLE DEFAULT 0.0,       -- Horizontal relationship
+<span class="linenum">0075</span>     
+<span class="linenum">0076</span>     PRIMARY KEY (f, g)
+<span class="linenum">0077</span> );
+<span class="linenum">0078</span> 
+<span class="linenum">0079</span> CREATE TABLE uramdb_vrel (
+<span class="linenum">0080</span>     -- VREL: group-to-actor vertical relationships
+<span class="linenum">0081</span>     g      TEXT,                     -- Symbolic group name
+<span class="linenum">0082</span>     a      TEXT,                     -- Symbolic actor name
+<span class="linenum">0083</span> 
+<span class="linenum">0084</span>     vrel   DOUBLE DEFAULT 0.0,       -- Vertical relationship
+<span class="linenum">0085</span>     
+<span class="linenum">0086</span>     PRIMARY KEY (g, a)
+<span class="linenum">0087</span> );
+<span class="linenum">0088</span> 
+<span class="linenum">0089</span> 
+<span class="linenum">0090</span> CREATE TABLE uramdb_sat (
+<span class="linenum">0091</span>     -- SAT: Satisfaction levels
+<span class="linenum">0092</span>     g          TEXT,                     -- Symbolic group name
+<span class="linenum">0093</span>     c          TEXT,                     -- Symbolic concern name
+<span class="linenum">0094</span> 
+<span class="linenum">0095</span>     sat        DOUBLE DEFAULT 0.0,       -- Initial satisfaction
+<span class="linenum">0096</span>     saliency   DOUBLE DEFAULT 1.0,       -- Saliency
+<span class="linenum">0097</span> 
+<span class="linenum">0098</span>     PRIMARY KEY (g, c)
+<span class="linenum">0099</span> );
+<span class="linenum">0100</span> 
+<span class="linenum">0101</span> CREATE TABLE uramdb_coop (
+<span class="linenum">0102</span>     -- COOP: CIV group cooperation with FRC group
+<span class="linenum">0103</span>     f        TEXT,                     -- Symbolic group name
+<span class="linenum">0104</span>     g        TEXT,                     -- Symbolic group name
+<span class="linenum">0105</span> 
+<span class="linenum">0106</span>     coop     DOUBLE DEFAULT 50.0,      -- Cooperation
+<span class="linenum">0107</span>     
+<span class="linenum">0108</span>     PRIMARY KEY (f, g)
+<span class="linenum">0109</span> );
+</pre>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>uramdb(5) is a descendent of a number of database formats for
+<a href="../mann/uram.html">uram(n)</a> and its ancestors.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+

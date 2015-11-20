@@ -1,0 +1,504 @@
+<html>
+<head>
+<title>mars 3.0.23: latlong(n) -- Latitude/Longitude Operations, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>latlong(n)</b> -- Latitude/Longitude Operations, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#latlong_area">latlong area <i>coords</i></a></li>
+<li><a class="iref" href="#latlong_dist">latlong dist <i>loc1 loc2</i></a></li>
+<li><a class="iref" href="#latlong_dist4">latlong dist4 <i>lat1 lon1 lat2 lon2</i></a></li>
+<li><a class="iref" href="#latlong_radius">latlong radius <i>lat lon</i></a></li>
+<li><a class="iref" href="#latlong_pole">latlong pole ?<i>loc</i>?</a></li>
+<li><a class="iref" href="#latlong_validate">latlong validate <i>loc</i></a></li>
+<li><a class="iref" href="#latlong_tomgrs">latlong tomgrs <i>loc</i> ?<i>precision</i>?</a></li>
+<li><a class="iref" href="#latlong_frommgrs">latlong frommgrs <i>utm</i></a></li>
+<li><a class="iref" href="#latlong_togcc">latlong togcc <i>loc</i></a></li>
+<li><a class="iref" href="#latlong_fromgcc">latlong fromgcc <i>xyz</i></a></li>
+<li><a class="iref" href="#latlong_spheroid">latlong spheroid ?<i>name</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>latlong(n) defines a number of operations on locations expressed as
+a latitude/longitude pair in decimal degrees.  Some of these
+operations are implemented in C and are available only in the
+optional Marsbin extension.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="latlong_area">latlong area <i>coords</i></a></dt><dd><p>
+
+Computes the area, in square kilometers, of the polygon defined by
+<i>coords</i>, a flat list of at least three pairs of lat/long
+coordinates in decimal degrees.  Things to note:
+
+</p><ul>
+  <li> The polygon must be expressed in counter-clockwise order; if
+       not, the result will be negated.
+  </li><li> The polygon must be simply connected, with no loops or holes.
+  </li><li> The polygon may not contain the south or north pole.
+  </li><li> The edges are assumed to be segments of great circles.
+  </li><li> Earth is assumed to be a perfect sphere with a diameter of
+       12472.0 kilometers.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="latlong_dist">latlong dist <i>loc1 loc2</i></a></dt><dd>
+
+Computes the spherical distance in kilometers between the two
+locations.
+
+</dd>
+<dt class="defitem"><a name="latlong_dist4">latlong dist4 <i>lat1 lon1 lat2 lon2</i></a></dt><dd>
+
+Computes the spherical distance in kilometers between location 1 and
+location 2.
+
+</dd>
+<dt class="defitem"><a name="latlong_radius">latlong radius <i>lat lon</i></a></dt><dd><p>
+
+Computes the spherical distance in kilometers between location
+<i>lat</i>,<i>long</i> and
+some point previously set using <a class="iref" href="#latlong_pole">latlong pole</a>.</p>
+
+<p>This routine allows radius-related rule checks to be written
+independent of the location of the pole.
+
+</p>
+</dd>
+<dt class="defitem"><a name="latlong_pole">latlong pole ?<i>loc</i>?</a></dt><dd>
+
+Sets/retrieves a location, <i>loc</i>, which is used as the pole for
+<a class="iref" href="#latlong_radius">latlong radius</a> computations.
+
+</dd>
+<dt class="defitem"><a name="latlong_validate">latlong validate <i>loc</i></a></dt><dd>
+Validates location <i>loc</i>, throwing an error if it is not a valid
+lat/long pair.  Otherwise, <i>loc</i> is returned unchanged.
+
+</dd>
+<dt class="defitem"><a name="latlong_tomgrs">latlong tomgrs <i>loc</i> ?<i>precision</i>?</a></dt><dd><p>
+
+<b>Binary Extension only.</b> Converts location <i>loc</i> from
+latitude/longitude to an MGRS 
+coordinate string, colloquially known as a "UTM string".  The
+<i>precision</i> indicates the number of digits to shown for each
+of easting and northing; it defaults to 3, for 100 meter resolution,
+but may be set from 0 to 5.</p>
+
+<p>Note that the conversion from lat/long to UTM/MGRS depends on the
+choice of <a class="iref" href="#latlong_spheroid">latlong spheroid</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="latlong_frommgrs">latlong frommgrs <i>utm</i></a></dt><dd><p>
+
+<b>Binary Extension only.</b> Converts an an MGRS coordinate string,
+colloquially known as a "UTM string", into a pair of
+latitude/longitude coordinates in decimal degrees.</p>
+
+<p>Note that the conversion from lat/long to UTM/MGRS depends on the
+choice of <a class="iref" href="#latlong_spheroid">latlong spheroid</a>.</p>
+
+<p>Also, note that due to the limited precision of the MGRS format,
+<a class="iref" href="#latlong_frommgrs">latlong frommgrs</a> is only an approximate inverse of
+<a class="iref" href="#latlong_tomgrs">latlong tomgrs</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="latlong_togcc">latlong togcc <i>loc</i></a></dt><dd><p>
+
+<b>Binary Extension only.</b> Converts location <i>loc</i> from
+latitude/longitude to a set of GCC (Geocentric Coordinate) values.
+The elevation value at <i>loc</i> is assumed to be zero.  The three
+GCC values returned are in deciman meters.</p>
+
+<p>Note that the conversion from lat/long to GCC depends on the
+choice of <a class="iref" href="#latlong_spheroid">latlong spheroid</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="latlong_fromgcc">latlong fromgcc <i>xyz</i></a></dt><dd><p>
+
+<b>Binary Extension only.</b> Converts a geocentric (GCC) location
+<i>xyz</i> to a geodetic lat/lon location. The three input
+GCC values are in deciman meters.  The returned lat/lon values are in
+decimal degreees.</p>
+
+<p>Note that the conversion from GCC to lat/lon depends on the
+choice of <a class="iref" href="#latlong_spheroid">latlong spheroid</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="latlong_spheroid">latlong spheroid ?<i>name</i>?</a></dt><dd><p>
+
+<b>Binary Extension only.</b> Sets/returns the name of the spheroid to use in
+all coordinate conversions.  Defaults to "WE", otherwise known as "WGS
+84".</p>
+
+<p>The list of supported spheroids is as follows:
+
+</p><table>
+<tr><td><b>WE</b></td> <td>WGS 84</td></tr>
+<tr><td><b>A1</b></td> <td>Airy 1830</td></tr>
+<tr><td><b>A2</b></td> <td>Modified Airy </td></tr>
+<tr><td><b>AN</b></td> <td>Australian National</td></tr>
+<tr><td><b>BN</b></td> <td>Bessel 1841 (Namibia) </td></tr>
+<tr><td><b>BR</b></td> <td>Bessel 1841 </td></tr>
+<tr><td><b>CC</b></td> <td>Clarke 1866 </td></tr>
+<tr><td><b>CD</b></td> <td>Clarke 1880</td></tr>
+<tr><td><b>E1</b></td> <td>Everest (India 1830) </td></tr>
+<tr><td><b>E2</b></td> <td>Everest (Sabah Sarawak)  </td></tr>
+<tr><td><b>E3</b></td> <td>Everest (India 1956) </td></tr>
+<tr><td><b>E4</b></td> <td>Everest (Malaysia 1969) </td></tr>
+<tr><td><b>E5</b></td> <td>Everest (Malay. &amp; Sing)  </td></tr>
+<tr><td><b>E6</b></td> <td>Everest (Pakistan)</td></tr>
+<tr><td><b>MF</b></td> <td>Modified Fischer 1960 </td></tr>
+<tr><td><b>HM</b></td> <td>Helmert 1906</td></tr>
+<tr><td><b>HO</b></td> <td>Hough 1960 </td></tr>
+<tr><td><b>ID</b></td> <td>Indonesian 1974 </td></tr>
+<tr><td><b>IN</b></td> <td>International 1924 </td></tr>
+<tr><td><b>KR</b></td> <td>Krassovsky 1940 </td></tr>
+<tr><td><b>G8</b></td> <td>GRS 80 </td></tr>
+<tr><td><b>SA</b></td> <td>South American 1969 </td></tr>
+<tr><td><b>W7</b></td> <td>WGS 72 </td></tr>
+</table>
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>latlong(n) requires the Marsbin extension for
+certain operations; the remainder require only Tcl 8.5 or later.</p>
+
+<p>To use latlong(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

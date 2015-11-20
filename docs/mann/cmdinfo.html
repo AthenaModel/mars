@@ -1,0 +1,708 @@
+<html>
+<head>
+<title>mars 3.0.23: cmdinfo(n) -- Tcl Command Introspection, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>cmdinfo(n)</b> -- Tcl Command Introspection, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#command_types">COMMAND TYPES</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#cmdinfo_exists">cmdinfo exists <i>name</i></a></li>
+<li><a class="iref" href="#cmdinfo_type">cmdinfo type <i>name</i></a></li>
+<li><a class="iref" href="#cmdinfo_origin">cmdinfo origin <i>cmdline</i></a></li>
+<li><a class="iref" href="#cmdinfo_list">cmdinfo list <i>ns</i></a></li>
+<li><a class="iref" href="#cmdinfo_nsemap">cmdinfo nsemap <i>nse</i></a></li>
+<li><a class="iref" href="#cmdinfo_getcode">cmdinfo getcode <i>cmdline</i> ?-related?</a></li>
+<li><a class="iref" href="#cmdinfo_is">cmdinfo is <i>predicate</i> <i>cmd</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/cmdinfo.html">cmdinfo(n)</a> provides a number of subcommands useful for
+introspection on Tcl commands.
+
+</p>
+
+<h2><a name="command_types">COMMAND TYPES</a></h2>
+<p>The <a class="iref" href="#cmdinfo_type">cmdinfo type</a> command determines the type of any given
+command.  <a href="../mann/cmdinfo.html">cmdinfo(n)</a> recognizes the following types:
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Topic</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td><b>proc</b></td>
+<td>
+        
+A normal Tcl command procedure.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>nse</b></td>
+<td>
+        
+A "namespace ensemble" command.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>alias</b></td>
+<td>
+        
+An interpreter alias.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>oo-object</b></td>
+<td>
+        
+A TclOO object or class.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>snit-type</b></td>
+<td>
+        
+A Snit type (including Snit widget types).  Note that the command is
+also a namespace ensemble.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>snit-instance</b></td>
+<td>
+        
+An instance of a Snit type (include widget instances).  Note that the
+command is also a namespace ensemble.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>unknown</b></td>
+<td>
+        
+A command of unknown origin, i.e., a command
+implemented in a binary Tcl extension, an alias from a parent
+interpreter, or a command that is truly undefined.
+
+</td>
+</tr>
+        
+<tr class="tr-odd">
+<td><b>ns</b></td>
+<td>
+        
+A namespace. The <b>ns</b> type is never actually returned by 
+<a class="iref" href="#cmdinfo_type">cmdinfo type</a>; however, <a class="iref" href="#cmdinfo_list">cmdinfo list</a> returns a list of both 
+the commands and namespaces within a given namespace, sorted in dictionary 
+order, and so it is convenient to define a type for the namespaces.
+</td>
+</tr>
+        
+</table>
+        
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cmdinfo_exists">cmdinfo exists <i>name</i></a></dt><dd>
+
+Returns 1 if a command with the specified <i>name</i> is defined in the
+caller's scope, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="cmdinfo_type">cmdinfo type <i>name</i></a></dt><dd>
+
+Returns the type of the command with the specified <i>name</i> in the
+caller's scope; see <a href="#command_types">COMMAND TYPES</a>.
+
+</dd>
+<dt class="defitem"><a name="cmdinfo_origin">cmdinfo origin <i>cmdline</i></a></dt><dd><p>
+
+Returns the ultimate origin of the code called by the given <i>cmdline</i>,
+looking up aliases, namespace ensemble subcommands, and TclOO and Snit
+object methods.  The origin is returned in the form of a triple,
+{<i>type</i> <i>command</i> ?<i>detail</i>?}, where the <i>type</i> is one of the
+following symbols:
+
+</p><table class="table topiclist">
+<tr>
+<th>Topic</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td><b>unknown</b></td>
+<td>
+        
+The <i>command</i> is the name of the command whose origin could not
+be determined, and the <i>detail</i> is an explanatory message. 
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>proc</b></td>
+<td>
+        
+The <i>command</i> is the name of the procedure, and the <i>detail</i> is
+absent.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>oo-objmethod</b></td>
+<td>
+        
+The <i>command</i> is the name of a TclOO object, and the <i>detail</i> is the
+name of a method defined directly on the object.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>oo-method</b></td>
+<td>
+        
+The <i>command</i> is the name of a TclOO class, and the <i>detail</i> is the
+name of one of the class's instance methods.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>snit-typemethod</b></td>
+<td>
+        
+The <i>command</i> is the name of a Snit type or widget, and the <i>detail</i> 
+is the name of a type method.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>snit-method</b></td>
+<td>
+        
+The <i>command</i> is the name of a Snit type or widget, and the <i>detail</i> 
+is the name of an instance method.
+</td>
+</tr>
+        
+</table>
+        
+
+
+</dd>
+<dt class="defitem"><a name="cmdinfo_list">cmdinfo list <i>ns</i></a></dt><dd><p>
+
+Returns a list of the commands and namespaces defined as children of
+namespace <i>ns</i>.  The list has the form of a dictionary whose keys
+are the fully qualified command and namespace names and whose values
+are <a href="#command_types">COMMAND TYPES</a> for each.</p>
+
+<p>Note that a namespace can appear twice, as both a namespace and a
+namespace ensemble.  Consequently, all namespace names will be
+formatted with a trailing "::" to ensure uniqueness.
+
+</p>
+</dd>
+<dt class="defitem"><a name="cmdinfo_nsemap">cmdinfo nsemap <i>nse</i></a></dt><dd>
+
+Returns a dictionary of the subcommand mappings for namespace ensemble
+<i>nse</i>.  Note that <b>snit-type</b> and <b>snit-instance</b> commands
+are also namespace ensembles, and so have mappings; however, methods are
+not added to the mapping until they are first called.
+
+</dd>
+<dt class="defitem"><a name="cmdinfo_getcode">cmdinfo getcode <i>cmdline</i> ?-related?</a></dt><dd><p>
+
+By default, <a class="iref" href="#cmdinfo_getcode">cmdinfo getcode</a> returns the command definition that
+most precisely matches the given command line, chasing down its
+<a class="iref" href="#cmdinfo_origin">cmdinfo origin</a> and returning "" if no such
+code is available.  (A command definition is a Tcl script that will
+redefine the specific command in context.)  If the <i>cmdline</i> begins with
+a <b>proc</b>, for example, then <a class="iref" href="#cmdinfo_getcode">cmdinfo getcode</a> will return a 
+<span class="tt">proc</span> script.  If it begins with a TclOO object and method, then
+<a class="iref" href="#cmdinfo_getcode">cmdinfo getcode</a> will return the method definition.</p>
+
+<p>If the <span class="tt">-related</span> option is given, then the output may include 
+related code definitions as well:
+
+</p><ul>
+<li> If the command is a TclOO object, the output will include all of the
+methods on the command's call-chain, excluding filters and forwards.
+
+</li><li> If the command is a TclOO class, and the remaining argument names
+     an instance method of that class, the instance method's definition
+     will be included.  If the class has class and instance methods with
+     the same name, both will appear.
+
+</li><li> Similarly, if the command is a Snit type or widget, and the remaining 
+     argument names an instance method of that class, the instance 
+     method's definition will be included.  If the type has type and 
+     instance methods with the same name, both will appear.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="cmdinfo_is">cmdinfo is <i>predicate</i> <i>cmd</i></a></dt><dd><p>
+
+This command groups together a number of predicates about commands, where
+<i>cmd</i> is a <b>fully-qualified</b> command name.  The command returns 1
+if the predicate is true, and 0 otherwise.  The predicates are as follows:
+
+</p><table class="table topiclist">
+<tr>
+<th>Topic</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td><b>alias</b></td>
+<td>
+        
+The <i>cmd</i> is an alias defined in the current interpreter.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>dummyWindow</b></td>
+<td>
+        
+The command is a BWidget dummy window, used internally.
+
+</td></tr><tr class="tr-even">
+<td><b>nse</b></td>
+<td>
+        
+The <i>cmd</i> is a namespace ensemble.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>oo-object</b></td>
+<td>
+        
+The <i>cmd</i> is a TclOO object or class.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>proc</b></td>
+<td>
+        
+The <i>cmd</i> is a normal Tcl command procedure.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>snit-instance</b></td>
+<td>
+        
+The <i>cmd</i> is a namespace ensemble implementing an instance of a 
+Snit type (include widget instances).
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>snit-method</b></td>
+<td>
+        
+The <i>cmd</i> is a <b>proc</b> defining a Snit instance method.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>snit-type</b></td>
+<td>
+        
+The <i>cmd</i> is a namespace ensemble implementing a Snit type 
+(including Snit widget types).
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>snit-typemethod</b></td>
+<td>
+        
+The <i>cmd</i> is a <b>proc</b> defining a Snit type method.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>window</b></td>
+<td>
+        
+The command has the same name as a Tk window.
+
+</td>
+</tr>
+        
+<tr class="tr-even">
+<td><b>ns</b></td>
+<td>
+        
+A namespace. The <b>ns</b> type is never actually returned by 
+<a class="iref" href="#cmdinfo_type">cmdinfo type</a>; however, <a class="iref" href="#cmdinfo_list">cmdinfo list</a> returns a list of both 
+the commands and namespaces within a given namespace, sorted in dictionary 
+order, and so it is convenient to define a type for the namespaces.
+</td>
+</tr>
+        
+</table>
+        
+
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    

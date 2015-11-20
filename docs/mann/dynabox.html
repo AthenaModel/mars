@@ -1,0 +1,431 @@
+<html>
+<head>
+<title>mars 3.0.23: dynabox(n) -- dynaform(n) Dialog Box, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>dynabox(n)</b> -- dynaform(n) Dialog Box, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#popup">dynabox popup <i>?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-resources">-resources <i>rdict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-formtype">-formtype <i>ftype</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-helpcmd">-helpcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-initvalue">-initvalue <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-oktext">-oktext <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-parent">-parent <i>window</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-title">-title <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-validatecmd">-validatecmd <i>command</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines a tool for popping up modal dialogs containing
+<a href="../mann/dynaform.html">dynaform(n)</a> forms.  The dialogs have these
+characteristics:
+
+</p>
+
+<ul>
+  <li> <b>OK</b> and <b>Cancel</b> buttons.
+
+  </li><li> If desired, a <b>Help</b> button.
+
+  </li><li> A user-defined title.
+
+  </li><li> <a href="../mann/dynaform.html">dynaform(n)</a>-based content.
+
+  </li><li> Optional validation support.
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="popup">dynabox popup <i>?options...?</i></a></dt><dd><p>
+
+Pops up a message box containing a text entry widget, given the
+following options.  On "Cancel", returns the empty string; on
+"OK", validates and returns the form's field/value dictionary.
+Pressing the window manager's close button
+is the same as pressing "Cancel". 
+
+</p><dl>
+<dt class="defopt"><a name="popup-resources">-resources <i>rdict</i></a></dt><dd>
+
+Specifies a <span class="tt">-resources</span> dictionary to pass along to the 
+<a href="../mann/dynaview.html">dynaview(n)</a> widget, as required by the <span class="tt">-formtype</span>.
+
+</dd>
+<dt class="defopt"><a name="popup-formtype">-formtype <i>ftype</i></a></dt><dd>
+
+Names the <a href="../mann/dynaform.html">dynaform(n)</a> form type to display in the dialog.
+
+</dd>
+<dt class="defopt"><a name="popup-helpcmd">-helpcmd <i>cmd</i></a></dt><dd>
+
+If given, the dialog will have a <b>Help</b> button; pressing the
+<b>Help</b> button will call the <i>cmd</i>, which presumably
+displays related help in some fashion.
+
+</dd>
+<dt class="defopt"><a name="popup-initvalue">-initvalue <i>dict</i></a></dt><dd>
+
+Specifies an initial value for the form, specified as a dictionary of
+field names and values.  The <i>dict</i> need not contain an entry
+for every one of the the form's fields.
+
+</dd>
+<dt class="defopt"><a name="popup-oktext">-oktext <i>text</i></a></dt><dd>
+
+Specifies the text for the <b>OK</b> button.  Defaults to "OK".
+
+</dd>
+<dt class="defopt"><a name="popup-parent">-parent <i>window</i></a></dt><dd>
+
+The message box will appear over the specfied window.
+
+</dd>
+<dt class="defopt"><a name="popup-title">-title <i>string</i></a></dt><dd>
+
+The dialog window will have the specified title <i>string</i>.
+
+</dd>
+<dt class="defopt"><a name="popup-validatecmd">-validatecmd <i>command</i></a></dt><dd><p>
+
+Specifies a validation command.  The command should take one
+additional argument, the name/value dictionary to validate.</p>
+
+<p>If the dictionary is valid, the command should return normally; if it returns 
+a text string, the string will be displayed at the bottom of the dialog in
+black text.</p>
+
+<p>If the dictionary is invalid, the command should do one of two things:
+First, the command can throw an error with error code <b>INVALID</b>.
+The error message will be displayed at the bottom of the dialog in red text.</p>
+
+<p>Second, the command can throw an error with error code
+<b>REJECTED</b>.  The error result must then be a dictionary of field
+names and error messages.  The dialog will mark fields with invalid
+values by coloring their labels red, and when an invalid field is
+selected its error message will appear at the bottom of the dialog in
+red text.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:50 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,693 @@
+<html>
+<head>
+<title>mars 3.0.23: cellmodel(n) -- Cell Model, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>cellmodel(n)</b> -- Cell Model, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0
+namespace import ::marsutil::cellmodel
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#cellmodel">cellmodel <i>name</i> ?<i>option value...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cellmodel-epsilon">-epsilon <i>epsilon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cellmodel-failcmd">-failcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cellmodel-maxiters">-maxiters <i>maxiters</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#cellmodel-tracecmd">-tracecmd <i>cmd</i></a></li>
+<li><a class="iref" href="#trace_iterate">iterate <i>page iteration maxdelta</i></a></li>
+<li><a class="iref" href="#trace_converge">converge <i>page iterations</i></a></li>
+<li><a class="iref" href="#cget"><i>object</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#cells"><i>object</i> cells ?<i>page</i>?</a></li>
+<li><a class="iref" href="#cellinfo"><i>object</i> cellinfo <i>field cell</i></a></li>
+<li><a class="iref" href="#clear"><i>object</i> clear</a></li>
+<li><a class="iref" href="#configure"><i>object</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#dump"><i>object</i> dump ?<i>page</i>?</a></li>
+<li><a class="iref" href="#eval"><i>object</i> eval <i>formula</i></a></li>
+<li><a class="iref" href="#formula"><i>object</i> formula <i>cell</i></a></li>
+<li><a class="iref" href="#get"><i>object</i> get ?<i>page</i>? ?-bare?</a></li>
+<li><a class="iref" href="#index"><i>object</i> index ?<i>name</i>?</a></li>
+<li><a class="iref" href="#initial"><i>object</i> initial</a></li>
+<li><a class="iref" href="#iterate"><i>object</i> iterate <i>page</i></a></li>
+<li><a class="iref" href="#load"><i>object</i> load <i>model</i></a></li>
+<li><a class="iref" href="#pages"><i>object</i> pages</a></li>
+<li><a class="iref" href="#pageinfo"><i>object</i> pageinfo <i>field page</i></a></li>
+<li><a class="iref" href="#reset"><i>object</i> reset</a></li>
+<li><a class="iref" href="#sane"><i>object</i> sane</a></li>
+<li><a class="iref" href="#set"><i>object</i> set <i>dict</i> ?<i>page</i>?</a></li>
+<li><a class="iref" href="#solve"><i>object</i> solve ?<i>from</i> ?<i>to</i>??</a></li>
+<li><a class="iref" href="#value"><i>object</i> value <i>cell</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>Instances of the cellmodel(n) type implement "cell models".  A cell
+model is essentially a spreadsheet model without the two-dimensional
+layout or presentation features.  A cell model consists of one or more
+cells; each cell has a name (as opposed to row and column
+coordinates), a value, and (optionally) a formula.  Formulas can
+contain references to the values of other cells.</p>
+
+<p>The cellmodel(n) instance provides the infrastructure; actual models
+(i.e., the cells with their values and formulas) are read from cell
+model files, which by convention have a ".cm" file type.  See the
+<a href="../man5/cellmodel.html">cellmodel(5)</a> man page for documentation on the contents of a
+cell model file.</p>
+
+<p>Just as a spreadsheet can contain multiple linked worksheets, a
+cell model can contain multiple "pages".  A formula on a given 
+page can refer to cells on its own page by name, and cells on
+previous pages by page name and cell name.
+(See <a href="../man5/cellmodel.html">cellmodel(5)</a>.)</p>
+
+<p>Once a cell model is loaded, the program can modify cell values and
+and ask the cellmodel(n) instance to recompute the model.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cellmodel">cellmodel <i>name</i> ?<i>option value...</i>?</a></dt><dd><p>
+
+Creates a new cellmodel(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#cellmodel">cellmodel</a> returns the fully-qualified form of the
+<i>name</i>.  The cellmodel(n) object can be created with the
+following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="cellmodel-epsilon">-epsilon <i>epsilon</i></a></dt><dd>
+
+Specifies the epsilon for the convergence test when iterating the
+model to a solution.  The default value is 0.0001.  The epsilon can be
+thought of as defining the number of signficant digits in the output,
+one for each decimal place.
+
+</dd>
+<dt class="defopt"><a name="cellmodel-failcmd">-failcmd <i>cmd</i></a></dt><dd>
+
+Specifies a command to call when a cell model solution fails. The command
+is appended with three arguments, the instance of the cell model object, 
+the type of failure - either <b>diverge</b>
+or <b>errors</b> and the page name in which the failure happened.
+
+</dd>
+<dt class="defopt"><a name="cellmodel-maxiters">-maxiters <i>maxiters</i></a></dt><dd>
+
+Specifies the maximum number of iterations when iterating the model to
+a solution.  The default value is 100.  If the model does not converge
+without <code>-maxiters</code> iterations, it is said to diverge.
+
+</dd>
+<dt class="defopt"><a name="cellmodel-tracecmd">-tracecmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to call to trace the recomputation of the model.
+The command is called with a number of additional arguments; the
+precise number depends on the first argument.</p>
+
+<p>The argument patterns are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="trace_iterate">iterate <i>page iteration maxdelta</i></a></dt><dd>
+
+The <code>-tracecmd</code> is called with these arguments before the
+first iteration of each cyclic page, and after each individual
+iteration of the page.  The arguments are the <i>page</i> name, the
+iteration number (0 before the first iteration, and incrementing for
+each iteration thereafter) and the iteration's <i>maxdelta</i>.  The
+max delta is a measure of convergence.
+
+</dd>
+<dt class="defitem"><a name="trace_converge">converge <i>page iterations</i></a></dt><dd>
+
+If the page converges, the <code>-tracecmd</code> is called with these
+arguments, where <i>page</i> is the page name and <i>iterations</i> is
+the number of iterations required to reach convergence.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#cellmodel">cellmodel</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>object</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="cells"><i>object</i> cells ?<i>page</i>?</a></dt><dd><p>
+
+Returns a list of fully-qualified cell names in order of definition.
+The <i>page</i> argument, if given, should be a valid page name, or
+one of the following symbolic constants:
+
+</p><ul>
+  <li> <b>all</b> -- All cells (this is the default)
+  </li><li> <b>unused</b> -- Cells defined in the model that aren't
+       referred to any formula.
+  </li><li> <b>unknown</b> -- Cells referred to in formulas but not defined
+       in the model.
+  </li><li> <b>error</b> -- Cells whose formulas contain an error.
+  </li><li> <b>invalid</b> -- The union of the <b>unknown</b> and
+       <b>error</b> cells.
+</li></ul>
+<p>Sane models don't contain <b>unknown</b> cells.  Some <b>error</b>
+cells can be caught during the initial sanity check; others will be
+caught when the model is solved.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="cellinfo"><i>object</i> cellinfo <i>field cell</i></a></dt><dd><p>
+
+Returns information about the specified <i>cell</i>.  The available
+<i>field</i> names are as follows:
+
+</p><ul>
+  <li> <b>page</b> -- The name of the page on which the <i>cell</i>
+       appears.
+  </li><li> <b>line</b> -- The line number at which the cell is defined in
+       the model script.
+  </li><li> <b>bare</b> -- The cell's bare (unqualified) name.
+  </li><li> <b>ctype</b> -- Cell Type: whether the cell is a <b>constant</b> or a
+       <b>formula</b> cell.
+  </li><li> <b>vtype</b> -- Value Type: whether the cell is a <b>number</b> or a
+       <b>symbol</b> cell.
+  </li><li> <b>ivalue</b> -- The cell's initial value.
+  </li><li> <b>formula</b> -- The cell's formula, or "" if none.
+  </li><li> <b>uses</b> -- A list of the fully-qualified names of the cells
+       used by this cell's formula.
+  </li><li> <b>usedby</b> -- A list of the fully-qualified names of the
+       cells whose formulas reference this cell.
+  </li><li> <b>unknown</b> -- A list of the names of cells referenced by
+       this cell's formula that aren't actually defined in the
+       model.
+  </li><li> <b>badpage</b> -- A list of the cells referenced by this
+       cell's formula that are defined on pages that are
+       defined <b>after</b> this cell's page.  (Formulas can only
+       reference cells defined on the same and previous pages.)
+  </li><li> <b>error</b> -- Any error message associated with this cell, or "".
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="clear"><i>object</i> clear</a></dt><dd>
+
+Deletes any loaded model from the <i>object</i>.
+
+
+</dd>
+<dt class="defitem"><a name="configure"><i>object</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="dump"><i>object</i> dump ?<i>page</i>?</a></dt><dd>
+
+Returns a pretty-printed string containing the name, value, and
+formula for every cell in the model.  If a <i>page</i> name is given,
+only cells on that page are included.
+
+</dd>
+<dt class="defitem"><a name="eval"><i>object</i> eval <i>formula</i></a></dt><dd>
+
+Evaluates a <a href="../man5/cellmodel.html">cellmodel(5)</a> formula in the context of the cell
+model, given the current cell values, and returns the result.  Note
+that invalid cell names are treated as zeroes.
+
+</dd>
+<dt class="defitem"><a name="formula"><i>object</i> formula <i>cell</i></a></dt><dd>
+
+Returns the formula associated with the named <i>cell</i>, or "" if none.
+
+</dd>
+<dt class="defitem"><a name="get"><i>object</i> get ?<i>page</i>? ?-bare?</a></dt><dd><p>
+
+Returns a dictionary of cell names with their current values for the
+specified <i>page</i>, or for <b>all</b> pages; <i>page</i> defaults
+to <b>all</b>.</p>
+
+<p>In either of the above cases, the cell names are qualified by their page
+names, e.g., the <b>MyNumber</b> cell on the <b>Data</b> page is
+called <b>Data::MyNumber</b>.  When retrieving a single page, however,
+the dictionary can be retrieved with unqualified cell names by
+specifying the <b>-bare</b> option.
+
+</p>
+</dd>
+<dt class="defitem"><a name="index"><i>object</i> index ?<i>name</i>?</a></dt><dd>
+
+Called with no arguments, this method returns a list of the names of
+the indices defined in the current model using the
+<a href="../man5/cellmodel.html#index">index</a> command.  If <i>name</i> is given, returns
+the list of values associated with the named index.
+
+</dd>
+<dt class="defitem"><a name="initial"><i>object</i> initial</a></dt><dd>
+
+Returns a dictionary of fully qualified cell names and values just prior to
+the start of the most recent attempt to solve. This is useful for debugging
+when a cell model fails to solve.
+
+</dd>
+<dt class="defitem"><a name="iterate"><i>object</i> iterate <i>page</i></a></dt><dd>
+
+Computes all values for the named <i>page</i> in order of definition,
+and return a list containing the max delta and the name of the cell
+that yielded the max delta.  It will seldom be necessary for the
+client to use the method directly.
+
+</dd>
+<dt class="defitem"><a name="load"><i>object</i> load <i>model</i></a></dt><dd><p>
+
+Loads a <i>model</i> into the object, replacing any previous model.
+The input is a <a href="../man5/cellmodel.html">cellmodel(5)</a> model definition.</p>
+
+<p>If the model cannot be loaded due to syntax errors, <a class="iref" href="#load">load</a>
+throws an error with error code "<b>SYNTAX <i>line_number</i></b>",
+where <i>linenumber</i> is the line number of the input in the
+<i>model</i>.</p>
+
+<p>Otherwise, <a class="iref" href="#load">load</a> returns 1 if the model appears to be "sane", and 
+0 if there are obvious errors.
+
+</p>
+</dd>
+<dt class="defitem"><a name="pages"><i>object</i> pages</a></dt><dd>
+
+Returns a list of the names of the model's pages in the order of
+definition.
+
+</dd>
+<dt class="defitem"><a name="pageinfo"><i>object</i> pageinfo <i>field page</i></a></dt><dd><p>
+
+Returns information about the specified <i>page</i>.  The available
+<i>field</i> names are as follows:
+
+</p><ul>
+  <li> <b>pline</b> -- The line number at which the page definition
+       begins in the model script.
+  </li><li> <b>cyclic</b> -- 1 if the page is cyclic, and 0 if the page is
+       acyclic (or if the model is not sane).
+  </li><li> <b>order</b> -- Returns the order in which cells on acyclic
+       pages are computed, which might be different from the order of
+       definition.  (Because the page is acyclic, each formula can be
+       computed only once--provided it's done in the right order.)
+       Returns the empty list for cyclic pages (or if the model is
+       not sane).
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="reset"><i>object</i> reset</a></dt><dd>
+
+Resets all cell values to their initial values.
+
+</dd>
+<dt class="defitem"><a name="sane"><i>object</i> sane</a></dt><dd>
+
+Returns 1 if the currently loaded model is "sane", i.e., contains no
+obvious errors, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="set"><i>object</i> set <i>dict</i> ?<i>page</i>?</a></dt><dd>
+
+Sets the values of one or more cells given a Tcl dictionary of the
+cell names and values.  By default the cell names must be
+fully-qualified.  If the <i>dict</i> contains unqualified cell names
+for a particular page, specify the <i>page</i> name as well.
+
+</dd>
+<dt class="defitem"><a name="solve"><i>object</i> solve ?<i>from</i> ?<i>to</i>??</a></dt><dd><p>
+
+Attempts to solve the model, computing each page in order.
+Acyclic pages are computed once, and cyclic pages are iterated to
+convergence (if possible).  Returns "<b>ok</b>" if the computation was
+successful; "<b>diverge <i>page</i></b>" if the named page diverged,
+and "<b>errors <i>page</i></b>" if there were outright errors (e.g.,
+division by zero) on the named page.</p>
+
+<p>Note that it's an error to call <a class="iref" href="#solve">solve</a> if the model is not
+<a class="iref" href="#sane">sane</a>.</p>
+
+<p>By default, all pages are solved.  If <i>from</i> is given, the named
+page is solved.  If <i>from</i> and <i>to</i> are given, the specified
+range of pages are solved.  If <i>to</i> is <b>end</b>, then all pages
+are solved from the <i>from</i> page to the end of the set of pages.
+
+</p>
+</dd>
+<dt class="defitem"><a name="value"><i>object</i> value <i>cell</i></a></dt><dd>
+
+Returns the current value of the named <i>cell</i>.  The cell
+must exist.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../man5/cellmodel.html">cellmodel(5)</a>
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

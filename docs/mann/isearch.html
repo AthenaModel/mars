@@ -1,0 +1,437 @@
+<html>
+<head>
+<title>mars 3.0.23: isearch(n) -- Incremental Search, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>isearch(n)</b> -- Incremental Search, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#bindings">BINDINGS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#isearch_enable">isearch enable <i>w</i></a></li>
+<li><a class="iref" href="#isearch_disable">isearch enable <i>w</i></a></li>
+<li><a class="iref" href="#isearch_logger">isearch logger <i>w</i> ?<i>cmd</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>isearch(n) is a module that enables incremental searching in Tk text
+widgets, and in components derived from them.  Incremental searching is a
+mode where the text widget shows the user the found text as the user types.
+See <a href="#bindings">BINDINGS</a> to see how it is used.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="isearch_enable">isearch enable <i>w</i></a></dt><dd><p>
+
+Enables incremental searching for the Tk text widget named <i>w</i>.  If
+<i>w</i> is <b>all</b>, then incremental searching is enabled on the
+Text binding, and thus effects all text widgets in the application (this
+might not be a good idea).</p>
+
+<p>Typically, <a class="iref" href="#isearch_enable">isearch enable</a> is called for the widget just after it
+is created.
+
+</p>
+</dd>
+<dt class="defitem"><a name="isearch_disable">isearch enable <i>w</i></a></dt><dd><p>
+
+Disables incremental searching for the Tk text widget named <i>w</i>.  If
+<i>w</i> is <b>all</b>, then incremental searching is disabled on the
+Text binding.</p>
+
+<p>There's generally no reason to disable incremental searching once it is
+enabled.
+
+</p>
+</dd>
+<dt class="defitem"><a name="isearch_logger">isearch logger <i>w</i> ?<i>cmd</i>?</a></dt><dd><p>
+
+Sets/queries a logger command for the Tk text widget named <i>w</i>, or for
+all isearch-enabled text widgets if <i>w</i> is <b>all</b>.  The <i>cmd</i>
+is a Tcl command prefix that takes one additional argument, the message.</p>
+
+<p>The logger command will usually write the message to a status line below
+the text widget; it keeps the user apprised of the progress of the search.
+This, however, is optional; incremental searching will work perfectly well
+even if no logger is defined.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="bindings">BINDINGS</a></h2>
+<p>Incremental searching is activated by the following keystrokes:
+
+</p>
+
+<ul>
+<li> <b>Ctrl+F</b> -- Search forwards from the insertion point
+</li><li> <b>Ctrl+R</b> -- Search backwards from the insertion point
+</li></ul>
+<p>Once in incremental search mode, the widget's normal bindings are suspended,
+and the following bindings are enabled.</p>
+
+<p>First, the user may begin typing the search target, and the widget will
+search for it as the user types.</p>
+
+<p>Next, the Backspace key will back up in the search, deleting characters
+from the search target.</p>
+
+<p>Next, pressing Ctrl+F will find the next occurrence of the currently found
+search target, and pressing Ctrl+R will find the previous occurrence.</p>
+
+<p>Note that if Ctrl+R or Ctrl+F is pressed <i>immediately</i> after entering
+incremental search mode, the widget will search for the search target from
+the previous search.  In other words, to search for the same thing again,
+press Ctrl+F twice in a row.</p>
+
+<p>Next, incremental search mode will terminate if:
+
+</p>
+
+<ul>
+<li> The user clicks with the mouse in the text widget.
+</li><li> The text widget loses the keyboard focus.
+</li><li> The user presses <b>Escape</b>, <b>Return</b>, <b>Tab</b>, or any of
+     cursor movement keys.
+     
+Other keys, including control, meta, and alt-key combinations, will
+have no effect.
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+    
+
+marsgui(n) requires Tcl 8.5 or later.
+
+To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<h2><a name="author">AUTHOR</a></h2>
+    
+
+Will Duquette
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+24 Aug 2012: Changed the search forward key from Ctrl+S to Ctrl+F,
+because Ctrl+S conflicts with the usual keystroke for saving the
+current document.
+
+
+<hr>
+<i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</li></ul></body>
+</html>
+    
+
+
+
+
+
+
+
+

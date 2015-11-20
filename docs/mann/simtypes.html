@@ -1,0 +1,1054 @@
+<html>
+<head>
+<title>mars 3.0.23: simtypes(n) -- Mars Simulation Types, submodule of simlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>simtypes(n)</b> -- Mars Simulation Types, submodule of <a href="../mann/simlib.html">simlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#qualities">QUALITIES</a></li>
+    
+
+    <li><a href="#enumerations">ENUMERATIONS</a></li>
+    
+
+    <li><a href="#numeric_types">NUMERIC TYPES</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require simlib 3.0.23
+namespace import ::simlib::*
+</pre>
+
+
+
+<ul class="itemlist">
+<li><a class="iref" href="#qaffinity">qaffinity</a></li>
+<li><a class="iref" href="#qcooperation">qcooperation</a></li>
+<li><a class="iref" href="#qduration">qduration</a></li>
+<li><a class="iref" href="#qemphasis">qemphasis</a></li>
+<li><a class="iref" href="#qmag">qmag</a></li>
+<li><a class="iref" href="#qposition">qposition</a></li>
+<li><a class="iref" href="#qrel">qrel</a></li>
+<li><a class="iref" href="#qsaliency">qsaliency</a></li>
+<li><a class="iref" href="#qsat">qsat</a></li>
+<li><a class="iref" href="#qtrend">qtrend</a></li>
+<li><a class="iref" href="#egrouptype">egrouptype</a></li>
+<li><a class="iref" href="#eproximity">eproximity</a></li>
+<li><a class="iref" href="#ipopulation">ipopulation</a></li>
+<li><a class="iref" href="#rfraction">rfraction</a></li>
+<li><a class="iref" href="#rfracpair">rfracpair</a></li>
+<li><a class="iref" href="#rmagnitude">rmagnitude</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines data types required by the Mars Simulation Library,
+<a href="../mann/simlib.html">simlib(n)</a>, and its clients.
+
+</p>
+
+<h2><a name="qualities">QUALITIES</a></h2>
+<p>simtypes(n) defines the following <a href="../mann/quality.html">quality(n)</a> types.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="qaffinity">qaffinity</a></dt><dd><p>
+
+This quality is used to measure the degree of affinity or relationship
+between two population groups.  Values have the bounds
+shown in the following table:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>SUPPORT</tt>&nbsp;</td>
+<td>Supports</td>
+<td>&nbsp;0.8</td>
+<td>&nbsp;0.7 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>LIKE</tt>&nbsp;</td>
+<td>Likes</td>
+<td>&nbsp;0.4</td>
+<td>&nbsp;0.2 &lt; <i>value</i> &lt;= 0.7</td>
+</tr>
+<tr class="tr-even">
+<td><tt>INDIFF</tt>&nbsp;</td>
+<td>Is Indifferent To</td>
+<td>&nbsp;0.0</td>
+<td>&nbsp;-0.2 &lt; <i>value</i> &lt;= 0.2</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>DISLIKE</tt>&nbsp;</td>
+<td>Dislikes</td>
+<td>&nbsp;-0.4</td>
+<td>&nbsp;-0.7 &lt; <i>value</i> &lt;= -0.2</td>
+</tr>
+<tr class="tr-even">
+<td><tt>OPPOSE</tt>&nbsp;</td>
+<td>Opposes</td>
+<td>&nbsp;-0.8</td>
+<td>&nbsp;-1.0 &lt; <i>value</i> &lt;= -0.7</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="qcooperation">qcooperation</a></dt><dd><p>
+
+This quality is used to measure the level of cooperation between two
+population groups; it can be interpreted as the probability that one
+group will give information to another group.  Values have the bounds
+shown in the following table:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>AC</tt>&nbsp;</td>
+<td>Always Cooperative</td>
+<td>&nbsp;100.0</td>
+<td>&nbsp;99.9 &lt; <i>value</i> &lt;= 100.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>VC</tt>&nbsp;</td>
+<td>Very Cooperative</td>
+<td>&nbsp;90.0</td>
+<td>&nbsp;80.0 &lt; <i>value</i> &lt;= 99.9</td>
+</tr>
+<tr class="tr-even">
+<td><tt>C</tt>&nbsp;</td>
+<td>Cooperative</td>
+<td>&nbsp;70.0</td>
+<td>&nbsp;60.0 &lt; <i>value</i> &lt;= 80.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>MC</tt>&nbsp;</td>
+<td>Marginally Cooperative</td>
+<td>&nbsp;50.0</td>
+<td>&nbsp;40.0 &lt; <i>value</i> &lt;= 60.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>U</tt>&nbsp;</td>
+<td>Uncooperative</td>
+<td>&nbsp;30.0</td>
+<td>&nbsp;20.0 &lt; <i>value</i> &lt;= 40.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>VU</tt>&nbsp;</td>
+<td>Very Uncooperative</td>
+<td>&nbsp;10.0</td>
+<td>&nbsp;1.0 &lt; <i>value</i> &lt;= 20.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>NC</tt>&nbsp;</td>
+<td>Never Cooperative</td>
+<td>&nbsp;0.0</td>
+<td>&nbsp;0.0 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qduration">qduration</a></dt><dd><p>
+
+This quality is used to describe the duration of <a href="../mann/gram.html">gram(n)</a>
+level inputs, in decimal days.</p>
+
+<p>Numerically,
+<a class="iref" href="#qduration">qduration</a> values have a minimum of 0.0.
+Symbolically,
+durations are broken down into these categories:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>XL</tt>&nbsp;</td>
+<td>X_LONG</td>
+<td>&nbsp;5.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>L</tt>&nbsp;</td>
+<td>LONG</td>
+<td>&nbsp;2.5</td>
+</tr>
+<tr class="tr-even">
+<td><tt>M</tt>&nbsp;</td>
+<td>MEDIUM</td>
+<td>&nbsp;1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>S</tt>&nbsp;</td>
+<td>SHORT</td>
+<td>&nbsp;0.1</td>
+</tr>
+<tr class="tr-even">
+<td><tt>XS</tt>&nbsp;</td>
+<td>X_SHORT</td>
+<td>&nbsp;0.042</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qemphasis">qemphasis</a></dt><dd><p>
+
+This quality is used to measure an entity's emphasis on agreement or
+disagreement with respect to a particular topic in a <a href="../mann/mam.html">mam(n)</a> belief
+system. Numerically, the values range from 0.0 to 1.0 and have the bins
+shown in the following table:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>ASTRONG</tt>&nbsp;</td>
+<td>Agreement--Strong</td>
+<td>&nbsp;0.9</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>AWEAK</tt>&nbsp;</td>
+<td>Agreement</td>
+<td>&nbsp;0.7</td>
+</tr>
+<tr class="tr-even">
+<td><tt>NEITHER</tt>&nbsp;</td>
+<td>Neither</td>
+<td>&nbsp;0.5</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>DWEAK</tt>&nbsp;</td>
+<td>Disagreement</td>
+<td>&nbsp;0.35</td>
+</tr>
+<tr class="tr-even">
+<td><tt>DSTRONG</tt>&nbsp;</td>
+<td>Disagreement--Strong</td>
+<td>&nbsp;0.25</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>DEXTREME</tt>&nbsp;</td>
+<td>Disagreement--Extreme</td>
+<td>&nbsp;0.15</td>
+</tr>
+</table>
+<p>For this variable, it is more usual to enter data using the symbolic
+values than to enter specific numbers.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="qmag">qmag</a></dt><dd><p>
+
+This quality is used to describe the magnitude of <a href="../mann/gram.html">gram(n)</a>
+level and slope inputs, among other things.
+For level inputs it represents the percent change to the level of
+satisfaction, and for slope events it represents the percent change
+per day.</p>
+
+<p>Symbolically, magnitude is broken down into these categories:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>XXXXL+</tt>&nbsp;</td>
+<td>XXXXL+</td>
+<td>&nbsp;30.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XXXL+</tt>&nbsp;</td>
+<td>XXXL+</td>
+<td>&nbsp;20.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>XXL+</tt>&nbsp;</td>
+<td>XXL+</td>
+<td>&nbsp;15.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XL+</tt>&nbsp;</td>
+<td>XL+</td>
+<td>&nbsp;10.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>L+</tt>&nbsp;</td>
+<td>L+</td>
+<td>&nbsp;7.5</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>M+</tt>&nbsp;</td>
+<td>M+</td>
+<td>&nbsp;5.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>S+</tt>&nbsp;</td>
+<td>S+</td>
+<td>&nbsp;3.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XS+</tt>&nbsp;</td>
+<td>XS+</td>
+<td>&nbsp;2.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>XXS+</tt>&nbsp;</td>
+<td>XXS+</td>
+<td>&nbsp;1.5</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XXXS+</tt>&nbsp;</td>
+<td>XXXS+</td>
+<td>&nbsp;1.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>ZERO</tt>&nbsp;</td>
+<td>ZERO</td>
+<td>&nbsp;0.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XXXS-</tt>&nbsp;</td>
+<td>XXXS-</td>
+<td>&nbsp;-1.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>XXS-</tt>&nbsp;</td>
+<td>XXS-</td>
+<td>&nbsp;-1.5</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XS-</tt>&nbsp;</td>
+<td>XS-</td>
+<td>&nbsp;-2.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>S-</tt>&nbsp;</td>
+<td>S-</td>
+<td>&nbsp;-3.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>M-</tt>&nbsp;</td>
+<td>M-</td>
+<td>&nbsp;-5.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>L-</tt>&nbsp;</td>
+<td>L-</td>
+<td>&nbsp;-7.5</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XL-</tt>&nbsp;</td>
+<td>XL-</td>
+<td>&nbsp;-10.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>XXL-</tt>&nbsp;</td>
+<td>XXL-</td>
+<td>&nbsp;-15.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>XXXL-</tt>&nbsp;</td>
+<td>XXXL-</td>
+<td>&nbsp;-20.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>XXXXL-</tt>&nbsp;</td>
+<td>XXXXL-</td>
+<td>&nbsp;-30.0</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qposition">qposition</a></dt><dd><p>
+
+This quality is used to measure an entity's position for or against
+a topic in a <a href="../mann/mam.html">mam(n)</a> belief system.  Numerically, the values
+range from -1.0 to 1.0, and have the bins
+shown in the following table:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>P+</tt>&nbsp;</td>
+<td>Passionately For</td>
+<td>&nbsp;0.9</td>
+<td>&nbsp;0.8 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>S+</tt>&nbsp;</td>
+<td>Strongly For</td>
+<td>&nbsp;0.6</td>
+<td>&nbsp;0.45 &lt; <i>value</i> &lt;= 0.8</td>
+</tr>
+<tr class="tr-even">
+<td><tt>W+</tt>&nbsp;</td>
+<td>Weakly For</td>
+<td>&nbsp;0.3</td>
+<td>&nbsp;0.05 &lt; <i>value</i> &lt;= 0.45</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>A</tt>&nbsp;</td>
+<td>Ambivalent</td>
+<td>&nbsp;0.0</td>
+<td>&nbsp;-0.05 &lt; <i>value</i> &lt;= 0.05</td>
+</tr>
+<tr class="tr-even">
+<td><tt>W-</tt>&nbsp;</td>
+<td>Weakly Against</td>
+<td>&nbsp;-0.3</td>
+<td>&nbsp;-0.45 &lt; <i>value</i> &lt;= -0.05</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>S-</tt>&nbsp;</td>
+<td>Strongly Against</td>
+<td>&nbsp;-0.6</td>
+<td>&nbsp;-0.8 &lt; <i>value</i> &lt;= -0.45</td>
+</tr>
+<tr class="tr-even">
+<td><tt>P-</tt>&nbsp;</td>
+<td>Passionately Against</td>
+<td>&nbsp;-0.9</td>
+<td>&nbsp;-1.0 &lt; <i>value</i> &lt;= -0.8</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qrel">qrel</a></dt><dd><p>
+
+This quality is used to describe the relationship between two
+groups.</p>
+
+<p>Numerically, <a class="iref" href="#qrel">qrel</a> values range from -1.0 to +1.0.  Symbolically,
+relationships are broken down into these categories:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>FRIEND</tt>&nbsp;</td>
+<td>Friend</td>
+<td>&nbsp;0.5</td>
+<td>&nbsp;0.3 &lt; <i>value</i> &lt;= 1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>NEUTRAL</tt>&nbsp;</td>
+<td>Neutral</td>
+<td>&nbsp;0.1</td>
+<td>&nbsp;-0.1 &lt; <i>value</i> &lt;= 0.3</td>
+</tr>
+<tr class="tr-even">
+<td><tt>ENEMY</tt>&nbsp;</td>
+<td>Enemy</td>
+<td>&nbsp;-0.5</td>
+<td>&nbsp;-1.0 &lt; <i>value</i> &lt;= -0.1</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qsaliency">qsaliency</a></dt><dd><p>
+
+This quality is used to describe the saliency of a concern to a
+particular pgroup.  <a class="iref" href="#qsaliency">qsaliency</a> values are used to weight a
+pgroup's level of satisfaction with each of its concerns.
+Numerically,
+<a class="iref" href="#qsaliency">qsaliency</a> values range from
+0.0 to 1.0.  Symbolically,
+saliency is broken down into these categories:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>CR</tt>&nbsp;</td>
+<td>Crucial</td>
+<td>&nbsp;1.000</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>VI</tt>&nbsp;</td>
+<td>Very Important</td>
+<td>&nbsp;0.850</td>
+</tr>
+<tr class="tr-even">
+<td><tt>I</tt>&nbsp;</td>
+<td>Important</td>
+<td>&nbsp;0.700</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>LI</tt>&nbsp;</td>
+<td>Less Important</td>
+<td>&nbsp;0.550</td>
+</tr>
+<tr class="tr-even">
+<td><tt>UN</tt>&nbsp;</td>
+<td>Unimportant</td>
+<td>&nbsp;0.400</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>NG</tt>&nbsp;</td>
+<td>Negligible</td>
+<td>&nbsp;0.000</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qsat">qsat</a></dt><dd><p>
+
+This quality is used to rate levels of group satisfaction with
+respect to various concerns.  Numerically,
+<a class="iref" href="#qsat">qsat</a> values range from -100.0 to +100.0.
+Symbolically, satisfaction is broken down into these categories:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>VS</tt>&nbsp;</td>
+<td>Very Satisfied</td>
+<td>&nbsp;80.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>S</tt>&nbsp;</td>
+<td>Satisfied</td>
+<td>&nbsp;40.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>A</tt>&nbsp;</td>
+<td>Ambivalent</td>
+<td>&nbsp;0.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>D</tt>&nbsp;</td>
+<td>Dissatisfied</td>
+<td>&nbsp;-40.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>VD</tt>&nbsp;</td>
+<td>Very Dissatisfied</td>
+<td>&nbsp;-80.0</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qtrend">qtrend</a></dt><dd><p>
+
+This quality is used to describe the trend (slope) of
+<a href="../mann/gram.html">gram(n)</a> satisfaction curves.
+Symbolically, the possible trends are broken down into these
+categories:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+</tr>
+<tr class="tr-even">
+<td><tt>VH</tt>&nbsp;</td>
+<td>Very High</td>
+<td>&nbsp;8.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>H</tt>&nbsp;</td>
+<td>High</td>
+<td>&nbsp;4.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>N</tt>&nbsp;</td>
+<td>Neutral</td>
+<td>&nbsp;-1.0</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>L</tt>&nbsp;</td>
+<td>Low</td>
+<td>&nbsp;-4.0</td>
+</tr>
+<tr class="tr-even">
+<td><tt>VL</tt>&nbsp;</td>
+<td>Very Low</td>
+<td>&nbsp;-8.0</td>
+</tr>
+</table>
+
+
+</dd>
+</dl>
+
+<h2><a name="enumerations">ENUMERATIONS</a></h2>
+<p>simtypes(n) defines the following <a href="../mann/enum.html">enum(n)</a> types.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="egrouptype">egrouptype</a></dt><dd><p>
+
+This enumeration defines the population group types which are used by the
+simulation.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>CIV</tt></td>
+<td>CIVILIAN</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>ORG</tt></td>
+<td>ORGANIZATION</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>FRC</tt></td>
+<td>FORCE</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="eproximity">eproximity</a></dt><dd><p>
+
+This enumeration is used to express the proximity of one neighborhood
+to another.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>HERE</tt></td>
+<td>Here</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>NEAR</tt></td>
+<td>Near</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>FAR</tt></td>
+<td>Far</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>REMOTE</tt></td>
+<td>Remote</td>
+</tr>
+</table>
+
+
+</dd>
+</dl>
+
+<h2><a name="numeric_types">NUMERIC TYPES</a></h2>
+<p>simtypes(n) defines the following numeric types.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ipopulation">ipopulation</a></dt><dd>
+
+This <b>snit::integer</b> defines the set of valid population numbers,
+integers greater than or equal to zero.
+
+</dd>
+<dt class="defitem"><a name="rfraction">rfraction</a></dt><dd>
+
+This <a href="../mann/range.html">range(n)</a> defines the set of valid proper decimal fractions.
+Numerically, <a class="iref" href="#rfraction">rfraction</a> values range from
+0.0 to 1.0.
+
+</dd>
+<dt class="defitem"><a name="rfracpair">rfracpair</a></dt><dd>
+
+This type defines the set of pairs of <a class="iref" href="#rfraction">rfraction</a>'s, where
+the elements of the pair sum to less than or equal to 1.0.
+
+</dd>
+<dt class="defitem"><a name="rmagnitude">rmagnitude</a></dt><dd>
+
+This <a href="../mann/range.html">range(n)</a> defines the set of valid real magnitudes.
+Numerically, <a class="iref" href="#rmagnitude">rmagnitude</a> values range upwards from
+0.0.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the <a href="../mann/simlib.html">simlib(n)</a>
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,554 @@
+<html>
+<head>
+<title>mars 3.0.23: geoset(n) -- Set of Geometric Figures, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>geoset(n)</b> -- Set of Geometric Figures, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#stacking_order">Stacking Order</a></li>
+
+    <li><a href="#tags">Tags</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::geoset
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#geoset">geoset <i>name</i></a></li>
+<li><a class="iref" href="#bbox">$gs bbox ?<i>tagOrId</i>?</a></li>
+<li><a class="iref" href="#clear">$gs clear</a></li>
+<li><a class="iref" href="#coords">$gs coords <i>id</i></a></li>
+<li><a class="iref" href="#create">$gs create <i>itemType</i> <i>args...</i></a></li>
+<li><a class="iref" href="#create_line">$gs create line <i>id coords</i> ?<i>tagList</i>?</a></li>
+<li><a class="iref" href="#create_point">$gs create point <i>id point</i> ?<i>tagList</i>?</a></li>
+<li><a class="iref" href="#create_polygon">$gs create polygon <i>id coords</i> ?<i>tagList</i>?</a></li>
+<li><a class="iref" href="#delete">$gs delete <i>id</i></a></li>
+<li><a class="iref" href="#exists">$gs exists <i>id</i></a></li>
+<li><a class="iref" href="#find">$gs find <i>point</i> ?<i>tag</i>?</a></li>
+<li><a class="iref" href="#list">$gs list ?<i>tag</i>?</a></li>
+<li><a class="iref" href="#itemtype">$gs itemtype <i>id</i></a></li>
+<li><a class="iref" href="#tag">$gs tag <i>id tag</i></a></li>
+<li><a class="iref" href="#tags">$gs tags <i>id</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>An instance of the geoset(n) type is an object that manages a
+collection of geometric figures, including polygons, polylines, and
+individual points.  The collected figures are referred to as the
+items in the set.  Items may be tagged with arbitrary tag strings,
+and may be retrieved by name, tag, or type.  The geoset(n) will also
+compute bounding boxes, and determine which polygon (if any) contains an
+arbitrary point.
+
+</p>
+
+<h2><a name="stacking_order">Stacking Order</a></h2>
+<p>The items in the geoset(n) are related according to their stacking
+order from lowest to highest, which initially is identical to the
+order in which they were created: items created later stack on top of
+items created earlier.  (At present, it is not possible to change the
+stacking order.)</p>
+
+<p>Whenever a list of items is retrieved from the geoset(n), the items
+will be returned in stacking order.  This has two effects.  First, if
+the items are drawn on a Tk canvas widget, they will indeed be stacked
+with the later items on top of the earlier ones.  Second, the
+<a class="iref" href="#find">find</a> method returns the topmost polygon which contains an
+arbitrary point.  In short, if an item contains a point when it is
+displayed on a canvas, then it will be the item returned by
+<a class="iref" href="#find">find</a>.
+
+</p>
+
+<h2><a name="tags">Tags</a></h2>
+<p>Items in a geoset(n) may be tagged with any number of user-defined
+tags, much like items in a Tk canvas widget.  A tag is an arbitrary
+string used to identify a set of one or more items for later retrieval.</p>
+
+<p>geoset(n) defines the following special tags:
+
+</p>
+
+<ul>
+  <li> <b>line</b>: All polyline items
+  </li><li> <b>point</b>: All point items
+  </li><li> <b>polygon</b>: All polygon items
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="geoset">geoset <i>name</i></a></dt><dd>
+
+Creates a new geoset object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#geoset">geoset</a> returns the fully-qualified form of the
+<i>name</i>.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#geoset">geoset</a> object has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="bbox">$gs bbox ?<i>tagOrId</i>?</a></dt><dd><p>
+
+If <i>tagOrId</i> is specified, it must be an item ID or a known
+tag.  If it is an item ID, this method returns the item's bounding
+box; otherwise, if it is a known tag, it returns the 
+the bounding box of all items tagged with that tag.  If no
+<i>tagOrId</i> is specified, it returns the bounding box of
+all items in the geoset(n).</p>
+
+<p>See <a href="../mann/geometry.html#bbox">bbox</a> in <a href="../mann/geometry.html">geometry(n)</a> for more on
+bounding boxes.
+
+</p>
+</dd>
+<dt class="defitem"><a name="clear">$gs clear</a></dt><dd>
+
+Deletes all items from the geoset(n).
+
+</dd>
+<dt class="defitem"><a name="coords">$gs coords <i>id</i></a></dt><dd>
+
+Returns the list of coordinates associated with item <i>id</i>.
+
+</dd>
+<dt class="defitem"><a name="create">$gs create <i>itemType</i> <i>args...</i></a></dt><dd><p>
+
+Creates an item of the specified <i>itemType</i>:
+
+</p><dl>
+
+<dt class="defitem"><a name="create_line">$gs create line <i>id coords</i> ?<i>tagList</i>?</a></dt><dd><p>
+
+Creates a polyline item with the specified list of X,Y coordinates,
+<i>coords</i>.  The <i>id</i> must be a string which uniquely
+identifies the item.</p>
+
+<p>After creation, the item will be tagged with the special tag
+<b>line</b>, as well as any other tags specified by the <i>tagList</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="create_point">$gs create point <i>id point</i> ?<i>tagList</i>?</a></dt><dd><p>
+
+Creates a point item at the specified X,Y <i>point</i>.  The <i>id</i>
+must be a string which uniquely identifies the item.</p>
+
+<p>After creation, the item will be tagged with the special tag
+<b>point</b>, as well as any other tags specified by the <i>tagList</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="create_polygon">$gs create polygon <i>id coords</i> ?<i>tagList</i>?</a></dt><dd><p>
+
+Creates a polygon item with the specified X,Y coordinates.
+<i>coords</i> should be a flat list of the X,Y coordinates of each
+vertex in counter-clockwise order; the first point should not be
+repeated at the end.  <i>id</i> must be a string which uniquely
+identifies the item.</p>
+
+<p>After creation, the item will be tagged with the special tag
+<b>polygon</b>, as well as any other tags specified by the <i>tagList</i>.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="delete">$gs delete <i>id</i></a></dt><dd>
+
+Deletes the item with the specified <i>id</i>.  Does nothing if there
+is no such item.
+
+</dd>
+<dt class="defitem"><a name="exists">$gs exists <i>id</i></a></dt><dd>
+
+Returns 1 if there is an item called <i>id</i>, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="find">$gs find <i>point</i> ?<i>tag</i>?</a></dt><dd><p>
+
+Returns the ID of the first item which contains the specified point
+when searching in reverse stacking order, that is, from <b>top</b> to
+<b>bottom</b>.  Returns "" if no known item contains the point.</p>
+
+<p>If <i>tag</i> is specified, the search is limited to items tagged with
+that <i>tag</i>.</p>
+
+<p><b>Note:</b> at present, the search is also limited to <b>polygon</b>
+items.
+
+</p>
+</dd>
+<dt class="defitem"><a name="list">$gs list ?<i>tag</i>?</a></dt><dd>
+
+Returns a list in stacking order of the IDs of all items in the
+geoset(n). If a <i>tag</i> is specified, the list includes only those
+items tagged with that <i>tag</i>.
+
+</dd>
+<dt class="defitem"><a name="itemtype">$gs itemtype <i>id</i></a></dt><dd>
+
+Returns item <i>id</i>'s type, <b>line</b>, <b>point</b>, or <b>polygon</b>.
+
+</dd>
+<dt class="defitem"><a name="tag">$gs tag <i>id tag</i></a></dt><dd>
+
+Tags item <i>id</i> with an additional <i>tag</i>.
+
+</dd>
+<dt class="defitem"><a name="tags">$gs tags <i>id</i></a></dt><dd>
+
+Returns a list of the tags on item <i>id</i>, in the order of creation.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/geometry.html">geometry(n)</a>, <a href="../mann/latlong.html">latlong(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

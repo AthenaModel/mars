@@ -1,0 +1,660 @@
+<html>
+<head>
+<title>mars 3.0.23: quality(n) -- Qualitative value definition type, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>quality(n)</b> -- Qualitative value definition type, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#rounding">Rounding</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#quality">quality <i>name deflist ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#quality-bounds">-bounds <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#quality-min">-min <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#quality-max">-max <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#quality-format">-format <i>format</i></a></li>
+<li><a class="iref" href="#cget">$quality cget <i>option</i></a></li>
+<li><a class="iref" href="#configure">$quality configure <i>option value...</i></a></li>
+<li><a class="iref" href="#validate">$quality validate <i>input</i></a></li>
+<li><a class="iref" href="#size">$quality size</a></li>
+<li><a class="iref" href="#names">$quality names</a></li>
+<li><a class="iref" href="#shortnames">$quality shortnames</a></li>
+<li><a class="iref" href="#longnames">$quality longnames</a></li>
+<li><a class="iref" href="#namedict">$quality namedict</a></li>
+<li><a class="iref" href="#value">$quality value <i>input</i></a></li>
+<li><a class="iref" href="#strictvalue">$quality strictvalue <i>input</i></a></li>
+<li><a class="iref" href="#name">$quality name <i>input</i></a></li>
+<li><a class="iref" href="#shortname">$quality shortname <i>input</i></a></li>
+<li><a class="iref" href="#longname">$quality longname <i>input</i></a></li>
+<li><a class="iref" href="#index">$quality index <i>input</i></a></li>
+<li><a class="iref" href="#format">$quality format <i>value</i></a></li>
+<li><a class="iref" href="#inrange">$quality inrange <i>value</i></a></li>
+<li><a class="iref" href="#clamp">$quality clamp <i>value</i></a></li>
+<li><a class="iref" href="#html">$quality html</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>quality(n) defines a qualitative value definition type.  Each instance of
+the type defines a qualitative type: a range of numeric values divided
+into qualitative categories with symbolic names.
+A <a class="iref" href="#quality">quality</a> object
+translates category symbols to numeric values and <i>vice
+versa</i>.  In addition, each category symbol has two forms:
+a short symbolic name and a longer descriptive name.</p>
+
+<p>A <a class="iref" href="#quality">quality</a> object is thus very similar to an
+<a href="../mann/enum.html">enum(n)</a> enumeration, except that the symbols are associated
+with arbitrary numbers instead of an ordered set of indices.</p>
+
+<p>Note that a numeric value associated with a <a class="iref" href="#quality">quality</a> need not
+have one of the specific values listed in the <a class="iref" href="#quality">quality</a>'s
+definition.  The <a class="iref" href="#quality">quality</a> object can relate arbitrary
+numeric values back to specific categories.</p>
+
+<p>The boundaries between two categories can be implicit (midway between
+the numeric values associated with the categories) or explicit.
+
+</p>
+
+<h2><a name="rounding">Rounding</a></h2>
+<p>Several commands (<a class="iref" href="#name">name</a>, <a class="iref" href="#longname">longname</a>, <a class="iref" href="#index">index</a>)
+can convert a numeric value to a symbolic value.  These commands all
+round the numeric value using the given <code>-format</code> string
+before doing the look-up; this guarantees that numeric values that
+display the same when <a class="iref" href="#format">format</a>ted always map to the same
+categories.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="quality">quality <i>name deflist ?options...?</i></a></dt><dd><p>
+
+<a class="iref" href="#quality">quality</a> defines a new qualitative type called
+<i>name</i>; the short and long names and their related numeric values
+are defined in the <i>deflist</i>, which has one of two forms,
+depending on the value of <code>-bounds</code>.  If
+<code>-bounds</code> is <b>no</b>, the default, then the bounds
+between the categories are implicit, and the <i>deflist</i> has
+this form:
+
+</p><pre>
+short long value
+short long value
+...
+</pre>
+<p>If <code>-bounds</code> is <b>yes</b>, then the bounds
+for each category are explicit, and the <i>deflist</i> has
+this form:
+
+</p>
+
+<pre>
+short long min value max
+short long min value max
+...
+</pre>
+<p>A <a class="iref" href="#quality">quality</a> can be created with the following <i>options</i>:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="quality-bounds">-bounds <i>flag</i></a></dt><dd>
+A flag, <b>yes</b> or <b>no</b> which indicates whether
+the symbolic categories have explicit bounds or not.  If <b>no</b>
+(the default) the bounds are midway between the numeric values of each
+pair of adjacent categories.  If <b>yes</b>, the bounds are as
+specified, and the values of <code>-min</code> and <code>-max</code>
+are computed automatically.
+
+</dd>
+<dt class="defopt"><a name="quality-min">-min <i>value</i></a></dt><dd>
+The minimum numeric <i>value</i> for this quality.  The default
+is no minimum.
+
+</dd>
+<dt class="defopt"><a name="quality-max">-max <i>value</i></a></dt><dd>
+The maximum numeric <i>value</i> for this quality.  The default
+is no maximum.
+
+</dd>
+<dt class="defopt"><a name="quality-format">-format <i>format</i></a></dt><dd><p>
+A <i>format</i> string used to format numeric values associated
+with this quality.  The default is "%4.2f".</p>
+
+<p><b>Note:</b> make sure that your format string provides for at least
+as many places after the decimal as the numeric values used in the
+type definition!  Otherwise, numeric value to symbolic value
+conversions may fail.
+
+
+</p>
+</dd>
+</dl>
+<p>For example, the following code defines "goodness" as a numeric value
+that ranges from 0.0 to 1.0; the range is broken into five categories
+ranging from "Very Good" to "Very Bad".  Numeric goodness
+values should be formatted with 1 decimal place.
+
+</p>
+
+<pre>
+quality goodness {
+    VG "Very Good" 0.9
+     G "Good"      0.7
+     N "Neutral"   0.5
+     B "Bad"       0.3
+    VB "Very Bad"  0.1
+} -min 0.0 -max 1.0 -format {%3.1f}
+</pre>
+<p>With explicit bounds, the definition would be as follows:
+
+</p>
+
+<pre>
+quality goodness {
+    VG "Very Good" 0.8 0.9 1.0
+     G "Good"      0.6 0.7 0.8
+     N "Neutral"   0.4 0.5 0.6
+     B "Bad"       0.2 0.3 0.4
+    VB "Very Bad"  0.0 0.1 0.2
+} -bounds yes -format {%3.1f}
+</pre>
+<p>The <i>name</i> becomes a Tcl command, defined in the current scope;
+<a class="iref" href="#quality">quality</a> returns the fully-qualified form of <i>name</i>.
+
+</p>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#quality">quality</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget">$quality cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure">$quality configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more options.
+
+</dd>
+<dt class="defitem"><a name="validate">$quality validate <i>input</i></a></dt><dd>
+
+Validates that <i>input</i> is a valid value for this quality.  If it
+is, it is returned in canonical form i.e., as a number.
+If it is not, an error is thrown with
+an <code>-errorcode</code> of <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="size">$quality size</a></dt><dd>
+
+Returns the number of symbolic categories in the quality.  Given <i>n</i>
+categories, they are indexed from 0 to <i>n</i>-1.
+
+</dd>
+<dt class="defitem"><a name="names">$quality names</a></dt>
+<dt class="defitem"><a name="shortnames">$quality shortnames</a></dt><dd>
+
+Returns a list of the short category names, in index order.  The
+form <a class="iref" href="#shortnames">shortnames</a> is deprecated.
+
+</dd>
+<dt class="defitem"><a name="longnames">$quality longnames</a></dt><dd>
+
+Returns a list of the long category names, in index order.
+
+</dd>
+<dt class="defitem"><a name="namedict">$quality namedict</a></dt><dd>
+
+Returns a dictionary of the short and long category names, in index
+order.
+
+</dd>
+<dt class="defitem"><a name="value">$quality value <i>input</i></a></dt><dd><p>
+
+Given a short name, a long name, or a numeric value within the valid
+range, returns a numeric value.  Throws an error given any other
+<i>input</i>.  If the input is symbolic, returns the
+corresponding value from the quality's definition; if the input is
+numeric, it is returned unchanged. Name lookups are case-insensitive.</p>
+
+<p>This subcommand is usually used to translate arbitrary symbolic
+or numeric inputs into values within the quality's range.
+
+</p>
+</dd>
+<dt class="defitem"><a name="strictvalue">$quality strictvalue <i>input</i></a></dt><dd><p>
+
+Given a short name, a long name, or a numeric value within the valid
+range, returns the corresponding numeric value from the quality's definition.
+Throws an error given any other <i>input</i>.  Name lookups are
+case-insensitive.</p>
+
+<p>This subcommand is usually used to translate a category name into a
+numeric value; it can also be used to translate an arbitrary numeric
+value into the specific value associated with the appropriate category.
+
+</p>
+</dd>
+<dt class="defitem"><a name="name">$quality name <i>input</i></a></dt>
+<dt class="defitem"><a name="shortname">$quality shortname <i>input</i></a></dt><dd><p>
+
+Given a short name, a long name, or a numeric value within the valid
+range, returns the corresponding short category name.  Given any other
+<i>input</i>, returns "".  Name lookups are
+case-insensitive.</p>
+
+<p>Numeric inputs are <a href="#rounding">rounded</a> before the lookup is
+performed.</p>
+
+<p>The form <a class="iref" href="#shortname">shortname</a> is deprecated.
+
+</p>
+</dd>
+<dt class="defitem"><a name="longname">$quality longname <i>input</i></a></dt><dd><p>
+
+Given a short name, a long name, or a numeric value with the valid
+rnage, returns the corresponding long category name.
+Given any other <i>input</i>, returns "".  Name lookups are
+case-insensitive.</p>
+
+<p>Numeric inputs are <a href="#rounding">rounded</a> before the lookup is
+performed.
+
+</p>
+</dd>
+<dt class="defitem"><a name="index">$quality index <i>input</i></a></dt><dd><p>
+
+Given a short name, a long name, or a numeric value within the valid
+range, returns the index of the specific category.
+Given any other <i>input</i>, returns -1.  Name lookups are
+case-insensitive.</p>
+
+<p>Numeric inputs are <a href="#rounding">rounded</a> before the lookup is
+performed.
+
+</p>
+</dd>
+<dt class="defitem"><a name="format">$quality format <i>value</i></a></dt><dd>
+
+Given a numeric value of this quality type, formats and returns
+the value as specified by the <b>-format</b> string.
+
+</dd>
+<dt class="defitem"><a name="inrange">$quality inrange <i>value</i></a></dt><dd>
+
+Returns 1 if the arbitrary <i>value</i> falls within the quality's
+<b>-min</b> and <b>-max</b>, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="clamp">$quality clamp <i>value</i></a></dt><dd>
+
+Clamps the arbitrary <i>value</i> within the quality's 
+<b>-min</b> and <b>-max</b>, and returns the clamped value.
+
+</dd>
+<dt class="defitem"><a name="html">$quality html</a></dt><dd>
+
+Returns an HTML snippet which documents the quality's names, long
+names, values, and (if <code>-bounds</code> is <b>yes</b>) category
+bounds.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/enum.html">enum(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>quality(n) requires Tcl 8.5 or later.</p>
+
+<p>To use quality(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

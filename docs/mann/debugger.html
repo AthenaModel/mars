@@ -1,0 +1,461 @@
+<html>
+<head>
+<title>mars 3.0.23: debugger(n) -- Debugging Console, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>debugger(n)</b> -- Debugging Console, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#options">OPTIONS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#debugger">debugger <i>pathName ?options...?</i></a></li>
+<li><a class="iref" href="#debugger_new">debugger new <i>?options...?</i></a></li>
+<li><a class="iref" href="#debugger_debug">debugger debug ?<i>command...</i>?</a></li>
+<li><a class="iref" href="#configure">$debugger configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$debugger cget <i>option</i></a></li>
+<li><a class="iref" href="#edit">$debugger edit <i>command</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/marsgui.html">marsgui(n)</a> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::debugger widget, a toplevel
+window which can be invoked to help debug problems in a
+a Tcl/Tk application.</p>
+
+<p>At present, the ::marsgui::debugger provides the following features:
+
+</p>
+
+<ul>
+  <li> A <a href="../mann/cli.html">cli(n)</a> which  provides command-line access to the main
+       Tcl interpreter.
+
+  </li><li> A <a href="../mann/winbrowser.html">winbrowser(n)</a>, which provides information on any
+       window in the Tk window tree.
+
+  </li><li> A <a href="../mann/cmdbrowser.html">cmdbrowser(n)</a>, which provides information on any
+       command known to the Tcl interpreter.
+       
+  </li><li> A <a href="../mann/modeditor.html">modeditor(n)</a>, which allows the user to edit code in
+       the running application, source it back in, and save it to disk
+       as a mod file.
+</li></ul>
+
+<h2><a name="options">OPTIONS</a></h2>
+<p>The <a class="iref" href="#debugger">debugger</a> widget has the same options as the
+standard Tk "toplevel" widget; in addition, it provides the
+following:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="edit-app">-app <i>flag</i></a></dt><dd>
+
+<b>Read-only.</b>  The <i>flag</i> must be a Boolean value.  If it is
+true, the created window assumes that it is the main window in the
+application; closing the window will terminate the program.  The
+option defaults to false.>
+
+</dd>
+<dt class="defopt"><a name="edit-editordefaultdir">-editordefaultdir <i>path</i></a></dt><dd>
+
+Specifies the default directory for the editor tab's "File Save" dialog.
+If unset, the dialog will open in the current working directory.
+
+</dd>
+<dt class="defopt"><a name="edit-editorformatcmd">-editorformatcmd <i>command</i></a></dt><dd>
+
+Specifies the name of a command used to format an edited mod before saving
+it.  The command takes two additional arguments, the file name and
+the code to format.  It should return the formatted text.  The
+application can use this to add boilerplate to the saved file.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="debugger">debugger <i>pathName ?options...?</i></a></dt><dd>
+
+Creates a new toplevel debugger window named <i>pathName</i>.
+
+
+</dd>
+<dt class="defitem"><a name="debugger_new">debugger new <i>?options...?</i></a></dt><dd>
+
+Creates a new toplevel debugger window, with the specified options.
+
+</dd>
+<dt class="defitem"><a name="debugger_debug">debugger debug ?<i>command...</i>?</a></dt><dd>
+
+Pops up a debugger, creating one if necessary, and attempts to load
+<i>command...</i> into the debugger's mod editor.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$debugger configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget">$debugger cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="edit">$debugger edit <i>command</i></a></dt><dd>
+
+Loads the <i>command</i>'s definition into the debugger's
+mod editor.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl/Tk 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:50 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

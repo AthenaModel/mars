@@ -1,0 +1,711 @@
+<html>
+<head>
+<title>mars 3.0.23: mars_cmtool(1) -- cellmodel(5) tool, submodule of mars(1)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mars_cmtool(1)</b> -- cellmodel(5) tool, submodule of <a href="../man1/mars.html">mars(1)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#mash_file">MASH FILE</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#mars_cmtool">mars cmtool <i>subcommand</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#check">mars cmtool check <i>modelfile</i></a></li>
+<li><a class="iref" href="#dump">mars cmtool dump <i>modelfile</i> ?-page <i>page</i>?</a></li>
+<li><a class="iref" href="#help">mars cmtool help</a></li>
+<li><a class="iref" href="#mash">mars cmtool mash <i>modelfile mashfile</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mash-epsilon">-epsilon <i>epsilon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mash-maxiters">-maxiters <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mash-logfile">-logfile <i>filename</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mash-csvfile">-csvfile <i>filename</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mash-errfile">-errfile <i>filename</i></a></li>
+<li><a class="iref" href="#run">mars cmtool run <i>modelfile</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#run-epsilon">-epsilon <i>epsilon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#run-maxiters">-maxiters <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#run-case">-case <i>name</i> ?<i>cell value...</i>?</a></li>
+<li><a class="iref" href="#solve">mars cmtool solve <i>modelfile</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-epsilon">-epsilon <i>epsilon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-initfrom">-initfrom <i>filename</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-maxiters">-maxiters <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-dumpstart">-dumpstart</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-dumpfinal">-dumpfinal</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-diffpages">-diffpages <i>a b</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-logiters">-logiters <i>page</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-dumpiters">-dumpiters <i>page</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-tracevalues">-tracevalues <i>page</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#solve-tracedeltas">-tracedeltas <i>page</i></a></li>
+<li><a class="iref" href="#xref">mars cmtool xref <i>modelfile</i></a></li>
+<li><a class="iref" href="#range">range <i>cell lower upper step</i></a></li>
+<li><a class="iref" href="#let">let <i>cell</i> = <i>formula</i></a></li>
+<li><a class="iref" href="#log">log <i>cell</i></a></li>
+<li><a class="iref" href="#require">require <i>condition</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="mars_cmtool">mars cmtool <i>subcommand</i> ?<i>options...</i>?</a></dt>
+</dl>
+<p>mars_cmtool(1) is a command-line tool for working with <a href="../man5/cellmodel.html">cellmodel(5)</a>
+models; see that man page for specifics of the <a href="../man5/cellmodel.html">cellmodel(5)</a>
+syntax and semantics.  It defines a number of subcommands, each of
+which has its own syntax.</p>
+
+<p>To check a model file for errors, use <a class="iref" href="#check">check</a>.  To dump the
+cells and formulas in the model, use <a class="iref" href="#dump">dump</a>; this is useful to
+verify that <a href="../man5/cellmodel.html">cellmodel(5)</a> macros have expanded as expected.
+The <a class="iref" href="#xref">xref</a> command shows who references each cell.</p>
+
+<p>There are three ways to solve the model and output results.  The
+<a class="iref" href="#solve">solve</a> command solves the model once, and can output a variety
+of detailed information about the solution.  This is the command to
+use to find out why a model does not converge.</p>
+
+<p>The <a class="iref" href="#run">run</a> command solves the model for a small number of cases,
+entered on the command line, and outputs the results in parallel
+columns.</p>
+
+<p>The <a class="iref" href="#mash">mash</a> command solves the model for a large number of
+cases, looking for problems and logging a selected set of inputs and
+outputs for plotting or other analysis.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>The application's subcommands are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="check">mars cmtool check <i>modelfile</i></a></dt><dd>
+
+Loads a <a href="../man5/cellmodel.html">cellmodel(5)</a> model from <i>modelfile</i>.  If the file
+cannot be loaded, outputs an error and halts.  Otherwise, outputs a
+detailed sanity check of the model.  If <a class="iref" href="#run">run</a> or <a class="iref" href="#solve">solve</a>
+reject a model becase it is not "sane", use this command to determine
+the problem.
+
+</dd>
+<dt class="defitem"><a name="dump">mars cmtool dump <i>modelfile</i> ?-page <i>page</i>?</a></dt><dd>
+
+Produces a dump of the cells in the model, including their values and
+formulas.  If the <b>-page</b> option is included, the output only
+includes the cells from the named <i>page</i>.
+
+</dd>
+<dt class="defitem"><a name="help">mars cmtool help</a></dt><dd>
+
+Outputs a list of the available subcommands, with a one-line
+description of each.
+
+</dd>
+<dt class="defitem"><a name="mash">mars cmtool mash <i>modelfile mashfile</i> ?<i>options...</i>?</a></dt><dd><p>
+
+This command runs the model contained in <i>modelfile</i> for the
+cases defined in the <i>mashfile</i>, and saves a variety of outputs
+as determined by the options.  See <a href="#mash_file">MASH FILE</a> for
+information on how to set up a mash file.</p>
+
+<p>Called with no options, it simply outputs the number of cases that
+had problems.  The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="mash-epsilon">-epsilon <i>epsilon</i></a></dt><dd>
+
+Specifies the <i>epsilon</i> to use in the convergence test.  Defaults
+to 0.0001.
+
+</dd>
+<dt class="defopt"><a name="mash-maxiters">-maxiters <i>num</i></a></dt><dd>
+
+Specifies the maximum number of iterations when iterating a cyclic
+page to convergence.  If the page's "max delta" is still greater than
+the <b>-epsilon</b> after <i>num</i> iterations, the page is said to
+have diverged.  Defaults to 100.
+
+</dd>
+<dt class="defopt"><a name="mash-logfile">-logfile <i>filename</i></a></dt><dd><p>
+
+Logs the input and output cell values for all cases to the named
+file.</p>
+
+<p>Each row contains an integer case ID, a flag (<b>ok</b> or <b>no</b>)
+that indicates whether the case was succesful or not, and the values of
+the input and output cells in the order they were defined in the
+mash file.</p>
+
+<p>The first row of the while contains the column names: "cid", "ok", and
+the cell names.</p>
+
+<p>Columns are delimited by whitespace.
+
+</p>
+</dd>
+<dt class="defopt"><a name="mash-csvfile">-csvfile <i>filename</i></a></dt><dd>
+
+Logs the successful cases in Comma-Separated-Value format, suitable
+for loading into a spreadsheet application.  The
+columns are the same as for the <b>-logfile</b>, except that the
+"ok" column is omitted.
+
+</dd>
+<dt class="defopt"><a name="mash-errfile">-errfile <i>filename</i></a></dt><dd>
+
+Any problem cases are logged to the named file.  For each case,
+the file will contain a line with the case ID and a dictionary of
+the input values, followed by one indented line for each problem
+found.  Note that a case is a failure if it diverges, or if any of
+the conditions required by the mash file are not met.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="run">mars cmtool run <i>modelfile</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Solves the model in the named file one or more times, and outputs a
+comparison of the results for the different cases.  The options are as
+follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="run-epsilon">-epsilon <i>epsilon</i></a></dt><dd>
+
+Specifies the <i>epsilon</i> to use in the convergence test.  Defaults
+to 0.0001.
+
+</dd>
+<dt class="defopt"><a name="run-maxiters">-maxiters <i>num</i></a></dt><dd>
+
+Specifies the maximum number of iterations when iterating a cyclic
+page to convergence.  If the page's "max delta" is still greater than
+the <b>-epsilon</b> after <i>num</i> iterations, the page is said to
+have diverged.  Defaults to 100.
+
+</dd>
+<dt class="defopt"><a name="run-case">-case <i>name</i> ?<i>cell value...</i>?</a></dt><dd>
+
+This option may be repeated any number of times to define individual
+cases.  Each case has a <i>name</i>, used as a column header in the
+output, and may specify the starting values of one or more cells.
+Before running each case, the model is reset, and the specified values
+are assigned to the cells.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="solve">mars cmtool solve <i>modelfile</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Attempts solve the model, computing acyclic pages and iterating
+acyclic pages to convergence, writing a dump of the final values to
+standard output.  The options allow the computation to be controlled
+and traced.
+
+</p><dl>
+
+<dt class="defopt"><a name="solve-epsilon">-epsilon <i>epsilon</i></a></dt><dd>
+
+Specifies the <i>epsilon</i> to use in the convergence test.  Defaults
+to 0.0001.
+
+</dd>
+<dt class="defopt"><a name="solve-initfrom">-initfrom <i>filename</i></a></dt><dd>
+
+Specifies a file that contains fully qualified cell names and values
+that the cellmodel reads for the purpose of setting
+initial values. This is useful when debugging initial conditions
+from some other source (such as Athena) that cause the cell model
+to not solve. 
+
+
+</dd>
+<dt class="defopt"><a name="solve-maxiters">-maxiters <i>num</i></a></dt><dd>
+
+Specifies the maximum number of iterations when iterating a cyclic
+page to convergence.  If the page's "max delta" is still greater than
+the <b>-epsilon</b> after <i>num</i> iterations, the page is said to
+have diverged.  Defaults to 100.
+
+</dd>
+<dt class="defopt"><a name="solve-dumpstart">-dumpstart</a></dt><dd>
+
+Dumps the model (as for <a class="iref" href="#dump">dump</a>) with its initial cell values,
+before computing any pages.
+
+</dd>
+<dt class="defopt"><a name="solve-dumpfinal">-dumpfinal</a></dt><dd>
+
+Dumps the model (as for <a class="iref" href="#dump">dump</a>) after all computations are
+complete.  If pages diverged, the dumped values might or might not be
+useful.  If no other output is requested, this option is assumed.
+
+</dd>
+<dt class="defopt"><a name="solve-diffpages">-diffpages <i>a b</i></a></dt><dd>
+
+Dumps a comparison of the content of the two pages named <i>a</i> and
+<i>b</i>.  This option may be repeated multiple times, to request
+comparisons of additional pairs of pages.
+
+</dd>
+<dt class="defopt"><a name="solve-logiters">-logiters <i>page</i></a></dt><dd>
+
+Logs the iteration delta for each iteration of the named <i>page</i>.
+This option may be repeated multiple times, to request logging for
+multiple pages.
+
+</dd>
+<dt class="defopt"><a name="solve-dumpiters">-dumpiters <i>page</i></a></dt><dd>
+
+Does a <a class="iref" href="#dump">dump</a> of the intermediate values following each
+iteration of <i>page</i>.  This option may be repeated multiple times,
+to request iteration dumping for multiple pages.
+
+</dd>
+<dt class="defopt"><a name="solve-tracevalues">-tracevalues <i>page</i></a></dt><dd>
+
+After the named <i>page</i> has converged or diverged, outputs a table
+of the page's cell values for the first and last three iterations.
+This can be useful when diagnosing divergence errors.  This option may
+be repeated multiple times, to request tracing for multiple
+pages.
+
+</dd>
+<dt class="defopt"><a name="solve-tracedeltas">-tracedeltas <i>page</i></a></dt><dd>
+
+After the named <i>page</i> has converged or diverged, outputs a table
+of the deltas for each of the page's cell values for the first and
+last three iterations.  This can be useful when diagnosing divergence
+errors.  This option may be repeated multiple times, to request
+tracing for multiple pages.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="xref">mars cmtool xref <i>modelfile</i></a></dt><dd>
+
+For each cell, in order of definition, outputs a list of the other
+cells whose formulas reference the cell.
+
+</dd>
+</dl>
+
+<h2><a name="mash_file">MASH FILE</a></h2>
+<p>The "mash file" required by the <a class="iref" href="#mash">mash</a> subcommand is a
+Tcl-formatted file containing the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="range">range <i>cell lower upper step</i></a></dt><dd><p>
+
+Directs <a class="iref" href="#mash">mash</a> to run the model for a number of values
+of the named input <i>cell</i>, from <i>lower</i> to <i>upper</i> with a
+step size of <i>step</i>.  For example,
+
+</p><pre>
+    range A 0 5 1
+</pre>
+<p>will run the model with A taking on the values 0, 1, 2, 3, 4, 5.</p>
+
+<p>Note that the <i>upper</i> value will be included only if the
+difference between <i>upper</i> and <i>lower</i> is a multiple of
+<i>step</i>, <b>and</b> round-off error doesn't prevent it.</p>
+
+<p>If the mash file contains multiple <a class="iref" href="#range">range</a> commands, the model
+will be run for all combinations.</p>
+
+<p>Note that <i>lower</i>, <i>upper</i>, and <i>step</i> can be either
+numbers or formulas; the formulas will be evaluated in the context of
+the cell model, given the values of the other cells.  For example,
+
+</p>
+
+<pre>
+    range A 1 100 1
+    range B 1 {[A]} 1
+</pre>
+<p>For each value of A from 1 to 100, B will range from 1 to the current
+value of A.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="let">let <i>cell</i> = <i>formula</i></a></dt><dd><p>
+
+Assigns an input <i>cell</i> the value indicated by the
+<i>formula</i>, which is evaluated in the context of the cell model.
+This is used to give an input a value that's related to the values of
+one or more other inputs.  For example,
+
+</p><pre>
+    range A 100 500 10
+    let   B = {[A] * 1.5}
+</pre>
+<p>B will always have a value 50% higher than that of A.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="log">log <i>cell</i></a></dt><dd><p>
+
+Tells <a class="iref" href="#mash">mash</a> to include the named <i>cell</i> in the
+<b>-logfile</b> and <b>-csvfile</b>. (Note that cells named in
+<a class="iref" href="#range">range</a> and <a class="iref" href="#let">let</a> commands are logged automatically.)
+For example,
+
+</p><pre>
+    log C
+</pre>
+<p>will log the value of C for each case.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="require">require <i>condition</i></a></dt><dd><p>
+
+Specifies a logical <i>condition</i> that must be true for a case to
+be considered successful, in addition to convergence.  The
+<i>condition</i> is a boolean expression to be evaluated in the
+context of the cell model.  For example,
+
+</p><pre>
+    require {[A] == [B]}
+</pre>
+<p>requires that cells A and B should have the same value or the case is
+a failure.  Note that when doing this kind of comparison it's often
+wise to use the <a href="../man5/cellmodel.html#ediff">ediff</a>() function, and require
+that the cell values are equal to within <b>-epsilon</b>:
+
+</p>
+
+<pre>
+    require {ediff([A],[B]) == 0}
+</pre>
+
+
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original application.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:48 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

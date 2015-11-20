@@ -1,0 +1,589 @@
+<html>
+<head>
+<title>mars 3.0.23: uramdb(n) -- uramdb(5) Parser, submodule of simlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>uramdb(n)</b> -- uramdb(5) Parser, submodule of <a href="../mann/simlib.html">simlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#database_schema">DATABASE SCHEMA</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require simlib 3.0.23
+namespace import ::simlib::*
+</pre>
+
+
+
+<ul class="itemlist">
+<li><a class="iref" href="#loadfile">uramdb loadfile <i>dbfile</i> ?<i>db</i>?</a></li>
+<li><a class="iref" href="#load">uramdb load <i>text</i> ?<i>db</i>?</a></li>
+<li><a class="iref" href="#mkperfdb">uramdb mkperfdb <i>db</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mkperfdb-actors">-actors <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mkperfdb-nbhoods">-nbhoods <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mkperfdb-civgroups">-civgroups <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mkperfdb-frcgroups">-frcgroups <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#mkperfdb-orggroups">-orggroups <i>num</i></a></li>
+<li><a class="iref" href="#loader">uramdb loader <i>db uram</i></a></li>
+<li><a class="iref" href="#sqlsection">uramdb sqlsection <i>subcommand</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>uramdb(n) defines a parser for <a href="../man5/uramdb.html">uramdb(5)</a> files.  uramdb(n)
+loads <a href="../man5/uramdb.html">uramdb(5)</a> data into an <a href="../mann/sqldocument.html">sqldocument(n)</a> or
+other SQLite3 database.  uramdb(n) adheres to the
+<a href="../mani/sqlsection.html">sqlsection(i)</a> interface.
+
+</p>
+
+<h2><a name="database_schema">DATABASE SCHEMA</a></h2>
+<p>uramdb(n) registers the following schema definitions:
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- TITLE: 
+--   uramdb.sql
+--
+-- PACKAGE:
+--   simlib(n) -- Simulation Infrastructure Package
+--
+-- PROJECT:
+--   Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--   Will Duquette
+--
+-- DESCRIPTION:
+--   SQL Schema for the uramdb(n) module.
+--
+------------------------------------------------------------------------
+
+
+CREATE TABLE uramdb_c (
+    -- Concern names
+    c    TEXT PRIMARY KEY          -- Symbolic name
+);
+
+CREATE TABLE uramdb_a (
+    -- Actor names
+    a    TEXT PRIMARY KEY          -- Symbolic name
+);
+
+CREATE TABLE uramdb_n (
+    -- Neighborhood names
+    n    TEXT PRIMARY KEY          -- Symbolic name
+);
+
+CREATE TABLE uramdb_g (
+    -- FRC group names and data
+    g     TEXT PRIMARY KEY,        -- Symbolic group name
+    gtype TEXT                     -- CIV, FRC, ORG   
+);
+
+CREATE TABLE uramdb_civ_g (
+    -- CIV group names and data
+    g    TEXT PRIMARY KEY,         -- Symbolic group name
+    n    TEXT,                     -- Nbhood of reference
+    pop  INTEGER DEFAULT 0 
+);
+
+CREATE TABLE uramdb_frc_g (
+    -- FRC group names and data
+    g    TEXT PRIMARY KEY          -- Symbolic group name
+);
+
+CREATE TABLE uramdb_org_g (
+    -- ORG group names and data
+    g    TEXT PRIMARY KEY          -- Symbolic group name
+);
+
+
+CREATE TABLE uramdb_mn (
+    -- Pairwise neighborhood data
+    m          TEXT,                     -- Symbolic nbhood name
+    n          TEXT,                     -- Symbolic nbhood name
+
+    proximity  TEXT DEFAULT 'REMOTE',    -- eproximity
+    
+    PRIMARY KEY (m, n)
+);
+
+CREATE TABLE uramdb_hrel (
+    -- HREL: group-to-group horizontal relationships
+    f      TEXT,                     -- Symbolic group name
+    g      TEXT,                     -- Symbolic group name
+
+    hrel   DOUBLE DEFAULT 0.0,       -- Horizontal relationship
+    
+    PRIMARY KEY (f, g)
+);
+
+CREATE TABLE uramdb_vrel (
+    -- VREL: group-to-actor vertical relationships
+    g      TEXT,                     -- Symbolic group name
+    a      TEXT,                     -- Symbolic actor name
+
+    vrel   DOUBLE DEFAULT 0.0,       -- Vertical relationship
+    
+    PRIMARY KEY (g, a)
+);
+
+
+CREATE TABLE uramdb_sat (
+    -- SAT: Satisfaction levels
+    g          TEXT,                     -- Symbolic group name
+    c          TEXT,                     -- Symbolic concern name
+
+    sat        DOUBLE DEFAULT 0.0,       -- Initial satisfaction
+    saliency   DOUBLE DEFAULT 1.0,       -- Saliency
+
+    PRIMARY KEY (g, c)
+);
+
+CREATE TABLE uramdb_coop (
+    -- COOP: CIV group cooperation with FRC group
+    f        TEXT,                     -- Symbolic group name
+    g        TEXT,                     -- Symbolic group name
+
+    coop     DOUBLE DEFAULT 50.0,      -- Cooperation
+    
+    PRIMARY KEY (f, g)
+);
+
+
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="loadfile">uramdb loadfile <i>dbfile</i> ?<i>db</i>?</a></dt><dd><p>
+
+Parses the content of the file named <i>dbfile</i>, and stores the
+data in the relevant tables in the <a href="../mann/sqldocument.html">sqldocument(n)</a> called
+<i>db</i>.</p>
+
+<p>If <i>db</i> is specified, the schema must already
+be initialized.  The relevant tables will be cleared prior to
+loading the data.</p>
+
+<p>If no <i>db</i> is specified, <a class="iref" href="#loadfile">loadfile</a> will create,
+initialize, and return an in-memory <a href="../mann/sqldocument.html">sqldocument(n)</a> object.
+In this case, it is the caller's responsibility to destroy the
+database object when it is no longer needed.
+
+</p>
+</dd>
+<dt class="defitem"><a name="load">uramdb load <i>text</i> ?<i>db</i>?</a></dt><dd>
+
+Identical to <a class="iref" href="#loadfile">loadfile</a>, but parses <a href="../man5/uramdb.html">uramdb(5)</a> text from
+string <i>text</i> rather than a file.
+
+</dd>
+<dt class="defitem"><a name="mkperfdb">uramdb mkperfdb <i>db</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Populates the <a href="../man5/uramdb.html">uramdb(5)</a> tables in the specified <i>db</i>
+with automatically-generated data for the purpose of measuring
+worst-case performance.  The options determine the size of the
+database:
+
+</p><dl>
+<dt class="defopt"><a name="mkperfdb-actors">-actors <i>num</i></a></dt><dd>
+The number of actors in the playbox.
+
+</dd>
+<dt class="defopt"><a name="mkperfdb-nbhoods">-nbhoods <i>num</i></a></dt><dd>
+The number of neighborhoods in the playbox.
+
+</dd>
+<dt class="defopt"><a name="mkperfdb-civgroups">-civgroups <i>num</i></a></dt><dd>
+The number of civilian groups per neighborhood.
+
+</dd>
+<dt class="defopt"><a name="mkperfdb-frcgroups">-frcgroups <i>num</i></a></dt><dd>
+The number of force groups in the playbox.
+
+</dd>
+<dt class="defopt"><a name="mkperfdb-orggroups">-orggroups <i>num</i></a></dt><dd>
+The number of organization groups in the playbox.
+
+</dd>
+</dl>
+<p>The generated data will have the following characteristics:
+
+</p>
+
+<ul>
+  <li> All neighborhood proximities are HERE or NEAR.
+  </li><li> All satisfaction levels are 0.0.
+  </li><li> All saliencies are 1.0.
+  </li><li> All cooperation levels are 50.0.
+  </li><li> All populations are 1000.
+  </li><li> All group relationships are 1.0, 0.5, or -0.5.
+       Each group will have a 1.0 relationship with itself and
+       0.5 or -0.5 with all other groups.
+  </li><li> All vertical relationships are 0.5 or -0.5.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="loader">uramdb loader <i>db uram</i></a></dt><dd><p>
+
+Loads the <a href="../man5/uramdb.html">uramdb(5)</a> data found in the
+<a href="../mann/sqldocument.html">sqldocument(n)</a> object <i>db</i> into <i>uram</i>, an
+instance of <a href="../mann/uram.html">uram(n)</a>.  This command is to be used as a
+<a href="../mann/uram2.html">uram2(n)</a> <b>-loadcmd</b>, like so:
+
+</p><pre>
+uram ::myuram \
+    -loadcmd [list ::simlib::uramdb loader $db] \
+      .
+      .
+      .
+</pre>
+<p>where <b>$db</b> is the name of the <a href="../mann/sqldocument.html">sqldocument(n)</a> containing the
+data.  Note that calling it directly simply won't work, as
+<a href="../mann/uram.html">uram(n)</a> won't be expecting it.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="sqlsection">uramdb sqlsection <i>subcommand</i></a></dt><dd>
+
+uramdb(n) is an <a href="../mani/sqlsection.html">sqlsection(i)</a>, as it defines
+schema entities (see <a href="#database_schema">DATABASE SCHEMA</a>).
+See <a href="../mani/sqlsection.html">sqlsection(i)</a> for a description
+of this method's subcommands.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>uramdb(n) is based on <a href="../mann/gramdb2.html">gramdb2(n)</a>, tailored to the needs
+of <a href="../mann/uram.html">uram(n)</a>.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:59 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

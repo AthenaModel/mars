@@ -1,0 +1,507 @@
+<html>
+<head>
+<title>mars 3.0.23: marsgui(n) -- Mars Graphical User Interface Library</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>marsgui(n)</b> -- Mars Graphical User Interface Library
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#details">DETAILS</a></li>
+    
+
+    <li><a href="#fonts">FONTS</a></li>
+    
+
+    <li><a href="#styles">STYLES</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>marsgui(n) is a package of non-application-specific graphical user
+interface code for use in Mars GUI applications; see the man page
+<a href="./index.html">index</a> for the full list.  In addition
+to including a number of useful widgets, it also configures
+Tk for a better look and feel.  See <a href="#details">DETAILS</a> for
+more.
+
+</p>
+
+<h2><a name="details">DETAILS</a></h2>
+<p>In addition to the modules and commands listed in the index,
+above, marsgui(n) modifies standard Tk as follows:
+
+</p>
+
+<ul>
+  <li> Defines Ctrl+Z, Ctrl+C, and Ctrl+V as the
+       standard cut, copy, and paste keys.
+       
+  </li><li> Defines Ctrl+Z and Ctrl+Shift+Z as the standard Undo/Redo keys;
+       widgets must support the &lt;&lt;Undo&gt;&gt; and
+       &lt;&lt;Redo&gt;&gt; virtual events.
+
+  </li><li> Defines Ctrl+Shift+A as the standard "select all" key.
+       Widgets must support the &lt;&lt;SelectAll&gt;&gt; virtual event.
+
+  </li><li> Defines a number of standard <a href="#fonts">FONTS</a>.
+  
+  </li><li> Modifies the standard <a href="../../../tk/docs/mann/text.html">text(n)</a> and <a href="../../../tk/docs/mann/entry.html">entry(n)</a>
+       widget bindings so that pasting text deletes the current selection.
+       
+  </li><li> Requests the <b>clam</b> ttk:: theme.
+      
+  </li><li> Defines new ttk:: <a href="#styles">STYLES</a>.
+
+  </li><li> Adds a number of definitions to the option database so that the
+       appearance and color of the standard Tk widgets matches the
+       current ttk::theme, or is otherwise improved.  See the code for
+       specifics.
+</li></ul>
+
+<h2><a name="fonts">FONTS</a></h2>
+<p>marsgui(n) defines the following standard fonts.
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Font Name</th> 
+<th>Description</th>
+</tr>
+        
+
+<tr class="tr-even">
+<td><span class="tt"><b>codefont</b></span></td>
+<td>
+        
+Standard fixed pitch font.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><span class="tt"><b>codefontitalic</b></span></td>
+<td>
+        
+<code><b>codefont</b></code> + Italics
+</td>
+</tr>
+        
+
+<tr>
+</tr><tr class="tr-even">
+<td><span class="tt"><b>codefontbold</b></span></td>
+<td>
+        
+<code><b>codefont</b></code> + Bold face
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><span class="tt"><b>tinyfont</b></span></td>
+<td>
+        
+Tiny sans-serif font, for small buttons.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><span class="tt"><b>messagefont</b></span></td>
+<td>
+        
+Sans-serif font for messages
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><span class="tt"><b>messagefontb</b></span></td>
+<td>
+        
+<code><b>messagefont</b></code> + Bold Face
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><span class="tt"><b>reportfont</b></span></td>
+<td>
+        
+Font for report headers.
+</td>
+</tr>
+        
+
+</table>
+        
+
+<h2><a name="styles">STYLES</a></h2>
+<p>marsgui(n) defines the follow styles for use with ttk:: widgets.
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Style Name</th> 
+<th>Description</th>
+</tr>
+        
+
+<tr class="tr-even">
+<td><span class="tt"><b>Entrybutton.Toolbutton</b></span></td>
+<td>
+        
+The standard <code><b>Toolbutton</b></code> style configures
+ttk::button widgets for use in toolbars.  This style extends this
+with a white background, for use in compound entry widgets like
+<a href="../mann/commandentry.html">commandentry(n)</a>.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><span class="tt"><b>Menubox.TCombobox</b></span></td>
+<td>
+        
+This style extends the standard <code><b>TCombobox</b></code> style,
+used for the ttk::combobox widget, giving it a white background even
+when it is readonly.
+</td>
+</tr>
+        
+
+</table>
+        
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+
+

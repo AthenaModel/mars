@@ -1,0 +1,612 @@
+<html>
+<head>
+<title>mars 3.0.23: commserver(n) -- comm(n) Command Server, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>commserver(n)</b> -- comm(n) Command Server, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#message_protocol">MESSAGE PROTOCOL</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::commserver
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#commserver">commserver <i>name ?options?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-port">-port <i>portId</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-logger">-logger <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-logcomponent">-logcomponent <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-allowremote">-allowremote <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-validatecmd">-validatecmd <i>prefix</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-evalcmd">-evalcmd <i>prefix</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#commserver-connectcmd">-connectcmd <i>prefix</i></a></li>
+<li><a class="iref" href="#cget">commserver cget <i>option</i></a></li>
+<li><a class="iref" href="#configure">$commserver configure <i>option value...</i></a></li>
+<li><a class="iref" href="#listen">$commserver listen</a></li>
+<li><a class="iref" href="#broadcast">$commserver broadcast <i>script</i></a></li>
+<li><a class="iref" href="#send">$commserver send <i>name script</i></a></li>
+<li><a class="iref" href="#clientid">$commserver clientid</a></li>
+<li><a class="iref" href="#clientname">$commserver clientname</a></li>
+<li><a class="iref" href="#clients">$commserver clients</a></li>
+<li><a class="iref" href="#clientStatus">$commserver clientStatus <i>name</i></a></li>
+<li><a class="iref" href="#clientTime">$commserver clientTime <i>name</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a></p>
+
+<p>commserver(n) defines a <a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a>-based command server;
+<a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a> is a socket-based communications package defined in
+Tcllib.</p>
+
+<p>The commserver(n) object accepts connections from clients at a
+specified port, and tracks which clients are connected at any given
+time.  Commands sent from the client are passed to an executive object
+for processing, and the response (whether a normal result or an error
+message) is sent back to the client.  In addition, the application
+which contains the commserver can send messages to specific clients or
+broadcast them to all clients.</p>
+
+<p>Note that the commserver(n) object doesn't begin to accept
+connections immediately on creation; call <a class="iref" href="#listen">listen</a> when
+the application is ready to accept connections.</p>
+
+<p>The client connects by sending the command "<span class="tt">connect
+<i>name</i></span>", where <i>name</i> is the client's logical name.
+The name and the client's IP address (or "localhost", for local
+connections) are passed to the commserver(n)'s <b>-validatecmd</b>,
+which must validate the client.  If the client's logical name is
+"" (the empty string), then the client's comm(n) ID is used in its
+place.</p>
+
+<p>Commands received from connected clients are passed to the
+<b>-evalcmd</b> for processing.  Return values and thrown errors are
+passed back to the client.</p>
+
+<p>Any Tcl application may be a client by using <a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a> directly;
+however, the <a href="../mann/commclient.html">commclient(n)</a> type encapsulates the <a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a>
+code, and provides a safe interpreter for processing messages coming
+in from the server.
+
+</p>
+
+<h2><a name="message_protocol">MESSAGE PROTOCOL</a></h2>
+<p>By default, <a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a> sends a command as a list of tokens, e.g.,
+
+</p>
+
+<pre>
+    comm::comm send $port set a 5     ;# Sends "set a 5"
+</pre>
+<p>commserver(n) expects the command to be sent as a single token, e.g.,
+
+</p>
+
+<pre>
+    comm::comm send $port {set a 5}   ;# Sends "set a 5"
+</pre>
+<p>The commands received by the commserver are arbitrary strings; the
+executive may process them however it likes.  Typically they will be
+formatted as Tcl commands, and the executive will handle them using
+a safe Tcl interpreter, but this isn't required.  The executive is
+expected to return a result or throw an error in the usual way.</p>
+
+<p>The response to the client is a list of two items:
+
+</p>
+
+<pre>
+    ok|error &lt;result&gt;
+</pre>
+<p>If the executive processed the command successfully, then the first
+token will be "ok" and the second will the result of calling the
+command.</p>
+
+<p>If the executive threw an error, then the first token will be "error"
+and the second will be an error message.</p>
+
+<p>Note that <a href="../mann/commclient.html">commclient(n)</a> handles this protocol automatically.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="commserver">commserver <i>name ?options?</i></a></dt><dd><p>
+
+Creates a new commserver(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#commserver">commserver</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a class="iref" href="#commserver">commserver</a> may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="commserver-port">-port <i>portId</i></a></dt><dd><p>
+
+The <a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a> port ID at which to receive incoming commands.</p>
+
+<p>This option must be set at creation time, and is read-only
+thereafter.
+
+</p>
+</dd>
+<dt class="defopt"><a name="commserver-logger">-logger <i>name</i></a></dt><dd><p>
+
+The name of the <a href="../mann/logger.html">logger(n)</a> object to use to log server
+activity.</p>
+
+<p>This option must be set at creation time, and is read-only
+thereafter.
+
+</p>
+</dd>
+<dt class="defopt"><a name="commserver-logcomponent">-logcomponent <i>name</i></a></dt><dd>
+
+The component name to pass to the <code>-logger</code> object when
+logging messages; defaults to "commserver".
+
+</dd>
+<dt class="defopt"><a name="commserver-allowremote">-allowremote <i>flag</i></a></dt><dd><p>
+
+If 0, the default, clients may only connect from the local host.
+If 1, connections are accepted from remote hosts as well.</p>
+
+<p><b>Note:</b> if remote clients are allowed, take care to ensure
+that they are properly validated, and that the executive given
+to them is suitably constrained!
+
+</p>
+</dd>
+<dt class="defopt"><a name="commserver-validatecmd">-validatecmd <i>prefix</i></a></dt><dd><p>
+
+The <i>prefix</i> is a command prefix.  When a new client connects,
+its logical name and IP address (or "localhost") will be appended to
+<i>prefix</i>, which will then be executed.</p>
+
+<p>The resulting command must validate the logical name and IP address.
+It may refuse the connection by throwing an error; otherwise the
+connection is presumed to be valid.</p>
+
+<p>If no <b>-validatecmd</b> is supplied, then all connections are
+valid.  Note that this is unsafe if <b>-allowremote</b> is enabled.
+
+</p>
+</dd>
+<dt class="defopt"><a name="commserver-evalcmd">-evalcmd <i>prefix</i></a></dt><dd>
+
+The <i>prefix</i> is a command prefix.  When a connected client
+sends a command, the <i>prefix</i> is called as a command with two
+additional arguments, the client name and the client's command.
+The <b>-evalcmd</b> should evaluate the client's command; any return
+value or thrown error are passed back to the client.
+
+</dd>
+<dt class="defopt"><a name="commserver-connectcmd">-connectcmd <i>prefix</i></a></dt><dd>
+
+The <i>prefix</i> is a command prefix.  When a new client connects
+and is validated successfully, its logical name and IP address (or
+"localhost") will be appended to <i>prefix</i>, which will then be
+executed.  Any return value is ignored.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#commserver">commserver</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget">commserver cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure">$commserver configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="listen">$commserver listen</a></dt><dd>
+
+Call this command when ready for the commserver(n) to accept
+connections.
+
+</dd>
+<dt class="defitem"><a name="broadcast">$commserver broadcast <i>script</i></a></dt><dd>
+
+Sends the script to all clients asynchronously, ignoring any reply.
+The script will usually be a Tcl command for the client to process
+(probably in a safe interpreter), but is in fact an arbitrary text;
+the client and server must agree on meaning of such messages.
+
+</dd>
+<dt class="defitem"><a name="send">$commserver send <i>name script</i></a></dt><dd>
+
+Sends the script to the specific client asynchronously, ignoring any
+reply.  The <i>name</i> is the client's logical name.
+The script will usually be a Tcl command for the client to process
+(probably in a safe interpreter), but is in fact an arbitrary text;
+the client and server must agree on meaning of such messages.
+
+</dd>
+<dt class="defitem"><a name="clientid">$commserver clientid</a></dt><dd>
+
+When the server is processing a client's command, this method returns
+the client's <a href="http://tcllib.sourceforge.net/doc/comm.html">comm(n)</a> ID.
+
+</dd>
+<dt class="defitem"><a name="clientname">$commserver clientname</a></dt><dd>
+
+When the server is processing a client's command, this method returns
+the client's logical name.
+
+</dd>
+<dt class="defitem"><a name="clients">$commserver clients</a></dt><dd>
+
+Returns a list of the logical names of all current clients.
+
+</dd>
+<dt class="defitem"><a name="clientStatus">$commserver clientStatus <i>name</i></a></dt><dd>
+
+Returns the connection status for the client identified by
+<i>name</i>.  The return value is "connected" or "disconnected".
+
+</dd>
+<dt class="defitem"><a name="clientTime">$commserver clientTime <i>name</i></a></dt><dd>
+
+Returns the time of last connection/disconnection for the client
+identified by <i>name</i>.  The return value is the number of seconds
+since the last epoch.  A return value of 0 indicates the client has
+never connected.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/commclient.html">commclient(n)</a>
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:50 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

@@ -1,0 +1,452 @@
+<html>
+<head>
+<title>mars 3.0.23: projection(i) -- Map Projection Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>projection(i)</b> -- Map Projection Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#subcommands">Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#box"><i>object</i> box</a></li>
+<li><a class="iref" href="#c2m"><i>object</i> c2m <i>zoom cx cy</i></a></li>
+<li><a class="iref" href="#c2ref"><i>object</i> c2ref <i>zoom cx cy</i></a></li>
+<li><a class="iref" href="#c2loc"><i>object</i> c2ref <i>zoom cx cy</i></a></li>
+<li><a class="iref" href="#dim"><i>object</i> dim</a></li>
+<li><a class="iref" href="#m2c"><i>object</i> m2c <i>zoom mx my....</i></a></li>
+<li><a class="iref" href="#m2ref"><i>object</i> m2ref <i>mx my</i></a></li>
+<li><a class="iref" href="#ref2c"><i>object</i> ref2c <i>zoom ref...</i></a></li>
+<li><a class="iref" href="#ref2m"><i>object</i> ref2m <i>ref...</i></a></li>
+<li><a class="iref" href="#ref_validate"><i>object</i> ref validate <i>ref...</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A map <a href="../mani/projection.html">projection(i)</a> is an object that converts between
+<a href="../mann/mapcanvas.html">mapcanvas(n)</a> canvas coordinates and map coordinates given the
+map's projection.  A <a href="../mani/projection.html">projection(i)</a> object will support the
+following kinds of coordinate system:
+
+</p>
+
+<dl>
+  <dt class="def">Canvas Units</dt><dd>
+   The <a href="../mann/mapcanvas.html">mapcanvas(n)</a> refers to points on a map image
+       using (cx,cy) pixel coordinates with the origin at the upper
+       left; coordinates increase to the right and down.
+
+  </dd>
+<dt class="def">Map Units</dt><dd>
+   A location in map units is an (mx,my) coordinate pair.  The
+       units, and indeed the nature of the coordinate system, are
+       entirely up to the <a href="../mani/projection.html">projection(i)</a> object.  The
+       <a href="../mann/mapref.html">mapref(n)</a> projection, for example, uses a simple
+       non-geographic scheme that's essentially just a rescaling of
+       canvas units; when georeferencing is required, lat/lon is an
+       obvious choice.
+
+  </dd>
+<dt class="def">Map Reference Strings</dt><dd>
+   A map reference string is a short string that identifies a
+       point on the map; it's a human-readable equivalent to the
+       (mx,my) map coordinates.  The <a href="../mann/mapref.html">mapref(n)</a> projection defines a
+       simple alphanumeric string; when georeferencing is required,
+       MGRS is an obvious choice.
+</dd>
+</dl>
+<p>Note that the <a href="../mann/mapcanvas.html">mapcanvas(n)</a> can display a given map
+at a variety of zoom factors.  The zoom factor is an integer number
+between 1 and 300, interpeted as a percentage.  At a zoom factor of
+200, for example, there are twice as many pixels in each direction.
+The conversion between canvas coordinates and map coordinates must
+take the zoom factor into account.</p>
+
+<p>The projection to be used depends on the projection of the map image,
+and on the desired map coordinate system.  The <a href="../mann/mapref.html">mapref(n)</a>
+projection has the advantage that it works with any map image, whether
+georeferenced or not.
+
+</p>
+
+<h2><a name="subcommands">Subcommands</a></h2>
+<p>Every <a href="../mani/projection.html">projection(i)</a> module must be an ensemble command with
+at least the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="box"><i>object</i> box</a></dt><dd>
+
+Returns the bounding box of the map in map units.
+
+</dd>
+<dt class="defitem"><a name="c2m"><i>object</i> c2m <i>zoom cx cy</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map coordinate pair as a list of two coordinates
+<i>mx</i> and <i>my</i>.
+
+</dd>
+<dt class="defitem"><a name="c2ref"><i>object</i> c2ref <i>zoom cx cy</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map reference string.
+
+</dd>
+<dt class="defitem"><a name="c2loc"><i>object</i> c2ref <i>zoom cx cy</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and a canvas coordinate pair <i>cx</i> and
+<i>cy</i>, returns a map location for purposes of display. How a location
+is displayed to a user is projection dependant.
+
+</dd>
+<dt class="defitem"><a name="dim"><i>object</i> dim</a></dt><dd>
+
+Returns the dimensions of the map in map units.
+
+</dd>
+<dt class="defitem"><a name="m2c"><i>object</i> m2c <i>zoom mx my....</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and one or more map coordinate pairs
+<i>mx</i> and <i>my</i>, returns a list of canvas 
+coordinate pairs as a flat list of coordinates <i>cx cy...</i>.
+
+</dd>
+<dt class="defitem"><a name="m2ref"><i>object</i> m2ref <i>mx my</i></a></dt><dd>
+
+Given a map coordinate pair <i>mx</i> and <i>my</i>, returns a
+map reference string.
+
+</dd>
+<dt class="defitem"><a name="ref2c"><i>object</i> ref2c <i>zoom ref...</i></a></dt><dd>
+
+Given a <i>zoom</i> factor and one or more map reference strings,
+returns a list of canvas coordinate pair as a flat list of coordinates
+<i>cx cy...</i>. 
+
+</dd>
+<dt class="defitem"><a name="ref2m"><i>object</i> ref2m <i>ref...</i></a></dt><dd>
+
+Given one or more map reference strings as arguments, returns a
+corresponding list of <i>mx</i> and <i>my</i> map coordinates.
+
+</dd>
+<dt class="defitem"><a name="ref_validate"><i>object</i> ref validate <i>ref...</i></a></dt><dd>
+
+Given one or more map reference strings as arguments, validates
+each. Throws an error with <code>-errorcode</code> <b>INVALID</b> if
+any reference string is invalid.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

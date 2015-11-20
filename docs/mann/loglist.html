@@ -1,0 +1,613 @@
+<html>
+<head>
+<title>mars 3.0.23: loglist(n) -- Log List Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>loglist(n)</b> -- Log List Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+    <li><a href="#to_be_done">TO BE DONE</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#loglist">loglist <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-width">-width <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-height">-height <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-showtitle">-showtitle <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-showapplist">-showapplist <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-rootdir">-rootdir <i>directory</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-logpattern">-logpattern <i>glob_pattern</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-msgcmd">-msgcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-selectcmd">-selectcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-title">-title <i>title</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-autoload">-autoload <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-autoupdate">-autoupdate <i>boolean</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-updateinterval">-updateinterval <i>msecs</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-defaultappdir">-defaultappdir <i>appdir</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-formattext">-formattext <i>val</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-parsecmd">-parsecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-formatcmd">-formatcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#loglist-filtercmd">-filtercmd <i>cmd</i></a></li>
+<li><a class="iref" href="#configure">$loglist configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$loglist cget <i>option</i></a></li>
+<li><a class="iref" href="#update">$loglist update</a></li>
+<li><a class="iref" href="#searchlogs">$loglist searchlogs <i>direction</i> <i>target</i> <i>?searchtype?</i></a></li>
+<li><a class="iref" href="#stopsearch">$loglist stopsearch</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The loglist(n) widget is used to browse the applications and
+application log files in a log directory tree.  The directory tree has
+this structure:</p>
+
+<p><i>rootdir</i>/<i>appdir</i>/log<i>NNNNN</i>.log</p>
+
+<p>where <i>rootdir</i> is the root of the tree.  The <i>rootdir</i> may
+contain zero or more application subdirectories; each application may
+have written zero or more log files.</p>
+
+<p>The loglist(n) widget displays two lists in a vertical column: a
+list of application names and a list of log files for the currently
+selected application.  Clicking on an application name in the upper
+list displays that application's log files in the lower list.
+Clicking on a log file causes the <code>-selectcmd</code> to be
+called for the selected log file.</p>
+
+<p>loglist(n) also supports searching across an application's log files;
+see <a class="iref" href="#searchlogs">searchlogs</a> for more details.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="loglist">loglist <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#loglist">loglist</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#loglist">loglist</a> widget may be created with the following options: 
+
+</p><dl>
+
+<dt class="defopt"><a name="loglist-width">-width <i>chars</i></a></dt><dd>
+
+The width of the loglist in character cells.  Defaults to 25.
+Read-only after creation.
+
+</dd>
+<dt class="defopt"><a name="loglist-height">-height <i>chars</i></a></dt><dd>
+
+The approximate height of the loglist in character cells.  The
+application list and the log file list will each
+be allocated roughly half of the <code>-height</code>.
+Defaults to 15.  Read-only after creation.
+
+</dd>
+<dt class="defopt"><a name="loglist-showtitle">-showtitle <i>boolean</i></a></dt><dd>
+
+When true (the default), a button containing <code>-title</code> will
+be included directly above the list.  Pressing the button causes the
+list to be updated.   
+
+</dd>
+<dt class="defopt"><a name="loglist-showapplist">-showapplist <i>boolean</i></a></dt><dd>
+
+When true (the default), the list of applications will be included
+directly above the list of logs files. 
+
+</dd>
+<dt class="defopt"><a name="loglist-rootdir">-rootdir <i>directory</i></a></dt><dd>
+
+The root of the log tree; its subdirectories contain log files for
+specific applications.
+
+</dd>
+<dt class="defopt"><a name="loglist-logpattern">-logpattern <i>glob_pattern</i></a></dt><dd>
+
+The glob pattern used to filter files in the application directories.
+Files matching the pattern are assumed to be log files; all other
+files are ignored.  Defaults to "*.log".
+
+</dd>
+<dt class="defopt"><a name="loglist-msgcmd">-msgcmd <i>cmd</i></a></dt><dd>
+
+The command used for reporting progress and status; it will usually
+write to the window's message line. The message will be appended
+to the <i>cmd</i> as a single string argument.  Defaults to "".
+
+</dd>
+<dt class="defopt"><a name="loglist-selectcmd">-selectcmd <i>cmd</i></a></dt><dd>
+
+A command to execute whenever a log file is selected.  Two arguments
+will be appended: The file's full pathname followed by a boolean flag
+indicating if the file changed or not.  When there is no
+currently-selected log file, the filename will be passed the empty
+string, "".  Note that a true value for the changed flag might be
+set true even if there was no change.  This should be treated as a
+hint that the user is requesting an update.
+
+</dd>
+<dt class="defopt"><a name="loglist-title">-title <i>title</i></a></dt><dd>
+
+Specifies the <i>title</i> which appears on the update button at the top of
+the widget.  Pressing the button updates the contents of the widget.
+Defaults to "Applications:".
+
+</dd>
+<dt class="defopt"><a name="loglist-autoload">-autoload <i>boolean</i></a></dt><dd>
+
+If enabled, specifies that the most recent file should be loaded during
+an update.  An update in this context refers to either a manual or
+automatic update.  The default is true.
+
+</dd>
+<dt class="defopt"><a name="loglist-autoupdate">-autoupdate <i>boolean</i></a></dt><dd>
+
+If enabled, the loglist(n) updates its contents every
+<code>-updateinterval</code>.  Defaults to "off".  Note that this
+option can be enabled and disabled at any time.  See
+<a class="iref" href="#update">update</a> for details on what happens during an update.
+
+</dd>
+<dt class="defopt"><a name="loglist-updateinterval">-updateinterval <i>msecs</i></a></dt><dd>
+
+Sets the auto-update interval to some number of milliseconds.
+Defaults to 1000 (one second).
+
+</dd>
+<dt class="defopt"><a name="loglist-defaultappdir">-defaultappdir <i>appdir</i></a></dt><dd>
+
+Sets the default application name; that application's subdirectory
+will be selected automatically when the loglist is first updated.
+
+</dd>
+<dt class="defopt"><a name="loglist-formattext">-formattext <i>val</i></a></dt><dd>
+
+A boolean option that indicates whether or not log entries should be
+formatted during a call to <a class="iref" href="#searchlogs">searchlogs</a>.  This only makes sense
+if -parsecmd and -formatcmd are also defined.  Searching with this
+option active will generally be much slower than without it.
+
+</dd>
+<dt class="defopt"><a name="loglist-parsecmd">-parsecmd <i>cmd</i></a></dt><dd>
+
+A parsing command used to parse the contents of a log file into the
+proper format.  The <i>parsecmd</i> will be passed a single argument,
+the text string to be parsed; this string will represent a block of
+zero or more log entries. This option only matters when -formattext is
+true.
+
+</dd>
+<dt class="defopt"><a name="loglist-formatcmd">-formatcmd <i>cmd</i></a></dt><dd>
+
+A formatting command to convert a list of parsed log entries into a
+list of formatted log entries just as they would be displayed
+currently.  It's up to client to define what formatted means.  This
+option only matters when -formattext is true. 
+
+</dd>
+<dt class="defopt"><a name="loglist-filtercmd">-filtercmd <i>cmd</i></a></dt><dd>
+
+A filtering command to filter individual entry strings.
+The command should take the entry string as the single argument.
+The command should return 1 if the entry string passes the filter and
+0 otherwise.  This command will be used during calls to
+<a class="iref" href="#searchlogs">searchlogs</a> when -formattext is off. 
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$loglist configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget">$loglist cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="update">$loglist update</a></dt><dd><p>
+
+On update, the loglist(n) looks for new log files for the currently
+selected application, if any, and automatically selects the most
+recent one; the <code>-selectcmd</code> is called in either case.  In
+addition, the loglist(n) looks for and displays any new application
+directories.</p>
+
+<p>If no log files are found, whether because the current application
+directory is empty or because it has ceased to exist, the
+<code>-selectcmd</code> will be called with the empty string, "".
+
+</p>
+</dd>
+<dt class="defitem"><a name="searchlogs">$loglist searchlogs <i>direction</i> <i>target</i> <i>?searchtype?</i></a></dt><dd><p>
+
+Executes a search for the <i>target</i> string among the current
+application's log files.  The kind of search is determined by
+the <i>searchtype</i>, which may be <b>exact</b> (the default),
+<b>wildcard</b>, or <b>regexp</b>.  Note that searches are done
+using grep(1), so fancy regular expressions may not work quite the
+same as they do for searches done using Tcl's regexp matcher.</p>
+
+<p>The search takes the current log file as the starting point and
+steps through the <b>earlier</b> or <b>later</b> logs as specified
+by the <i>direction</i>.</p>
+
+<p>The first log in the specified direction to contain a hit is
+automatically selected, and the <code>-selectcmd</code> is called.
+If no hits are found in that direction then a message is written
+via the <code>-msgcmd</code>.</p>
+
+<p>Returns 1 on success and 0 on failure.</p>
+
+<p>Searching can be a lengthy process; calling <a class="iref" href="#stopsearch">stopsearch</a>
+will terminate it prior to completion.
+
+</p>
+</dd>
+<dt class="defitem"><a name="stopsearch">$loglist stopsearch</a></dt><dd>
+
+Stops the active log search, if there is one.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe,
+Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>6/24/2005 DJ -- Original package.
+5/31/2006 WHD -- Extensively revised and refactored.
+
+</p>
+
+<h2><a name="to_be_done">TO BE DONE</a></h2>
+    
+
+<ul>
+  <li> Bug: <a class="iref" href="#searchlogs">searchlogs</a> uses a for loop containing an explicit
+       "update".  This should be recast as a sequence of idle tasks;
+       using "update" is asking for trouble.
+
+  </li><li> <a class="iref" href="#searchlogs">searchlogs</a> executes grep(1) to do the search.  This is
+       fast, but the regexp syntax probably isn't identical to Tcl's.
+       We should figure out whether there's a significant performance
+       penalty for doing it entirely in Tcl.
+</li></ul>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

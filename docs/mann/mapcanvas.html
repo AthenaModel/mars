@@ -1,0 +1,1017 @@
+<html>
+<head>
+<title>mars 3.0.23: mapcanvas(n) -- Map Canvas Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mapcanvas(n)</b> -- Map Canvas Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#the_map">The Map</a></li>
+
+    <li><a href="#coordinate_systems">Coordinate Systems</a></li>
+
+    <li><a href="#projections">Projections</a></li>
+
+    <li><a href="#visible_region">Visible Region</a></li>
+
+    <li><a href="#neighborhoods">Neighborhoods</a></li>
+
+    <li><a href="#icons">Icons</a></li>
+
+    <li><a href="#interaction_modes">Interaction Modes</a></li>
+
+</ul>
+    
+
+    <li><a href="#options">OPTIONS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#events">EVENTS</a></li>
+    
+
+    <li><a href="#bindings">BINDINGS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#mapcanvas">mapcanvas <i>pathName ?options...?</i></a></li>
+<li><a class="iref" href="#mapcanvas_icon">mapcanvas icon <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#mapcanvas_icon_register">mapcanvas icon register <i>iconType</i></a></li>
+<li><a class="iref" href="#mapcanvas_icon_types">mapcanvas icon types</a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#clear"><i>pathName</i> clear</a></li>
+<li><a class="iref" href="#icon"><i>pathName</i> icon <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#icon_create"><i>pathName</i> icon create <i>icontype mappoint</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#icon_cget"><i>pathName</i> icon cget <i>id option</i></a></li>
+<li><a class="iref" href="#icon_configure"><i>pathName</i> icon configure <i>id option value</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#icon_delete"><i>pathName</i> icon delete <i>id</i>?</a></li>
+<li><a class="iref" href="#icon_exists"><i>pathName</i> icon exists <i>id</i>?</a></li>
+<li><a class="iref" href="#icon_list"><i>pathName</i> icon list ?<i>iconType</i>?</a></li>
+<li><a class="iref" href="#icon_moveto"><i>pathName</i> icon moveto <i>id mappoint</i></a></li>
+<li><a class="iref" href="#icon_ref"><i>pathName</i> icon ref <i>id</i></a></li>
+<li><a class="iref" href="#mode"><i>pathName</i> mode ?<i>mode</i>?</a></li>
+<li><a class="iref" href="#nbhood"><i>pathName</i> nbhood <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#nbhood_cget"><i>pathName</i> nbhood cget <i>id option</i></a></li>
+<li><a class="iref" href="#nbhood_configure"><i>pathName</i> nbhood configure <i>id option value</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#nbhood_create"><i>pathName</i> nbhood create <i>refpoint polygon</i> ?<i>option value...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#nbhood create-fill">-fill <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#nbhood create-pointcolor">-pointcolor <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#nbhood create-linewidth">-linewidth <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#nbhood create-polycolor">-polycolor <i>color</i></a></li>
+<li><a class="iref" href="#nbhood_delete"><i>pathName</i> nbhood delete <i>id</i></a></li>
+<li><a class="iref" href="#nbhood_ids"><i>pathName</i> nbhood ids</a></li>
+<li><a class="iref" href="#nbhood_point"><i>pathName</i> nbhood point <i>id</i> ?<i>point</i>?</a></li>
+<li><a class="iref" href="#nbhood_polygon"><i>pathName</i> nbhood polygon <i>id</i> ?<i>polygon</i>?</a></li>
+<li><a class="iref" href="#refresh"><i>pathName</i> refresh</a></li>
+<li><a class="iref" href="#region"><i>pathName</i> region ?<i>region</i>?</a></li>
+<li><a class="iref" href="#see"><i>pathName</i> see <i>mappoint</i></a></li>
+<li><a class="iref" href="#zoom"><i>pathName</i> zoom ?<i>factor</i>?</a></li>
+<li><a class="iref" href="#zoomfactors"><i>pathName</i> zoomfactors</a></li>
+<li><a class="iref" href="#c2m"><i>pathName</i> c2m <i>cx cy</i></a></li>
+<li><a class="iref" href="#c2ref"><i>pathName</i> c2ref <i>cx cy</i></a></li>
+<li><a class="iref" href="#m2c"><i>pathName</i> m2c <i>mx my</i></a></li>
+<li><a class="iref" href="#m2ref"><i>pathName</i> m2ref <i>mx my</i></a></li>
+<li><a class="iref" href="#ref2c"><i>pathName</i> ref2c <i>ref</i></a></li>
+<li><a class="iref" href="#ref2m"><i>pathName</i> ref2m <i>ref</i></a></li>
+<li><a class="iref" href="#w2c"><i>pathName</i> w2c <i>wx wy</i></a></li>
+<li><a class="iref" href="#w2m"><i>pathName</i> w2m <i>wx wy</i></a></li>
+<li><a class="iref" href="#w2ref"><i>pathName</i> w2ref <i>wx wy</i></a></li>
+<li><a class="iref" href="#Icon-1">&lt;&lt;Icon-1&gt;&gt;</a></li>
+<li><a class="iref" href="#Icon-3">&lt;&lt;Icon-3&gt;&gt;</a></li>
+<li><a class="iref" href="#IconMoved">&lt;&lt;IconMoved&gt;&gt;</a></li>
+<li><a class="iref" href="#Nbhood-1">&lt;&lt;Nbhood-1&gt;&gt;</a></li>
+<li><a class="iref" href="#Nbhood-3">&lt;&lt;Nbhood-3&gt;&gt;</a></li>
+<li><a class="iref" href="#Point-1">&lt;&lt;Point-1&gt;&gt;</a></li>
+<li><a class="iref" href="#PolyComplete">&lt;&lt;PolyComplete&gt;&gt;</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The mapcanvas(n) widget is a Tk <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a> widget adapted
+for the display of asset and neighborhood polygons on top of a
+map background.  In addition, all standard <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a>
+features are supported.
+
+</p>
+
+<h2><a name="the_map">The Map</a></h2>
+<p>The map is a single image file, defining the map background for the
+entire playbox at 100% zoom.  The mapcanvas(n) has the ability to zoom
+in and out on this background for a variety of <a class="iref" href="#zoomfactors">zoomfactors</a>.
+
+</p>
+
+<h2><a name="coordinate_systems">Coordinate Systems</a></h2>
+<p>The mapcanvas(n) widget uses the following coordinate systems, and
+provides numerous subcommands that convert between them.
+
+</p>
+
+<dl>
+  <dt class="def">Window Coordinates</dt><dd><p>
+   Tk event bindings receive the (<i>wx,wy</i>) pixel coordinates of the
+       event location within the visible area of the canvas.  The
+       origin is at the upper-left corner of the canvas; values
+       increase to the left and down.</p>
+
+<p>The map location referenced by window coordinates varies as the
+       map is panned and zoomed.
+
+  </p>
+</dd>
+<dt class="def">Canvas Coordinates</dt><dd><p>
+   The underlying Tk canvas represents locations using
+       (<i>cx,cy</i>) canvas coordinates, which are measured in
+       floating-point pixels.  The origin is at the upper-left corner
+       of the map image; values increase to the left and down.</p>
+
+<p>Note that the map location referenced by canvas coordinates
+       varies as the map is zoomed in and out.
+
+  </p>
+</dd>
+<dt class="def">Map Coordinates</dt><dd>
+   The mapcanvas(n)-specific code represents locations using
+       (<i>mx,my</i>) map coordinates.  The units and meaning of these
+       coordinates depend on the map <a href="../mani/projection.html">projection(i)</a> in use.
+       See <a href="#projections">Projections</a>, below, for more details.
+
+  </dd>
+<dt class="def">Map Reference Strings</dt><dd>
+   A map reference string, or "ref", is a short string that is
+       equivalent to some pair of (<i>mx,my</i>) map coordinates.  Map
+       refs are generally more user-friendly than numeric map
+       coordinates.  See <a href="#projections">Projections</a>, elow, for more details.
+</dd>
+</dl>
+
+<h2><a name="projections">Projections</a></h2>
+<p>The mapping from map coordinates to canvas coordinates is determined
+by the map projection in use.  By default mapcanvas(n) uses a
+pseudo-projection called <a href="../mann/mapref.html">mapref(n)</a>.  This projection provides
+resolution-independent map coordinates and reference strings for any
+map image; however, the coordinates do not carry over from one map to
+another.</p>
+
+<p>If a properly geo-referenced map and an appropriate
+map <a href="../mani/projection.html">projection(i)</a> are available, geographic coordinates
+(e.g., lat/lon and MGRS) may be used instead.
+
+</p>
+
+<h2><a name="visible_region">Visible Region</a></h2>
+<p>When given a map image, mapcanvas(n) normally sets its scroll region
+to the bounds of the map.  This typically means that some valid map
+coordinates are off of the map, and can't be seen.  When the extended
+region is selected, the points corresponding to all valid map
+reference strings are visible whether they are on the map or not.</p>
+
+<p>If no map is available, mapcanvas(n) bases the visible region on the
+current projection.  If no projection is available, either,
+mapcanvas(n) presumes a nominal 1000x1000 map, in which case the
+normal and extended regions are identical.
+
+</p>
+
+<h2><a name="neighborhoods">Neighborhoods</a></h2>
+<p>A neighborhood consists of a polygon and a reference point within it.
+The mapcanvas(n) draws neighborhoods and allows their display to be
+adjusted using the <a class="iref" href="#nbhood">nbhood</a> command.  In particular, Each
+neighborhood's background color can be changed.</p>
+
+<p>Neighborhoods are drawn using standard <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a> items;
+however, the <a class="iref" href="#nbhood_create">nbhood create</a>, <a class="iref" href="#nbhood_cget">nbhood cget</a>, and
+<a class="iref" href="#nbhood_configure">nbhood configure</a> subcommands should be used to manipulate them.
+
+</p>
+
+<h2><a name="icons">Icons</a></h2>
+<p>Icons are graphics symbols drawn on the map which represent assets,
+infrastructure, and so forth, positioned using the chosen map
+coordinates.  The application defines icon types using the
+<a href="../mani/mapicon.html">mapicon(i)</a> interface, and registers them with the
+mapcanvas(n); then, the application can create icons of all registered
+types.</p>
+
+<p>Icons are drawn using standard <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a> items; however,
+the <a class="iref" href="#icon_create">icon create</a>, <a class="iref" href="#icon_cget">icon cget</a>, and <a class="iref" href="#icon_configure">icon configure</a>
+subcommands should be used to manipulate them.
+
+</p>
+
+<h2><a name="interaction_modes">Interaction Modes</a></h2>
+<p>The mapcanvas(n) defines a number of user interaction modes:
+
+</p>
+
+<dl>
+  <dt class="def">null</dt><dd>
+  In this mode, no interaction is possible.
+
+  </dd>
+<dt class="def">browse</dt><dd>
+  In this mode, the user can point at icons, neighborhoods, and
+       so forth, generating events to be processed by the
+       application.  This is the default mode when a map is
+       displayed.
+
+  </dd>
+<dt class="def">point</dt><dd>
+  In this mode, the user can puck points, which are reported to
+       the application via the <b>&lt;&lt;Point-1&gt;&gt;</b> event.
+
+  </dd>
+<dt class="def">poly</dt><dd>
+  In this mode, the user can draw polygons on the map.  Completed
+       polygons are reported to the application via the
+       <b>&lt;&lt;PolyComplete&gt;&gt;</b> virtual event.  It is up to
+       the application to make the new polygon permanent in some way,
+       e.g., by creating a neighborhood.
+
+  </dd>
+<dt class="def">pan</dt><dd>
+  In this mode, the user can click-and-drag to pan the map from
+       side-to-side and up-and-down.
+</dd>
+</dl>
+<p>Other modes are TBD.
+
+</p>
+
+<h2><a name="options">OPTIONS</a></h2>
+<p>The mapcanvas(n) widget provides the following options in addition to
+the standard <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a> options:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="PolyComplete-map">-map <i>image</i></a></dt><dd>
+
+Specifies the map image to display, a standard Tk <a href="../../../tk/docs/mann/photo.html">photo(n)</a>
+image.  If the map image is changed after the widget is created, the
+<a class="iref" href="#clear">clear</a> method must be called before the change will be visible.
+
+</dd>
+<dt class="defopt"><a name="PolyComplete-modevariable">-modevariable <i>varname</i></a></dt><dd>
+
+A variable name.  The mapcanvas(n) will set this variable to the name
+of the current interaction mode.
+
+</dd>
+<dt class="defopt"><a name="PolyComplete-projection">-projection <i>proj</i></a></dt><dd>
+
+Name of a <a href="../mani/projection.html">projection(i)</a> object.  If no projection is
+specified, the mapcanvas(n) will use the <a href="../mann/mapref.html">mapref(n)</a>
+pseudo-projection.  If the projection is changed after the widget is
+created, the <a class="iref" href="#clear">clear</a> method must be called before the change
+will be visible.
+
+</dd>
+<dt class="defopt"><a name="PolyComplete-locvariable">-locvariable <i>varname</i></a></dt><dd>
+
+A variable name.  As the mouse pointer moves over the mapcanvas(n),
+the mapcanvas(n) will set this variable (if specified) to the map
+location string as determined by the projection in the mapcanvas(n).
+
+</dd>
+<dt class="defopt"><a name="PolyComplete-snapmode">-snapmode <i>boolean</i></a></dt><dd>
+
+If true, then mapcanvas(n) will snap to existing points when drawing
+polygons.  If false, it won't.  Defaults to true.
+
+</dd>
+<dt class="defopt"><a name="PolyComplete-snapradius">-snapradius <i>radius</i></a></dt><dd>
+
+Specifies the distance in pixels within which mapcanvas(n) will snap
+to existing points when drawing polygons.  Defaults to 5 pixels.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="mapcanvas">mapcanvas <i>pathName ?options...?</i></a></dt><dd>
+
+Creates a new <a class="iref" href="#mapcanvas">mapcanvas</a> widget named <i>pathName</i>.
+
+</dd>
+<dt class="defitem"><a name="mapcanvas_icon">mapcanvas icon <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This subcommand is used to manage the icon types available to the mapcanvas(n).
+
+</p><dl>
+
+<dt class="defitem"><a name="mapcanvas_icon_register">mapcanvas icon register <i>iconType</i></a></dt><dd>
+
+Registers a <a href="../mani/mapicon.html">mapicon(i)</a> icon type for use with instances of
+mapcanvas(n).
+
+</dd>
+<dt class="defitem"><a name="mapcanvas_icon_types">mapcanvas icon types</a></dt><dd>
+
+Returns the list of registered icon type names.  Note that these are
+the names used with <a class="iref" href="#icon_create">icon create</a>, <i>not</i> the
+<a href="../mani/mapicon.html">mapicon(i)</a> command names.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>mapcanvas(n) widgets have the following subcommands, in addition to
+all of the standard canvas(n) subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>pathName</i> clear</a></dt><dd><p>
+
+Deletes all icons and neighborhoods from the mapcanvas(n), and
+displays the current <code>-map</code> using the current
+<code>-projection</code> at 100% zoom.</p>
+
+<p>If no <code>-projection</code> has been selected, a
+<a href="../mann/mapref.html">mapref(n)</a> will be used.  Finally, the interaction mode is set to
+<b>browse</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="icon"><i>pathName</i> icon <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This subcommand is used to create and manage icons on the map.
+
+</p><dl>
+
+<dt class="defitem"><a name="icon_create"><i>pathName</i> icon create <i>icontype mappoint</i> ?<i>option value...</i>?</a></dt><dd><p>
+
+Creates an icon of type <i>icontype</i> at point <i>mappoint</i>.  The
+valid options vary by icon type.</p>
+
+<p>The <i>mappoint</i> may be expressed as a map reference string, or as a
+pair of map coordinates.  In the latter case, the pair of coordinates can
+be passed as either two separate arguments, or as a single argument, a
+list of two coordinates.</p>
+
+<p>Returns the new icon's ID.
+
+</p>
+</dd>
+<dt class="defitem"><a name="icon_cget"><i>pathName</i> icon cget <i>id option</i></a></dt><dd>
+
+Returns the value of the specified
+<i>option</i> for the icon with ID <i>id</i>.
+
+</dd>
+<dt class="defitem"><a name="icon_configure"><i>pathName</i> icon configure <i>id option value</i> ?<i>option value...</i>?</a></dt><dd>
+
+Sets the value of one or more of the icon's options.  The precise set
+of options depends on the icon type; typical options include
+<code>-foreground</code> and <code>-background</code>.
+
+</dd>
+<dt class="defitem"><a name="icon_delete"><i>pathName</i> icon delete <i>id</i>?</a></dt><dd>
+
+Deletes the icon with the given icon <i>id</i>, or all icons if
+<i>id</i> has the value <b>all</b>, or all icons of a given type
+if <i>id</i> is an icon type. 
+
+</dd>
+<dt class="defitem"><a name="icon_exists"><i>pathName</i> icon exists <i>id</i>?</a></dt><dd>
+
+Returns 1 if the icon exists, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="icon_list"><i>pathName</i> icon list ?<i>iconType</i>?</a></dt><dd>
+
+Returns a list of the IDs of all icons, or optionally
+all icons of a given <i>iconType</i>.
+
+</dd>
+<dt class="defitem"><a name="icon_moveto"><i>pathName</i> icon moveto <i>id mappoint</i></a></dt><dd><p>
+
+Moves the icon with ID <i>id</i> to the location specified as
+<i>mappoint</i>.  As with <a class="iref" href="#icon_create">icon create</a>, the <i>mappoint</i>
+may be expressed as a map reference string, or as a pair of map
+coordinates.  In the latter case, the pair of coordinates can 
+be passed as either two separate arguments, or as a single argument, a
+list of two coordinates.</p>
+
+<p>Note that no <b>&lt;&lt;IconMoved&gt;&gt;</b> event is generated by
+this call.
+
+</p>
+</dd>
+<dt class="defitem"><a name="icon_ref"><i>pathName</i> icon ref <i>id</i></a></dt><dd>
+
+Returns a map reference string representing the location of the icon
+with ID <i>id</i>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="mode"><i>pathName</i> mode ?<i>mode</i>?</a></dt><dd>
+
+If <i>mode</i> is specified, sets the current interaction mode to
+<i>mode</i>; see <a href="#interaction_modes">Interaction Modes</a>, above.  Returns the
+current interaction mode.
+
+</dd>
+<dt class="defitem"><a name="nbhood"><i>pathName</i> nbhood <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This subcommand is used to create and manage icons on the map.
+
+</p><dl>
+
+<dt class="defitem"><a name="nbhood_cget"><i>pathName</i> nbhood cget <i>id option</i></a></dt><dd>
+
+Returns the value of the specified
+<i>option</i> for the neighborhood with ID <i>id</i>.
+
+</dd>
+<dt class="defitem"><a name="nbhood_configure"><i>pathName</i> nbhood configure <i>id option value</i> ?<i>option value...</i>?</a></dt><dd>
+
+Sets the value of one or more of the
+neighborhood options.
+
+</dd>
+<dt class="defitem"><a name="nbhood_create"><i>pathName</i> nbhood create <i>refpoint polygon</i> ?<i>option value...</i>?</a></dt><dd><p>
+
+Creates a neighborhood with the specified <i>refpoint</i>, a map
+location, and <i>polygon</i>, a list of map locations.</p>
+
+<p>The <i>refpoint</i> may be expressed as a map reference string, or as a
+pair of map coordinates, as either one argument or two separate
+arguments.  The <i>polygon</i> may be expressed as a list of map
+reference strings or map coordinates, and as one argument or as
+multiple arguments.</p>
+
+<p>Returns the new nbhood's ID.</p>
+
+<p>The neighborhood may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="nbhood create-fill">-fill <i>color</i></a></dt><dd>
+
+Sets the fill color for the neighborhood's polygon.  If "", the
+default, the polygon is unfilled, allowing the underlying map to be
+seen.
+
+</dd>
+<dt class="defopt"><a name="nbhood create-pointcolor">-pointcolor <i>color</i></a></dt><dd>
+
+Sets the color of the reference point icon.  Defaults to "black".
+
+</dd>
+<dt class="defopt"><a name="nbhood create-linewidth">-linewidth <i>width</i></a></dt><dd>
+
+Sets the line width of the neighborhood's polygon in pixels. Defaults to 1.
+
+</dd>
+<dt class="defopt"><a name="nbhood create-polycolor">-polycolor <i>color</i></a></dt><dd>
+
+Sets the line color of the neighborhood's polygon. Defaults to "black".
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="nbhood_delete"><i>pathName</i> nbhood delete <i>id</i></a></dt><dd>
+
+Deletes the specified neighborhood from the canvas.
+
+</dd>
+<dt class="defitem"><a name="nbhood_ids"><i>pathName</i> nbhood ids</a></dt><dd>
+
+Returns a list of the neighborhood IDs.
+
+</dd>
+<dt class="defitem"><a name="nbhood_point"><i>pathName</i> nbhood point <i>id</i> ?<i>point</i>?</a></dt><dd>
+
+Returns neighborhood <i>id</i>'s reference point as a pair of map
+coordinates.  If <i>point</i> is given, the neighborhood's reference point
+is updated accordingly; it may be expressed as a
+map reference string or in map coordinates, and as one argument or two.
+
+</dd>
+<dt class="defitem"><a name="nbhood_polygon"><i>pathName</i> nbhood polygon <i>id</i> ?<i>polygon</i>?</a></dt><dd>
+
+Returns neighborhood <i>id</i>'s polygon as a list of map
+coordinates.  If <i>polygon</i> is given, the neighborhood's polygon
+is updated accordingly; it may be expressed as a
+list of map reference strings or map coordinates, and as one argument or as
+multiple arguments.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="refresh"><i>pathName</i> refresh</a></dt><dd>
+
+Completely redraws the display at the current zoom level.
+
+</dd>
+<dt class="defitem"><a name="region"><i>pathName</i> region ?<i>region</i>?</a></dt><dd>
+
+Sets/queries the mapcanvas(n)'s visible region, which may be
+<b>normal</b> or <b>extended</b>.  See <a href="#visible_region">Visible Region</a>, above.
+
+</dd>
+<dt class="defitem"><a name="see"><i>pathName</i> see <i>mappoint</i></a></dt><dd>
+
+Scrolls the map so that the specified location is as close to the
+center as possible.  The <i>mappoint</i> may be expressed as a map
+reference string, or as a pair of map coordinates.  In the latter
+case, the pair of coordinates can be passed as either two separate
+arguments, or as a single argument, a list of two coordinates.
+
+</dd>
+<dt class="defitem"><a name="zoom"><i>pathName</i> zoom ?<i>factor</i>?</a></dt><dd><p>
+
+Called with no argument, queries the current zoom factor.  Otherwise,
+the <i>factor</i> must be a valid zoom factor, an integer percentage
+from the list returned by <a class="iref" href="#zoomfactors">zoomfactors</a>.  For example,
+100 indicates a 100% zoom, i.e., full-size.</p>
+
+<p>If the zoom <i>factor</i> is changed, mapcanvas(n) scales the
+<code>-map</code> and caches and displays the result.
+
+</p>
+</dd>
+<dt class="defitem"><a name="zoomfactors"><i>pathName</i> zoomfactors</a></dt><dd>
+
+Returns the list of valid zoom factors for use with <a class="iref" href="#zoom">zoom</a>.
+
+</dd>
+<dt class="defitem"><a name="c2m"><i>pathName</i> c2m <i>cx cy</i></a></dt><dd>
+
+Given a canvas coordinate pair <i>cx</i> and <i>cy</i>, returns a map
+coordinate pair as a list of two coordinates <i>mx</i> and <i>my</i>.
+
+</dd>
+<dt class="defitem"><a name="c2ref"><i>pathName</i> c2ref <i>cx cy</i></a></dt><dd>
+
+Given a canvas coordinate pair <i>cx</i> and <i>cy</i>, returns a map
+reference string.
+
+</dd>
+<dt class="defitem"><a name="m2c"><i>pathName</i> m2c <i>mx my</i></a></dt><dd>
+
+Given a map coordinate pair <i>mx</i> and <i>my</i>, returns a canvas
+coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.
+
+</dd>
+<dt class="defitem"><a name="m2ref"><i>pathName</i> m2ref <i>mx my</i></a></dt><dd>
+
+Given a map coordinate pair <i>mx</i> and <i>my</i>, returns a
+map reference string.
+
+</dd>
+<dt class="defitem"><a name="ref2c"><i>pathName</i> ref2c <i>ref</i></a></dt><dd>
+
+Given a map reference string, returns a canvas
+coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.
+
+</dd>
+<dt class="defitem"><a name="ref2m"><i>pathName</i> ref2m <i>ref</i></a></dt><dd>
+
+Given a map reference string, returns a map
+coordinate pair as a list of two coordinates <i>mx</i> and
+<i>my</i>.
+
+</dd>
+<dt class="defitem"><a name="w2c"><i>pathName</i> w2c <i>wx wy</i></a></dt><dd>
+
+Given a windows coordinate pair <i>wx</i> and <i>wy</i>, returns a canvas
+coordinate pair as a list of two coordinates <i>cx</i> and <i>cy</i>.
+
+</dd>
+<dt class="defitem"><a name="w2m"><i>pathName</i> w2m <i>wx wy</i></a></dt><dd>
+
+Given a window coordinate pair <i>wx</i> and <i>wy</i>, returns a map
+coordinate pair as a list of two coordinates <i>mx</i> and <i>my</i>.
+
+</dd>
+<dt class="defitem"><a name="w2ref"><i>pathName</i> w2ref <i>wx wy</i></a></dt><dd>
+
+Given a window coordinate pair <i>wx</i> and <i>wy</i>, returns a map
+reference string.
+
+</dd>
+</dl>
+
+<h2><a name="events">EVENTS</a></h2>
+<p>The mapcanvas(n) defines the following virtual events.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="Icon-1">&lt;&lt;Icon-1&gt;&gt;</a></dt><dd>
+
+Sent when the user clicks button-1 on an icon in <b>browse</b> mode.
+The <b>%x</b> and <b>%y</b> conversions are the window coordinates of
+the event, as usual, and <b>%d</b> is the ID of the icon.
+
+</dd>
+<dt class="defitem"><a name="Icon-3">&lt;&lt;Icon-3&gt;&gt;</a></dt><dd>
+
+Sent when the user clicks button-3 on an icon in <b>browse</b> mode.
+The <b>%x</b>, <b>%y</b>, <b>%X</b>, and <b>%Y</b> conversions are
+defined as usual, and <b>%d</b> is the ID of the icon.
+
+</dd>
+<dt class="defitem"><a name="IconMoved">&lt;&lt;IconMoved&gt;&gt;</a></dt><dd>
+
+Sent when the user drags an icon to a new location in <b>browse</b> mode.
+The <b>%x</b> and <b>%y</b> conversions are the window coordinates of
+the event, as usual, and <b>%d</b> is the ID of the icon.
+
+</dd>
+<dt class="defitem"><a name="Nbhood-1">&lt;&lt;Nbhood-1&gt;&gt;</a></dt><dd>
+
+Sent when the user clicks button-1 on a neighborhood in <b>browse</b> mode.
+The <b>%x</b>, <b>%y</b>, <b>%X</b>, and <b>%Y</b> conversions are
+defined as usual, and <b>%d</b> is the ID of the neighborhood.
+
+</dd>
+<dt class="defitem"><a name="Nbhood-3">&lt;&lt;Nbhood-3&gt;&gt;</a></dt><dd>
+
+Sent when the user clicks button-3 on a neighborhood in <b>browse</b> mode.
+The <b>%x</b>, <b>%y</b>, <b>%X</b>, and <b>%Y</b> conversions are
+defined as usual, and <b>%d</b> is the ID of the neighborhood.
+
+</dd>
+<dt class="defitem"><a name="Point-1">&lt;&lt;Point-1&gt;&gt;</a></dt><dd>
+
+Sent when the user clicks button-1 <b>point</b> mode.
+The <b>%x</b> and <b>%y</b> conversions are the window coordinates of
+the event, as usual, and <b>%d</b> is the corresponding map reference.
+
+</dd>
+<dt class="defitem"><a name="PolyComplete">&lt;&lt;PolyComplete&gt;&gt;</a></dt><dd>
+
+Sent when the user has completed a new polygon in <b>poly</b> mode.
+The <b>%d</b> conversion is replaced with the list of the new
+polygon's vertices as map reference strings.  The mapcanvas(n) does
+not automatically save the new polygon; it is up to the application to
+do that, e.g., by creating a neighborhood.
+
+</dd>
+</dl>
+
+<h2><a name="bindings">BINDINGS</a></h2>
+<p>TBD.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

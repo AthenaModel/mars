@@ -1,0 +1,513 @@
+<html>
+<head>
+<title>mars 3.0.23: subwin(n) -- Subordinate Window Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>subwin(n)</b> -- Subordinate Window Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#example">EXAMPLE</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#subwin">subwin <i>pathName ?options...?</i></a></li>
+<li><a class="iref" href="#subwin_hide">subwin hide</a></li>
+<li><a class="iref" href="#subwin_reconfigure">subwin reconfigure</a></li>
+<li><a class="iref" href="#subwin_show">subwin show</a></li>
+<li><a class="iref" href="#subwin_windows">subwin windows</a></li>
+<li><a class="iref" href="#configure">$subwin configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$subwin cget <i>option</i></a></li>
+<li><a class="iref" href="#hide">$subwin hide</a></li>
+<li><a class="iref" href="#reconfigure">$subwin reconfigure</a></li>
+<li><a class="iref" href="#show">$subwin show</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/marsgui.html">marsgui(n)</a> contains general-purpose (i.e.,
+non-application-specific) GUI code for use in Mars.
+This module defines the ::marsgui::subwin widget, a base for subordinate
+application windows.  Subordinate windows have the following
+features:
+
+</p>
+
+<ul>
+  <li> The existence of a subwindow doesn't keep the application from
+       terminating when the main window is closed--contrast this with
+       the behavior of an application with multiple main windows.
+
+  </li><li> Clicking the WM's close button pops the window down, but doesn't
+       destroy it.
+
+  </li><li> Subwindows can be popped up or down using their <a class="iref" href="#show">show</a>
+       and <a class="iref" href="#hide">hide</a> methods.
+
+  </li><li> If popped down and then popped up again, subwindows remember
+       their location--even if the window manager likes to put htem
+       somewhere else.
+
+  </li><li> Subwindows can be popped up or down <i>en masse</i>, using
+       <a class="iref" href="#subwin_show">subwin show</a> and <a class="iref" href="#subwin_hide">subwin hide</a>.
+
+  </li><li> The structure of a subwindow often depends on data that can't
+       be known when the window is created, and which might change
+       over time (e.g., after a checkpoint restore).  The
+       <a class="iref" href="#subwin_reconfigure">subwin reconfigure</a> command calls the
+       <a class="iref" href="#reconfigure">reconfigure</a> method for each existing subwindow.
+       This is defined as a no-op by subwin(n) but can be redefined
+       by the client.
+</li></ul>
+<p>See <a href="#example">EXAMPLE</a> for an example of how to base an application
+window on subwin(n).
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="subwin">subwin <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#subwin">subwin</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#subwin">subwin</a> widget inherits its options from toplevel(n);
+it defines no new options of its own.
+
+</p>
+</dd>
+<dt class="defitem"><a name="subwin_hide">subwin hide</a></dt><dd>
+
+Hides all existing subwindows.
+
+</dd>
+<dt class="defitem"><a name="subwin_reconfigure">subwin reconfigure</a></dt><dd>
+
+Calls <a class="iref" href="#reconfigure">reconfigure</a> on all existing subwindows.
+
+</dd>
+<dt class="defitem"><a name="subwin_show">subwin show</a></dt><dd>
+
+Pops up all existing subwindows; subwindows which are already
+popped up but which are obscured by other windows will be
+raised.
+
+</dd>
+<dt class="defitem"><a name="subwin_windows">subwin windows</a></dt><dd>
+
+Returns a list of the names of the existing subwindows.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$subwin configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget">$subwin cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="hide">$subwin hide</a></dt><dd>
+
+Pops down the subwindow.
+
+</dd>
+<dt class="defitem"><a name="reconfigure">$subwin reconfigure</a></dt><dd>
+
+By default, this is a no-op; the client may redefine it as desired.
+See <a href="#example">EXAMPLE</a>.
+
+</dd>
+<dt class="defitem"><a name="show">$subwin show</a></dt><dd>
+
+Pops up the subwindow if it's hidden; it's already up but is
+obscured by other windows, raises it to the top.
+
+</dd>
+</dl>
+
+<h2><a name="example">EXAMPLE</a></h2>
+<p>The following snippet is a skeleton to use when defining
+subordinate application windows using subwin(n).
+
+</p>
+
+<pre>
+snit::widgetadaptor myWindow {
+    #-------------------------------------------------------------------
+    # Options
+
+    # Inherit options and methods from the hull subwin(n).
+    delegate option * to hull
+    delegate method * to hull
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {args} {
+        # FIRST, install the hull
+        installhull [::marsgui::subwin $win]
+
+        # NEXT, save the options
+        $self configurelist $args
+
+        # NEXT, add my content
+
+            .
+            .
+            .
+    }
+
+    #-------------------------------------------------------------------
+    # Public Methods
+
+    method reconfigure {} {
+        # Define this to do whatever's needed when the app
+        # reconfigures.
+    }
+}
+</pre>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

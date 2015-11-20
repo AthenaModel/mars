@@ -1,0 +1,1164 @@
+<html>
+<head>
+<title>mars 3.0.23: order(n) -- Order Base Class, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>order(n)</b> -- Order Base Class, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#intermediate_base_classes">Intermediate Base Classes</a></li>
+
+</ul>
+    
+
+    <li><a href="#order_classes">ORDER CLASSES</a></li>
+    <ul>
+
+    <li><a href="#order_lifecycle">Order Lifecycle</a></li>
+
+    <li><a href="#customization">Customization</a></li>
+
+    <li><a href="#parameters_with_default_values">Parameters with Default Values</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    <ul>
+
+    <li><a href="#metadata">Metadata</a></li>
+
+    <li><a href="#parameter_access">Parameter Access</a></li>
+
+    <li><a href="#other_queries">Other Queries</a></li>
+
+    <li><a href="#order_operations">Order Operations</a></li>
+
+    <li><a href="#validation_helpers">Validation Helpers</a></li>
+
+    <li><a href="#execution_helpers">Execution Helpers</a></li>
+
+</ul>
+    
+
+    <li><a href="#examples">EXAMPLES</a></li>
+    <ul>
+
+    <li><a href="#basic_use">Basic Use</a></li>
+
+</ul>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#order_create">::marsutil::order create <i>name</i> ?<i>parmdict</i>?</a></li>
+<li><a class="iref" href="#order_new">::marsutil::order new ?<i>parmdict</i>?</a></li>
+<li><a class="iref" href="#name"><i>obj</i> name</a></li>
+<li><a class="iref" href="#title"><i>obj</i> title</a></li>
+<li><a class="iref" href="#parmlist"><i>obj</i> parmlist</a></li>
+<li><a class="iref" href="#sendstates"><i>obj</i> sendstates</a></li>
+<li><a class="iref" href="#form"><i>obj</i> parmtags</a></li>
+<li><a class="iref" href="#monitor"><i>obj</i> monitor</a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#defaults"><i>obj</i> defaults</a></li>
+<li><a class="iref" href="#get"><i>obj</i> get <i>parm</i></a></li>
+<li><a class="iref" href="#getdict"><i>obj</i> getdict</a></li>
+<li><a class="iref" href="#parms"><i>obj</i> parms</a></li>
+<li><a class="iref" href="#set"><i>obj</i> set <i>parm value</i></a></li>
+<li><a class="iref" href="#setdict"><i>obj</i> setdict <i>parmdict</i></a></li>
+<li><a class="iref" href="#narrative"><i>obj</i> narrative</a></li>
+<li><a class="iref" href="#state"><i>obj</i> state</a></li>
+<li><a class="iref" href="#prune"><i>obj</i> prune</a></li>
+<li><a class="iref" href="#valid"><i>obj</i> valid</a></li>
+<li><a class="iref" href="#_validate"><i>obj</i> _validate</a></li>
+<li><a class="iref" href="#errdict"><i>obj</i> errdict</a></li>
+<li><a class="iref" href="#execute"><i>obj</i> execute ?<i>flunky</i>?</a></li>
+<li><a class="iref" href="#_execute"><i>obj</i> _execute ?<i>flunky</i>?</a></li>
+<li><a class="iref" href="#canundo"><i>obj</i> canundo</a></li>
+<li><a class="iref" href="#undo"><i>obj</i> undo</a></li>
+<li><a class="iref" href="#prepare">my prepare <i>parm</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-listof">-listof <i>valtype</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-listwith">-listwith <i>valcmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-normalize">-normalize</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-num">-num</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-oneof">-oneof <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-required">-required</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-selector">-selector</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-someof">-someof <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-toupper">-toupper</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-tolower">-tolower</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-type">-type <i>valtype</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-with">-with <i>valcmd</i></a></li>
+<li><a class="iref" href="#badparm">my badparm <i>parm</i></a></li>
+<li><a class="iref" href="#reject">my reject <i>parm errtext</i></a></li>
+<li><a class="iref" href="#checkon">my checkon <i>parm script</i></a></li>
+<li><a class="iref" href="#returnOnError">my returnOnError</a></li>
+<li><a class="iref" href="#setundo">my setundo <i>script</i></a></li>
+<li><a class="iref" href="#mode">my mode</a></li>
+<li><a class="iref" href="#cancel">my cancel</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The <span class="tt">::marsutil::order</span> class is part of the Mars Order Processing
+framework, which includes <a href="../mann/order.html">order(n)</a>, <a href="../mann/order_set.html">order_set(n)</a>,
+<a href="../mann/order_flunky.html">order_flunky(n)</a>, and <a href="../mann/order_dialog.html">order_dialog(n)</a>.</p>
+
+<p>In this framework, an "order" is a request from the user to change the
+program's state in some way, e.g., to add, update, or delete an entity
+of some kind.  Each type of order has its own parameters; together they
+have the same interface, which supports validation, logging, and user
+undo/redo.</p>
+
+<p>An order is created as an instance of an order leaf class, which is a
+descendant of <span class="tt">::marsutil::order</span>.  It can be validated and executed
+on its own; more typically, it is executed by an instance of 
+<a href="../mann/order_flunky.html">order_flunky(n)</a>, which handles the undo/redo stacks.</p>
+
+<p>New subclasses of order(n) are defined using an instance of 
+<a href="../mann/order_set.html">order_set(n)</a>, which ensures that the each order class has the 
+right superclass and good default <a href="../mann/oohelpers.html#meta">meta</a>data settings.
+The order set then provides introspection on the set of
+defined order classes and validation of order type names.</p>
+
+<p>Each application or library that defines orders will usually define its
+own <a href="../mann/order_set.html">order_set(n)</a> and <a href="../mann/order_flunky.html">order_flunky(n)</a> objects, and may
+choose to subclass <a href="../mann/order.html">order(n)</a> and <a href="../mann/order_flunky.html">order_flunky(n)</a>.
+
+</p>
+
+<img src="order.svg" width="100%">
+
+<h2><a name="intermediate_base_classes">Intermediate Base Classes</a></h2>
+<p>When the Mars Order Processing framework is used in an application context,
+the order classes can usually access all needed resources using well-defined
+names.  When it is used in a library context, e.g., to control an instance
+of the library, then the orders will typically need access to the instance
+command.  This is usually done by subclassing order(n) to make an 
+intermediate base class.  All order types defined by the application would
+then be subclasses of the intermediate base class.  <a href="../mann/order_set.html">order_set(n)</a> can
+be configured to define the set's orders with the appropriate base class.
+
+</p>
+
+<h2><a name="order_classes">ORDER CLASSES</a></h2>
+<p>The actual orders are leaf classes descended from 
+<span class="tt">::marsutil::order</span>, as defined using <a href="../mann/order_set.html">order_set(n)</a>'s 
+<a href="../mann/order_set.html#define">define</a> method.  Each order class represents a
+particular kind of operation on the application or library's
+data.  This man page explains the standard interface for every 
+order class. 
+
+</p>
+
+<h2><a name="order_lifecycle">Order Lifecycle</a></h2>
+<p>Each instance of an order class goes through a lifecycle, as indicated
+by the four order states: <b>CHANGED</b>, <b>INVALID</b>, <b>VALID</b>, 
+and <b>EXECUTED</b>.  The order object's current state is returned by its
+<a class="iref" href="#state">state</a> method.</p>
+
+<p>When first created, an order is in the <b>CHANGED</b> set; it returns to
+this state whenever the order's parameters are modified.</p>
+
+<p>When the order's <a class="iref" href="#valid">valid</a> method is called, the order's parameters
+are validated, and it goes to the <b>VALID</b> or <b>INVALID</b> state.</p>
+
+<p>If the order is in the <b>VALID</b> state, then calling its 
+<a class="iref" href="#execute">execute</a> method makes the order take effect; the order will be in 
+the <b>EXECUTED</b> state.</p>
+
+<p>It is usually possible to undo an <b>EXECUTED</b> order.  If the 
+<a class="iref" href="#canundo">canundo</a> method returns a true value, then the <a class="iref" href="#undo">undo</a> method
+will undo the order's effects and the order will return to the <b>VALID</b>
+state.</p>
+
+<p><b>NOTE:</b> Undo/redo will only work if proper undo/redo stack discipline is 
+maintained.  For this reason, orders are usually executed, undone, and
+redone under the control of an <a href="../mann/order_flunky.html">order_flunky(n)</a>.  See
+<a href="#examples">EXAMPLES</a>, below. 
+
+</p>
+
+<h2><a name="customization">Customization</a></h2>
+<p>Subclasses of <span class="tt">::marsutil::order</span> are expected to customize the
+parent class in the following ways:
+
+</p>
+
+<ul>
+<li> Define the order <a href="#metadata">Metadata</a>.
+
+</li><li> Override the <a class="iref" href="#_validate">_validate</a> method to validate the order's 
+     parameters.  The method may use the <a href="#validation_helpers">Validation Helpers</a>.
+
+</li><li> Override the <a class="iref" href="#_execute">_execute</a> method to do whatever the order is
+    suppose to do.  The method may use the 
+    <a href="#execution_helpers">Execution Helpers</a>.
+
+</li><li> Optionally, override the <a class="iref" href="#narrative">narrative</a> method to return 
+     an undo/redo narrative based on the actual parameter values.  
+     If this is not overridden, the order's <a class="iref" href="#title">title</a> will be used 
+     as the narrative string.
+
+</li><li> Optionally, override the <a class="iref" href="#canundo">canundo</a> and <a class="iref" href="#undo">undo</a> methods.
+     Usually, the <a class="iref" href="#_execute">_execute</a> method will call <a class="iref" href="#setundo">setundo</a>
+     to save an undo script, which the existing methods will use to
+     undo the order.  But the order may choose to handle everything
+     directly.
+</li></ul>
+
+<h2><a name="parameters_with_default_values">Parameters with Default Values</a></h2>
+<p>order(n) subclasses are to use the <a class="iref" href="#parmlist">parmlist</a> metadata value to define
+the list of its parameters and their default values.  <b>Note:</b> If a
+parameter has a default value, it is assumed that it can never validly
+be the empty string, i.e., that it can never be NULL in the SQL sense.
+If this is an issue, the order should define a sentinel value for that
+parameter that indicates that it is empty, e.g., "NONE", thus providing
+the functionality while meeting the constraint.</p>
+
+<p>See <a href="#examples">EXAMPLES</a>, below.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>The following commands create instances of order(n), which isn't
+usually all that useful.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="order_create">::marsutil::order create <i>name</i> ?<i>parmdict</i>?</a></dt><dd><p>
+
+Creates a new instance of <span class="tt">::marsutil::order</span>
+called <i>name</i>; if given, the <i>parmdict</i> is a dictionary 
+used to initialize the order parameters.</p>
+
+<p>It is more usual to create order instances via an <a href="../mann/order_flunky.html">order_flunky(n)</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="order_new">::marsutil::order new ?<i>parmdict</i>?</a></dt><dd>
+
+Creates a new instance of <span class="tt">::marsutil::order</span> with an arbitrary
+name; if given, the <i>parmdict</i> is a dictionary 
+used to initialize the order parameters.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance order(n) or its subclasses has at least the following 
+groups of subcommands.
+
+</p>
+
+<h2><a name="metadata">Metadata</a></h2>
+<p>Each order class will have a number of attached metadata values; these
+are defined by the <a href="../mann/oohelpers.html#meta">meta</a> class definition statement.
+The <span class="tt">meta</span> statement takes a <i>name</i> and <i>value</i> and defines an
+instance method and a class method, both called <i>name</i>, and both
+returning the <i>value</i>.</p>
+
+<p>By convention, subclasses of order(n) should define the following metadata
+items.  Note that <a href="../mann/order_set.html">order_set(n)</a>'s <a href="../mann/order_set.html#define">define</a> method
+provides defaults for these.  In addition, the programmer may choose
+to add any additional metadata he likes.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="name"><i>obj</i> name</a></dt><dd><p>
+
+Returns the name of the order, e.g., "MY:ORDER".  By convention, orders
+have names in all capital letters with ":" as a separator.  This is 
+distinct from the order class's name, which is usually the order name
+qualified by some namespace.</p>
+
+<p>The <span class="tt">name</span> metadata item is usually defined automatically by
+<a href="../mann/order_set.html">order_set(n)</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="title"><i>obj</i> title</a></dt><dd>
+
+Returns the title of the order, e.g., "My Order".  If the order class
+doesn't define it explicitly, then <a href="../mann/order_set.html">order_set(n)</a> makes it the same
+as the order name.
+
+</dd>
+<dt class="defitem"><a name="parmlist"><i>obj</i> parmlist</a></dt><dd><p>
+
+<b>Required.</b> Defines the order's parameter names and their default
+values using Tcl's <span class="tt">proc</span> argument list syntax: each element in the
+list defines the name of a parameter.  If the element is a pair, the second 
+item in the pair is the default value; otherwise the default value is the
+empty string.</p>
+
+<p>If a parameter has a default value, then using <a class="iref" href="#set">set</a> to set it to ""
+will actually set it to its default value.</p>
+
+<p>Every leaf class should define this metadata value.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sendstates"><i>obj</i> sendstates</a></dt><dd><p>
+
+Returns a list of the <a href="../mann/order_flunky.html">order_flunky(n)</a> states in which this order 
+may be sent.  "Send States" are a means of controlling which orders can
+be used at different times; see <a href="../mann/order_flunky.html">order_flunky(n)</a> for details.</p>
+
+<p><a href="../mann/order_set.html">order_set(n)</a> defaults this value to the empty list, which is
+appropriate if "send states" are not being used.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="form"><i>obj</i> parmtags</a></dt><dd><p>
+
+Parmtags, or "parameter tags", relate order parameter names to data types
+that can be "pucked" in the application's GUI.  The value of this item is
+a dictionary of data types by parameter name.</p>
+
+<p><a href="../mann/order_set.html">order_set(n)</a> defaults this value to the empty list, which is
+usually appropriate.
+
+</p>
+</dd>
+<dt class="defitem"><a name="monitor"><i>obj</i> monitor</a></dt><dd><p>
+
+This a boolean flag; if true (the default), the order's execution should
+be monitored and reported to the application, and if false then not.
+Just what form the monitoring will take depends on the application,
+and will be implemented by a subclass of <a href="../mann/order_flunky.html">order_flunky(n)</a>.</p>
+
+<p>The only reason for turning monitoring off is when executing an order
+that performs a large amount of work and then sends its own notification
+at the end (i.e., locking a scenario or ticking time forward).
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="parameter_access">Parameter Access</a></h2>
+<p>The order's parameters and their default values are defined by the order
+class's <i>defaults</i> metadata item.  Parameter values are saved in the 
+instance's <span class="tt">parms()</span> array.  Order classes defined using 
+<a href="../mann/orderset.html">orderset(n)</a> can use the <span class="tt">parms()</span> array freely in all of their
+methods; other classes would need to call <span class="tt">my variable parms</span> in each
+relevant method to bring <span class="tt">parms()</span> into scope.</p>
+
+<p>The following subcommands manipulate the <span class="tt">parms()</span> array.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+This command is identical to <a class="iref" href="#get">get</a>, but expresses the parameter
+name using option notation, e.g., the parameter "<span class="tt">foo</span>" is entered as
+"<span class="tt">-foo</span>"
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more order parameters using option notation.
+
+</dd>
+<dt class="defitem"><a name="defaults"><i>obj</i> defaults</a></dt><dd>
+
+Returns the order's default parameter settings, a dictionary of default
+values by parameter name.
+
+</dd>
+<dt class="defitem"><a name="get"><i>obj</i> get <i>parm</i></a></dt><dd>
+
+Returns the value of the named <i>parm</i>.
+
+</dd>
+<dt class="defitem"><a name="getdict"><i>obj</i> getdict</a></dt><dd>
+
+Returns a dictionary of the order's parameters by parameter name.
+
+</dd>
+<dt class="defitem"><a name="parms"><i>obj</i> parms</a></dt><dd>
+
+Returns a list of the names of the order's parameters, in the order in
+which they appear in the order's <a class="iref" href="#defaults">defaults</a>.
+
+</dd>
+<dt class="defitem"><a name="set"><i>obj</i> set <i>parm value</i></a></dt><dd><p>
+
+Sets the <i>value</i> of the named <i>parm</i>, and changes the order's 
+<a class="iref" href="#state">state</a> to <b>CHANGED</b>.  This command cannot be used when the
+order is in the <b>EXECUTED</b> state.</p>
+
+<p><b>Note:</b> If the <i>value</i> is the empty string, and the <i>parm</i> has
+a default value, then it will be assigned its default value.
+
+</p>
+</dd>
+<dt class="defitem"><a name="setdict"><i>obj</i> setdict <i>parmdict</i></a></dt><dd>
+
+Sets some or all of the order's parameters given a dictionary of 
+parameter names and values.  Note that <a class="iref" href="#set">set</a> is used to make the
+actual changes.
+
+</dd>
+</dl>
+
+<h2><a name="other_queries">Other Queries</a></h2>
+<p>The user may also make the following queries:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="narrative"><i>obj</i> narrative</a></dt><dd><p>
+
+Returns a narrative string for the order instance.  This string
+defaults to the order's title, e.g., "My Order"; the class may override
+this method to provide a more detailed narrative.</p>
+
+<p>The narrative primarily appears in the Edit/Undo and Edit/Redo menu items.
+
+</p>
+</dd>
+<dt class="defitem"><a name="state"><i>obj</i> state</a></dt><dd><p>
+
+This command returns the order object's own state, which is one of
+<b>CHANGED</b>, <b>VALID</b>, <b>INVALID</b>, or <b>EXECUTED</b>:
+
+</p><ul>
+    <li> A newly created or modified order will be in the <b>CHANGED</b>
+         state.
+
+    </li><li> Calling <a class="iref" href="#valid">valid</a> attempts to validate the order's parameters.
+         Afterwards the state will be either <b>VALID</b> or 
+         <b>INVALID</b>.
+
+    </li><li> If the order's state is <b>VALID</b>, then calling 
+        <a class="iref" href="#execute">execute</a> will execute it; and will go
+         into the <b>EXECUTED</b> state.
+
+    </li><li> Orders in the <b>EXECUTED</b> state can be undone by calling
+         <a class="iref" href="#undo">undo</a>, but cannot be modified in other ways.
+
+    </li><li> If the order has been executed, then calling <a class="iref" href="#undo">undo</a> will
+         undo its effects, returning it to the <b>VALID</b> state.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="prune"><i>obj</i> prune</a></dt><dd>
+
+Returns a dictionary of order parameter names and values that is pruned
+of all parameters with default values.
+
+</dd>
+</dl>
+
+<h2><a name="order_operations">Order Operations</a></h2>
+<p>The following methods are used to move an order through its lifecycle.
+See <a href="#order_lifecycle">Order Lifecycle</a>, above.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="valid"><i>obj</i> valid</a></dt><dd>
+
+Returns 1 if the order's parameters are valid and 0 otherwise.  If
+the order was not already known to be valid, it will be validated by
+calling its <a class="iref" href="#_validate">_validate</a> method, and the order's state will be
+changed to <b>VALID</b> or <b>INVALID</b> as appropriate.
+
+</dd>
+<dt class="defitem"><a name="_validate"><i>obj</i> _validate</a></dt><dd>
+
+This method must be overridden by the subclass to actually validate
+the order's parameters.  It should use the <a href="#validation_helpers">Validation Helpers</a>
+to do this.  The parameter values are accessed via the <span class="tt">parms()</span> array.
+
+
+</dd>
+<dt class="defitem"><a name="errdict"><i>obj</i> errdict</a></dt><dd>
+
+If the order's state is <b>INVALID</b>, then this method returns a dictionary
+of error messages by parameter name.  The dictionary may also contain
+a "*" key whose value is an error message applying to the order as a 
+whole.
+
+</dd>
+<dt class="defitem"><a name="execute"><i>obj</i> execute ?<i>flunky</i>?</a></dt><dd><p>
+
+Executes the order, optionally in the context of an <a href="../mann/order_flunky.html">order_flunky(n)</a>
+called <i>flunky</i>.  If a <i>flunky</i> is provided, then the order preserves
+the flunky's execution 
+mode; this is made available to the order code via its <a class="iref" href="#mode">mode</a> method.</p>
+
+<p>The order is executed by calling its <a class="iref" href="#_execute">_execute</a> method, and passes
+along that method's return value to its caller.</p>
+
+<p>Only <b>VALID</b> orders can be executed; after execution, the order will
+be in the <b>EXECUTED</b> state.
+
+</p>
+</dd>
+<dt class="defitem"><a name="_execute"><i>obj</i> _execute ?<i>flunky</i>?</a></dt><dd><p>
+
+The subclass must override this method to carry out the order's work on 
+execution.  The method may use the <a href="#execution_helpers">Execution Helpers</a>,
+and the parameter values are accessed via the <span class="tt">parms()</span> array. This
+method's return value will be returned to the ultimate caller.</p>
+
+<p>Usually an undone order can be redone simply by executing the order a
+second time, in the same way.  Sometimes in order to redo the order 
+identically, the order requires information produced during the first
+execution.  In this case, the order should save that information in
+an instance variable so that it is available on redo.</p>
+
+<p>Similarly, if the <a class="iref" href="#execute">execute</a> method was called with a <i>flunky</i>,
+it is passed along to this method; and if there is any information
+from the flunky that the order needs for undo/redo, it should be saved
+in an instance variable.
+
+</p>
+</dd>
+<dt class="defitem"><a name="canundo"><i>obj</i> canundo</a></dt><dd><p>
+
+Returns 1 if the order is <b>EXECUTED</b> and can be undone, and 0 otherwise.</p>
+
+<p>By default, the order can be undone if the <a class="iref" href="#_execute">_execute</a> method 
+specified an undo script using <a class="iref" href="#setundo">setundo</a>.  The developer may choose
+to override this method in subclasses.
+
+</p>
+</dd>
+<dt class="defitem"><a name="undo"><i>obj</i> undo</a></dt><dd>
+
+By default, this method undoes the effects of an <b>EXECUTED</b> order by
+calling the order's undo script, which was set by calling <a class="iref" href="#setundo">setundo</a>
+in the order's <a class="iref" href="#_execute">_execute</a> method.  If desired, the developer may 
+implement the undo algorithm directly in this method, in which case 
+<a class="iref" href="#_execute">_execute</a> should save any necessary undo data in instance variables
+and override <a class="iref" href="#canundo">canundo</a> appropriately.
+
+</dd>
+</dl>
+
+<h2><a name="validation_helpers">Validation Helpers</a></h2>
+<p>The following methods are for use in subclasses' <a class="iref" href="#_validate">_validate</a> method.
+They are "protected", i.e., they can be used only in order(n) 
+subclasses.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="prepare">my prepare <i>parm</i> ?<i>options...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#prepare">prepare</a> method prepares the parameter for use by the
+<a class="iref" href="#_execute">_execute</a> method.  It can transform and validate the parameter 
+value in a number of ways.</p>
+
+<p>It is customary to begin each order's <a class="iref" href="#_validate">_validate</a> method with a 
+succession of <a class="iref" href="#prepare">prepare</a> commands, one for each parameter.  The
+method's useful work is done by the options, which are processed in
+order from left to right.  The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="prepare-listof">-listof <i>valtype</i></a></dt><dd>
+
+This is similar to <code>-type</code>.  It indicates that the value is
+a list of which every element must be a member of the specified
+validation type.  If any element is invalid, the parameter is
+<a class="iref" href="#reject">reject</a>ed.
+
+</dd>
+<dt class="defopt"><a name="prepare-listwith">-listwith <i>valcmd</i></a></dt><dd>
+
+This is similar to <span class="tt">-with</span>.  It indicates that the value is a list of
+which every element must be valid according to the specified validation
+command.  If any element is invalid, the parameter is <a class="iref" href="#reject">reject</a>ed.
+
+</dd>
+<dt class="defopt"><a name="prepare-normalize">-normalize</a></dt><dd>
+
+Normalizes internal whitespace: all internal whitespace sequences are
+replaced with single spaces.
+
+</dd>
+<dt class="defopt"><a name="prepare-num">-num</a></dt><dd>
+
+Tcl interprets integer numbers with leading zeroes as octal numbers.
+To prevent this, this option removes leading zeroes from parameter
+values which are non-zero integers.  Floating point and other
+non-integer values are left alone, and plain zeroes are left alone.
+
+</dd>
+<dt class="defopt"><a name="prepare-oneof">-oneof <i>list</i></a></dt><dd>
+
+Ensures that the parameter's value is a member of the <i>list</i>.  If
+the list is short enough, the valid values will be included in any
+error message.
+
+</dd>
+<dt class="defopt"><a name="prepare-required">-required</a></dt><dd>
+
+The parameter is required; if the parameter's value is the empty
+string, consequently, it is <a class="iref" href="#reject">reject</a>ed.
+
+</dd>
+<dt class="defopt"><a name="prepare-selector">-selector</a></dt><dd>
+
+The parameter is a <a href="../mann/dynaform.html">dynaform(n)</a> selector; validate that its
+value matches one of the selector's cases.  This option is used in
+place of a <code>-type</code> option.
+
+</dd>
+<dt class="defopt"><a name="prepare-someof">-someof <i>list</i></a></dt><dd>
+
+Ensures that the parameter's value consists of a list of values, each 
+of which is a member of <i>list</i>.  If <i>list</i> is short enough,
+the valid values will be included in any error message.
+
+</dd>
+<dt class="defopt"><a name="prepare-toupper">-toupper</a></dt><dd>
+
+Converts the parameter's value to all uppercase.
+
+</dd>
+<dt class="defopt"><a name="prepare-tolower">-tolower</a></dt><dd>
+
+Converts the parameter's value to all lowercase.
+
+</dd>
+<dt class="defopt"><a name="prepare-type">-type <i>valtype</i></a></dt><dd><p>
+
+Indicates that the value of the parameter must belong to a validation
+type called <i>valtype</i>.  Specifying this option is essentially the
+same as including the following code snippet in the order body:
+
+</p><pre class="example">
+    my checkon $parm {
+        set parms($parm) [{*}$valtype validate $parms($parm)]
+    }
+</pre>
+<p>The <i>valtype</i>'s "validate" method is used to validate the value,
+and may also put it into canonical form.</p>
+
+<p>Note that 
+
+</p>
+
+<pre class="example">
+my prepare -type ::foo
+</pre>
+<p>is simply a convenient shorthand for
+
+</p>
+
+<pre class="example">
+my prepare -with {::foo validate}
+</pre>
+
+</dd>
+<dt class="defopt"><a name="prepare-with">-with <i>valcmd</i></a></dt><dd><p>
+
+Indicates that the value of the parameter must be acceptable to a 
+validation command called <i>valcmd</i>.  Specifying this option is 
+essentially the same as including the following code snippet in the order 
+body:
+
+</p><pre class="example">
+    my checkon $parm {
+        set parms($parm) [{*}$valcmd $parms($parm)]
+    }
+</pre>
+<p>The validation command should accept and return a valid input, possibly
+putting it into canonical form, and throw <b>INVALID</b> for invalid inputs.
+
+</p>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="badparm">my badparm <i>parm</i></a></dt><dd>
+
+This method returns 1 if there's no point in validating parameter 
+<i>parm</i> any further, and 0 otherwise.  The parameter is "bad" if it
+has no value (i.e., its value is the empty string) or if it has already
+been <a class="iref" href="#reject">reject</a>ed.
+
+</dd>
+<dt class="defitem"><a name="reject">my reject <i>parm errtext</i></a></dt><dd>
+
+Rejects the named <i>parm</i> with the given error text, saving the 
+error text for later use.  This command doesn't throw an error; 
+typically we want to reject as many of the parameters as possible.
+
+</dd>
+<dt class="defitem"><a name="checkon">my checkon <i>parm script</i></a></dt><dd><p>
+
+If the given <i>parm</i> is not known to be "bad" (see <a class="iref" href="#badparm">badparm</a>), 
+then this method executes the <i>script</i> to validate it further.  The
+script may call <i>reject</i> to reject the parameter; or, the parameter
+will be rejected automatically if the script throws <b>INVALID</b>
+(as it might if a validation type is used to validate the value).</p>
+
+<p>For example, the following code will validate that parameter <i>i</i>
+is an integer, only if <i>i</i> isn't already known to be "bad".
+
+</p><pre class="example">
+my checkon i {
+    snit::integer validate $parms(i)
+}
+</pre>
+
+
+</dd>
+<dt class="defitem"><a name="returnOnError">my returnOnError</a></dt><dd>
+
+Usually we want to try to find all of the errors in an order; but sometimes
+a particular error will preclude further processing.  This command simply
+causes the <a class="iref" href="#_validate">_validate</a> method to return early, only if at least one 
+parameter value is known to be invalid.
+
+</dd>
+</dl>
+
+<h2><a name="execution_helpers">Execution Helpers</a></h2>
+<p>The following methods are for use in subclasses' <a class="iref" href="#_execute">_execute</a> method.
+They are "protected", i.e., they can be used only in order(n) 
+subclasses.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="setundo">my setundo <i>script</i></a></dt><dd>
+
+Saves the undo <i>script</i>.  If a non-empty string is saved the order
+will be undoable; otherwise not--unless the subclass overrides 
+<a class="iref" href="#canundo">canundo</a> and <a class="iref" href="#undo">undo</a>, in which case <a class="iref" href="#setundo">setundo</a> is 
+probably irrelevant.
+
+</dd>
+<dt class="defitem"><a name="mode">my mode</a></dt><dd><p>
+
+If the order was executed by an <a href="../mann/order_flunky.html">order_flunky(n)</a>, this command
+will return its execute mode, one of <b>gui</b>, <b>normal</b>, or 
+<i>private</i>.  Otherwise, it will return <b>private</b>.  (See 
+<a href="../mann/order_flunky.html">order_flunky(n)</a> for details.)  Note that an <b>EXECUTED</b> order
+preserves the flunky's mode at the time it was executed.</p>
+
+<p>In particular, if the mode is <b>gui</b> then the order may access the 
+GUI, e.g., to pop up confirmation dialogs.
+
+</p>
+</dd>
+<dt class="defitem"><a name="cancel">my cancel</a></dt><dd>
+
+Cancels execution of the order.  This is usually called in response to
+a selection of "Cancel" in a confirmation dialog.
+
+</dd>
+</dl>
+
+<h2><a name="examples">EXAMPLES</a></h2>
+    
+
+<h2><a name="basic_use">Basic Use</a></h2>
+<p>First, create an order_set for this package's orders.  This is usually
+# done in the <span class="tt">pkgModules.tcl</span> file, just prior to the modules that
+define orders.
+
+</p>
+
+<pre class="example">
+::marsutil::order_set ::mylib::orders
+</pre>
+<p>Then, use the order set to define the orders.  See <a href="../mann/order_set.html">order_set(n)</a>
+for metadata defaults.
+
+</p>
+
+<pre class="example">
+mylib::orders define BSYS:PLAYBOX:UPDATE {
+    meta title      "Update Playbox-wide Belief System Parameters"
+    meta sendstates {PREP}
+    meta defaults   {
+        gamma 1.0
+    }
+
+    method narrative {} {
+        return "Set Playbox Gamma to [format %g $parms(gamma)]"
+    }
+
+    method _validate {} {
+        my prepare gamma -required -num -type ::simlib::rmagnitude
+    }
+
+    method _execute {} {
+        my setundo [bsys mutate update playbox "" [my getdict]]
+        return
+    }
+}
+</pre>
+<p>Next, the library or application must create an <a href="../mann/order_flunky.html">order_flunky(n)</a>
+to manage order execution for this set of orders:
+
+</p>
+
+<pre class="example">
+set flunky [::marsutil::order_flunky new ::mylib::orders]
+</pre>
+<p>The flunky can then be used to execute orders in several ways.  For 
+example,
+
+</p>
+
+<pre class="example">
+# Send the order
+$flunky send normal BSYS:PLAYBOX:UPDATE -gamma 1.5
+
+# Undo the last order
+$flunky undo
+
+# Redo the last undone order
+$flunky redo
+</pre>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/order_flunky.html">order_flunky(n)</a>, <a href="../mann/order_set.html">order_set(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>order(n) requires Tcl 8.6 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

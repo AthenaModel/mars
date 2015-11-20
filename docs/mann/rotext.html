@@ -1,0 +1,559 @@
+<html>
+<head>
+<title>mars 3.0.23: rotext(n) -- Read-only Text Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>rotext(n)</b> -- Read-only Text Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#text_tags">Text Tags</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#rotext">rotext <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rotext-foundcmd">-foundcmd <i>cmd</i></a></li>
+<li><a class="iref" href="#configure">$rotext configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$rotext cget <i>option</i></a></li>
+<li><a class="iref" href="#del">$rotext del <i>args...</i></a></li>
+<li><a class="iref" href="#ins">$rotext ins <i>args...</i></a></li>
+<li><a class="iref" href="#selectAll">$rotext selectAll</a></li>
+<li><a class="iref" href="#find">$rotext find <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#find_target">$rotext find target <i>targetType</i> <i>target</i></a></li>
+<li><a class="iref" href="#find_update">$rotext find update <i>?force?</i></a></li>
+<li><a class="iref" href="#find_count">$rotext find count</a></li>
+<li><a class="iref" href="#find_instance">$rotext find instance</a></li>
+<li><a class="iref" href="#find_show">$rotext find show <i>instance</i></a></li>
+<li><a class="iref" href="#find_prev">$rotext find prev</a></li>
+<li><a class="iref" href="#find_next">$rotext find next</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The rotext(n) widget provides read-only browsing and searching
+of styled text.  As such, it is a drop-in replacement for the standard
+text(n) widget, with these differences:
+
+</p>
+
+<ul>
+  <li> The <b>insert</b> and <b>delete</b> methods are no-ops; use the
+       new <b>ins</b> and <b>del</b> methods instead.  These methods
+       are used precisely like the text(n) methods they replace.
+
+  </li><li> The navigation key-bindings have been changed to allow easier
+       browsing, i.e., the Up and Down arrow keys scroll the text in
+       the widget rather than moving the insertion point (which is
+       hidden in any event).
+
+  </li><li> The <b>&lt;&lt;SelectAll&gt;&gt;</b> virtual event will select
+       all of the text in the widget.
+
+  </li><li> The <a class="iref" href="#find">find</a> method and <code>-foundcmd</code> callback
+       work with the <a href="../mann/finder.html">finder(n)</a> widget to allow searching
+       of the displayed text.
+</li></ul>
+<p>This man page describes only those options and subcommands which are
+specific to rotext(n); but see also the Tk text(n) man page for
+more details.
+
+</p>
+
+<h2><a name="text_tags">Text Tags</a></h2>
+<p>The rotext(n) widget defines the following text tags, which are
+used by the <a class="iref" href="#find">find</a> mechanism:
+
+</p>
+
+<ul>
+  <li> <b>FOUND</b>: This tag is used to highlight all instances of a
+       search target in the widget's text.  By default, it adds
+       boldface and underlining.
+
+  </li><li> <b>SHOWN</b>:  This tag is used to a line containing an
+       instance of the search target.  The <a class="iref" href="#find">find</a> subcommands
+       can be used to move the highlight from one instance to the
+       next, scrolling the widget as needed.  By default, it
+       sets the foreground color to white and the
+       background color to black.
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="rotext">rotext <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#rotext">rotext</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#rotext">rotext</a> widget may be created with the following
+rotext(n)-specific options, along with the normal text(n) options:
+
+</p><dl>
+
+<dt class="defopt"><a name="rotext-foundcmd">-foundcmd <i>cmd</i></a></dt><dd><p>
+
+This option is used to link a rotext(n) widget with a finder(n)
+widget, or any other widget which supports the "found" half of the
+find/found protocol.  It specifies a command which will be called when
+the widget's find status is updated.  It will be called with two
+additional arguments, both integers: the number of instances of the
+target string which have been found (or 0 if there are none) and
+the index (0 to N-1) of the instance which is currently highlighted
+(or -1 if no instance is highlighted).</p>
+
+<p>See <a href="../mann/finder.html">finder(n)</a> for an example.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$rotext configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified options.
+
+</dd>
+<dt class="defitem"><a name="cget">$rotext cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="del">$rotext del <i>args...</i></a></dt><dd>
+
+Replacement for the text(n) "delete" method.
+
+</dd>
+<dt class="defitem"><a name="ins">$rotext ins <i>args...</i></a></dt><dd>
+
+Replacement for the text(n) "insert" method.
+
+</dd>
+<dt class="defitem"><a name="selectAll">$rotext selectAll</a></dt><dd>
+
+Selects all of the text in the widget.
+
+</dd>
+<dt class="defitem"><a name="find">$rotext find <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#find">find</a> method, along with the <code>-foundcmd</code>
+callback, implements the rotext(n) widget's half of the find/found
+protocol.  It is used to search for and highlight text strings.
+
+</p><dl>
+
+<dt class="defitem"><a name="find_target">$rotext find target <i>targetType</i> <i>target</i></a></dt><dd><p>
+
+Searches for all instances of <i>target</i>, which must be a string
+of the given <i>targetType</i>:
+
+</p><ul>
+  <li> <b>exact</b> -- any text string
+  </li><li> <b>wildcard</b> -- a glob-pattern
+  </li><li> <b>regexp</b> -- a regular expression
+</li></ul>
+<p>All instances are highlighted with the FOUND tag.  Then, the
+widget scrolls to show the line containing the last instance
+of the target; the line is highlighted with the SHOWN tag.
+Finally, the <code>-foundcmd</code>, if any, is called.</p>
+
+<p>To clear the search, call this method with a <i>target</i> of "".
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="find_update">$rotext find update <i>?force?</i></a></dt><dd><p>
+
+This method causes the widget to redo the current search.
+If a line was highlighted before <a class="iref" href="#find_update">find update</a> it
+will still be highlighted after unless <i>force</i> is set true.</p>
+
+<p>Call this method after changing the contents of the widget.
+
+</p>
+</dd>
+<dt class="defitem"><a name="find_count">$rotext find count</a></dt><dd><p>
+
+Returns the number of instances of the target which were found.  Note
+that if the target occurs twice on one line, that counts as a single
+instance.</p>
+
+<p>Returns 0 if there's no target.
+
+</p>
+</dd>
+<dt class="defitem"><a name="find_instance">$rotext find instance</a></dt><dd><p>
+
+Returns the index (0 to N-1) of the instance which is
+currently highlighted, or -1 if no instance is highlighted.</p>
+
+<p>Note that the resulting value might be incorrect if the
+widget's contents have been modified since the search was
+done (unless <a class="iref" href="#find_update">find update</a> has been called).
+
+</p>
+</dd>
+<dt class="defitem"><a name="find_show">$rotext find show <i>instance</i></a></dt><dd>
+
+Scroll to and highlight the line containing an instance
+of the search target.  <i>instance</i> is the instance number,
+0 to [<a class="iref" href="#find_count">find count</a>]-1, or "end" for the final instance.
+
+</dd>
+<dt class="defitem"><a name="find_prev">$rotext find prev</a></dt><dd>
+
+Scroll to and highlight the line containing the next instance
+of the search target, if any.
+
+</dd>
+<dt class="defitem"><a name="find_next">$rotext find next</a></dt><dd>
+
+Scroll to and highlight the line containing the previous instance
+of the search target, if any.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

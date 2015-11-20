@@ -1,0 +1,545 @@
+<html>
+<head>
+<title>mars 3.0.23: mat(n) -- Matrix Operations, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mat(n)</b> -- Matrix Operations, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#mat_new">mat new <i>m n ?initval?</i></a></li>
+<li><a class="iref" href="#mat_rows">mat rows <i>matrix</i></a></li>
+<li><a class="iref" href="#mat_cols">mat cols <i>matrix</i></a></li>
+<li><a class="iref" href="#mat_rowvec">mat rowvec <i>matrix i</i></a></li>
+<li><a class="iref" href="#mat_colvec">mat colvec <i>matrix j</i></a></li>
+<li><a class="iref" href="#mat_equal">mat equal <i>mat1 mat2</i></a></li>
+<li><a class="iref" href="#mat_add">mat add <i>mat1 mat2</i></a></li>
+<li><a class="iref" href="#mat_sub">mat sub <i>mat1 mat2</i></a></li>
+<li><a class="iref" href="#mat_scalarmul">mat scalarmul <i>matrix constant</i></a></li>
+<li><a class="iref" href="#mat_format">mat format <i>matrix</i> <i>fmtstring</i></a></li>
+<li><a class="iref" href="#mat_pprint">mat pprint <i>matrix ?rlabels? ?clabels?</i></a></li>
+<li><a class="iref" href="#mat_pprintf">mat pprintf <i>matrix format ?rlabels? ?clabels?</i></a></li>
+<li><a class="iref" href="#mat_pprintq">mat pprintq <i>matrix quality ?rlabels? ?clabels?</i></a></li>
+<li><a class="iref" href="#mat_numerize">mat numerize <i>matrix quality</i></a></li>
+<li><a class="iref" href="#mat_filter">mat filter <i>matrix command</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>mat(n) defines a number of operations on Tcl matrices.  A Tcl
+matrix is a list of lists in row-major order,
+indexed <i>i</i> = 0,..., <i>m-1</i> and
+<i>j</i> = 0,..., <i>n-1</i>.  Thus, the following code defines an
+initialized matrix of 2 rows and 3 columns:
+
+</p>
+
+<pre>
+set matrix {
+    {1 2 3}
+    {4 5 6}
+}
+</pre>
+<p>Matrices can be entered explicitly, as shown; alternatively, the
+<a class="iref" href="#mat_new">mat new</a> command can create a matrix of arbitrary size.
+In general, the elements of a matrix can be of any type, although some of the
+operations defined by this module assume them to be numeric.</p>
+
+<p>The elements of a matrix are accessed using the standard Tcl commands
+<code>lindex</code> and <code>lset</code>:
+
+</p>
+
+<pre>
+# Print element i,j
+puts [lindex $matrix $i $j]
+
+# Set element i,j to 7
+lset matrix $i $j 7
+</pre>
+<p>Note that Tcl lists are represented internally as extensible arrays;
+consequently, access to matrix elements is reasonably quick.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="mat_new">mat new <i>m n ?initval?</i></a></dt><dd><p>
+
+Returns a new matrix of <i>m</i> rows and <i>n</i> columns.  If
+<i>initval</i> is given, all elements will be set to it; otherwise all
+elements will contain the empty string.  For example, the following
+code creates a 2*3 matrix of zeroes:
+
+</p><pre>
+set matrix [mat new 2 3 0]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="mat_rows">mat rows <i>matrix</i></a></dt><dd>
+
+Returns the number of rows in the matrix.
+
+</dd>
+<dt class="defitem"><a name="mat_cols">mat cols <i>matrix</i></a></dt><dd>
+
+Returns the number of columns in the matrix.
+
+</dd>
+<dt class="defitem"><a name="mat_rowvec">mat rowvec <i>matrix i</i></a></dt><dd>
+
+Returns the <i>i</i><sup>th</sup> row of <i>matrix</i> as a
+<a href="../mann/vec.html">vec(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="mat_colvec">mat colvec <i>matrix j</i></a></dt><dd>
+
+Returns the <i>j</i><sup>th</sup> column of <i>matrix</i> as a
+<a href="../mann/vec.html">vec(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="mat_equal">mat equal <i>mat1 mat2</i></a></dt><dd>
+
+Returns 1 if the two matrices have the same dimensions and
+corresponding elements are numerically equal, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="mat_add">mat add <i>mat1 mat2</i></a></dt><dd>
+
+Returns the sum of the two matrices <i>mat1</i> and <i>mat2</i>.
+
+</dd>
+<dt class="defitem"><a name="mat_sub">mat sub <i>mat1 mat2</i></a></dt><dd>
+
+Returns the difference of the two matrices <i>mat1</i> and
+<i>mat2</i>.
+
+</dd>
+<dt class="defitem"><a name="mat_scalarmul">mat scalarmul <i>matrix constant</i></a></dt><dd>
+
+Returns the product of the <i>matrix</i> with a scalar <i>constant</i>.
+
+</dd>
+<dt class="defitem"><a name="mat_format">mat format <i>matrix</i> <i>fmtstring</i></a></dt><dd>
+
+Returns a copy of the <i>matrix</i> which each element formatted using
+the standard Tcl <span class="tt">format</span> command and the given format string.
+
+</dd>
+<dt class="defitem"><a name="mat_pprint">mat pprint <i>matrix ?rlabels? ?clabels?</i></a></dt><dd><p>
+
+Returns a pretty-printed text string of the elements in the
+<i>matrix</i>.  If specified, <i>rlabels</i> is a list of <a class="iref" href="#mat_rows">mat rows</a>
+row labels, and <i>clabels</i> is a list of <a class="iref" href="#mat_cols">mat cols</a>
+column labels; otherwise, the row and column labels are defaulted to
+the row and column numbers. The matrix elements are included "as is",
+with no additional formatting.</p>
+
+<p>For example, the command
+
+</p><pre>
+mat pprint {
+   {1 2 3}
+   {4 5 6}
+}
+</pre>
+<p>returns the following string:
+
+</p>
+
+<pre>
+       Col 0  Col 1  Col 2
+Row 0      1      2      3
+Row 1      4      5      6
+</pre>
+
+</dd>
+<dt class="defitem"><a name="mat_pprintf">mat pprintf <i>matrix format ?rlabels? ?clabels?</i></a></dt><dd><p>
+
+This is a variant of <a class="iref" href="#mat_pprint">mat pprint</a>; before the <i>matrix</i> is
+pretty-printed, the elements are formatted using the standard Tcl
+command <code>format</code> and the specified <i>format</i> string.
+For example, the following code pretty-prints a numeric matrix
+containing decimal numbers between 0.000 and 100.000:
+
+</p><pre>
+puts [mat pprintf $matrix "%7.3f"]
+</pre>
+<p>Note that empty elements are passed through to the output.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="mat_pprintq">mat pprintq <i>matrix quality ?rlabels? ?clabels?</i></a></dt><dd><p>
+
+This is a variant of <a class="iref" href="#mat_pprint">mat pprint</a>; the <i>matrix</i> is
+assumed to contain numeric values of a <a href="../mann/quality.html">quality(n)</a> type.  The
+<i>quality</i> object is used to format each element as follows:
+
+</p><pre>
+&lt;shortname&gt;=&lt;value&gt;
+</pre>
+<p>The <i>value</i> is formatted using the <i>quality</i> object's
+<a href="../mann/quality.html#format">format</a> subcommand; the <i>shortname</i> is the
+short symbolic name corresponding to the <i>value</i>.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="mat_numerize">mat numerize <i>matrix quality</i></a></dt><dd>
+
+Given a <i>matrix</i> whose elements are symbols of the specified
+<i>quality</i> object, returns a matrix in which all symbols have been
+converted to their numeric equivalents.  Any pre-existing numeric
+elements in the <i>matrix</i> are retained.
+
+</dd>
+<dt class="defitem"><a name="mat_filter">mat filter <i>matrix command</i></a></dt><dd>
+
+Given a <i>matrix</i>, pass each element to <i>command</i> and return
+the matrix of results.  The <i>command</i> is an arbitrary Tcl
+command expecting one additional argument.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/vec.html">vec(n)</a>, <a href="../mann/mat3d.html">mat3d(n)</a>.
+
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>mat(n) requires Tcl 8.5 or later.</p>
+
+<p>To use mat(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

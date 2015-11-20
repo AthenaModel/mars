@@ -1,0 +1,578 @@
+<html>
+<head>
+<title>mars 3.0.23: rmf(n) -- Relationship Multiplier Functions, submodule of simlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>rmf(n)</b> -- Relationship Multiplier Functions, submodule of <a href="../mann/simlib.html">simlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#configuration_parameters">Configuration Parameters</a></li>
+
+    <li><a href="#function_plots">Function Plots</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require simlib 3.0.23
+namespace import ::simlib::*
+</pre>
+
+
+
+<ul class="itemlist">
+<li><a class="iref" href="#rmf">rmf <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#rmf_parm">rmf parm <i>subcommand</i> ?<i>args..</i>?</a></li>
+<li><a class="iref" href="#rmf_constant">rmf constant <i>R</i> ?<i>Rnom</i>?</a></li>
+<li><a class="iref" href="#rmf_linear">rmf linear <i>R</i> ?<i>Rnom</i>?</a></li>
+<li><a class="iref" href="#rmf_quad">rmf quad <i>R</i> ?<i>Rnom</i>?</a></li>
+<li><a class="iref" href="#rmf_frquad">rmf frquad <i>R</i> ?<i>Rnom</i>?</a></li>
+<li><a class="iref" href="#rmf_frmore">rmf frmore <i>R</i> ?<i>Rnom</i>?</a></li>
+<li><a class="iref" href="#rmf_enquad">rmf enquad <i>R</i> ?<i>Rnom</i>?</a></li>
+<li><a class="iref" href="#rmf_enmore">rmf enmore <i>R</i> ?<i>Rnom</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>rmf(n) defines a family of "relationship multiplier functions", or
+"RMFs".  An RMF translates an <a href="../mann/simtypes.html#rgrouprel">rgrouprel</a> value, a
+number that ranges from -1.0 (perfect enemies) to 1.0 (perfect
+friends), into a multiplier.  Models use
+RMFs to determine the magnitude of an effect based on the relationship
+between the affected group and the acting group.</p>
+
+<p>The various RMFs are implemented as subcommands of the <a class="iref" href="#rmf">rmf</a>
+command.  Because there are many RMFs, and because the RMF to be
+used in a particular rule can be set in the <a href="../man5/parmdb.html">parmdb(5)</a>,
+<a class="iref" href="#rmf">rmf</a> is also an <a href="../mann/enum.html">enum(n)</a> of the RMF names, which are
+as follows:
+
+</p>
+
+<table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>constant</tt></td>
+<td>Constant</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>linear</tt></td>
+<td>Linear</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>quad</tt></td>
+<td>Quad</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>frquad</tt></td>
+<td>Friends Quad</td>
+</tr>
+<tr class="tr-even">
+<td>4</td>
+<td><tt>frmore</tt></td>
+<td>Friends More</td>
+</tr>
+<tr class="tr-odd">
+<td>5</td>
+<td><tt>enquad</tt></td>
+<td>Enemies Quad</td>
+</tr>
+<tr class="tr-even">
+<td>6</td>
+<td><tt>enmore</tt></td>
+<td>Enemies More</td>
+</tr>
+</table>
+
+
+<h2><a name="configuration_parameters">Configuration Parameters</a></h2>
+<p>rmf(n) is a <a href="../mani/parm.html">parm(i)</a>, and defines the following configuration
+parameter.  The <a class="iref" href="#rmf_parm">rmf parm</a> subcommand can be used to set and query
+parameter values.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="rmf.*">rmf.*</a></dt><dd><p>
+rmf(n) configuration parameters.
+</p><dl>
+
+<dt class="defitem"><a name="rmf.nominalRelationship">rmf.nominalRelationship <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.6</span></b>".
+This value, a floating point number from 0.1 to 1.0, defines the strength of the nominal relationship value, that is, the magnitude of relationships for which the RMFs should return a value of 1.0 or -1.0.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="function_plots">Function Plots</a></h2>
+<p>The functions which correspond to these names are as follows, assuming
+that the <b>rmf.nominalRelationship</b> parameter is set to its
+default value of 
+0.6.
+Note that where the plots cross the -1.0 and 1.0 lines they do so at
+&plusmn;0.6
+
+
+</p>
+
+<img src="rmf2.gif">
+<p>If <b>rmf.nominalRelationship</b> is set to 1.0, we get the RMFs used
+in JNEM 2.1.  Note that where the plots cross the -1.0 and 1.0 lines,
+they do so at &plusmn;1.0.
+
+</p>
+
+<img src="rmf.gif">
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="rmf">rmf <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#rmf">rmf</a> command has all of the standard
+<a href="../mann/enum.html">enum(n)</a> subcommands; the following are defined as well.</p>
+
+<p>In what follows, the value of the <b>rmf.nominalRelationship</b>
+parameter is indicated by <i>Rnom</i>.
+
+</p><dl>
+
+<dt class="defitem"><a name="rmf_parm">rmf parm <i>subcommand</i> ?<i>args..</i>?</a></dt><dd>
+
+The <a class="iref" href="#rmf_parm">rmf parm</a> subcommand gives access to the rmf(n) module's
+configuration <a href="../mann/parmset.html">parmset(n)</a>; see
+<a href="#configuration_parameters">Configuration Parameters</a> for details.  The subcommands
+of <a class="iref" href="#rmf_parm">rmf parm</a> are exactly those of <a href="../mann/parmset.html">parmset(n)</a>
+instances.
+
+
+</dd>
+<dt class="defitem"><a name="rmf_constant">rmf constant <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns a constant 1.0 regardless of <i>R</i>.
+The "Constant" function should be used when the
+relationship between the two groups should have no effect.</p>
+
+<p>The <i>Rnom</i> argument is ignored.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rmf_linear">rmf linear <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns <i>R/Rnom</i>.  The "Linear" function should be used when the
+effect of an input should be directly proportional to the strength of the
+relationship.</p>
+
+<p>If given, the <i>Rnom</i> argument overrides the
+<span class="tt">rmf.nominalRelationship</span> parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rmf_quad">rmf quad <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns (<i>R/Rnom</i>)&sup2;&sdot;sign(<i>R</i>).  The "Quad" function
+is similar to <a class="iref" href="#rmf_linear">rmf linear</a> but has a weaker effect for <i>R</i> &lt;
+<i>Rnom</i> and a stronger effect for <i>R</i> &gt; <i>Rnom</i>.</p>
+
+<p>Note that friends are affected with the same sign as
+the input's magnitude, and enemies with the opposite sign, i.e.,
+if friends are affected positively then enemies are affected negatively.</p>
+
+<p>If given, the <i>Rnom</i> argument overrides the
+<span class="tt">rmf.nominalRelationship</span> parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rmf_frquad">rmf frquad <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &gt; 0, and 0 otherwise.  Friends
+are affected according to the strength of the relationship, but
+enemies are not affected at all.</p>
+
+<p>If given, the <i>Rnom</i> argument overrides the
+<span class="tt">rmf.nominalRelationship</span> parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rmf_frmore">rmf frmore <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns ((1+<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and friends are
+affected, but enemies are affected much less than friends, and
+perfect enemies are not affected at all.</p>
+
+<p>Note that both friends and enemies are affected with the same sign
+as the input's magnitude; thus, if it is a positive input then
+both friends and enemies are affected positively.</p>
+
+<p>If given, the <i>Rnom</i> argument overrides the
+<span class="tt">rmf.nominalRelationship</span> parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rmf_enquad">rmf enquad <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns (<i>R/Rnom</i>)&sup2; where <i>R</i> &lt; 0, and 0 otherwise.  Enemies
+are affected according to the strength of the relationship, but
+friends are not affected at all.</p>
+
+<p>If given, the <i>Rnom</i> argument overrides the
+<span class="tt">rmf.nominalRelationship</span> parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rmf_enmore">rmf enmore <i>R</i> ?<i>Rnom</i>?</a></dt><dd><p>
+
+Returns ((1&minus;<i>R</i>)/(1+<i>Rnom</i>))&sup2;.  Both enemies and
+friends are affected, but friends are affected much less than enemies,
+and perfect friends are not affected at all.</p>
+
+<p>Note that both friends and enemies are affected with the same sign
+as the input's magnitude; thus, if it is a positive input then
+both friends and enemies are affected positively.
+
+</p>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

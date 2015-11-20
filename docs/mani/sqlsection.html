@@ -1,0 +1,538 @@
+<html>
+<head>
+<title>mars 3.0.23: sqlsection(i) -- SQL Document Section</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>sqlsection(i)</b> -- SQL Document Section
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#registration">Registration</a></li>
+
+    <li><a href="#subcommands">Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#example">EXAMPLE</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#title"><i>section</i> sqlsection title</a></li>
+<li><a class="iref" href="#schema"><i>section</i> sqlsection schema</a></li>
+<li><a class="iref" href="#tempschema"><i>section</i> sqlsection tempschema</a></li>
+<li><a class="iref" href="#tempdata"><i>section</i> sqlsection tempdata</a></li>
+<li><a class="iref" href="#functions"><i>section</i> sqlsection functions</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mani/sqlsection.html">sqlsection(i)</a> documents the interface exported by
+<a href="../mann/sqldocument.html">sqldocument(n)</a> sections, i.e., modules that add to the
+<a href="../mann/sqldocument.html">sqldocument(n)</a> schema.  Such a module can add both permanent
+and temporary entities--tables, indicies, views, etc.--to the schema,
+populate its temporary tables, and define SQL functions.</p>
+
+<p>By convention, schema entities and functions defined by an
+<a href="../mani/sqlsection.html">sqlsection(i)</a> should have names which derive from the
+section's name, so as to avoid name collisions with other sections.
+
+</p>
+
+<h2><a name="registration">Registration</a></h2>
+<p>In order to be included in an <a href="../mann/sqldocument.html">sqldocument(n)</a> database, the
+<a href="../mani/sqlsection.html">sqlsection(i)</a> must register itself with the
+<a href="../mann/sqldocument.html">sqldocument(n)</a> type.  If <code>::fred</code> implements the
+<a href="../mani/sqlsection.html">sqlsection(i)</a> interface, it can register itself as follows:
+
+</p>
+
+<pre>
+   ::marsutil::sqldocument register ::fred
+</pre>
+<p>Once <code>::fred</code> is registered, its definitions become part of
+all future <a href="../mann/sqldocument.html">sqldocument(n)</a> databases.  In particular,
+<code>::fred</code>'s temporary schema definitions and SQL functions
+will be added to all instances of <a href="../mann/sqldocument.html">sqldocument(n)</a> on
+<a href="../mann/sqldocument.html#open">open</a>, and the persistent schema definitions
+will be added on <a href="../mann/sqldocument.html#clear">clear</a>.</p>
+
+<p>An <a href="../mani/sqlsection.html">sqlsection(i)</a> module can choose to register itself
+as soon as its code is loaded, or it can allow the application to
+decide whether or not it should be registered.
+
+</p>
+
+<h2><a name="subcommands">Subcommands</a></h2>
+<p>Every <a href="../mani/sqlsection.html">sqlsection(i)</a> module must be an ensemble command with
+at least the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="title"><i>section</i> sqlsection title</a></dt><dd><p>
+
+Returns the <i>section</i>'s "title", a human-readable equivalent of
+the module's name.  For example, <a href="../mann/sqldocument.html">sqldocument(n)</a> is an
+<a href="../mani/sqlsection.html">sqlsection(i)</a>; its module name is
+<code>::marsutil::sqldocument</code>, and its title is "sqldocument(n)".</p>
+
+<p>The title will primarily be used when documenting the schema.
+
+</p>
+</dd>
+<dt class="defitem"><a name="schema"><i>section</i> sqlsection schema</a></dt><dd><p>
+
+Returns the <i>section</i>'s persistent schema definitions as a block
+of SQL text.  The block should not contain any "CREATE TEMP TABLE",
+"CREATE TEMP VIEW", or "CREATE TEMP TRIGGER" statements.</p>
+
+<p>If the section defines no persistent schema definitions, this
+subcommand should return the empty string.
+
+</p>
+</dd>
+<dt class="defitem"><a name="tempschema"><i>section</i> sqlsection tempschema</a></dt><dd><p>
+
+Returns the <i>section</i>'s temporary schema definitions as a block
+of SQL text.  The block should contain only "CREATE TEMP TABLE",
+"CREATE TEMP VIEW", and "CREATE TEMP TRIGGER" statements, with
+related indices.</p>
+
+<p>If the section defines no temporary schema definitions, this
+subcommand should return the empty string.
+
+</p>
+</dd>
+<dt class="defitem"><a name="tempdata"><i>section</i> sqlsection tempdata</a></dt><dd><p>
+
+Returns content for zero or more of the section's temporary tables.
+The content is structured as a dictionary whose keys are the table
+names and whose values are lists of row dictionaries.</p>
+
+<p>When the <a href="../mann/sqldocument.html">sqldocument(n)</a> containing the section is opened or
+cleared, the temporary data will be loaded into the relevant
+tables.</p>
+
+<p>New sections should define this subcommand; it is optional, however,
+for backward compatibility with older code.
+
+</p>
+</dd>
+<dt class="defitem"><a name="functions"><i>section</i> sqlsection functions</a></dt><dd><p>
+
+Returns the <i>section</i>'s function definitions as a dictionary
+of function names and the Tcl command prefixes which implement them.</p>
+
+<p>If the section defines no SQL functions, this
+subcommand should return the empty string.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="example">EXAMPLE</a></h2>
+<p>Here's an example of a minimal <a href="../mani/sqlsection.html">sqlsection(i)</a> module.
+
+</p>
+
+<pre>
+snit::type sample {
+    typeconstructor {
+        namespace import ::marsutil::*
+
+        # Register this section at load time.  Alternatively,
+        # this step can be left to the application.
+        sqldocument register $type
+    }
+
+    #-------------------------------------------------------------------
+    # sqlsection(i) implementation
+    #
+    # The following variables and routines implement the module's 
+    # sqlsection(i) interface.
+
+    # Persistent schema definitions
+    typevariable section_schema {
+        CREATE TABLE persistent(a,b,c);
+        -- ...
+    }
+
+    # Temporary schema definitions
+    typevariable section_temp_schema {
+        CREATE TABLE temporary(d,e,f);
+        -- ...
+    }
+
+    # Temporary Data
+    typevariable section_temp_data {
+        temporary {
+            {d 1 e 2 f 3}
+            {d 4 e 5 f 6}
+            ...
+        }
+        ...
+    }
+
+    # sqlsection title
+    #
+    # Returns a human-readable title for the section
+
+    typemethod {sqlsection title} {} {
+        return "sample(n)"
+    }
+
+    # sqlsection schema
+    #
+    # Returns the section's persistent schema definitions, if any.
+
+    typemethod {sqlsection schema} {} {
+        return [outdent $section_schema]
+    }
+
+    # sqlsection tempschema
+    #
+    # Returns the section's temporary schema definitions, if any.
+
+    typemethod {sqlsection tempschema} {} {
+        return [outdent $section_temp_schema]
+    }
+
+    # sqlsection tempdata
+    #
+    # Returns content for the temporary tables
+
+    typemethod {sqlsection tempdata} {} {
+        return $section_temp_data
+    }
+
+    # sqlsection functions
+    #
+    # Returns a dictionary of function names and command prefixes
+
+    typemethod {sqlsection functions} {} {
+        set functions [list]
+
+        lappend functions format    [list ::format]
+        lappend functions joinlist  [list ::join]
+        lappend functions percent   [list ::marsutil::percent]
+        lappend functions wallclock [list ::simclock seconds]
+
+        return $functions
+    }
+
+    #-------------------------------------------------------------------
+    # Other code...
+
+    ...
+}
+</pre>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>22 June 2009: Added <a class="iref" href="#tempdata">tempdata</a>.  Because this is new to the
+spec, it will remain optional.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

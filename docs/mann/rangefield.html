@@ -1,0 +1,540 @@
+<html>
+<head>
+<title>mars 3.0.23: rangefield(n) -- Range Type Entry Field, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>rangefield(n)</b> -- Range Type Entry Field, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#rangefield">rangefield <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-changemode">-changemode <i>mode</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-font">-font <i>font</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-labelpos">-labelpos <i>position</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-min">-min <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-max">-max <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-scalelength">-scalelength <i>pixels</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-state">-state <i>state</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-type">-type <i>object</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-resetvalue">-resetvalue <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-resolution">-resolution <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-showreset">-showreset <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rangefield-showsymbols">-showsymbols <i>flag</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The rangefield(n) widget is a <a href="../../../tk/docs/mann/scale.html">scale(n)</a> configured as a
+<a href="../mani/field.html">field(i)</a> data entry field.  It is used for entering numeric
+values from a limited range.  If the range is specified as
+a <a href="../mann/quality.html">quality(n)</a> type, the field can include a
+<a href="../mann/menubox.html">menubox(n)</a> containing the symbolic quality values.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="rangefield">rangefield <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#rangefield">rangefield</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="rangefield-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <a class="iref" href="#set">set</a>.  The new value is appended
+to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="rangefield-changemode">-changemode <i>mode</i></a></dt><dd><p>
+
+The <i>mode</i> determines how often the rangefield(n) widget calls
+the <code>-changecmd</code> as the slider is being dragged.  If the
+mode is <b>continuous</b> (the default), then it is called with
+great frequency.  If the mode is <b>onrelease</b>, then it is called
+only when the user releases the mouse button at the end of the
+drag.</p>
+
+<p>The <b>onrelease</b> mode is for use when continuous updates are
+a problem for the application.  Note that holding down an arrow key
+can create the same kind of stream of continual changes.
+Unfortunately, it also creates a stream of &lt;KeyRelease&gt; events,
+which makes it impossible to call the <code>-changecmd</code> only
+when the key is released.  Consequently, the slider cannot be adjusted
+using the keyboard when the mode is <b>onrelease</b>.
+
+</p>
+</dd>
+<dt class="defopt"><a name="rangefield-font">-font <i>font</i></a></dt><dd>
+
+Sets the font for the data label and the <a href="../mann/menubox.html">menubox(n)</a> of
+symbolic quality values (if any).
+
+</dd>
+<dt class="defopt"><a name="rangefield-labelpos">-labelpos <i>position</i></a></dt><dd>
+
+Determines whether the label is positioned to the <b>left</b> or the
+<b>right</b> of the slider.  The default is <b>right</b>.
+
+</dd>
+<dt class="defopt"><a name="rangefield-min">-min <i>value</i></a></dt>
+<dt class="defopt"><a name="rangefield-max">-max <i>value</i></a></dt><dd>
+
+<b>Creation only.</b>  Normally the minimum and maximum bounds for
+the range come from the <code>-type</code> option; however, sometimes
+the valid range should be narrower than the type's.  Use these options to
+set a narrower range.
+
+</dd>
+<dt class="defopt"><a name="rangefield-scalelength">-scalelength <i>pixels</i></a></dt><dd>
+
+Sets the length of the slider in pixels; the default is 150.  Note
+that if the length is too short, it might not be possible to drag the
+slider to every legal value.
+
+</dd>
+<dt class="defopt"><a name="rangefield-state">-state <i>state</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  rangefield(n) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.
+
+</dd>
+<dt class="defopt"><a name="rangefield-type">-type <i>object</i></a></dt><dd><p>
+
+The rangefield(n) must be given a type object with <code>-min</code>
+and <code>-max</code> options.  Mars <a href="../mann/range.html">range(n)</a> and
+<a href="../mann/quality.html">quality(n)</a> objects work, as do <b>snit::integer</b> and
+<b>snit::double</b> objects (provided that both <code>-min</code> and
+<code>-max</code> are set).</p>
+
+<p>Note that the user will not be layed out until <code>-type</code> is
+set; and once <code>-type</code> is set, it cannot be changed.
+
+</p>
+</dd>
+<dt class="defopt"><a name="rangefield-resetvalue">-resetvalue <i>value</i></a></dt><dd>
+
+Any <a href="../mani/field.html">field(i)</a> can be set to "" to clear its value.  A
+<a href="../../../tk/docs/mann/scale.html">scale(n)</a> widget has to display some concrete value at all
+times; this option sets the <b>value</b> to use.  If <i>value</i> is
+"", then the reset value will be 0 if it is in range, and the minimum
+bound otherwise.
+
+</dd>
+<dt class="defopt"><a name="rangefield-resolution">-resolution <i>value</i></a></dt><dd><p>
+
+This option specifies the scale's granularity, e.g., if it is set to 1
+then the scale's value will be an integer ranging from the minimum
+value to the maximum value by 1.</p>
+
+<p>If the <b>value</b> is "", then the rangefield(n) will pick a
+resolution automatically.
+
+</p>
+</dd>
+<dt class="defopt"><a name="rangefield-showreset">-showreset <i>flag</i></a></dt><dd>
+
+If true, the field will include a "Reset" button at the right end.
+Pressing the button will reset the field to its <code>-resetvalue</code>.
+
+</dd>
+<dt class="defopt"><a name="rangefield-showsymbols">-showsymbols <i>flag</i></a></dt><dd>
+
+If true, the <code>-type</code> is assumed to be a
+<a href="../mann/quality.html">quality(n)</a> object.  The object's long symbolic names will
+appear in a pulldown at the right end of the field.  The user can
+select a particular symbol and get the matching value.  If the user
+sets the value using the slider, the pulldown will show the symbol
+that most closely matches the selected value.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>rangefield(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Sets the value of one or more of the object's
+options.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Returns the field's current value.
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>value</i></a></dt><dd><p>
+
+From <a href="../mani/field.html">field(i)</a>.  Explicitly sets the field's <i>value</i>, and
+calls the <code>-changecmd</code> if the value has really changed,
+i.e., successive calls to <a class="iref" href="#set">set</a> with the same <i>value</i> will
+result in at most one call to the <code>-changecmd</code>.</p>
+
+<p>If the <i>value</i> is the empty string, the field will display no
+value, the scale will be reset to the <code>-resetvalue</code>, and
+the <code>-showsymbols</code> pulldown, if any, will be blank.
+
+</p>
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

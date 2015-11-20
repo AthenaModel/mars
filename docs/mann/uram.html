@@ -1,0 +1,2068 @@
+<html>
+<head>
+<title>mars 3.0.23: uram(n) -- Unified Regional Attitude Model, submodule of simlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>uram(n)</b> -- Unified Regional Attitude Model, submodule of <a href="../mann/simlib.html">simlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#initialization_and_time_management">Initialization and Time Management</a></li>
+
+    <li><a href="#undo_stack">Undo Stack</a></li>
+
+    <li><a href="#empty_civilian_groups">Empty Civilian Groups</a></li>
+
+</ul>
+    
+
+    <li><a href="#database_schema">DATABASE SCHEMA</a></li>
+    
+
+    <li><a href="#input_data">INPUT DATA</a></li>
+    
+
+    <li><a href="#attitude_drivers">ATTITUDE DRIVERS</a></li>
+    <ul>
+
+    <li><a href="#drivers_and_causes">Drivers and Causes</a></li>
+
+</ul>
+    
+
+    <li><a href="#configuration_parameters">CONFIGURATION PARAMETERS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require simlib 3.0.23
+namespace import ::simlib::*
+</pre>
+
+
+
+
+<ul class="itemlist">
+<li><a class="iref" href="#uram">uram <i>name ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#uram-driverbase">-driverbase <i>number</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#uram-loadcmd">-loadcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#uram-logger">-logger <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#uram-logcomponent">-logcomponent <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#uram-parmset">-parmset <i>parmset</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#uram-rdb">-rdb <i>name</i></a></li>
+<li><a class="iref" href="#uram_parm">uram parm <i>subcommand</i> ?<i>args..</i>?</a></li>
+<li><a class="iref" href="#uram_sqlsection">uram sqlsection <i>subcommand</i></a></li>
+<li><a class="iref" href="#advance">$obj advance <i>t</i></a></li>
+<li><a class="iref" href="#cget">$obj cget <i>option</i></a></li>
+<li><a class="iref" href="#clear">$obj clear</a></li>
+<li><a class="iref" href="#configure">$obj configure <i>option value</i></a></li>
+<li><a class="iref" href="#contribs">$obj contribs <i>subcommand</i> ?<i>indices options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#contribs-start">-start <i>ticks</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#contribs-end">-end <i>ticks</i></a></li>
+<li><a class="iref" href="#contribs_coop">$obj contribs coop <i>f g</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#contribs_hrel">$obj contribs hrel <i>f g</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#contribs_mood">$obj contribs mood <i>g</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#contribs_nbcoop">$obj contribs nbcoop <i>n g</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#contribs_nbmood">$obj contribs nbmood <i>n</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#contribs_sat">$obj contribs sat <i>g c</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#contribs_vrel">$obj contribs vrel <i>g a</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#coop">$obj coop <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#coop_badjust">$obj coop badjust <i>driver f g delta</i></a></li>
+<li><a class="iref" href="#coop_bset">$obj coop bset <i>driver f g value</i></a></li>
+<li><a class="iref" href="#coop_cset">$obj coop cset ?<i>f g value...</i>?</a></li>
+<li><a class="iref" href="#coop_persistent">$obj coop persistent <i>driver cause f g mag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#coop_transient">$obj coop transient <i>driver cause f g mag</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#coop transient-s">-s <i>factor</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#coop transient-p">-p <i>factor</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#coop transient-q">-q <i>factor</i></a></li>
+<li><a class="iref" href="#driver">$obj driver</a></li>
+<li><a class="iref" href="#edit">$obj edit <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#edit_canundo">$obj edit canundo</a></li>
+<li><a class="iref" href="#edit_reset">$obj edit reset</a></li>
+<li><a class="iref" href="#edit_mark">$obj edit mark</a></li>
+<li><a class="iref" href="#edit_undo">$obj edit undo</a></li>
+<li><a class="iref" href="#hrel">$obj hrel <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#hrel_badjust">$obj hrel badjust <i>driver f g delta</i></a></li>
+<li><a class="iref" href="#hrel_bset">$obj hrel bset <i>driver f g value</i></a></li>
+<li><a class="iref" href="#hrel_cset">$obj hrel cset ?<i>f g value...</i>?</a></li>
+<li><a class="iref" href="#hrel_persistent">$obj hrel persistent <i>driver cause f g mag</i></a></li>
+<li><a class="iref" href="#hrel_transient">$obj hrel transient <i>driver cause f g mag</i></a></li>
+<li><a class="iref" href="#init">$obj init ?-reload?</a></li>
+<li><a class="iref" href="#initialized">$obj initialized</a></li>
+<li><a class="iref" href="#load">$obj load <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#load_causes">$obj load causes ?<i>cause</i>...?</a></li>
+<li><a class="iref" href="#load_actors">$obj load actors <i>a</i> ?<i>a</i>...?</a></li>
+<li><a class="iref" href="#load_nbhoods">$obj load nbhoods <i>n</i> ?<i>n</i>...?</a></li>
+<li><a class="iref" href="#load_prox">$obj load prox ?<i>m n proximity</i>...?</a></li>
+<li><a class="iref" href="#load_civg">$obj load civg <i>g n pop</i> ?<i>g n pop</i>...?</a></li>
+<li><a class="iref" href="#load_otherg">$obj load otherg <i>g gtype</i> ?<i>g gtype</i>...?</a></li>
+<li><a class="iref" href="#load_hrel">$obj load hrel <i>f g current base nat</i> ?<i>f g base nat</i>...?</a></li>
+<li><a class="iref" href="#load_vrel">$obj load vrel <i>g a current base nat</i> ?<i>g a base nat</i>...?</a></li>
+<li><a class="iref" href="#load_sat">$obj load sat <i>g c current base nat saliency</i> ?<i>g c base nat saliency</i>...?</a></li>
+<li><a class="iref" href="#load_coop">$obj load coop <i>f g current base nat</i> ?<i>f g base nat</i>...?</a></li>
+<li><a class="iref" href="#sat">$obj sat <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#sat_badjust">$obj sat badjust <i>driver g c delta</i></a></li>
+<li><a class="iref" href="#sat_bset">$obj sat bset <i>driver g c value</i></a></li>
+<li><a class="iref" href="#sat_cset">$obj sat cset ?<i>g c value...</i>?</a></li>
+<li><a class="iref" href="#sat_persistent">$obj sat persistent <i>driver cause g c mag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#sat_transient">$obj sat transient <i>driver cause g c mag</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sat transient-s">-s <i>factor</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sat transient-p">-p <i>factor</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sat transient-q">-q <i>factor</i></a></li>
+<li><a class="iref" href="#saveable">$obj saveable <i>subcommand</i> ?<i>args..</i>?</a></li>
+<li><a class="iref" href="#time">$obj time</a></li>
+<li><a class="iref" href="#update">$obj update <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#update_pop">$obj update pop ?<i>g pop</i>...?</a></li>
+<li><a class="iref" href="#vrel">$obj vrel <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#vrel_badjust">$obj vrel badjust <i>driver g a delta</i></a></li>
+<li><a class="iref" href="#vrel_bset">$obj vrel bset <i>driver g a value</i></a></li>
+<li><a class="iref" href="#vrel_cset">$obj vrel cset ?<i>g a value...</i>?</a></li>
+<li><a class="iref" href="#vrel_persistent">$obj vrel persistent <i>driver cause g a mag</i></a></li>
+<li><a class="iref" href="#vrel_transient">$obj vrel transient <i>driver cause g a mag</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/uram.html">uram(n)</a> is the Tcl API for the Unified Regional
+Attitude Model (URAM), a successor of <a href="../mann/gram.html">gram(n)</a> and
+<a href="../mann/gram2.html">gram2(n)</a> for the use of Athena.  URAM models
+relationships, group satisfaction, and inter-group
+cooperation; see the <i>Mars Analyst's Guide</i> for full details.
+
+</p>
+
+<h2><a name="initialization_and_time_management">Initialization and Time Management</a></h2>
+<p>URAM initialization is a three-step process.
+
+</p>
+
+<ul class="ulp">
+  <li> First, the client application calls <a class="iref" href="#init">init</a> to initialize
+       URAM, loading the client application's data and setting URAM's
+       time to -1.  Note that satisfaction and cooperation roll-ups are 
+       computed based on the current levels given to URAM as part of the 
+       data load; these current levels and roll-ups will persist until
+       <a class="iref" href="#advance">advance</a> is called.
+
+  </li><li> Next, the client application should enter transient attitude
+       inputs reflecting the simulation starting conditions.  Note
+       that persistent inputs and baseline adjustments are not allowed
+       when t = -1.
+
+  </li><li> Finally, the client application calls <a class="iref" href="#advance">advance</a> to
+       complete the initialization.  This first advance sets the initial
+       simulation time, and computes the current level of each attitude curve
+       based on the initial data load and the transient attitude inputs 
+       just received.  The <b>initial baseline level is not modified</b>.
+
+  </li><li> To advance to later time steps, the client calls <a class="iref" href="#advance">advance</a>
+       again.
+</li></ul>
+
+<p><b>Note:</b> URAM requires that time advances monotonically,
+e.g., {0, 1, 2, ...} or perhaps {0, 7, 14, 21, ...}; however, URAM has
+no real understanding of simulation time, and  simply uses the time value to timestamp historical data.
+
+
+</p>
+
+<h2><a name="undo_stack">Undo Stack</a></h2>
+<p>Many uram(n) operations are undoable; to enable the undo stack, set
+the <code>-undo</code> option to <b>on</b>.  The undo stack is then managed
+using the <a class="iref" href="#edit">edit</a> command.  Use the <a class="iref" href="#edit_undo">edit undo</a> command
+to undo operations up to the last mark.  Marks can be
+inserted manually using the <a class="iref" href="#edit_mark">edit mark</a> command, or
+automatically inserted with each operation by setting the
+<code>-automark</code> option to <b>on</b>.  <b>(TBD: -automark is not
+yet implemented.)</b></p>
+
+<p>Commands may be <b>Undoable</b>, <b>Not Undoable</b>, or neither.
+A command that is <b>Not Undoable</b> clears the undo stack as part of
+its operation.  Commands that are neither usually do not affect the
+undo stack one way or another.  The <b>Undoable</b> and <b>Not
+Undoable</b> commands are so marked.
+
+</p>
+
+<h2><a name="empty_civilian_groups">Empty Civilian Groups</a></h2>
+<p>uram(n) allows civilian groups to be "empty", i.e., to have a
+population of zero.  Curves relating to an empty civilian group
+are "untracked" in <a href="../mann/ucurve.html">ucurve(n)</a>, receive no direct or
+indirect effects, and do not contribute to the neighborhood mood or
+cooperation roll-ups.</p>
+
+<p>Civilian population is dynamic, and can change from tick to tick;
+thus a group might be empty at time 0, gain population at a later
+time, and become empty again still later.
+
+</p>
+
+<h2><a name="database_schema">DATABASE SCHEMA</a></h2>
+<p>uram(n) stores almost all of its working data in an
+<a href="../mann/sqldocument.html">sqldocument(n)</a> "run-time database", or RDB.  
+The names of all of the tables, views, indices, and so forth defined
+by URAM begin with the string "uram_".</p>
+
+<p>Other modules may query any of the tables as needed, but
+should not alter them.</p>
+
+<p>uram(n) registers the following schema definitions with
+<a href="../mann/sqldocument.html">sqldocument(n)</a>:
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- TITLE: 
+--   uram.sql
+--
+-- PACKAGE:
+--   simlib(n) -- Simulation Infrastructure Package
+--
+-- PROJECT:
+--   Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--   Will Duquette
+--
+-- DESCRIPTION:
+--   SQL Schema for the uram(n) module.
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Conventions
+--
+-- Clients refer to entities using a unique name; URAM uses a unique
+-- integer for speed.  The name column uses the index variable name
+-- used in mathematical models, i.e., actor variables use the "a" 
+-- subscript.  The unique ID is the index variable name plus "_id", e.g.,
+-- "a_id".  The index variable name usually appears in the table name
+-- as well.
+--
+-- Tables keyed on multiple entities have a unique record ID, plus 
+-- foreign key links to the entity tables.  For example, the uram_mn table
+-- contains pairwise neighborhood data.  It has a unique record ID as its
+-- key, called "mn_id"; it also has "m_id" and "n_id" columns that link to
+-- the uram_n table.
+--
+-- Tables which relate to curves managed by URAM have a unique record ID
+-- plus entity links, as just described; they also have a curve_id field
+-- that relates to a ucurve(n) curves.
+--
+-- Tables that link to data from a number of other tables will often have
+-- views associated with them; in this case the table and the view will
+-- have the same name, with the table name have a "_t" suffix, e.g.,
+-- "uram_sat" and "uram_sat_t".
+
+
+------------------------------------------------------------------------
+-- Entity data
+--
+-- Tables in this section define the entities (actors, nbhoods, groups)
+-- known to URAM, including pairwise data EXCEPT for curves managed by
+-- ucurve(n).
+
+CREATE TABLE uram_cause (
+    -- Cause names known to URAM
+    cause_id INTEGER PRIMARY KEY,   -- URAM unique cause ID
+    cause    TEXT UNIQUE            -- Application name
+);
+
+CREATE TABLE uram_a (
+    -- Actors known to URAM
+    a_id    INTEGER PRIMARY KEY,   -- URAM unique actor ID
+    a       TEXT UNIQUE            -- Application name
+);
+
+CREATE TABLE uram_n (
+    -- Neighborhoods known to URAM
+    n_id         INTEGER PRIMARY KEY, -- URAM unique nbhood ID
+    n            TEXT UNIQUE,         -- Application name
+
+    -- Outputs
+    pop          INTEGER DEFAULT 0.0, -- Neighborhood population
+    nbmood_denom DOUBLE DEFAULT 0.0,  -- Denominator for nbmood
+    nbmood       DOUBLE DEFAULT 0.0,  -- Current neighborhood mood
+    nbmood0      DOUBLE DEFAULT 0.0   -- Initial neighborhood mood
+);
+
+CREATE TABLE uram_mn (
+    -- Pairwise neighborhood data
+
+    mn_id     INTEGER PRIMARY KEY,      -- URAM Unique record ID
+    m_id      INTEGER                   -- URAM unique nbhood ID
+              REFERENCES uram_n(n_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    n_id      INTEGER                   -- URAM unique nbhood ID
+              REFERENCES uram_n(n_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    -- Proximity of nbhood m to nbhood n from the point of view of 
+    -- residents of m.
+    --  0 if m is "here"
+    --  1 if m is "near" n
+    --  2 if m is "far" from n
+    --  3 if m is "remote" from n
+    proximity INTEGER,
+
+    UNIQUE (m_id, n_id)    -- Provides constraint and fast index
+);
+
+CREATE TABLE uram_g (
+    -- All groups known to URAM, by group type
+    g_id    INTEGER PRIMARY KEY,   -- URAM unique group ID
+    g       TEXT UNIQUE,           -- Application name
+    gtype   TEXT                   -- Group type: CIV, FRC, ORG
+);
+
+
+CREATE TABLE uram_civ_g (
+    -- Data specific to civilian groups
+    g_id       INTEGER PRIMARY KEY              -- URAM unique group ID
+               REFERENCES uram_g(g_id)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- Neighborhood in which g resides
+    n_id       INTEGER REFERENCES uram_n(n_id)  -- URAM unique nbhood ID
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    pop        INTEGER,                         -- g's population
+
+    -- Outputs
+    mood_denom DOUBLE DEFAULT 0.0,              -- Mood denominator
+    mood       DOUBLE DEFAULT 0.0,              -- Current group mood
+    mood0      DOUBLE DEFAULT 0.0               -- Initial group mood
+);
+
+-- View for retrieving group mood
+CREATE VIEW uram_mood AS
+SELECT g_id, g, mood_denom, mood, mood0
+FROM uram_g JOIN uram_civ_g USING (g_id);
+
+CREATE TABLE uram_c (
+    -- Concerns used by URAM.  (Populated automatically by URAM)
+    c_id   INTEGER PRIMARY KEY,  -- URAM unique concern ID
+    c      TEXT UNIQUE           -- AUT, CUL, QOL, SFT
+);
+
+CREATE TABLE uram_civrel_t (
+    -- Civilian group relationship table: for groups f and g, contains
+    -- the proximity of f to g and a link to the HREL of f with g.
+    -- Proximity is computed from neighborhood proximities.
+    -- Used when computing COOP spread.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER,                        -- URAM unique group ID
+    g_id      INTEGER,                        -- URAM unique group ID
+    hrel_id   INTEGER UNIQUE,                 -- HREL curve_id
+
+    proximity INTEGER,                        -- As in uram_mn, with -1 if
+                                              -- f=g.
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+-- View linking uram_civrel_t with ucurve_curves_t
+CREATE VIEW uram_civrel AS
+SELECT R.fg_id             AS fg_id,
+       R.f_id              AS f_id,
+       R.g_id              AS g_id,
+       R.proximity         AS proximity,
+       C.a                 AS hrel,
+       C.tracked           AS tracked
+FROM uram_civrel_t AS R
+JOIN ucurve_curves_t AS C ON (C.curve_id = R.hrel_id);
+
+CREATE TABLE uram_frcrel_t (
+    -- Force group relationship table: for groups f and g, contains
+    -- a link to the HREL of f with g. Proximity is computed from 
+    -- neighborhood proximities.
+    -- Used when computing COOP spread.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER,                        -- URAM unique group ID
+    g_id      INTEGER,                        -- URAM unique group ID
+
+    hrel_id   INTEGER UNIQUE,                 -- HREL curve_id
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+CREATE VIEW uram_frcrel AS
+SELECT R.fg_id             AS fg_id,
+       R.f_id              AS f_id,
+       R.g_id              AS g_id,
+       C.a                 AS hrel
+FROM uram_frcrel_t AS R
+JOIN ucurve_curves_t AS C ON (C.curve_id = R.hrel_id);
+
+------------------------------------------------------------------------
+-- Horizontal Relationship Curves
+
+CREATE TABLE uram_hrel_t (
+    -- HREL table: Horizontal relationship curves between all pairs
+    -- of groups f,g.  Relationships between groups need not be 
+    -- symmetric; values in the table are from group f's point of view.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    g_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                 -- ucurve(n) curve ID
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+-- uram_hrel view; links uram_hrel_t with other tables.
+CREATE VIEW uram_hrel AS
+SELECT HREL.fg_id      AS fg_id,
+       HREL.f_id       AS f_id,
+       HREL.g_id       AS g_id,
+       F.g             AS f,
+       G.g             AS g,
+       HREL.curve_id   AS curve_id,
+       CRV.a0          AS hrel0,
+       CRV.a           AS hrel,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_hrel_t       AS HREL 
+JOIN ucurve_curves_t   AS CRV  USING (curve_id)
+JOIN uram_g            AS F    ON    (HREL.f_id = F.g_id)
+JOIN uram_g            AS G    ON    (HREL.g_id = G.g_id);
+
+-- uram_hrel_effects; links uram_hrel_t with the ucurve effects
+CREATE VIEW uram_hrel_effects AS
+SELECT ATT.fg_id                           AS fg_id,
+       ATT.f_id                            AS f_id,
+       ATT.g_id                            AS g_id,
+       ATT.f                               AS f,
+       ATT.g                               AS g,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS hrel0,
+       ATT.avalue                          AS hrel,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_hrel             AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_hrel_adjustments; links uram_hrel_t with the ucurve adjustments
+CREATE VIEW uram_hrel_adjustments AS
+SELECT ATT.fg_id           AS fg_id,
+       ATT.f_id            AS f_id,
+       ATT.g_id            AS g_id,
+       ATT.f               AS f,
+       ATT.g               AS g,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS hrel0,
+       ATT.avalue          AS hrel,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_hrel             AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+
+------------------------------------------------------------------------
+-- Vertical Relationship Curves
+
+CREATE TABLE uram_vrel_t (
+    -- VREL table: Vertical relationship curves between all  
+    -- groups g and actors a.
+
+    ga_id     INTEGER PRIMARY KEY,            -- URAM unique record ID
+    g_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    a_id      INTEGER                         -- URAM unique actor ID
+              REFERENCES uram_a(a_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                 -- ucurve(n) curve ID
+
+    UNIQUE (g_id, a_id)                       -- Constraint, fast index
+);
+
+-- uram_vrel view; links uram_vrel_t with other tables.
+CREATE VIEW uram_vrel AS
+SELECT VREL.ga_id      AS ga_id,
+       VREL.g_id       AS g_id,
+       VREL.a_id       AS a_id,
+       G.g             AS g,
+       A.a             AS a,
+       VREL.curve_id   AS curve_id,
+       CRV.a0          AS vrel0,
+       CRV.a           AS vrel,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_vrel_t       AS VREL 
+JOIN ucurve_curves_t   AS CRV  USING (curve_id)
+JOIN uram_g            AS G    ON    (VREL.g_id = G.g_id)
+JOIN uram_a            AS A    ON    (VREL.a_id = A.a_id);
+
+-- uram_vrel_effects; links uram_vrel_t with the ucurve effects
+CREATE VIEW uram_vrel_effects AS
+SELECT ATT.ga_id                           AS ga_id,
+       ATT.g_id                            AS g_id,
+       ATT.a_id                            AS a_id,
+       ATT.g                               AS g,
+       ATT.a                               AS a,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS vrel0,
+       ATT.avalue                          AS vrel,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_vrel             AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_vrel_adjustments; links uram_vrel_t with the ucurve adjustments
+CREATE VIEW uram_vrel_adjustments AS
+SELECT ATT.ga_id           AS ga_id,
+       ATT.g_id            AS g_id,
+       ATT.a_id            AS a_id,
+       ATT.g               AS g,
+       ATT.a               AS a,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS vrel0,
+       ATT.avalue          AS vrel,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_vrel             AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+--------------------------------------------------------------------------------
+-- Satisfaction Curves
+
+CREATE TABLE uram_sat_t (
+    -- AUT/CUL/QOL/SFT table: Satisfaction of civilian group g with
+    -- concern c.
+
+    gc_id     INTEGER PRIMARY KEY,               -- URAM unique record ID
+    g_id      INTEGER                            -- URAM unique group ID
+              REFERENCES uram_civ_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    c_id      INTEGER                            -- URAM unique concern ID
+              REFERENCES uram_c(c_id)  
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                    -- ucurve(n) curve ID
+
+    saliency  DOUBLE DEFAULT 1.0,       -- Saliency, 0.0 to 1.0, of c to g.
+
+    UNIQUE (g_id, c_id)                          -- Constraint, fast index
+);
+
+-- uram_sat view; links uram_sat_t with other tables.
+CREATE VIEW uram_sat AS
+SELECT SAT.gc_id       AS gc_id,
+       SAT.g_id        AS g_id,
+       SAT.c_id        AS c_id,
+       G.g             AS g,
+       CG.n_id         AS n_id,
+       CG.pop          AS pop,
+       C.c             AS c,
+       SAT.saliency    AS saliency,
+       SAT.curve_id    AS curve_id,
+       CRV.a0          AS sat0,
+       CRV.a           AS sat,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_sat_t        AS SAT
+JOIN ucurve_curves_t   AS CRV USING (curve_id)
+JOIN uram_g            AS G   ON    (SAT.g_id = G.g_id)
+JOIN uram_c            AS C   ON    (SAT.c_id = C.c_id)
+JOIN uram_civ_g        AS CG  ON    (SAT.g_id = CG.g_id);
+
+-- uram_sat_effects; links uram_sat_t with the ucurve effects
+CREATE VIEW uram_sat_effects AS
+SELECT ATT.gc_id                           AS gc_id,
+       ATT.g_id                            AS g_id,
+       ATT.c_id                            AS c_id,
+       ATT.g                               AS g,
+       ATT.c                               AS c,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS sat0,
+       ATT.avalue                          AS sat,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_sat              AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_sat_adjustments; links uram_sat_t with the ucurve adjustments
+CREATE VIEW uram_sat_adjustments AS
+SELECT ATT.gc_id           AS gc_id,
+       ATT.g_id            AS g_id,
+       ATT.c_id            AS c_id,
+       ATT.g               AS g,
+       ATT.c               AS c,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS sat0,
+       ATT.avalue          AS sat,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_sat              AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+------------------------------------------------------------------------
+-- Cooperation Curves
+
+CREATE TABLE uram_coop_t (
+    -- COOP table: Cooperation curves between all civilian groups f
+    -- and force groups g.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    g_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                 -- ucurve(n) curve ID
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+-- uram_coop view; links uram_coop_t with other tables.
+
+CREATE VIEW uram_coop AS
+SELECT COOP.fg_id      AS fg_id,
+       COOP.f_id       AS f_id,
+       COOP.g_id       AS g_id,
+       F.g             AS f,
+       CF.n_id         AS n_id,
+       CF.pop          AS pop,
+       G.g             AS g,
+       COOP.curve_id   AS curve_id,
+       CRV.a0          AS coop0,
+       CRV.a           AS coop,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_coop_t       AS COOP 
+JOIN ucurve_curves_t   AS CRV  USING (curve_id)
+JOIN uram_g            AS F    ON    (COOP.f_id = F.g_id)
+JOIN uram_civ_g        AS CF   ON    (COOP.f_id = CF.g_id)
+JOIN uram_g            AS G    ON    (COOP.g_id = G.g_id);
+
+-- uram_coop_effects; links uram_coop_t with the ucurve effects
+CREATE VIEW uram_coop_effects AS
+SELECT ATT.fg_id                           AS fg_id,
+       ATT.f_id                            AS f_id,
+       ATT.g_id                            AS g_id,
+       ATT.f                               AS f,
+       ATT.g                               AS g,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS coop0,
+       ATT.avalue                          AS coop,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_coop             AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_coop_adjustments; links uram_coop_t with the ucurve adjustments
+CREATE VIEW uram_coop_adjustments AS
+SELECT ATT.fg_id           AS fg_id,
+       ATT.f_id            AS f_id,
+       ATT.g_id            AS g_id,
+       ATT.f               AS f,
+       ATT.g               AS g,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS coop0,
+       ATT.avalue          AS coop,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_coop             AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+-- uram_coop_spread
+--
+-- This view yields the values needed to compute cooperation spread.
+-- Given an a civilian group df and force group dg, this view puts
+-- together all pairs of civilian groups if and force groups ig, providing
+-- the proximity and relationship between if and df and the relationship
+-- between ig and dg, along with the COOP curve between if and ig.
+
+CREATE VIEW uram_coop_spread AS
+SELECT CREL.g_id      AS df_id,       -- Direct f
+       CREL.f_id      AS if_id,       -- Indirect f
+       CREL.proximity AS proximity,
+       CREL.hrel      AS civrel,
+       CREL.tracked   AS tracked,
+       FREL.g_id      AS dg_id,       -- Direct g
+       FREL.f_id      AS ig_id,       -- Indirect g
+       FREL.hrel      AS factor,
+       COOP.fg_id     AS ifg_id,
+       COOP.curve_id  AS curve_id
+FROM uram_civrel AS CREL
+JOIN uram_frcrel AS FREL
+JOIN uram_coop_t AS COOP ON (COOP.f_id = if_id AND COOP.g_id = ig_id);
+
+
+------------------------------------------------------------------------
+-- Output Tables
+--
+-- Some outputs appear in the tables above; tables devoted entirely to
+-- storing outputs are defined here.
+
+CREATE TABLE uram_nbcoop_t (
+    -- Neighborhood cooperation
+    ng_id        INTEGER PRIMARY KEY,            -- URAM Unique record ID
+    n_id         INTEGER                         -- URAM unique nbhood ID
+                 REFERENCES uram_n(n_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+    g_id         INTEGER                         -- URAM unique group ID
+                 REFERENCES uram_g(g_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Outputs
+    nbcoop       DOUBLE DEFAULT 0.0,  -- Current cooperation of n with g
+    nbcoop0      DOUBLE DEFAULT 0.0,  -- Initial cooperation of n with g
+
+    UNIQUE (n_id, g_id)               -- Constraint, fast index
+);
+
+CREATE VIEW uram_nbcoop  AS
+SELECT COOP.ng_id        AS ng_id,
+       COOP.n_id         AS n_id,
+       COOP.g_id         AS g_id,
+       N.n               AS n,
+       G.g               AS g,
+       COOP.nbcoop       AS nbcoop,
+       COOP.nbcoop0      AS nbcoop0
+FROM uram_nbcoop_t       AS COOP 
+JOIN uram_n              AS N ON (COOP.n_id = N.n_id)
+JOIN uram_g              AS G ON (COOP.g_id = G.g_id);
+
+------------------------------------------------------------------------
+-- History tables, required for rolling up historical contributions to
+-- nbmood and nbcoop.
+
+CREATE TABLE uram_civhist_t (
+    -- Civilian history of civilian population figures over
+    -- time, by group.
+
+    t    INTEGER,   -- The timestamp, in ticks
+    g_id INTEGER,   -- The group ID
+    n_id INTEGER,   -- The group's neighborhood ID
+    pop  INTEGER,   -- The number of people in the group at that time.
+
+    PRIMARY KEY (t, g_id)
+);
+
+CREATE TABLE uram_nbhist_t (
+    -- Civilian history of neighborhood civilian population figures over
+    -- time, by neighborhood.
+
+    t     INTEGER,       -- The timestamp, in ticks
+    n_id  INTEGER,       -- The neighborhood ID
+    pop   INTEGER,       -- The neighborhood's civilian population at 
+                         -- the given time.
+    nbmood_denom DOUBLE, -- The nbmood denominator for the neighborhood
+                         -- at the given time.
+    PRIMARY KEY (t, n_id)
+);
+
+
+
+
+</pre>
+
+
+<h2><a name="input_data">INPUT DATA</a></h2>
+<p>The client is reponsible for providing a <code>-loadcmd</code>, which
+will load input data into URAM using the <a class="iref" href="#load">load</a> family of
+commands.  Each of these commands accepts a list of one kind of GRAM
+entity; they be called in the following order:
+
+</p>
+
+<ul class="ulp">
+  <li> <a class="iref" href="#load_causes">load causes</a>
+  </li><li> <a class="iref" href="#load_actors">load actors</a>       
+  </li><li> <a class="iref" href="#load_nbhoods">load nbhoods</a>
+  </li><li> <a class="iref" href="#load_prox">load prox</a>
+  </li><li> <a class="iref" href="#load_civg">load civg</a>
+  </li><li> <a class="iref" href="#load_otherg">load otherg</a>
+  </li><li> <a class="iref" href="#load_hrel">load hrel</a>
+  </li><li> <a class="iref" href="#load_vrel">load vrel</a>
+  </li><li> <a class="iref" href="#load_sat">load sat</a>
+  </li><li> <a class="iref" href="#load_coop">load coop</a>
+</li></ul>
+<p>Note that these commands may only be called from a <code>-loadcmd</code>.</p>
+
+<p>URAM input data typically comes from RDB tables; hence, the
+<a class="iref" href="#load">load</a> commands are designed to accept the result of an RDB
+query as input.  The <code>-loadcmd</code> code to load the 
+neighborhood relationship data might look like this:
+
+</p>
+
+<pre>
+    proc MyLoadCommand {gram} {
+        ...
+        $gram load prox {*}[$rdb eval {
+            SELECT m, n, proximity
+            FROM uramdb_mn
+            ORDER BY m, n;
+        }]
+        ...
+    }
+</pre>
+
+<h2><a name="attitude_drivers">ATTITUDE DRIVERS</a></h2>
+<p>In URAM, attitude drivers (e.g., events and situations) are identified
+by a unique integer ID.  The application is free to select these in
+any way it chooses; for convenience, the <a class="iref" href="#driver">driver</a> subcommand
+can be used to generate them on demand.  The initial driver ID is set
+using the <code>-driverbase</code> option, which defaults to 1000.
+
+</p>
+
+<h2><a name="drivers_and_causes">Drivers and Causes</a></h2>
+<p>Each attitude input is associated with a driver and a cause.  The
+cause will usually be one of the predefined causes
+(see <a class="iref" href="#load_causes">load causes</a>); but magic drivers will sometimes have a
+unique cause not shared with any other driver.  In this case it is
+customary to use the driver ID as the cause; hence,
+<code>-driverbase</code> is set to a number higher than any predefined
+cause ID.
+
+</p>
+
+<h2><a name="configuration_parameters">CONFIGURATION PARAMETERS</a></h2>
+<p>uram(n) is a <a href="../mani/parm.html">parm(i)</a>, and defines the following configuration
+parameters.  The <a class="iref" href="#uram_parm">uram parm</a> subcommand can be used to set and query
+their values.  Alternatively, the parameters can be included into
+another parmset specified using the <span class="tt">-parmset</span> creation option.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="uram.*">uram.*</a></dt><dd><p>
+uram(n) configuration parameters.
+</p><dl>
+
+<dt class="defitem"><a name="uram.saveHistory">uram.saveHistory <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, URAM saves a history, timestep-by-timestep, of the actual contribution to each effect's curve during that timestep by each driver, as well as the current level of each curve. If no, it doesn't.
+</dd>
+<dt class="defitem"><a name="uram.coopRelationshipLimit">uram.coopRelationshipLimit <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Controls the set of civilian groups that receive cooperation indirect effects. When CIV group g gets a direct cooperation effect, all groups f whose relationships rel.fg are greater than or equal to this limit receive indirect effects.
+</dd>
+<dt class="defitem"><a name="uram.factors.*">uram.factors.*</a></dt><dd><p>
+Alpha and gamma parameters for the different attitude curve types. Changes made to these parameters will take effect at the next time advance. The beta value will be 1.0 minus the sum of alpha and gamma.
+</p><dl>
+
+<dt class="defitem"><a name="uram.factors.AUT">uram.factors.AUT <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.0</span></b>".
+Alpha and gamma parameters for the Autonomy (AUT) satisfaction curve type, specified as a white-space-delimited pair of floating point numbers. Alpha plus gamma must be less than or equal to 1.0.
+</dd>
+<dt class="defitem"><a name="uram.factors.COOP">uram.factors.COOP <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.02</span></b>".
+Alpha and gamma parameters for the cooperation curve type, specified as a white-space-delimited pair of floating point numbers. alpha plus gamma must be less than or equal to 1.0.
+</dd>
+<dt class="defitem"><a name="uram.factors.CUL">uram.factors.CUL <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.0</span></b>".
+Alpha and gamma parameters for the Culture (CUL) satisfaction curve type, specified as a white-space-delimited pair of floating point numbers. Alpha plus gamma must be less than or equal to 1.0.
+</dd>
+<dt class="defitem"><a name="uram.factors.HREL">uram.factors.HREL <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.02</span></b>".
+Alpha and gamma parameters for the horizontal relationship curve type, specified as a white-space-delimited pair of floating point numbers. alpha plus gamma must be less than or equal to 1.0.
+</dd>
+<dt class="defitem"><a name="uram.factors.QOL">uram.factors.QOL <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.0</span></b>".
+Alpha and gamma parameters for the Quality of Life (QOL) satisfaction curve type, specified as a white-space-delimited pair of floating point numbers. Alpha plus gamma must be less than or equal to 1.0.
+</dd>
+<dt class="defitem"><a name="uram.factors.SFT">uram.factors.SFT <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.02</span></b>".
+Alpha and gamma parameters for the Safety (SFT) satisfaction curve type, specified as a white-space-delimited pair of floating point numbers. Alpha plus gamma must be less than or equal to 1.0.
+</dd>
+<dt class="defitem"><a name="uram.factors.VREL">uram.factors.VREL <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.05 0.02</span></b>".
+Alpha and gamma parameters for the vertical relationship curve type, specified as a white-space-delimited pair of floating point numbers. Alpha plus gamma must be less than or equal to 1.0.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="uram.raf.*">uram.raf.*</a></dt><dd><p>
+The Relationship Attenuation Factors are used when computing indirect effects based on horizontal relationships. The relationship multiplier is attenuated (decreased) by multiplying it with either the positive or negative RAF. This is so that strongly negative relationships will no longer cause pathological indirect effects. (The positive RAF is defined mostly for symmetry.)
+</p><dl>
+
+<dt class="defitem"><a name="uram.raf.positive">uram.raf.positive <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The positive Relationship Attenuation Factor.
+</dd>
+<dt class="defitem"><a name="uram.raf.negative">uram.raf.negative <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">0.5</span></b>".
+The negative Relationship Attenuation Factor.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="uram">uram <i>name ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#uram">uram</a> object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#uram">uram</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p><a class="iref" href="#uram">uram</a> takes the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="uram-driverbase">-driverbase <i>number</i></a></dt><dd>
+
+Specifies the initial driver ID returned by the <a class="iref" href="#driver">driver</a>
+subcommand.
+
+</dd>
+<dt class="defopt"><a name="uram-loadcmd">-loadcmd <i>cmd</i></a></dt><dd>
+
+Defines a command which will populate the URAM tables with data.  The
+command must take a single additional argument, the name of the
+instance of <a href="../mann/uram.html">uram(n)</a> in question.
+
+
+</dd>
+<dt class="defopt"><a name="uram-logger">-logger <i>name</i></a></dt><dd>
+
+The name of the <a href="../mann/logger.html">logger(n)</a> object to use to log URAM
+activity.  If no -logger is specified, no logging is done.  The
+-logger may be changed at any time; set it to {} to disable logging by
+this object.
+
+</dd>
+<dt class="defopt"><a name="uram-logcomponent">-logcomponent <i>name</i></a></dt><dd>
+
+The component name to pass to the <code>-logger</code> object when
+logging messages; defaults to "uram".
+
+</dd>
+<dt class="defopt"><a name="uram-parmset">-parmset <i>parmset</i></a></dt><dd>
+
+Names an alternate <a href="../mann/parmset.html">parmset(n)</a> object to be used instead of 
+<a class="iref" href="#uram_parm">uram parm</a>.  The <a class="iref" href="#uram_parm">uram parm</a> parameters must be copied into 
+the <i>parmset</i> by the client using the <a href="../mann/parmset.html">parmset(n)</a> "into" 
+subcommand.
+
+</dd>
+<dt class="defopt"><a name="uram-rdb">-rdb <i>name</i></a></dt><dd><p>
+
+Specifies the name of an <a href="../mann/sqldocument.html">sqldocument(n)</a> object
+which uram(n) will use to store its data, and from which it will read
+its inputs.  See <a href="#database_schema">DATABASE SCHEMA</a>.</p>
+
+<p>Each instance of uram(n) must be created in a distinct RDB.</p>
+
+<p>This option must be set at creation time, and cannot be changed
+thereafter.
+
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="uram_parm">uram parm <i>subcommand</i> ?<i>args..</i>?</a></dt><dd>
+
+The <a class="iref" href="#uram_parm">uram parm</a> subcommand gives access to the uram(n) module's
+configuration <a href="../mann/parmset.html">parmset(n)</a>; see
+<a href="#configuration_parameters">CONFIGURATION PARAMETERS</a> for details.  The subcommands
+of <a class="iref" href="#uram_parm">uram parm</a> are exactly those of <a href="../mann/parmset.html">parmset(n)</a>
+instances.
+
+</dd>
+<dt class="defitem"><a name="uram_sqlsection">uram sqlsection <i>subcommand</i></a></dt><dd>
+
+uram(n) is an <a href="../mani/sqlsection.html">sqlsection(i)</a>, as it defines
+schema entities (see <a href="#database_schema">DATABASE SCHEMA</a>).
+See <a href="../mani/sqlsection.html">sqlsection(i)</a> for a description
+of this method's subcommands.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="advance">$obj advance <i>t</i></a></dt><dd><p>
+
+<b>Not Undoable.</b> Advances the simulation time to time <i>t</i> in
+ticks, applying all effects scheduled since the previous advance and
+recomputing all attitude levels and related outputs.</p>
+
+<p>The first call to <a class="iref" href="#advance">advance</a> after <a class="iref" href="#init">init</a> is special:  it
+sets the simulation time for the start of simulation, and applies any
+pending transient inputs to compute current attitude levels without
+modifying the initial baseline levels in any way.  See
+<a href="#initialization_and_time_management">Initialization and Time Management</a> for more information.
+
+</p>
+</dd>
+<dt class="defitem"><a name="cget">$obj cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="clear">$obj clear</a></dt><dd>
+
+<b>Not Undoable.</b>
+Returns the instance of uram(n) to its state at creation: the RDB
+tables are cleared, and the in-memory variables are returned to their
+initial values, before <a class="iref" href="#init">init</a> was called.
+
+</dd>
+<dt class="defitem"><a name="configure">$obj configure <i>option value</i></a></dt><dd>
+
+Sets the <i>value</i> of the specified <i>option</i> (if the option is
+not read-only).
+
+</dd>
+<dt class="defitem"><a name="contribs">$obj contribs <i>subcommand</i> ?<i>indices options...</i>?</a></dt><dd><p>
+
+This family of commands allows the client to query the contributions
+by driver to various curves and families of curves for specified
+periods of time.</p>
+
+<p>The aggregated contributions are placed in a temporary table,
+<b>uram_contribs</b>, which has two columns: <b>driver</b>, the driver
+ID, and <b>contrib</b>, the total contribution by that driver.</p>
+
+<p>All the subcommands take the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="contribs-start">-start <i>ticks</i></a></dt>
+<dt class="defopt"><a name="contribs-end">-end <i>ticks</i></a></dt><dd>
+
+These options specify the end-points in ticks of the time interval of
+interest.  They default to 0 and the current time, respectively.
+
+</dd>
+</dl>
+<p>The subcommands are as follows.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="contribs_coop">$obj contribs coop <i>f g</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to civilian group <i>f</i>'s
+cooperation with force group <i>g</i>.
+
+</dd>
+<dt class="defitem"><a name="contribs_hrel">$obj contribs hrel <i>f g</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to group <i>f</i>'s
+horizontal relationship with group <i>g</i>.
+
+</dd>
+<dt class="defitem"><a name="contribs_mood">$obj contribs mood <i>g</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to the mood of group <i>g</i>.
+
+</dd>
+<dt class="defitem"><a name="contribs_nbcoop">$obj contribs nbcoop <i>n g</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to the cooperation of
+neighborhood <i>n</i> with force group <i>g</i>.
+
+</dd>
+<dt class="defitem"><a name="contribs_nbmood">$obj contribs nbmood <i>n</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to the mood of
+neighborhood <i>n</i>.
+
+</dd>
+<dt class="defitem"><a name="contribs_sat">$obj contribs sat <i>g c</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to group <i>g</i>'s
+satisfaction with concern <i>c</i>.
+
+</dd>
+<dt class="defitem"><a name="contribs_vrel">$obj contribs vrel <i>g a</i> ?<i>options...</i>?</a></dt><dd>
+
+Aggregates the total contribution by driver to group <i>g</i>'s
+vertical relationship with actor <i>a</i>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="coop">$obj coop <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands manages the cooperation attitude
+curves.
+
+</p><dl>
+
+<dt class="defitem"><a name="coop_badjust">$obj coop badjust <i>driver f g delta</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the cooperation
+of civilian group <i>f</i> with force group <i>g</i> by <i>delta</i>, 
+which is a floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.</p>
+
+<p>The adjustment takes effect immediately, and is ascribed to the
+driver at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if group <i>f</i> has a population of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="coop_bset">$obj coop bset <i>driver f g value</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command set the baseline level of the cooperation
+of civilian group <i>f</i> with force group <i>g</i> to <i>value</i>, 
+which is a <a href="../mann/simtypes.html#qcooperation">qcooperation</a>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).</p>
+
+<p>The change takes effect immediately, and is ascribed to the
+driver at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if group <i>f</i> has a population of zero.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="coop_cset">$obj coop cset ?<i>f g value...</i>?</a></dt><dd><p>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more cooperation
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of <i>f</i>, <i>g</i>, <i>value</i>
+triples, where <i>f</i> is a civilian group, <i>g</i> is a force
+group, and <i>value</i> is a
+<a href="../mann/simtypes.html#qcooperation">qcooperation</a> value, the natural level of <i>f</i>'s
+cooperation with <i>g</i>.</p>
+
+<p>This command would normally be used to set the natural level for all
+cooperation curves just prior to a time advance.
+
+</p>
+</dd>
+<dt class="defitem"><a name="coop_persistent">$obj coop persistent <i>driver cause f g mag</i> ?<i>options...</i>?</a></dt>
+<dt class="defitem"><a name="coop_transient">$obj coop transient <i>driver cause f g mag</i> ?<i>options...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <a href="../mann/qmag.html">qmag(n)</a> value, on the cooperation
+of civilian group <i>f</i> with force group <i>g</i>.  The input was
+produced by the specified <i>driver</i>
+(see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>) and has the specified <i>cause</i>.</p>
+
+<p>The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <a class="iref" href="#load_causes">load causes</a>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.</p>
+
+<p>The input is a direct effect with indirect effects on <i>f</i>'s cooperation 
+with all other force groups, and on other civilian groups' cooperation
+with all force groups provided that the civilian groups have a 
+sufficiently high relationship with <i>f</i> are within the 
+proximity indicated by the following options.  The magnitude of
+the indirect effects is adjusted by the relationship between the
+direct and indirect force groups and the proximity between the 
+direct and indirect civilian groups.</p>
+
+<p>No indirect effects are created for empty civilian groups; and if 
+group <i>f</i> is empty, no effects are created at all.
+
+
+</p><dl>
+
+<dt class="defopt"><a name="coop transient-s">-s <i>factor</i></a></dt><dd>
+
+The "here factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on other
+civilian groups in <i>g</i>'s own neighborhood.  Defaults to 1.0.
+
+</dd>
+<dt class="defopt"><a name="coop transient-p">-p <i>factor</i></a></dt><dd>
+
+The "near factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>near</b> to <i>g</i>'s neighborhood.  Defaults to 0.0.
+
+</dd>
+<dt class="defopt"><a name="coop transient-q">-q <i>factor</i></a></dt><dd>
+
+The "far factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>far</b> from <i>g</i>'s neighborhood.  Defaults to 0.0.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+
+</dd>
+<dt class="defitem"><a name="driver">$obj driver</a></dt><dd>
+
+<b>Undoable.</b>
+Generates a unique integer driver ID, which may then be passed to any
+of the attitude input subcommands.  See <a href="#attitude_drivers">ATTITUDE DRIVERS</a>.
+
+</dd>
+<dt class="defitem"><a name="edit">$obj edit <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands manages the <a href="#undo_stack">Undo Stack</a>.  This
+capability is available only when the <code>-undo</code> option is set
+to <b>on</b>.
+
+</p><dl>
+
+<dt class="defitem"><a name="edit_canundo">$obj edit canundo</a></dt><dd>
+
+Returns 1 if there's a command on the stack to be undone, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="edit_reset">$obj edit reset</a></dt><dd>
+
+Clears the undo stack.
+
+</dd>
+<dt class="defitem"><a name="edit_mark">$obj edit mark</a></dt><dd><p>
+
+Adds a mark to the undo stack.  The <a class="iref" href="#edit_undo">edit undo</a> command
+undoes all operations back to the last mark (or until the stack
+is empty).  This allows a set of uram(n) commands relating to a
+single client operation to be undone as a group.</p>
+
+<p>Alternatively, the <code>-automark</code> option may be set to
+<b>on</b>, and each undoable uram(n) command will insert a matching
+mark, allowing them to be undone individually.</p>
+
+<p><b>TBD: -automark is not yet implemented.</b>
+
+</p>
+</dd>
+<dt class="defitem"><a name="edit_undo">$obj edit undo</a></dt><dd>
+
+Undoes all commands back to the most recent mark, or until the
+stack is empty if there are no marks.  It's an error if there is
+no command to be undone.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="hrel">$obj hrel <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands manages the horizontal relationship attitude
+curves.
+
+</p><dl>
+
+<dt class="defitem"><a name="hrel_badjust">$obj hrel badjust <i>driver f g delta</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the horizontal relationship
+of group <i>f</i> with group <i>g</i> by <i>delta</i>, which is a
+floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.</p>
+
+<p>The adjustment takes effect immediately and is ascribed to the driver
+at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if either group is a civilian group with a population 
+of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="hrel_bset">$obj hrel bset <i>driver f g value</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command set the baseline level of the horizontal relationship
+of group <i>f</i> with group <i>g</i> to <i>value</i>, 
+which is a <a href="../mann/simtypes.html#qaffinity">qaffinity</a>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).</p>
+
+<p>The change takes effect immediately, and is ascribed to the
+driver at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if either group is a civilian group with a population 
+of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="hrel_cset">$obj hrel cset ?<i>f g value...</i>?</a></dt><dd><p>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more horizontal relationship
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of <i>f</i>, <i>g</i>, <i>value</i>
+triples, where <i>f</i> and <i>g</i> are groups and <i>value</i> is a
+<a href="../mann/simtypes.html#qaffinity">qaffinity</a> value, the natural level of <i>f</i>'s
+relationship with <i>g</i>.</p>
+
+<p>This command would normally be used to set the natural level for all
+relationship curves just prior to a time advance.
+
+</p>
+</dd>
+<dt class="defitem"><a name="hrel_persistent">$obj hrel persistent <i>driver cause f g mag</i></a></dt>
+<dt class="defitem"><a name="hrel_transient">$obj hrel transient <i>driver cause f g mag</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <a href="../mann/qmag.html">qmag(n)</a> value, on the horizontal
+relationship of group <i>f</i> with group <i>g</i>.  The input was
+produced by the specified <i>driver</i>
+(see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>) and has the specified <i>cause</i>.</p>
+
+<p>The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <a class="iref" href="#load_causes">load causes</a>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.</p>
+
+<p>We have no spread model for horizontal relationship inputs; hence,
+these commands create one direct effect and no indirect effects.</p>
+
+<p>If either group <i>f</i> or group <i>g</i> is empty, no effect is
+created.
+
+</p>
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="init">$obj init ?-reload?</a></dt><dd><p>
+
+<b>Not Undoable.</b>
+Resets uram(n) to the attitude levels,
+restoring all variables to their initial values, deleting all
+history, computing all roll-ups, and setting the simulation time to -1.  
+It will then be necessary to call <a class="iref" href="#advance">advance</a> to complete the
+initialization; see
+<a href="#initialization_and_time_management">Initialization and Time Management</a> for details.</p>
+
+<p>If <code>-reload</code> is specified, the object's
+<code>-loadcmd</code> will be called to reload all of the URAM input
+data from scratch; otherwise it will work from its cached (and
+possibly modified) copy of that data.
+
+</p>
+</dd>
+<dt class="defitem"><a name="initialized">$obj initialized</a></dt><dd>
+
+Returns 1 if either <a class="iref" href="#init">init</a> or the <a class="iref" href="#saveable">saveable</a> "restore"
+command has
+been called such that this instance's RDB tables are populated and it
+is capable of advancing time, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="load">$obj load <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#load">load</a> family of subcommands is used to load input data
+into URAM.  The
+<code>-loadcmd</code> must call each of the <a class="iref" href="#load">load</a> commands, in
+the order shown here.
+
+</p><dl>
+
+<dt class="defitem"><a name="load_causes">$obj load causes ?<i>cause</i>...?</a></dt><dd>
+
+Specifies the set of cause names; if there are no predefined causes,
+call the routine with no arguments.  The names should be pre-sorted
+in alphabetical order.
+
+</dd>
+<dt class="defitem"><a name="load_actors">$obj load actors <i>a</i> ?<i>a</i>...?</a></dt><dd>
+
+Specifies the set of actor names.  Requires at least one name.
+The names should be pre-sorted in alphabetical order.
+
+</dd>
+<dt class="defitem"><a name="load_nbhoods">$obj load nbhoods <i>n</i> ?<i>n</i>...?</a></dt><dd>
+
+Specifies the set of neighborhood names.  Requires at least one name.
+The names should be pre-sorted in alphabetical order.
+
+</dd>
+<dt class="defitem"><a name="load_prox">$obj load prox ?<i>m n proximity</i>...?</a></dt><dd>
+
+This command is used to specify the set of neighborhood
+proximities.
+
+</dd>
+<dt class="defitem"><a name="load_civg">$obj load civg <i>g n pop</i> ?<i>g n pop</i>...?</a></dt><dd>
+
+Specifies the set of civilian groups, with their neighborhoods of
+residence and their populations.  The groups
+should be sorted by name.  There should be at least one group.
+
+</dd>
+<dt class="defitem"><a name="load_otherg">$obj load otherg <i>g gtype</i> ?<i>g gtype</i>...?</a></dt><dd>
+
+Specifies the set of force and organization groups, where <i>gtype</i>
+is <b>FRC</b> or <b>ORG</b>. The groups
+should be sorted by name, and there should be at least one force
+group.
+
+</dd>
+<dt class="defitem"><a name="load_hrel">$obj load hrel <i>f g current base nat</i> ?<i>f g base nat</i>...?</a></dt>
+<dt class="defitem"><a name="load_vrel">$obj load vrel <i>g a current base nat</i> ?<i>g a base nat</i>...?</a></dt>
+<dt class="defitem"><a name="load_sat">$obj load sat <i>g c current base nat saliency</i> ?<i>g c base nat saliency</i>...?</a></dt>
+<dt class="defitem"><a name="load_coop">$obj load coop <i>f g current base nat</i> ?<i>f g base nat</i>...?</a></dt><dd><p>
+
+These commands are used to specify the initial current, baseline, and natural
+(A, B, and C) levels for each attitude curve (plus, for satisfaction
+curves, the saliency as well).</p>
+
+<p>It is usual for the initial <i>current</i> and <i>baseline</i> to be the same,
+especially since the <i>current</i> value will be recomputed on the first
+<a class="iref" href="#advance">advance</a>.  If a scenario is created as a follow-on to a preceding
+scenario, however, the client application might have good current levels
+from the preceding run; and if the client application needs access to 
+good attitude levels and roll-ups during its bootstrapping process, it may
+make sense to use them.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="sat">$obj sat <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands manages the satisfaction attitude
+curves.
+
+</p><dl>
+
+<dt class="defitem"><a name="sat_badjust">$obj sat badjust <i>driver g c delta</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the satisfaction
+of group <i>g</i> with concern <i>c</i> by <i>delta</i>, which is a
+floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.</p>
+
+<p>The adjustment takes effect immediately, and is ascribed to the driver
+at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if group <i>g</i> has a population of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sat_bset">$obj sat bset <i>driver g c value</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command set the baseline level of the satisfaction
+of group <i>g</i> with concern <i>c</i> to <i>value</i>, 
+which is a <a href="../mann/simtypes.html#qsat">qsat</a>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).</p>
+
+<p>The change takes effect immediately, and is ascribed to the
+driver at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if group <i>g</i> has a population of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sat_cset">$obj sat cset ?<i>g c value...</i>?</a></dt><dd><p>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more satisfaction
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of group <i>g</i>, concern <i>c</i>, 
+<i>value</i> triples, where <i>value</i> is a <a href="../mann/simtypes.html#qsat">qsat</a> 
+value, the natural level of <i>g</i>'s satisfaction <i>c</i>.</p>
+
+<p>This command would normally be used to set the natural level for all
+satisfaction curves just prior to a time advance.</p>
+
+<p><b>Note:</b> Given the default <a href="#configuration_parameters">CONFIGURATION PARAMETERS</a>, 
+the natural satisfaction level will be ignored for all concerns 
+except <b>SFT</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sat_persistent">$obj sat persistent <i>driver cause g c mag</i> ?<i>options...</i>?</a></dt>
+<dt class="defitem"><a name="sat_transient">$obj sat transient <i>driver cause g c mag</i> ?<i>options...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <a href="../mann/qmag.html">qmag(n)</a> value, on the satisfaction
+of group <i>g</i> with concern <i>c</i>.  The input was
+produced by the specified <i>driver</i>
+(see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>) and has the specified <i>cause</i>.</p>
+
+<p>The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <a class="iref" href="#load_causes">load causes</a>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.</p>
+
+<p>The input is a direct effect with indirect effects governed by the options:</p>
+
+<p>No indirect effects are created for empty civilian groups; and if 
+group <i>g</i> is empty, no effects are created at all.
+
+</p><dl>
+
+<dt class="defopt"><a name="sat transient-s">-s <i>factor</i></a></dt><dd>
+
+The "here factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on other
+civilian groups in <i>g</i>'s own neighborhood.  Defaults to 1.0.
+
+</dd>
+<dt class="defopt"><a name="sat transient-p">-p <i>factor</i></a></dt><dd>
+
+The "near factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>near</b> to <i>g</i>'s neighborhood.  Defaults to 0.0.
+
+</dd>
+<dt class="defopt"><a name="sat transient-q">-q <i>factor</i></a></dt><dd>
+
+The "far factor", a multiplicative factor between 0.0 and 1.0
+inclusive; it determines the strength of indirect effects on
+other civilian groups in neighborhoods which are 
+<b>far</b> from <i>g</i>'s neighborhood.  Defaults to 0.0.
+
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="saveable">$obj saveable <i>subcommand</i> ?<i>args..</i>?</a></dt><dd>
+
+This command and its subcommands implement the <a href="../mani/saveable.html">saveable(i)</a>
+interface.  Note that the application is responsible for checkpointing
+the RDB data.
+
+</dd>
+<dt class="defitem"><a name="time">$obj time</a></dt><dd>
+
+Returns the current simulation time in integer ticks.
+
+
+</dd>
+<dt class="defitem"><a name="update">$obj update <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The <a class="iref" href="#update">update</a> family of subcommands is used to update selected
+scenario data after the initial load.
+
+</p><dl>
+
+<dt class="defitem"><a name="update_pop">$obj update pop ?<i>g pop</i>...?</a></dt><dd><p>
+
+This command updates the population of civilian groups
+for the specified <i>g</i> and <i>pop</i> pairs
+specified on the command line.</p>
+
+<p><b>NOTE:</b>  This command is optimized for speed, and consequently
+does little error checking.
+
+</p>
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="vrel">$obj vrel <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands manages the vertical relationship attitude
+curves.
+
+</p><dl>
+
+<dt class="defitem"><a name="vrel_badjust">$obj vrel badjust <i>driver g a delta</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command adjusts the baseline level of the vertical relationship
+of group <i>g</i> with actor <i>a</i> by <i>delta</i>, which is a
+floating point number.  The adjustment is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).  If the
+result of the adjustment is out-of-bounds, the baseline will be
+clamped accordingly.</p>
+
+<p>The adjustment takes effect immediately, and is ascribed to the driver
+at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if group <i>g</i> is a civilian group with 
+a population of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="vrel_bset">$obj vrel bset <i>driver g a value</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+This command set the baseline level of the vertical relationship
+of group <i>g</i> with actor <i>a</i> to <i>value</i>, 
+which is a <a href="../mann/simtypes.html#qaffinity">qaffinity</a>
+value.  The change is ascribed to
+the specified <i>driver</i> (see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>).</p>
+
+<p>The change takes effect immediately, and is ascribed to the
+driver at the next <a class="iref" href="#advance">advance</a>.</p>
+
+<p>The command has no effect if group <i>g</i> is a civilian group with 
+a population of zero.
+
+</p>
+</dd>
+<dt class="defitem"><a name="vrel_cset">$obj vrel cset ?<i>g a value...</i>?</a></dt><dd><p>
+
+<b>Not Undoable.</b>
+This command sets the natural level of one or more vertical relationship
+curves, each to its own value.  The desired change is specified on
+the command line as a flat list of group <i>g</i>, actor <i>a</i>, 
+<i>value</i> triples, where <i>value</i> is a <a href="../mann/simtypes.html#qaffinity">qaffinity</a> 
+value, the natural level of <i>g</i>'s relationship with <i>a</i>.</p>
+
+<p>This command would normally be used to set the natural level for all
+relationship curves just prior to a time advance.
+
+</p>
+</dd>
+<dt class="defitem"><a name="vrel_persistent">$obj vrel persistent <i>driver cause g a mag</i></a></dt>
+<dt class="defitem"><a name="vrel_transient">$obj vrel transient <i>driver cause g a mag</i></a></dt><dd><p>
+
+<b>Undoable.</b>
+These commands schedule a persistent or transient attitude input of
+magnitude <i>mag</i>, a <a href="../mann/qmag.html">qmag(n)</a> value, on the vertical
+relationship of group <i>g</i> with actor <i>a</i>.  The input was
+produced by the specified <i>driver</i>
+(see <a href="#attitude_drivers">ATTITUDE DRIVERS</a>) and has the specified <i>cause</i>.</p>
+
+<p>The <i>cause</i> may be the name of one of the predefined causes given
+to URAM by <a class="iref" href="#load_causes">load causes</a>, or it may be the empty string.  In
+this case, the driver ID will be used as the numeric cause ID, making
+this driver a unique cause.</p>
+
+<p>We have no spread model for vertical relationship inputs; hence,
+these commands create one direct effect and no indirect effects.</p>
+
+<p>If group <i>g</i> is empty, no effect is created.
+
+</p>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use the package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package, derived from gram(n) v2.0.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+

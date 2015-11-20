@@ -1,0 +1,473 @@
+<html>
+<head>
+<title>mars 3.0.23: filter(n) -- Filter Control Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>filter(n)</b> -- Filter Control Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#the_sieve_icon_menu">The Sieve Icon Menu</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#filter">filter <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#filter-width">-width <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#filter-filtercmd">-filtercmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#filter-filtertype">-filtertype <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#filter-ignorecase">-ignorecase <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#filter-msgcmd">-msgcmd <i>cmd</i></a></li>
+<li><a class="iref" href="#check">$filter check <i>string</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This widget provides a text filter control for doing exact, wildcard
+and regular expression-based filtering, both inclusive and exclusive,
+of arbitrary text.  The widget contains a sieve icon which pops up a
+menu, an entry field (with command history) for typing filter text,
+and a clear button.</p>
+
+<p>Filtering is triggered when &lt;Return&gt; is pressed in
+the entry field, when the field is cleared, and when the search type
+and inclusive/exclusive match flag is set.  When filtering is
+triggered, the client's <code>-filtercmd</code> is called.  The
+<code>-filtercmd</code> will typically pass one or more snippets of
+text to the <a class="iref" href="#check">check</a> method, and display them or not depending
+on the result.
+
+</p>
+
+<h2><a name="the_sieve_icon_menu">The Sieve Icon Menu</a></h2>
+<p>The first set of entries on the menu allows the user to select the
+type of the filter text:
+
+</p>
+
+<ul>
+  <li> <b>Exact</b>  -- An arbitrary text string
+  </li><li> <b>Incremental</b> -- An arbitrary text string, matched
+       incrementally as the user enters each character.
+  </li><li> <b>Wildcard</b>  -- A string containing wildcard characters,
+       e.g., "*"
+  </li><li> <b>Regexp</b> -- A regular expression
+</li></ul>
+<p>The second set is a single flag, <b>Ignore Case</b>.</p>
+
+<p>The third set indicates whether filtration is inclusive or exclusive:
+
+</p>
+
+<ul>
+  <li> <b>Include Matches</b> -- data items which match the filter
+       text pass the filter.
+  </li><li> <b>Exclude Matches</b> -- data items which do <i>not</i> match
+       the filter text pass the filter.
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="filter">filter <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#filter">filter</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#filter">filter</a> widget may be created with all the standard Tk frame
+widget options, plus the following filter(n)-specific options:
+
+</p><dl>
+
+<dt class="defopt"><a name="filter-width">-width <i>chars</i></a></dt><dd>
+
+Specifies the character width of the filter(n)'s entry field.
+Defaults to 20.
+
+</dd>
+<dt class="defopt"><a name="filter-filtercmd">-filtercmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command to be called whenever filtration is triggered; the
+command can do anything at all, but will usually use
+<a class="iref" href="#check">check</a> to filter one or more snippets of text.</p>
+
+<p>The <code>-filtercmd</code> will be called when &lt;Return&gt; is pressed
+in the widget's text field, when any character is pressed (in
+<b>incremental</b> mode), when the text field is cleared, when
+an option is changed on <a href="#the_sieve_icon_menu">The Sieve Icon Menu</a>, and when the
+<code>-filtertype</code> or <code>-ignorecase</code> options are
+changed by the application.
+
+</p>
+</dd>
+<dt class="defopt"><a name="filter-filtertype">-filtertype <i>value</i></a></dt><dd>
+
+Explicitly sets the filter type to one of <b>exact</b> (the default),
+<b>incremental</b>, <b>wildcard</b>, or <b>regexp</b>, and calls the <code>-filtercmd</code>.
+
+</dd>
+<dt class="defopt"><a name="filter-ignorecase">-ignorecase <i>flag</i></a></dt><dd>
+
+Explicitly sets the ignore case <i>flag</i> (the default is false),
+and calls the <code>-filtercmd</code>.
+
+</dd>
+<dt class="defopt"><a name="filter-msgcmd">-msgcmd <i>cmd</i></a></dt><dd>
+
+A command for reporting messages to the user; if defined, <i>cmd</i>
+will be called with a message appended to it as a single argument
+whenever filter(n) wishes to report a message.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="check">$filter check <i>string</i></a></dt><dd>
+
+Checks the <i>string</i> against the current filter text and settings,
+and returns 1 if the <i>string</i> passes the filter and 0 otherwise.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe, 
+Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>6/24/2005 DJ Original package.
+6/07/2006 WHD Redesigned.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

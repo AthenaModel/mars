@@ -1,0 +1,530 @@
+<html>
+<head>
+<title>mars 3.0.23: dynaview(n) -- Dynamic Form Data Entry Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>dynaview(n)</b> -- Dynamic Form Data Entry Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#dynaview">dynaview <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#dynaview-resources">-resources <i>rdict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#dynaview-formtype">-formtype <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#dynaview-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#dynaview-currentcmd">-currentcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#dynaview-state">-state <i>state</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#clear"><i>pathName</i> clear</a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#current"><i>pathName</i> current</a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#getlabel"><i>pathName</i> getlabel <i>field</i></a></li>
+<li><a class="iref" href="#invalid"><i>pathName</i> invalid <i>fields...</i></a></li>
+<li><a class="iref" href="#refresh"><i>pathName</i> refresh</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>key value...</i></a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>key value...</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The dynaview(n) widget is an <a href="../mann/htmlframe.html">htmlframe(n)</a> configured to display
+<a href="../mann/dynaform.html">dynaform(n)</a> data entry forms.</p>
+
+<p>The first step in using the dynaview(n) widget is to 
+define the desired <a href="../mann/dynaform.html">dynaform(n)</a> form types, along with any
+required custom field types.  An instance of <a href="../mann/dynaview.html">dynaview(n)</a> can
+then be created to display any given form type.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="dynaview">dynaview <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#dynaview">dynaview</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options:
+
+</p><dl>
+<dt class="defopt"><a name="dynaview-resources">-resources <i>rdict</i></a></dt><dd><p>
+
+Specifies a dictionary of "application resource" values that will be 
+accessible to the form's field callbacks in the same way that 
+upstream field values are, by name.  For example, if the <i>rdict</i>
+contains the key "<span class="tt">db_</span>", the key's value may appear in a 
+<span class="tt">-loadcmd</span> prefix as "<span class="tt">$db_</span>".</p>
+
+<p>Each form may explicitly define the resources it needs, via the
+<a href="../mann/dynaform.html">dynaform(n)</a> <a href="../mann/dynaform.html#resources">resources</a> specification command;
+and certain field types (notably <a href="../mann/dynaform.html#dbkey">dbkey</a>) have their
+own requirements.</p>
+
+<p>The dynaview(n) widget never explicitly uses the resources itself; it
+simply makes them available to the form's callback commands, and to those
+field types that require them when creating the form's field widgets.  
+It is the application's responsibility to ensure that the proper 
+resources are made available.</p>
+
+<p><b>WARNING</b>: if this option is used, it must be set <i>before</i> the 
+<span class="tt">-formtype</span> option, e.g., it must precede it on the command line if
+both are specified when the widget is created.  The configuration 
+handle for <span class="tt">-formtype</span> assumes that it has everything it needs to 
+initialize the form, and will bgerror if <span class="tt">-resources</span> is needed
+but not set.
+
+</p>
+</dd>
+<dt class="defopt"><a name="dynaview-formtype">-formtype <i>name</i></a></dt><dd>
+
+Specifies the name of a <a href="../mann/dynaform.html">dynaform(n)</a> form type.  The named
+form will be displayed in the widget.
+
+</dd>
+<dt class="defopt"><a name="dynaview-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called whenever a field's value
+changes, for any reason whatsoever (including explicit calls
+to <a class="iref" href="#set">set</a>).  A list of the names of the fields whose values
+actually changed is appended to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="dynaview-currentcmd">-currentcmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called whenever a new field receives the
+focus.  The name of the field receiving the focus is appended to the
+<i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="dynaview-state">-state <i>state</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  dynaview(n) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.  If the state is
+<b>disabled</b> then all fields in the dynaview(n) are disabled; if the
+state <b>normal</b> then all non-readonly fields are enabled.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>dynaview(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>pathName</i> clear</a></dt><dd>
+
+Clears all values from the form, and sets default values.  Note that
+fields for which <code>-context</code> is true are not cleared.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="current"><i>pathName</i> current</a></dt><dd>
+
+Returns the name of the field that has the input focus, or the name
+of the first visible field if no field has the focus.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+Returns the dynaview's current value, a dictionary of symbolic field
+names and field values. Fields that are not currently layed out will
+have empty values.
+
+</dd>
+<dt class="defitem"><a name="getlabel"><i>pathName</i> getlabel <i>field</i></a></dt><dd><p>
+
+Returns the text of the first displayed label associated with the 
+named field, or "" if none.</p>
+
+<p><b>Note:</b> This was added for the benefit of 
+<a href="../mann/orderdialog.html">orderdialog(n)</a>'s display of field errors at the bottom of
+the error dialog.  However, the mechanism is rather klunky and
+fragile; probably a better way of showing errors should be found, in
+which case this command can be removed.
+
+</p>
+</dd>
+<dt class="defitem"><a name="invalid"><i>pathName</i> invalid <i>fields...</i></a></dt><dd>
+
+Tells the dynaview(n) that the named <i>fields</i> contain invalid
+values; the remainder contain valid values.  The effect of making
+a field invalid depends on the layout algorithm in use; the usual
+effect is to make the label associated with the field to turn
+red.  The list of fields can be specified as a single argument, or as
+individual field names on the command line.
+
+</dd>
+<dt class="defitem"><a name="refresh"><i>pathName</i> refresh</a></dt><dd>
+
+Refreshes the contents of the form: saves the current field values,
+clears the form, and then restores the field values.  This causes a
+complete reconfiguration of all fields, updating them to be
+consistent with the current state of the application.
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>dict</i></a></dt>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>key value...</i></a></dt><dd>
+
+Explicitly sets the dynaview's field values given a dictionary of
+symbolic field names and field values, and calls
+the <code>-changecmd</code> if at least one field's value has actually
+changed, i.e., successive calls to <a class="iref" href="#set">set</a> with the same
+<i>dict</i> will result in at most one call to the
+<code>-changecmd</code>.  It isn't necessary for the <i>dict</i> to
+contain an entry for every field.
+
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:50 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

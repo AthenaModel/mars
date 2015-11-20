@@ -1,0 +1,445 @@
+<html>
+<head>
+<title>mars 3.0.23: parm(i) -- Parameter Set Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>parm(i)</b> -- Parameter Set Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#parameter_names">Parameter Names</a></li>
+
+    <li><a href="#subcommands">Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#examples">EXAMPLES</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#parm"><i>module</i> parm <i>subcommand</i> ?<i>args</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mani/parm.html">parm(i)</a> documents the interface exported by
+modules which define a <a href="../mann/parmset.html">parmset(n)</a> of configuration
+parameters.  It is not required that such modules use precisely this
+interface, but if they do it makes it easy to include their parameters
+in a larger project-wide or application-wide <a href="../mann/parmset.html">parmset(n)</a> file.
+
+
+</p>
+
+<h2><a name="parameter_names">Parameter Names</a></h2>
+<p>The purpose of the <a href="../mani/parm.html">parm(i)</a> interface is to allow parameters
+from many modules to be pulled into a single <a href="../mann/parmset.html">parmset(n)</a>.
+Therefore, in order to avoid naming collisions, the first element of
+every parameter name must be derived from the module's name.
+If the module's name is <code>fred(n)</code>, for example, then
+its parameter names must all match the pattern "<code>fred.*</code>".
+
+</p>
+
+<h2><a name="subcommands">Subcommands</a></h2>
+<p>Every <a href="../mani/parm.html">parm(i)</a> module must be an ensemble command with
+at least the following subcommand:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="parm"><i>module</i> parm <i>subcommand</i> ?<i>args</i>?</a></dt><dd>
+
+This subcommand provides access to the module's <a href="../mann/parmset.html">parmset(n)</a>;
+the subcommands of <a class="iref" href="#parm">parm</a> must be exactly those of the
+module's <a href="../mann/parmset.html">parmset(n)</a>.  See the <a href="#examples">EXAMPLES</a> for a typical
+implementation.
+
+</dd>
+</dl>
+
+<h2><a name="examples">EXAMPLES</a></h2>
+<p>Here's an example of a minimal <a href="../mani/parm.html">parm(i)</a> module.
+
+</p>
+
+<pre>
+snit::type sample {
+    #-------------------------------------------------------------------
+    # Type Components
+
+    # Define the parm component and make it public; this creates the
+    # "parm" subcommand.
+    typecomponent parm -public parm
+
+    #-------------------------------------------------------------------
+    # Type Constructor
+
+    typeconstructor {
+        namespace import ::util::*
+
+        # FIRST, create the parmset and save it as the parm component.
+        set parm ${type}::parm
+        parmset $parm \
+            -notifycmd [mytypemethod NotifyCB]
+
+        # NEXT, define parameters
+        $parm subset sample {
+            sample(n) configuration parameters.
+        }
+
+        $parm define sample.number snit::integer 0 {
+            Sample parameter definition.
+        } 
+
+        ...
+    }
+
+    typemethod NotifyCB {name} {
+        # This callback is not required; but if the module needs
+        # to take action when a parameter's value changes it can
+        # do it here.  See parmset(n) for details.
+    }
+
+    ...
+}
+</pre>
+<p>The parameters can then be readily accessed by clients:
+
+</p>
+
+<pre>
+    % sample parm set sample.number 5
+    5
+    % sample parm list
+    sample.number 5
+    %
+</pre>
+<p>Further, the parameters can be linked into a larger <a href="../mann/parmset.html">parmset(n)</a>
+quite easily:
+
+</p>
+
+<pre>
+    % parmset collection
+    ::collection
+    % collection slave add [list ::sample parm]
+    % collection set sample.number 10
+    10
+    % sample parm get sample.number
+    10
+    %
+</pre>
+<p>See <a href="../mann/parmset.html">parmset(n)</a> for a discussion of master and slave
+parameter sets.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

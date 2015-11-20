@@ -1,0 +1,518 @@
+<html>
+<head>
+<title>mars 3.0.23: finder(n) -- Text Search Widget, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>finder(n)</b> -- Text Search Widget, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#example">EXAMPLE</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*.toolbar.finder
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#finder">finder <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#finder-findcmd">-findcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#finder-width">-width <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#finder-msgcmd">-msgcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#finder-targettype">-targettype <i>type</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#finder-loglist">-loglist <i>widget</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#finder-multicol">-multicol <i>val</i></a></li>
+<li><a class="iref" href="#found">$finder found <i>count instance</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The finder(n) widget is used for controlling searching within other
+widgets, including the <a href="../mann/rotext.html">rotext(n)</a>, <a href="../mann/logdisplay.html">logdisplay(n)</a> and
+<a href="../mann/loglist.html">loglist(n)</a> widgets.  It allows the user to enter a target
+string; it provides a menu for selecting the target type, which may be
+incremental, exact, wildcard, or regexp; and it provides buttons for
+navigating through the instances of the target in the data being
+searched.</p>
+
+<p>See the <a href="#example">EXAMPLE</a>, below, for details on how to connect
+a finder(n) with a <a href="../mann/rotext.html">rotext(n)</a> widget.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="finder">finder <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#finder">finder</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#finder">finder</a> widget may be created with all the standard Tk frame
+widget options, plus the following finder(n)-specific options:
+
+</p><dl>
+
+<dt class="defopt"><a name="finder-findcmd">-findcmd <i>cmd</i></a></dt><dd>
+
+Specifies the command the finder will use to request searches and
+browse the search results.  This will usually be the "find" method
+of a <a href="../mann/rotext.html">rotext(n)</a> or similar widget.  The <a href="#example">EXAMPLE</a>
+shows how to connect a finder(n) with a <a href="../mann/rotext.html">rotext(n)</a> widget.
+
+</dd>
+<dt class="defopt"><a name="finder-width">-width <i>chars</i></a></dt><dd>
+
+Specifies the character width of the finder(n)'s text entry field.
+Defaults to 20.
+
+</dd>
+<dt class="defopt"><a name="finder-msgcmd">-msgcmd <i>cmd</i></a></dt><dd>
+
+Specifies a command to be used for passing messages to the user.
+The command will be called with one additional argument, the message
+to display; it will usually be displayed in the window's message line.
+
+</dd>
+<dt class="defopt"><a name="finder-targettype">-targettype <i>type</i></a></dt><dd>
+
+Sets the type of the target string: <b>incremental</b>, <b>exact</b>,
+<b>wildcard</b>, or <b>regexp</b>.  Defaults to <b>exact</b>.  If the
+target type is <b>incremental</b>, then an <b>exact</b>-match search
+will be done incrementally as each character of the target string is
+entered by the user.
+
+</dd>
+<dt class="defopt"><a name="finder-loglist">-loglist <i>widget</i></a></dt><dd>
+
+If set to the name of a <a href="../mann/loglist.html">loglist(n)</a> widget, the finder(n) will
+include buttons for searching through the logs displayed in the
+loglist(n) using that widget's  <a href="../mann/loglist.html#searchlogs">searchlogs</a>
+and <a href="../mann/loglist.html#stopsearch">stopsearch</a> methods.
+
+</dd>
+<dt class="defopt"><a name="finder-multicol">-multicol <i>val</i></a></dt><dd>
+
+A boolean option indicating whether or not the search string spans
+multiple columns.  The intdended receiver of this will be the declared
+<i>-loglist</i> if it exists.  If <i>-loglist</i> is not
+specified, this option has no use.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="found">$finder found <i>count instance</i></a></dt><dd><p>
+
+This method is used by the recipient of the <code>-findcmd</code>
+to notify the finder(n) of the search results.</p>
+
+<p>The <i>count</i> is the number of instances of the target which were
+found; it will be 0 if no instances were found, or if the target is "".</p>
+
+<p>The <i>instance</i> identifies the instance which is currently
+being highlighted on the display, if any.  If an instance is
+highlighted, it will be a number from 0 to <i>count</i> - 1.
+Otherwise it will be -1.</p>
+
+<p>The <a href="#example">EXAMPLE</a> shows how to connect the finder(n) to other widgets.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="example">EXAMPLE</a></h2>
+<p>The finder(n) can be connected to any widget that supports the
+"find/found" protocol, e.g., the <a href="../mann/rotext.html">rotext(n)</a> and
+<a href="../mann/logdisplay.html">logdisplay(n)</a> widgets.  Here's a short script that connects
+a finder(n) to a <a href="../mann/rotext.html">rotext(n)</a> displaying an arbitrary text file.
+
+</p>
+
+<pre>
+    #!/bin/sh
+    # -*-tcl-*-
+    # The next line restarts using wish \
+    exec wish8.5 "$0" "$@"
+
+    package require gui
+    namespace import ::marsutil::* ::marsgui::*
+
+    # FIRST, create a toolbar and a finder, and pack them on the top
+    frame .bar
+
+    finder .bar.finder               \
+        -width   15                  \
+        -findcmd [list .rotext find] \
+        -msgcmd  puts
+
+    pack .bar.finder -side right
+    pack .bar -side top -fill x -expand 1
+
+    # NEXT, create a rotext and fill in the rest with it.
+    rotext .rotext                                   \
+        -setgrid            1                        \
+        -wrap               none                     \
+        -highlightthickness 1                        \
+        -borderwidth        1                        \
+        -relief             sunken                   \
+        -yscrollcommand     [list .yscroll set]      \
+        -foundcmd           [list .bar.finder found]
+
+    ttk::scrollbar .yscroll           \
+        -orient vertical              \
+        -command [list .rotext yview]
+
+    pack .yscroll -side right -fill y
+    pack .rotext -side right -fill both -expand 1
+
+    # NEXT, load some text into the rotext
+    if {[llength $argv] == 0} {
+        puts "Usage: viewer filename"
+        exit
+    }
+
+    set f [open [lindex $argv 0]]
+    .rotext ins end [read $f]
+    close $f
+
+    .rotext see 1.0
+</pre>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Jaffe,
+Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>6/24/2005 DJ Original package.
+6/09/2006 WHD Updated to support find/found protocol.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

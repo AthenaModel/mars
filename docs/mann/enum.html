@@ -1,0 +1,521 @@
+<html>
+<head>
+<title>mars 3.0.23: enum(n) -- Enumerated value definition type, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>enum(n)</b> -- Enumerated value definition type, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#enum">enum <i>name deflist</i> ?-noindex?</a></li>
+<li><a class="iref" href="#validate">$enum validate <i>input</i></a></li>
+<li><a class="iref" href="#size">$enum size</a></li>
+<li><a class="iref" href="#names">$enum names</a></li>
+<li><a class="iref" href="#shortnames">$enum shortnames</a></li>
+<li><a class="iref" href="#longnames">$enum longnames</a></li>
+<li><a class="iref" href="#deflist">$enum deflist</a></li>
+<li><a class="iref" href="#index">$enum index <i>input</i></a></li>
+<li><a class="iref" href="#name">$enum name <i>input</i></a></li>
+<li><a class="iref" href="#shortname">$enum shortname <i>input</i></a></li>
+<li><a class="iref" href="#longname">$enum longname <i>input</i></a></li>
+<li><a class="iref" href="#add">$enum add <i>deflist</i></a></li>
+<li><a class="iref" href="#eq">$enum eq <i>a b</i></a></li>
+<li><a class="iref" href="#lt">$enum lt <i>a b</i></a></li>
+<li><a class="iref" href="#gt">$enum gt <i>a b</i></a></li>
+<li><a class="iref" href="#le">$enum le <i>a b</i></a></li>
+<li><a class="iref" href="#ge">$enum ge <i>a b</i></a></li>
+<li><a class="iref" href="#html">$enum html</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>enum(n) defines an enumerated value definition type.  Each instance of
+the type defines an enumeration type: an ordered set of symbolic
+values.  An <a class="iref" href="#enum">enum</a> object allows enumerated symbols to be
+validated, translated to their numeric indices, and <i>vice versa</i>.
+In addition, each enumerated symbol has two forms: a short symbolic
+name and a longer descriptive name.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="enum">enum <i>name deflist</i> ?-noindex?</a></dt><dd><p>
+
+<a class="iref" href="#enum">enum</a> defines a new enumeration definition type called
+<i>name</i>; the short and long names of the enumerated values are
+defined in the <i>deflist</i>, which has the form:
+
+</p><pre>
+short long short long....
+</pre>
+<p>For example,
+
+</p>
+
+<pre>
+enum MyEnum {
+    G  "The Good"
+    B  "The Bad"
+    U  "The Ugly"
+}
+</pre>
+<p>Alternatively, the <i>deflist</i> can be the empty string, "", and
+values can be added later using the <a class="iref" href="#add">add</a> subcommand.</p>
+
+<p>The <i>name</i> becomes a Tcl command, defined in the current scope;
+<a class="iref" href="#enum">enum</a> returns the fully-qualified form of <i>name</i>.</p>
+
+<p>By default, a valid enumeration value is a short name, a long name, or the
+numeric index of the short name, where index numbers range from 
+0 to (<a class="iref" href="#size">size</a> - 1).  Allowing index numbers is sometimes convenient,
+but means that short names and long names can't look like integers.  If the 
+<b>-noindex</b> option is included on creation, then numeric indices are no
+longer valid values; and consequently short names can be numeric.
+
+</p>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#enum">enum</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="validate">$enum validate <i>input</i></a></dt><dd>
+
+Validates that <i>input</i> belongs to the enumeration.  If it does,
+the input is translated to a short name, and returned.
+If it does not, an error is thrown with an <code>-errorcode</code>
+of <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="size">$enum size</a></dt><dd>
+
+Returns the number of symbols in the enumerated type.  Given <i>n</i>
+symbols, the symbols are indexed from 0 to <i>n</i>-1.
+
+</dd>
+<dt class="defitem"><a name="names">$enum names</a></dt>
+<dt class="defitem"><a name="shortnames">$enum shortnames</a></dt><dd>
+
+Returns a list of the short symbolic names, in index order.  The form
+<a class="iref" href="#shortnames">shortnames</a> is deprecated.
+
+</dd>
+<dt class="defitem"><a name="longnames">$enum longnames</a></dt><dd>
+
+Returns a list of the long descriptive names, in index order.
+
+</dd>
+<dt class="defitem"><a name="deflist">$enum deflist</a></dt><dd>
+
+Returns the enum's current definition list, suitable for creating
+another enumeration.
+
+</dd>
+<dt class="defitem"><a name="index">$enum index <i>input</i></a></dt><dd>
+
+Given a short name, a long name, or (if <b>-noindex</b> is omitted) a 
+valid index, returns the index.
+Given any other <i>input</i>, returns -1.  Name lookups are
+case-insensitive.
+
+</dd>
+<dt class="defitem"><a name="name">$enum name <i>input</i></a></dt>
+<dt class="defitem"><a name="shortname">$enum shortname <i>input</i></a></dt><dd><p>
+
+Given a short name, a long name, or (if <b>-noindex</b> is omitted) a 
+valid index, returns the
+corresponding short symbolic name.  Given any other <i>input</i>,
+returns "".  Name lookups are
+case-insensitive.</p>
+
+<p>The form <a class="iref" href="#shortname">shortname</a> is deprecated.
+
+</p>
+</dd>
+<dt class="defitem"><a name="longname">$enum longname <i>input</i></a></dt><dd>
+
+Given a short name, a long name, or (if <b>-noindex</b> is omitted) a 
+valid index, returns the
+corresponding long descriptive name.  Given any other <i>input</i>,
+returns "".  Name lookups are
+case-insensitive.
+
+</dd>
+<dt class="defitem"><a name="add">$enum add <i>deflist</i></a></dt><dd>
+
+Adds additional symbols to the enumeration; this allows the
+enumeration to be defined a little at a time.  The syntax of
+<i>deflist</i> is defined just as for <a class="iref" href="#enum">enum</a>.
+
+</dd>
+<dt class="defitem"><a name="eq">$enum eq <i>a b</i></a></dt>
+<dt class="defitem"><a name="lt">$enum lt <i>a b</i></a></dt>
+<dt class="defitem"><a name="gt">$enum gt <i>a b</i></a></dt>
+<dt class="defitem"><a name="le">$enum le <i>a b</i></a></dt>
+<dt class="defitem"><a name="ge">$enum ge <i>a b</i></a></dt><dd>
+
+These methods compare two enumerated values, <i>a</i> and <i>b</i>,
+and return 1 if <i>a</i> is equal to, less than, greater than,
+less than or equal to, or greater than or equal to <i>b</i>,
+respectively.  The values <i>a</i> and <i>b</i> may be short names,
+long names, or indices; they are converted to indices and compared
+numerically.
+
+</dd>
+<dt class="defitem"><a name="html">$enum html</a></dt><dd>
+
+Returns an HTML snippet which documents the enumeration's names and
+long names.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/quality.html">quality(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>enum(n) requires Tcl 8.5 or later.</p>
+
+<p>To use enum(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the marsutil(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+

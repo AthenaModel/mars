@@ -1,0 +1,466 @@
+<html>
+<head>
+<title>mars 3.0.23: mapicon(i) -- Mapcanvas Icon Type Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mapicon(i)</b> -- Mapcanvas Icon Type Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#canvas_tags">CANVAS TAGS</a></li>
+    
+
+    <li><a href="#options">OPTIONS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#mapicon"><i>mapicon</i> <i>name canvas cx cy</i> ?<i>options</i>?</a></li>
+<li><a class="iref" href="#typename"><i>mapicon</i> typename</a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#draw"><i>obj</i> draw <i>cx cy</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A <a href="../mani/mapicon.html">mapicon(i)</a> is <code>snit::type</code> that implements
+a <a href="../mann/mapcanvas.html">mapcanvas(n)</a> icon type.  Mapcanvas icons are graphics
+symbols, possibly composed of multiple <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a> items
+than can be positioned and manipulated using map coordinates and
+reference strings via the <a href="../mann/mapcanvas.html">mapcanvas(n)</a>
+<a href="../mann/mapcanvas.html#icon">icon</a> command.</p>
+
+<p>A <a href="../mani/mapicon.html">mapicon(i)</a>'s primary responsibility is to draw the icon on
+the canvas to begin with; then, various aspects of the icon's
+appearance can be manipulated using the icon's options (if any).</p>
+
+<p>When the object is destroyed, it should remove itself from the
+canvas, using <a href="../../../tcl/docs/mann/catch.html">catch(n)</a> in case the canvas has already
+been destroyed.
+
+</p>
+
+<h2><a name="canvas_tags">CANVAS TAGS</a></h2>
+<p>Every icon should be tagged with the following canvas tags, in the
+following order:
+
+</p>
+
+<ul>
+  <li> Its <b><i>id</i></b>.  This is the final component of its command name.
+
+  </li><li> Any tags required to identify pieces of the icon to support
+       changes to option values.  These should be called names like
+       "<b><i>id</i>.this</b>" and "<b><i>id</i>.that</b>".
+
+  </li><li> Its <a class="iref" href="#typename">typename</a>.
+
+  </li><li> The tag "<b>icon</b>".
+
+  </li><li> Any additional tags, as specified by <code>-tags</code>.
+</li></ul>
+
+
+<h2><a name="options">OPTIONS</a></h2>
+<p>Every mapicon(i) should define at least the following options:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="draw-tags">-tags <i>taglist</i></a></dt><dd>
+
+This is a list of additional canvas tags that should be applied to this
+particular icon.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>Every <a href="../mani/mapicon.html">mapicon(i)</a> module must define a command like the following:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="mapicon"><i>mapicon</i> <i>name canvas cx cy</i> ?<i>options</i>?</a></dt><dd><p>
+
+Creates a new mapicon(i) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#mapicon">mapicon</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <i>canvas</i> is the window name of the <a href="../mann/mapcanvas.html">mapcanvas(n)</a> on
+which the icon will appear.  It will be drawn at canvas coordinates
+<i>cx</i>,<i>cy</i>.</p>
+
+<p>The options vary by icon type.
+The standard Snit <b>info options</b> method may be used to retrieve
+the option names.
+
+</p>
+</dd>
+<dt class="defitem"><a name="typename"><i>mapicon</i> typename</a></dt><dd>
+
+Returns the name by which the icon type will be known to users of the
+<a href="../mann/mapcanvas.html">mapcanvas(n)</a> widget.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of a <a class="iref" href="#mapicon">mapicon</a> object has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="draw"><i>obj</i> draw <i>cx cy</i></a></dt><dd>
+
+Redraws the icon at the specified coordinates, using the current
+option settings.  The previous instance of the icon (if any) is
+deleted from the canvas.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/mapcanvas.html">mapcanvas(n)</a>
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

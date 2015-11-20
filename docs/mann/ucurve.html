@@ -1,0 +1,1148 @@
+<html>
+<head>
+<title>mars 3.0.23: ucurve(n) -- URAM Curve Manager, submodule of simlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>ucurve(n)</b> -- URAM Curve Manager, submodule of <a href="../mann/simlib.html">simlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#untracked_curves">Untracked Curves</a></li>
+
+    <li><a href="#undo_stack">Undo Stack</a></li>
+
+</ul>
+    
+
+    <li><a href="#database_schema">DATABASE SCHEMA</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require simlib 3.0.23
+namespace import ::simlib::*
+</pre>
+
+
+
+<ul class="itemlist">
+<li><a class="iref" href="#ucurve">ucurve <i>name ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ucurve-automark">-automark <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ucurve-rdb">-rdb <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ucurve-savehistory">-savehistory <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ucurve-undo">-undo <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ucurve-undostack">-undostack <i>cmd</i></a></li>
+<li><a class="iref" href="#adjust">$obj adjust <i>driver_id curve_id delta</i> ?<i>curve_id delta...</i>?</a></li>
+<li><a class="iref" href="#apply">$obj apply <i>t</i> ?-start?</a></li>
+<li><a class="iref" href="#cget">$obj cget <i>option</i></a></li>
+<li><a class="iref" href="#clear">$obj clear</a></li>
+<li><a class="iref" href="#configure">$obj configure <i>option value</i></a></li>
+<li><a class="iref" href="#ctype">$obj ctype <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#ctype_add">$obj ctype add <i>name min max</i> ?<i>options...</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ctype add-alpha">-alpha <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ctype add-gamma">-gamma <i>value</i></a></li>
+<li><a class="iref" href="#ctype_cget">$obj ctype cget <i>name option</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ctype cget-beta">-beta <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ctype cget-min">-min <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ctype cget-max">-max <i>value</i></a></li>
+<li><a class="iref" href="#ctype_configure">$obj ctype configure <i>option value</i></a></li>
+<li><a class="iref" href="#ctype_delete">$obj ctype delete <i>name</i></a></li>
+<li><a class="iref" href="#ctype_id">$obj ctype id <i>name</i></a></li>
+<li><a class="iref" href="#ctype_name">$obj ctype name <i>id</i></a></li>
+<li><a class="iref" href="#ctype_names">$obj ctype names</a></li>
+<li><a class="iref" href="#curve">$obj curve <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#curve_add">$obj curve add <i>ctype a b c</i> ?<i>a b c...</i>?</a></li>
+<li><a class="iref" href="#curve_bset">$obj curve bset <i>curve_id b</i> ?<i>curve_id b</i>?</a></li>
+<li><a class="iref" href="#curve_cget">$obj curve cget <i>curve_id option</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#curve cget-b">-b</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#curve cget-c">-c</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#curve cget-tracked">-tracked</a></li>
+<li><a class="iref" href="#curve_configure">$obj curve configure <i>curve_id</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#curve configure-b">-b <i>value</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#curve configure-c">-c <i>value</i></a></li>
+<li><a class="iref" href="#curve_cset">$obj curve cset <i>curve_id c</i> ?<i>curve_id c</i>...?</a></li>
+<li><a class="iref" href="#curve_exists">$obj curve exists <i>curve_id</i></a></li>
+<li><a class="iref" href="#curve_track">$obj curve track <i>curve_ids</i></a></li>
+<li><a class="iref" href="#curve_untrack">$obj curve untrack <i>curve_ids</i></a></li>
+<li><a class="iref" href="#edit">$obj edit <i>subcommand</i> ?<i>value...</i>?</a></li>
+<li><a class="iref" href="#edit_canundo">$obj edit canundo</a></li>
+<li><a class="iref" href="#edit_reset">$obj edit reset</a></li>
+<li><a class="iref" href="#edit_mark">$obj edit mark</a></li>
+<li><a class="iref" href="#edit_undo">$obj edit undo</a></li>
+<li><a class="iref" href="#istracked">$obj istracked <i>curve_id</i></a></li>
+<li><a class="iref" href="#persistent">$obj persistent <i>driver_id cause_id curve_id mag</i> ?<i>curve_id mag...</i>?</a></li>
+<li><a class="iref" href="#reset">$obj reset</a></li>
+<li><a class="iref" href="#transient">$obj transient <i>driver_id cause_id curve_id mag</i> ?<i>curve_id mag...</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/ucurve.html">ucurve(n)</a> is the Tcl API for the Unified Regional
+Attitude Model (URAM)'s Curve Manager.  The curve manager is
+implements the general attitude curve model.  It manages the curve
+types, individual curves, and effects to be applied to them.  It knows
+nothing about groups, actors, or the spread of indirect effects;
+these are the province of <a href="../mann/uram.html">uram(n)</a> itself.</p>
+
+<p>See the <i>Mars Analyst's Guide</i> for the attitude curve model that
+underlies ucurve(n).</p>
+
+<p>The client is responsible for defining the set of curves to be managed:
+
+</p>
+
+<ul class="ulp">
+  <li> First, the client must define one or more curve types using
+       the <a class="iref" href="#ctype">ctype</a> commands.  The
+       curve type determines the minimum and maximum bounds for curves
+       of this type, as well as the &alpha;, &beta;, and &gamma; parameters
+       that determine how the baseline changes over time.
+
+  </li><li> Next, the client must define curves of each type using the
+       <a class="iref" href="#curve">curve</a> commands.  Each curve
+       gets a unique integer ID.  It is the client's responsibility to
+       associated that ID with other data (e.g., a civilian group and
+       concern).
+
+  </li><li> Next, the client may enter adjustments to curve baselines using
+       <a class="iref" href="#adjust">adjust</a> and also add <a class="iref" href="#persistent">persistent</a> and
+       <a class="iref" href="#transient">transient</a> effects. Both adjustments and effects are
+       associated with attitude drivers.
+
+  </li><li> Effects are retained until
+       time is advanced using the <a class="iref" href="#apply">apply</a> command.  ucurve(n)
+       has no real notion of simulation time; rather, a timestamp is
+       passed to <a class="iref" href="#apply">apply</a>, which uses it when saving the history
+       of contributions by each attitude driver.
+
+  </li><li> Adjustments have an immediate effect on the baseline; the
+       net delta to the adjusted baseline is retained until 
+       time is advanced using the <a class="iref" href="#apply">apply</a> command, and saved
+       to the contributions table at that time.
+
+  </li><li> After adjustments and effects are applied, they are deleted;
+       if they are to recur, the client must re-enter them during the
+       next timestep.
+</li></ul>
+
+<h2><a name="untracked_curves">Untracked Curves</a></h2>
+<p>The client has the option of marking particular curves as "untracked"
+using <a class="iref" href="#curve_untrack">curve untrack</a>.  Ucurve(n) does not track changes to 
+untracked curves; instead, their current or baseline levels are always
+exactly equal to their natural levels.  For example, if the client
+allows civilian groups to have zero population then the curves related
+to those groups can be untracked.  Tracking can be turned back on
+using <a class="iref" href="#curve_track">curve track</a>, at which point the curve can begin to
+fluctuate from its natural level.</p>
+
+<p>Things to note:
+
+</p>
+
+<ul class="ulp">
+<li> It is an error to add adjustments or effects to an untracked
+     curve.
+
+</li><li> For performance reasons, the error will not be detected until
+     the next time <a class="iref" href="#apply">apply</a> is called, at which point an error
+     will be thrown.
+
+</li><li> If a curve with pending adjustments or effects is untracked,
+     the pending changes will be deleted automatically.
+</li></ul>
+
+<h2><a name="undo_stack">Undo Stack</a></h2>
+<p>Many ucurve(n) operations are undoable; to enable the undo stack, set
+the <code>-undo</code> option to <b>on</b>.  The undo stack is then managed
+using the <a class="iref" href="#edit">edit</a> command.  Use the <a class="iref" href="#edit_undo">edit undo</a> command
+to undo operations up to the last mark.  Marks can be
+inserted manually using the <a class="iref" href="#edit_mark">edit mark</a> command, or
+automatically inserted with each operation by setting the
+<code>-automark</code> option to <b>on</b>.</p>
+
+<p>Commands may be <b>Undoable</b>, <b>Not Undoable</b>, or neither.
+A command that is <b>Not Undoable</b> clears the undo stack as part of
+its operation.  Commands that are neither usually do not affect the
+undo stack one way or another.  The <b>Undoable</b> and <b>Not
+Undoable</b> commands are so marked.</p>
+
+<p>The undo capability is provided by <a href="../mann/undostack.html">undostack(n)</a>.
+A ucurve(n) instance usually belongs to some parent object, i.e.,
+an instance of <a href="../mann/uram.html">uram(n)</a>.  The parent object can share its own
+<a href="../mann/undostack.html">undostack(n)</a> with ucurve(n) using the <code>-undostack</code>
+option.
+
+</p>
+
+<h2><a name="database_schema">DATABASE SCHEMA</a></h2>
+<p>ucurve(n) stores almost all of its working data in an
+<a href="../mann/sqldocument.html">sqldocument(n)</a> "run-time database", or RDB.  
+The names of all of the tables, views, indices, and so forth defined
+by UCURVE begin with the string "ucurve_".</p>
+
+<p>Other modules may query any of the tables as needed, but
+should not alter them.</p>
+
+<p>ucurve(n) registers the following schema definitions with
+<a href="../mann/sqldocument.html">sqldocument(n)</a>:
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- TITLE: 
+--   ucurve.sql
+--
+-- PACKAGE:
+--   simlib(n) -- Simulation Infrastructure Package
+--
+-- PROJECT:
+--   Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--   Will Duquette
+--
+-- DESCRIPTION:
+--   SQL Schema for the ucurve(n) module.
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Curve Types
+
+-- ucurve(n) curve types table.  Stores the attributes of each 
+-- curve type.
+CREATE TABLE ucurve_ctypes_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Curve Type ID
+    ct_id        INTEGER PRIMARY KEY,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Short name for this specific curve type
+    name          TEXT UNIQUE NOT NULL,
+
+    min           DOUBLE NOT NULL
+        CHECK (min = CAST (min AS real)),
+
+    -- Maximum and minimum bounds for curves of this type.
+    max           DOUBLE NOT NULL
+        CHECK (max = CAST (max AS real)),
+
+    -- Alpha and Gamma smoothing parameters (Beta is computed)
+    alpha         DOUBLE DEFAULT 0.0
+        CHECK (alpha = CAST (alpha AS real))
+        CHECK (0.0 <= alpha AND alpha <= 1.0),
+
+    gamma         DOUBLE DEFAULT 0.0
+        CHECK (gamma = CAST (gamma AS real))
+        CHECK (0.0 <= gamma AND gamma <= 1.0),
+
+    -- Global constraints
+    CHECK (min < max),
+    CHECK (alpha + gamma <= 1.0)
+);
+
+-- ucurve(n) types view that provides computed values
+
+CREATE VIEW ucurve_ctypes AS
+SELECT *,
+       1.0 - (alpha + gamma) AS beta
+FROM ucurve_ctypes_t;
+
+------------------------------------------------------------------------
+-- Curves
+
+-- ucurve(n) curves table.
+
+CREATE TABLE ucurve_curves_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Curve ID
+    curve_id     INTEGER PRIMARY KEY,
+
+    -- Curve Type ID
+    ct_id        INTEGER REFERENCES ucurve_ctypes_t(ct_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    --  Are we tracking changes to this curve?
+    tracked      INTEGER DEFAULT 1
+        CHECK (tracked IN (0,1)),
+
+    -- The current A.t, B.t, C.t, and DeltaA.t values
+
+    a            DOUBLE
+        CHECK (a = CAST (a AS real)),
+
+    b            DOUBLE
+        CHECK (b = CAST (b AS real)),
+
+    c            DOUBLE
+        CHECK (c = CAST (c AS real)),
+
+    delta        DOUBLE DEFAULT 0.0,
+
+    -- The current scale factors
+    posfactor    DOUBLE DEFAULT 0.0,
+    negfactor    DOUBLE DEFAULT 0.0,
+
+    -- The Initial values for A.t, B.t, and C.t
+    -- TBD: We might decide not to use these.
+    a0            DOUBLE
+        CHECK (a0 = CAST (a0 AS real)),
+
+    b0            DOUBLE
+        CHECK (b0 = CAST (b0 AS real)),
+
+    c0            DOUBLE
+        CHECK (c0 = CAST (c0 AS real))
+);
+
+------------------------------------------------------------------------
+-- Curve Effects
+
+
+-- ucurve(n) effects table.
+
+CREATE TABLE ucurve_effects_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Effect ID
+    e_id         INTEGER PRIMARY KEY,
+
+    -- Curve ID: ID of the curve receiving the effect.
+    curve_id     INTEGER REFERENCES ucurve_curves_t(curve_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Driver ID, an integer assigned by the client.
+    driver_id    INTEGER NOT NULL,
+
+    -- Cause ID, an integer assigned by the client.
+    cause_id     INTEGER NOT NULL,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Persistence flag.  If 1, persistent, if 0, transient.
+    pflag        INTEGER DEFAULT 0,
+
+    -- Nominal (unscaled) magnitude of the effect.
+    mag          DOUBLE DEFAULT 0.0
+        CHECK (mag = CAST (mag AS real)),
+
+    -- Actual (unscaled) magnitude of the effect, when causes are
+    -- taken into account.
+    actual       DOUBLE DEFAULT 0.0
+);
+
+CREATE INDEX ucurve_effects_cc_index ON ucurve_effects_t(curve_id,cause_id);
+
+------------------------------------------------------------------------
+-- Baseline Adjustments
+
+
+-- ucurve(n) adjustments table.
+
+CREATE TABLE ucurve_adjustments_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Effect ID
+    a_id         INTEGER PRIMARY KEY,
+
+    -- Curve ID: ID of the curve receiving the effect.
+    curve_id     INTEGER REFERENCES ucurve_curves_t(curve_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Driver ID, an integer assigned by the client.
+    driver_id    INTEGER NOT NULL,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Delta to the curve
+    delta          DOUBLE DEFAULT 0.0
+        CHECK (delta = CAST (delta AS real))
+);
+
+------------------------------------------------------------------------
+-- Contribution History
+
+-- ucurve(n) contribs table
+--
+-- NOTE: We have no FK constraint on the curve_id, so that Athena can
+-- exclude the contribs table (which can get quite large) from snapshots
+-- without causing problems on snapshot import.
+
+CREATE TABLE ucurve_contribs_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Curve ID: ID of the curve receiving the effect.
+    curve_id     INTEGER,
+
+    -- Driver ID, an integer assigned by the client.
+    driver_id    INTEGER NOT NULL,
+
+    -- Timestamp
+    t            INTEGER NOT NULL,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Contribution to curve_id by driver_id at time t
+    contrib      DOUBLE NOT NULL DEFAULT 0.0,    
+    
+
+    PRIMARY KEY (curve_id, driver_id, t)
+);
+
+
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ucurve">ucurve <i>name ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#ucurve">ucurve</a> object named <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#ucurve">ucurve</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p><a class="iref" href="#ucurve">ucurve</a> takes the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="ucurve-automark">-automark <i>flag</i></a></dt><dd>
+
+If <b>on</b> (the default), marks will be inserted in the
+<a href="#undo_stack">Undo Stack</a> automatically.  If <b>off</b>, they will not.
+
+</dd>
+<dt class="defopt"><a name="ucurve-rdb">-rdb <i>name</i></a></dt><dd><p>
+
+Specifies the name of an <a href="../mann/sqldocument.html">sqldocument(n)</a> object
+which ucurve(n) will use to store its data, and from which it will read
+its inputs.  See <a href="#database_schema">DATABASE SCHEMA</a>.</p>
+
+<p>Each instance of ucurve(n) must be created in a distinct RDB.</p>
+
+<p>This option must be set at creation time, and cannot be changed
+thereafter.
+
+</p>
+</dd>
+<dt class="defopt"><a name="ucurve-savehistory">-savehistory <i>flag</i></a></dt><dd>
+
+If <b>on</b> (the default), ucurve(n) will save the history of
+contributions to each curve by each driver in its
+<b>ucurve_contribs_t</b> table.  If <b>off</b>, it will not.  Setting
+the option to <b>off</b> will delete any existing contents of the
+<b>ucurve_contribs_t</b> table.
+
+</dd>
+<dt class="defopt"><a name="ucurve-undo">-undo <i>flag</i></a></dt><dd>
+
+If <b>on</b>, then ucurve(n) will maintain an <a href="#undo_stack">Undo Stack</a>.
+If <b>off</b> (the default) it will not.
+
+</dd>
+<dt class="defopt"><a name="ucurve-undostack">-undostack <i>cmd</i></a></dt><dd><p>
+
+By default, ucurve(n) will create its own instance of
+<a href="../mann/undostack.html">undostack(n)</a> to manage its <a href="#undo_stack">Undo Stack</a>.  However,
+an instance of ucurve(n) will often be owned by a parent object (e.g.,
+<a href="../mann/uram.html">uram(n)</a> which has its own <a href="../mann/undostack.html">undostack(n)</a>.  The parent
+can share its undo stack by setting this option to the name of the
+<a href="../mann/undostack.html">undostack(n)</a> object.</p>
+
+<p>This option must be set at creation time, and cannot be changed
+thereafter.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="adjust">$obj adjust <i>driver_id curve_id delta</i> ?<i>curve_id delta...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b> Creates one or more adjustments associated with the given
+<i>driver_id</i>.  Each adjustment is specified as a curve ID/delta
+pair, where the delta will be applied as is (i.e., unscaled) to the
+curve's baseline value.</p>
+
+<p>The delta is applied immediately; its net delta will be saved as
+part of the driver's contribution the next time
+<a class="iref" href="#apply">apply</a> is called.
+
+</p>
+</dd>
+<dt class="defitem"><a name="apply">$obj apply <i>t</i> ?-start?</a></dt><dd><p>
+
+<b>Not Undoable.</b> Applies and deletes all pending adjustments and
+effects, and records their actual contributions by curve and driver at time
+<i>t</i>, which is specified as an integer tick.</p>
+
+<p>Note that ucurve(n) has no little real notion of simulation time;
+<i>t</i> is usually used only as a time stamp.</p>
+
+<p>If the option <b>-start</b> is given, ucurve(n) does two special things.  
+First, the current attitude levels are recomputed given any pending transient
+effects; the baseline levels are unchanged, and any pending persistent
+effects will be thrown away unused.  Second, the current <b>a</b>,
+<b>b</b>, and <b>c</b> values for each attitude curve are saved to the 
+<b>a0</b>, <b>b0</b>, and <b>c0</b> columns in the
+<b>ucurve_curves_t</b> table for future reference.
+This is allows the client to initialize the <b>a</b> values with
+transient effects based on the simulation starting conditions.</p>
+
+<p>It is an error if there are pending adjustments or effects on 
+untracked curves.  See <a href="#untracked_curves">Untracked Curves</a> for more
+details.
+
+</p>
+</dd>
+<dt class="defitem"><a name="cget">$obj cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="clear">$obj clear</a></dt><dd>
+
+<b>Not Undoable.</b> Restores the instance to its creation state.
+This includes deleting all ucurve(n) data from the RDB tables.
+
+</dd>
+<dt class="defitem"><a name="configure">$obj configure <i>option value</i></a></dt><dd>
+
+Sets the <i>value</i> of the specified <i>option</i> (if the option is
+not read-only).
+
+</dd>
+<dt class="defitem"><a name="ctype">$obj ctype <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands is used to create and manage the set of curve
+types and their parameters.
+
+</p><dl>
+
+<dt class="defitem"><a name="ctype_add">$obj ctype add <i>name min max</i> ?<i>options...</i></a></dt><dd><p>
+
+<b>Undoable.</b> Adds a new curve type with the given <i>name</i>.  Curves of this type
+will have the specified <i>min</i> and <i>max</i> bounds, which may be
+integer or floating point numbers.  By default the curve type will
+have &alpha; and &gamma; parameters of 0.0, resulting in a &beta; of
+1.0.</p>
+
+<p>The command returns the new curve type's numeric ID.</p>
+
+<p>The type may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="ctype add-alpha">-alpha <i>value</i></a></dt>
+<dt class="defopt"><a name="ctype add-gamma">-gamma <i>value</i></a></dt><dd>
+
+These options set the curve type's &alpha; and &gamma; parameters;
+&beta; is computed automatically so that the three values sum to 1.0.
+The <i>value</i> must be between 0.0 and 1.0.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="ctype_cget">$obj ctype cget <i>name option</i></a></dt><dd><p>
+
+Returns the value of the specified <i>option</i> for curve type
+<i>name</i>.  In addition to the creation options (see
+<a class="iref" href="#ctype_add">ctype add</a>, the client can also query the following:
+
+</p><dl>
+
+<dt class="defopt"><a name="ctype cget-beta">-beta <i>value</i></a></dt><dd>
+
+The curve type's computed &beta; value.
+
+</dd>
+<dt class="defopt"><a name="ctype cget-min">-min <i>value</i></a></dt>
+<dt class="defopt"><a name="ctype cget-max">-max <i>value</i></a></dt><dd>
+
+The curve type's minimum and maximum bounds.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="ctype_configure">$obj ctype configure <i>option value</i></a></dt><dd>
+
+<b>Undoable.</b> Sets the <i>value</i> of the specified curve type creation
+<i>option</i>; see <a class="iref" href="#ctype_add">ctype add</a> for the list.
+
+</dd>
+<dt class="defitem"><a name="ctype_delete">$obj ctype delete <i>name</i></a></dt><dd>
+
+<b>Undoable.</b> Deletes the named curve type, along with all related
+data.
+
+</dd>
+<dt class="defitem"><a name="ctype_id">$obj ctype id <i>name</i></a></dt><dd>
+
+Returns the numeric ID associated with the curve type <i>name</i>, or
+"" if none is found. The numeric ID is used to associate a curve type
+with specific curves.
+
+</dd>
+<dt class="defitem"><a name="ctype_name">$obj ctype name <i>id</i></a></dt><dd>
+
+Returns the curve type name associated with the curve type <i>id</i>.
+
+</dd>
+<dt class="defitem"><a name="ctype_names">$obj ctype names</a></dt><dd>
+
+Returns the names of all curve types.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="curve">$obj curve <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands is used to create and manage curves of various
+curve types.
+
+</p><dl>
+
+<dt class="defitem"><a name="curve_add">$obj curve add <i>ctype a b c</i> ?<i>a b c...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b> This command defines one or more curves of curve type
+<i>ctype</i>, which may be either a curve type name or ID.  Each curve
+is defined by its A, B, and C values at time 0, each of which is a
+numeric value within the minimum and maximum bounds for the curve
+type.</p>
+
+<p>The command returns a list of curve IDs, one for each curve, in the
+order of definition.</p>
+
+<p><b>NOTE:</b> This command is designed for speed, and hence does
+minimal error checking.  It is the client's responsibility to make
+sure that all A, B, and C values are valid.
+
+</p>
+</dd>
+<dt class="defitem"><a name="curve_bset">$obj curve bset <i>curve_id b</i> ?<i>curve_id b</i>?</a></dt><dd>
+
+<b>Not Undoable.</b>  Sets the B values for one or more curve IDs.
+This command is designed for speed; it is the client's
+responsibility to ensure that the arguments are valid.
+
+</dd>
+<dt class="defitem"><a name="curve_cget">$obj curve cget <i>curve_id option</i></a></dt><dd><p>
+
+Retrieves the value of <i>option</i> for curve <i>curve_id</i>.
+The following options can be retrieved:
+
+</p><dl>
+
+<dt class="defopt"><a name="curve cget-b">-b</a></dt><dd>
+
+The curve's B value.
+
+</dd>
+<dt class="defopt"><a name="curve cget-c">-c</a></dt><dd>
+
+The curve's C value.
+
+</dd>
+<dt class="defopt"><a name="curve cget-tracked">-tracked</a></dt><dd>
+
+The curve's "tracked" flag, 1 if the curve is tracked and 0 if it is
+untracked.
+
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="curve_configure">$obj curve configure <i>curve_id</i> ?<i>options...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b> Modifies the curve with the given <i>curve_id</i>.
+The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="curve configure-b">-b <i>value</i></a></dt><dd>
+
+Sets the curve's B value.
+
+</dd>
+<dt class="defopt"><a name="curve configure-c">-c <i>value</i></a></dt><dd>
+
+Sets the curve's C value.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="curve_cset">$obj curve cset <i>curve_id c</i> ?<i>curve_id c</i>...?</a></dt><dd>
+
+<b>Not Undoable.</b>  Sets the C values for one or more curve IDs.
+This command is designed for speed; it is the client's
+responsibility to ensure that the arguments are valid.
+
+</dd>
+<dt class="defitem"><a name="curve_exists">$obj curve exists <i>curve_id</i></a></dt><dd>
+
+Returns 1 if there is a curve with the given <i>curve_id</i>, and 0
+otherwise.
+
+</dd>
+<dt class="defitem"><a name="curve_track">$obj curve track <i>curve_ids</i></a></dt><dd>
+
+<b>Not Undoable.</b>  Given a list of curve IDs, marks all of the
+listed curves "tracked".  See <a href="#untracked_curves">Untracked Curves</a> for
+details.
+
+</dd>
+<dt class="defitem"><a name="curve_untrack">$obj curve untrack <i>curve_ids</i></a></dt><dd>
+
+<b>Not Undoable.</b>  Given a list of curve IDs, marks all of the
+listed curves "untracked", and deletes any pending adjustments or
+effects on them.  See <a href="#untracked_curves">Untracked Curves</a> for details.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="edit">$obj edit <i>subcommand</i> ?<i>value...</i>?</a></dt><dd><p>
+
+This family of commands manages the <a href="#undo_stack">Undo Stack</a>.  This
+capability is available only when the <code>-undo</code> option is set
+to <b>on</b>.
+
+</p><dl>
+
+<dt class="defitem"><a name="edit_canundo">$obj edit canundo</a></dt><dd>
+
+Returns 1 if there's a command on the stack to be undone, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="edit_reset">$obj edit reset</a></dt><dd>
+
+Clears the undo stack.
+
+</dd>
+<dt class="defitem"><a name="edit_mark">$obj edit mark</a></dt><dd><p>
+
+Adds a mark to the undo stack.  The <a class="iref" href="#edit_undo">edit undo</a> command
+undoes all operations back to the last mark (or until the stack
+is empty).  This allows a set of ucurve(n) commands relating to a
+single client operation to be undone as a group.</p>
+
+<p>Alternatively, the <code>-automark</code> option may be set to
+<b>on</b>, and each ucurve(n) command will insert a matching
+mark, allowing them to be undone individually.
+
+</p>
+</dd>
+<dt class="defitem"><a name="edit_undo">$obj edit undo</a></dt><dd>
+
+Undoes all commands back to the most recent mark, or until the
+stack is empty if there are no marks.  It's an error if there is
+no command to be undone.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="istracked">$obj istracked <i>curve_id</i></a></dt><dd>
+
+Returns 1 if the curve is tracked, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="persistent">$obj persistent <i>driver_id cause_id curve_id mag</i> ?<i>curve_id mag...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b>  Creates one or more persistent effects related to
+attitude driver <i>driver_id</i> with cause <i>cause_id</i>.  Each
+effect is specified as a curve ID/magnitude pair; the magnitude will
+ultimately be scaled based on the curve's baseline.</p>
+
+<p>The created effects will remain pending until the next time
+<a class="iref" href="#apply">apply</a> is called.  At that time they will applied,
+and deleted.</p>
+
+<p>Persistent effects are scaled (with causes taken into account)
+relative to the baseline B.t; the resulting delta is then applied
+to the baseline, resulting in a new B.t for the current time step.
+The extent to which the resulting delta will actually persist in
+future time steps depends on the curve type's &beta; parameter.
+
+</p>
+</dd>
+<dt class="defitem"><a name="reset">$obj reset</a></dt><dd>
+
+Resets all curves to their initial values and deletes all pending
+adjustments and effects and historical contributions.
+
+</dd>
+<dt class="defitem"><a name="transient">$obj transient <i>driver_id cause_id curve_id mag</i> ?<i>curve_id mag...</i>?</a></dt><dd><p>
+
+<b>Undoable.</b>  Creates one or more transient effects related to
+attitude driver <i>driver_id</i> with cause <i>cause_id</i>.  Each
+effect is specified as a curve ID/magnitude pair; the magnitude will
+ultimately be scaled based on the current baseline for the curve.</p>
+
+<p>The created effects will remain pending until the next time
+<a class="iref" href="#apply">apply</a> is called.  At that time they will be applied and deleted.</p>
+
+<p>Effects are scaled (with causes taken into account) relative to the
+baseline B.t after all persistent effects have been applied; the
+result delta is applied to the curve's A value for the current time
+step.  The extent to which the resulting delta will persist into
+future time steps depends on the curve type's &alpha; parameter.
+
+</p>
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use the package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package, derived from gram(n) v2.0.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+

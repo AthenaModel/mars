@@ -1,0 +1,453 @@
+<html>
+<head>
+<title>mars 3.0.23: gradient(n) -- Color Gradient Computer, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>gradient(n)</b> -- Color Gradient Computer, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#gradient">gradient <i>pathName ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gradient-mincolor">-mincolor <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gradient-midcolor">-midcolor <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gradient-maxcolor">-maxcolor <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gradient-minlevel">-minlevel <i>level</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gradient-midlevel">-midlevel <i>level</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gradient-maxlevel">-maxlevel <i>level</i></a></li>
+<li><a class="iref" href="#configure">$gradient configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cget">$gradient cget <i>option</i></a></li>
+<li><a class="iref" href="#color">$gradient color <i>level</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The gradient(n) module defines a type for defining and computing
+color gradients: shadings of color used to visualize a range of input
+levels.</p>
+
+<p>A gradient is defined by six parameters: the input range, specified as
+a minimum level, a midpoint, and a maximum level, and the colors
+associated with each of these points, defined in <b>#<i>rrggbb</i></b>
+form.  Then, given any numeric value between the
+minimum and maximum levels, the gradient will output a color in
+<b>#<i>rrggbb</i></b> form.  For inputs between the minimum level and
+the midpoint it is scaled between the minimum color and the midpoint
+color; for inputs between the midpoint and the maximum level, it is
+scaled between the midpoint color and the maximum color.  For example,
+a value between -100 and +100 could gradate from red at -100 to white
+at 0 to green at +100.
+
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="gradient">gradient <i>pathName ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#gradient">gradient</a> widget named <i>pathName</i>.</p>
+
+<p>The <a class="iref" href="#gradient">gradient</a> widget may be created with the following
+options; the defaults cause inputs from 0.0 to 1.0 to produce shades
+of gray from white to black.
+
+</p><dl>
+
+<dt class="defopt"><a name="gradient-mincolor">-mincolor <i>color</i></a></dt><dd>
+
+Specifies the color, in <b>#<i>rrggbb</i></b> form, which corresponds
+to the minimum input level, <code>-minlevel</code>.  Defaults to
+<b>#FFFFFF</b>.
+
+</dd>
+<dt class="defopt"><a name="gradient-midcolor">-midcolor <i>color</i></a></dt><dd>
+
+Specifies the color, in <b>#<i>rrggbb</i></b> form, which corresponds
+to the midpoint input level, <code>-midlevel</code>.  Defaults to
+<b>#FFFFFF</b>.
+
+</dd>
+<dt class="defopt"><a name="gradient-maxcolor">-maxcolor <i>color</i></a></dt><dd>
+
+Specifies the color, in <b>#<i>rrggbb</i></b> form, which corresponds
+to the maximum input level, <code>-maxlevel</code>.  Defaults to
+<b>#000000</b>.
+
+</dd>
+<dt class="defopt"><a name="gradient-minlevel">-minlevel <i>level</i></a></dt><dd>
+
+Specifies the minimum input level.  Defaults to 0.0.
+
+</dd>
+<dt class="defopt"><a name="gradient-midlevel">-midlevel <i>level</i></a></dt><dd>
+
+Specifies the midpoint input level.  Defaults to 0.0.
+
+</dd>
+<dt class="defopt"><a name="gradient-maxlevel">-maxlevel <i>level</i></a></dt><dd>
+
+Specifies the maximum input level.  Defaults to 1.0.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="configure">$gradient configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cget">$gradient cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="color">$gradient color <i>level</i></a></dt><dd>
+
+Given an input <i>level</i> ranging from <code>-minlevel</code> to
+<code>-maxlevel</code>, returns an output color (in <b>#<i>rrggbb</i></b>
+form) scaled from <code>-mincolor</code> to <code>-midcolor</code> to
+<code>-maxcolor</code>.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>marsutil(n) requires Tcl 8.5 or later.</p>
+
+<p>To use marsutil(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:51 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

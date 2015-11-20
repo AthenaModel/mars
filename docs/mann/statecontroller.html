@@ -1,0 +1,532 @@
+<html>
+<head>
+<title>mars 3.0.23: statecontroller(n) -- State Controller Object, submodule of marsutil(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>statecontroller(n)</b> -- State Controller Object, submodule of <a href="../mann/marsutil.html">marsutil(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#examples">EXAMPLES</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsutil 3.0.23
+namespace import ::marsutil::statecontroller
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#statecontroller">statecontroller <i>name ?options?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#statecontroller-condition">-condition <i>expression</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#statecontroller-events">-events <i>eventlist</i></a></li>
+<li><a class="iref" href="#menuitem">menuitem <i>menu itemtype label</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#control"><i>obj</i> control <i>object</i> ?<i>key value...</i>?</a></li>
+<li><a class="iref" href="#update"><i>obj</i> update ?<i>objects</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>An instance of the <a href="../mann/statecontroller.html">statecontroller(n)</a> is an object that
+controls the <code>-state</code> of one or more other objects.
+Controlled objects are typically Tk menu items and buttons; however,
+<a href="../mann/statecontroller.html">statecontroller(n)</a> can control any object with a
+<code>-state</code> option with values <b>normal</b> and
+<b>disabled</b>.</p>
+
+<p>The <a href="../mann/statecontroller.html">statecontroller(n)</a> updates the state of controlled
+objects when explicitly asked to do so via its <a class="iref" href="#update">update</a>
+method.  Optionally, it can do so on receipt of one or more
+<a href="../mann/notifier.html">notifier(n)</a> events.</p>
+
+<p>The <a href="../mann/statecontroller.html">statecontroller(n)</a> determines whether the controlled
+objects should be enabled or disabled by evaluating a boolean
+<code>-condition</code> for each.  The <code>-condition</code>
+expression may reference the controlled object as <code>$obj</code>.
+In addition, each controlled object may specify a dictionary of data
+items peculiar to that object; this is called the <b>objdict</b>.
+The <code>-condition</code> may reference any of the entries in the
+dictionary by name.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="statecontroller">statecontroller <i>name ?options?</i></a></dt><dd><p>
+
+Creates a new statecontroller(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#statecontroller">statecontroller</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a href="../mann/statecontroller.html">statecontroller(n)</a> may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="statecontroller-condition">-condition <i>expression</i></a></dt><dd><p>
+
+A boolean <i>expression</i> that will be evaluated for each controlled
+object.  The object will be enabled if the expression is true, and
+disabled if false.</p>
+
+<p>The <i>expression</i> may reference the controlled object as
+<code>$obj</code>, and any of the values in the object dictionary.
+See <a href="#examples">EXAMPLES</a> for details.
+
+</p>
+</dd>
+<dt class="defopt"><a name="statecontroller-events">-events <i>eventlist</i></a></dt><dd>
+
+The <i>eventlist</i> must be a flat list of <a href="../mann/notifier.html">notifier(n)</a>
+subjects and events.  The <a href="../mann/statecontroller.html">statecontroller(n)</a> will
+automatically subscribe to each of the subject/event pairs, and will
+update all controlled objects whenever one of the events is received.
+Any event arguments are ignored.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="menuitem">menuitem <i>menu itemtype label</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Defines a menu item, and returns "$menu $label".  This is a
+convenience function that makes it easier to control menu items; see
+the <a href="#examples">EXAMPLES</a> for more.  It's equivalent to the following code:
+
+</p><pre>
+    $menu add $itemtype -label $label {*}$options
+</pre>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of the <a class="iref" href="#statecontroller">statecontroller</a> object has the following
+subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="control"><i>obj</i> control <i>object</i> ?<i>key value...</i>?</a></dt><dd><p>
+
+Directs the <a class="iref" href="#statecontroller">statecontroller</a> to control the
+<code>-state</code> of the specified <i>object</i>.  The remaining
+arguments collectively form the <i>object</i>'s object dictionary.</p>
+
+<p>Usually, the <b>object</b> is the name of a Tk widget instance.  Menu
+items, however, are a special case, as a menu item isn't a widget;
+rather, it's owned by a widget.  If the controlled object is a menu
+item, then <b>object</b> must be a list of two items: the instance
+command of the menu on which the item appears, and the index of the
+item, as defined in for the Tk <span class="tt">menu</span> command.  
+The item's label string is a valid index.
+
+</p>
+</dd>
+<dt class="defitem"><a name="update"><i>obj</i> update ?<i>objects</i>?</a></dt><dd><p>
+
+By default, this command explicitly updates the <code>-state</code> of
+all controlled objects.  Alternatively, it can update only the
+listed subset of the controlled objects.  This command is useful in
+two cases:
+
+</p><ul>
+  <li> First, when updates need to be triggered by something other
+       than a <a href="../mann/notifier.html">notifier(n)</a> event, e.g., by a Tk event.
+
+  </li><li> Second, when it's known that the triggering event can affect
+       only a small subset of the controlled objects.
+</li></ul>
+
+</dd>
+</dl>
+
+<h2><a name="examples">EXAMPLES</a></h2>
+<p>The following <a class="iref" href="#statecontroller">statecontroller</a> is used to enable and disable
+widgets based on whether the order sent by the widget is valid or not:
+
+</p>
+
+<pre>
+    statecontroller ::cond::orderIsValid -events {
+        ::order &lt;State&gt;
+    } -condition {
+        [::order isvalid $order]
+    }
+</pre>
+<p>Updates are triggered by receipt of the <b>&lt;State&gt;</b> event
+from the <code>::order</code> processor.  The controlled widget is enabled
+if the <code>$order</code> specified in its object dictionary is
+valid, and disabled otherwise.</p>
+
+<p>A button widget is normally associated with the
+<a class="iref" href="#statecontroller">statecontroller</a> as follows:
+
+</p>
+
+<pre>
+    cond::orderIsValid control \
+       [button $win.button                              \
+           -text "Create Neighborhood"                  \
+           -command [list ::order enter NBHOOD:CREATE]] \
+       order NBHOOD:CREATE
+</pre>
+<p>Menu items are a special case, because a menu item is an item within a
+menu widget, not a widget in its own right.  Thus, menu items are
+specified as a list of two items, the menu command and the index of
+the item, typically the item's label.  The <a class="iref" href="#menuitem">menuitem</a> command
+is a convenience command that creates a menu item and returns exactly
+such a list:
+
+</p>
+
+<pre>
+    cond::orderIsValid control \
+       [menuitem $menu command "Create Neighborhood"    \
+           -command [list ::order enter NBHOOD:CREATE]] \
+       order NBHOOD:CREATE
+</pre>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>This package was inherited from Athena.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+

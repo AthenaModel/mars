@@ -1,0 +1,709 @@
+<html>
+<head>
+<title>mars 3.0.23: messagebox(n) -- Message Box, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>messagebox(n)</b> -- Message Box, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#ignoring_messages">Ignoring Messages</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#popup">messagebox popup <i>?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-buttons">-buttons <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-default">-default <i>symbol</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-icon">-icon <i>icon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-ignoretag">-ignoretag <i>tag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-ignoredefault">-ignoredefault <i>symbol</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-message">-message <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-onclose">-onclose <i>symbol</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-parent">-parent <i>window</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-title">-title <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#popup-wraplength">-wraplength <i>len</i></a></li>
+<li><a class="iref" href="#reset">messagebox reset ?<i>tag</i>?</a></li>
+<li><a class="iref" href="#gets">messagebox gets <i>?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-oktext">-oktext <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-icon">-icon <i>icon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-initvalue">-initvalue <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-message">-message <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-parent">-parent <i>window</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-title">-title <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#gets-validatecmd">-validatecmd <i>command</i></a></li>
+<li><a class="iref" href="#pick">messagebox pick <i>?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-oktext">-oktext <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-icon">-icon <i>icon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-initvalue">-initvalue <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-message">-message <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-parent">-parent <i>window</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-title">-title <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#pick-values">-values <i>list</i></a></li>
+<li><a class="iref" href="#listselect">messagebox listselect <i>?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-oktext">-oktext <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-icon">-icon <i>icon</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-initvalue">-initvalue <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-message">-message <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-parent">-parent <i>window</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-title">-title <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-itemdict">-itemdict <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-showkeys">-showkeys <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-stripe">-stripe <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-listrows">-listrows <i>rows</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listselect-listwidth">-listwidth <i>chars</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines a replacement for the
+<a href="../../../tk/docs/mann/:messageBox.html#tk_messageBox(n)">tk_messageBox(n)</a> command that offers the
+following enhancements:
+
+</p>
+
+<ul>
+  <li> The icons are slightly improved.
+
+  </li><li> The button constants and label text can be set explicitly.
+
+  </li><li> The fonts are more in keeping with the theme.
+
+  </li><li> If desired, the dialog will include a "Do not show this message
+       again" checkbox.  See <a href="#ignoring_messages">Ignoring Messages</a> for
+       more information.
+
+  </li><li> If desired, the user can enter a text string, select an
+       item from a list, or select multiple items from a list,
+       in addition to just selecting buttons.
+</li></ul>
+
+<h2><a name="ignoring_messages">Ignoring Messages</a></h2>
+<p>messagebox(n) allows the application to define message dialogs that
+the user can choose to ignore, at least until the application is
+restarted.  The process is as follows:
+
+</p>
+
+<ul>
+  <li> The application passes an <b>-ignoretag</b> that uniquely
+       identifies this message.
+
+  </li><li> As a result, the dialog will contain a check box labeled
+       "Do not show this message again".
+
+  </li><li> If the user checks the check box, messagebox(n) will remember
+       that this message should be ignored in the future.
+
+  </li><li> When the application requests the message again, messagebox(n)
+       will simply return the <b>-ignoredefault</b> value.
+
+  </li><li> The ignore flags can be cleared using the <a class="iref" href="#reset">reset</a> subcommand.
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="popup">messagebox popup <i>?options...?</i></a></dt><dd><p>
+
+Pops up the message box, given the following options.  The
+command returns the symbolic name of the selected button.
+
+</p><dl>
+
+<dt class="defopt"><a name="popup-buttons">-buttons <i>dict</i></a></dt><dd>
+
+A dictionary of symbolic constants and label strings that defines the
+set of buttons to appear at the bottom of the message box.  Defaults
+to <b><code>{ok "OK"}</code></b>.
+
+</dd>
+<dt class="defopt"><a name="popup-default">-default <i>symbol</i></a></dt><dd>
+
+Specifies the symbolic constant of the default button. Defaults to the
+symbolic constant of the first button in <b>-buttons</b>.
+
+</dd>
+<dt class="defopt"><a name="popup-icon">-icon <i>icon</i></a></dt><dd>
+
+Specifies which icon should be included in the message box:
+<b>error</b>, <b>info</b>, <b>question</b>, <b>warning</b>, or
+<b>peabody</b>.
+
+</dd>
+<dt class="defopt"><a name="popup-ignoretag">-ignoretag <i>tag</i></a></dt><dd>
+
+If given, the message box will include a "Do not show this message
+again" check box.  See <a href="#ignoring_messages">Ignoring Messages</a> for more
+information.
+
+</dd>
+<dt class="defopt"><a name="popup-ignoredefault">-ignoredefault <i>symbol</i></a></dt><dd>
+
+Specifies the symbolic constant to return when user has previously
+asked to ignore this message.  Defaults to the value of <b>-default</b>.
+
+</dd>
+<dt class="defopt"><a name="popup-message">-message <i>text</i></a></dt><dd>
+
+The message <i>text</i> to display.  The text will be wrapped
+automatically; newlines are honored.
+
+</dd>
+<dt class="defopt"><a name="popup-onclose">-onclose <i>symbol</i></a></dt><dd>
+
+Specifies the symbolic constant associated with the window manager's
+"close" button.  Defaults to the symbolic constant of the first button
+in <b>-buttons</b>.
+
+</dd>
+<dt class="defopt"><a name="popup-parent">-parent <i>window</i></a></dt><dd>
+
+The message box will appear over the specfied window.
+
+</dd>
+<dt class="defopt"><a name="popup-title">-title <i>string</i></a></dt><dd>
+
+The dialog window will have the specified title <i>string</i>.
+
+</dd>
+<dt class="defopt"><a name="popup-wraplength">-wraplength <i>len</i></a></dt><dd>
+
+Species the <code>-wraplength</code> for the Tk label widget that will 
+display the user's message.  Defaults to "3i".  If "" is given, no wrapping
+will be done.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="reset">messagebox reset ?<i>tag</i>?</a></dt><dd>
+
+Clears the ignore flag for the specified ignore <i>tag</i>.  If no tag
+is given, clears all ignore flags.
+
+</dd>
+<dt class="defitem"><a name="gets">messagebox gets <i>?options...?</i></a></dt><dd><p>
+
+Pops up a message box containing a text entry widget, given the
+following options.  On "Cancel", returns the empty string; on
+"OK", validates and returns the entered text, trimmed of leading
+and trailing whitespace.  Pressing the window manager's close button
+is the same as pressing "Cancel". 
+
+</p><dl>
+
+<dt class="defopt"><a name="gets-oktext">-oktext <i>text</i></a></dt><dd>
+
+Specifies the text for the OK button.  Defaults to <b>OK</b>.
+
+</dd>
+<dt class="defopt"><a name="gets-icon">-icon <i>icon</i></a></dt><dd>
+
+Specifies which icon should be included in the message box:
+<b>error</b>, <b>info</b>, <b>question</b>, <b>warning</b>, or
+<b>peabody</b>.  Defaults to <b>question</b>
+
+</dd>
+<dt class="defopt"><a name="gets-initvalue">-initvalue <i>text</i></a></dt><dd>
+
+Specifies an initial value for the entry widget.  If <i>text</i> is
+not the empty string, the widget will contain the <i>text</i>, already
+selected.  Otherwise, the widget will be empty.
+
+</dd>
+<dt class="defopt"><a name="gets-message">-message <i>text</i></a></dt><dd>
+
+The message <i>text</i> to display.  The text will be wrapped
+automatically; newlines are honored.
+
+</dd>
+<dt class="defopt"><a name="gets-parent">-parent <i>window</i></a></dt><dd>
+
+The message box will appear over the specfied window.
+
+</dd>
+<dt class="defopt"><a name="gets-title">-title <i>string</i></a></dt><dd>
+
+The dialog window will have the specified title <i>string</i>.
+
+</dd>
+<dt class="defopt"><a name="gets-validatecmd">-validatecmd <i>command</i></a></dt><dd>
+
+Specifies a validation command.  The command should take one
+additional argument, the string to validate.  If the string is
+valid, it should be returned; the validation command can canonicalize
+it if desired (e.g., convert it to uppercase).  If the string is
+invalid, the command should throw an error with error code
+<b>INVALID</b> and a human-readable error message.  The error message
+will be displayed below the entry widget.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="pick">messagebox pick <i>?options...?</i></a></dt><dd><p>
+
+Pops up a message box containing a menu box, given the
+following options.  On "Cancel", returns the empty string; on
+"OK", returns the item selected from the menu box's pulldown.
+Pressing the window manager's close button is the same as pressing
+"Cancel".
+
+</p><dl>
+
+<dt class="defopt"><a name="pick-oktext">-oktext <i>text</i></a></dt><dd>
+
+Specifies the text for the OK button.  Defaults to <b>OK</b>.
+
+</dd>
+<dt class="defopt"><a name="pick-icon">-icon <i>icon</i></a></dt><dd>
+
+Specifies which icon should be included in the message box:
+<b>error</b>, <b>info</b>, <b>question</b>, <b>warning</b>, or
+<b>peabody</b>.  Defaults to <b>question</b>
+
+</dd>
+<dt class="defopt"><a name="pick-initvalue">-initvalue <i>text</i></a></dt><dd>
+
+Specifies an initial value for the menu box.
+
+</dd>
+<dt class="defopt"><a name="pick-message">-message <i>text</i></a></dt><dd>
+
+The message <i>text</i> to display.  The text will be wrapped
+automatically; newlines are honored.
+
+</dd>
+<dt class="defopt"><a name="pick-parent">-parent <i>window</i></a></dt><dd>
+
+The message box will appear over the specfied window.
+
+</dd>
+<dt class="defopt"><a name="pick-title">-title <i>string</i></a></dt><dd>
+
+The dialog window will have the specified title <i>string</i>.
+
+</dd>
+<dt class="defopt"><a name="pick-values">-values <i>list</i></a></dt><dd>
+
+Specifies the list of values for the menu box's pulldown.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="listselect">messagebox listselect <i>?options...?</i></a></dt><dd><p>
+
+Pops up a message box containing an <a href="../mann/listfield.html">listfield(n)</a> widget, given the
+following options, allowing the user to select multiple items
+from a list.  The list is displayed in parallel columns; the
+right-hand column shows the items the user has chosen, and the
+left-hand column shows all remaining items.</p>
+
+<p>On "OK", returns a list whose first element is <b>ok</b> and whose second
+element is a list of the keys of the items selected from the list
+field.  On "Cancel", returns a list of one element, <b>cancel</b>.  Pressing the 
+window manager's close button is the same as pressing "Cancel".
+
+</p><dl>
+
+<dt class="defopt"><a name="listselect-oktext">-oktext <i>text</i></a></dt><dd>
+
+Specifies the text for the OK button.  Defaults to <b>OK</b>.
+
+</dd>
+<dt class="defopt"><a name="listselect-icon">-icon <i>icon</i></a></dt><dd>
+
+Specifies which icon should be included in the message box:
+<b>error</b>, <b>info</b>, <b>question</b>, <b>warning</b>, or
+<b>peabody</b>.  Defaults to <b>question</b>
+
+</dd>
+<dt class="defopt"><a name="listselect-initvalue">-initvalue <i>text</i></a></dt><dd>
+
+Specifies an initial value for the list field, a list of keys from the
+<code>-itemdict</code>.
+
+</dd>
+<dt class="defopt"><a name="listselect-message">-message <i>text</i></a></dt><dd>
+
+The message <i>text</i> to display.  The text will be wrapped
+automatically; newlines are honored.
+
+</dd>
+<dt class="defopt"><a name="listselect-parent">-parent <i>window</i></a></dt><dd>
+
+The message box will appear over the specfied window.
+
+</dd>
+<dt class="defopt"><a name="listselect-title">-title <i>string</i></a></dt><dd>
+
+The dialog window will have the specified title <i>string</i>.
+
+</dd>
+<dt class="defopt"><a name="listselect-itemdict">-itemdict <i>dict</i></a></dt><dd>
+
+Specifies the item dictionary that the user will choose from.  The
+values are displayed for the user; the call will return the keys of
+the selected items.
+
+</dd>
+<dt class="defopt"><a name="listselect-showkeys">-showkeys <i>flag</i></a></dt><dd>
+
+If this option is true, the values the displayed to the user will
+be prefixed by the keys.  Defaults to false.
+
+</dd>
+<dt class="defopt"><a name="listselect-stripe">-stripe <i>flag</i></a></dt><dd>
+
+If this option is true, even-numbered rows will be striped with a
+distinctive color.  This is useful if the row values might wrap to
+multiple lines.
+
+</dd>
+<dt class="defopt"><a name="listselect-listrows">-listrows <i>rows</i></a></dt><dd>
+
+The list items are displayed in scrolling lists.  This option controls
+the height of these lists in rows of text.
+
+</dd>
+<dt class="defopt"><a name="listselect-listwidth">-listwidth <i>chars</i></a></dt><dd>
+
+The list items are displayed in scrolling lists.  This option controls
+the width of these lists in characters.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>The original package was written for Athena, and then moved to Mars for
+general use. The icons are based on the appearance of the
+<a href="../../../tk/docs/mann/messageBox.html#tk_messageBox(n)">tk_messageBox(n)</a> icons.</p>
+
+<p>The <a class="iref" href="#gets">gets</a> subcommand was added on 4/19/2010.</p>
+
+<p>The <a class="iref" href="#pick">pick</a> subcommand was added on 1/28/2011.</p>
+
+<p>The <a class="iref" href="#listselect">listselect</a> subcommand was added on 9/29/2011.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:53 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+

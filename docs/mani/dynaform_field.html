@@ -1,0 +1,560 @@
+<html>
+<head>
+<title>mars 3.0.23: dynaform_field(i) -- Dynaform Field Type Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>dynaform_field(i)</b> -- Dynaform Field Type Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#field_type_methods">FIELD TYPE METHODS</a></li>
+    
+
+    <li><a href="#helper_commands">HELPER COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#attributes"><i>fieldType</i> attributes</a></li>
+<li><a class="iref" href="#defvalue"><i>fieldType</i> defvalue <i>attr</i></a></li>
+<li><a class="iref" href="#validate"><i>fieldType</i> validate <i>idict</i></a></li>
+<li><a class="iref" href="#create"><i>fieldType</i> create <i>w idict rdict</i></a></li>
+<li><a class="iref" href="#create"><i>fieldType</i> create <i>w idict rdict</i></a></li>
+<li><a class="iref" href="#ready"><i>fieldType</i> ready <i>w idict</i></a></li>
+<li><a class="iref" href="#resources"><i>fieldType</i> resources</a></li>
+<li><a class="iref" href="#reconfigure"><i>fieldType</i> reconfigure <i>w idict vdict</i></a></li>
+<li><a class="iref" href="#asoptions">asoptions <i>idict attr</i> ?<i>attr...</i>?</a></li>
+<li><a class="iref" href="#formcall">formcall <i>vdict_ cmd_</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A <a href="../mani/dynaform_field.html">dynaform_field(i)</a> is an object that adds a new field type
+for use with <a href="../mann/dynaform.html">dynaform(n)</a>/<a href="../mann/dynaview.html">dynaview(n)</a>.  As such, the
+object is the glue between the <a href="../mann/dynaform.html">dynaform(n)</a> infrastructure
+and a <a href="../mani/field.html">field(i)</a> widget.</p>
+
+<p>New dynaform field types are defined using the 
+<a href="../mann/dynaform.html">dynaform(n)</a> <a href="../mann/dynaform.html#fieldtype_define">fieldtype define</a>
+command:
+
+</p>
+
+<pre>
+    ::marsutil::dynaform fieldtype define <i>name</i> {
+        ...
+    }
+</pre>
+<p>This adds a command called <i>name</i> for use in form specification
+scripts, and a snit::type singleton called
+<code>::marsgui::dynaform::<i>NAME</i></code>.  The body of the
+definition is a snit::type definition body providing 
+the type methods defined below.</p>
+
+<p>Most of the type methods depend on the item's item definition
+dictionary, or <i>idict</i>.  It
+contains all of the attributes that pertain to the item; and in
+particular, all options on the field command are turned into
+<i>idict</i> attributes by removing the hyphens from the option
+names.
+
+</p>
+
+<h2><a name="field_type_methods">FIELD TYPE METHODS</a></h2>
+<p>Every field type provides the following type methods:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="attributes"><i>fieldType</i> attributes</a></dt><dd><p>
+
+Returns a list of the names of the type-specific attributes for this field
+type.  These attributes become options on the newly defined field command.
+How they are used depends on the rest of the field type definition.</p>
+
+<p>If no such typemethod appears in the field type definition script, no
+type-specific attributes are defined.
+
+</p>
+</dd>
+<dt class="defitem"><a name="defvalue"><i>fieldType</i> defvalue <i>attr</i></a></dt><dd><p>
+
+Returns the default value for the named attribute, or "" if no
+default has been set.</p>
+
+<p>If no such typemethod appears in the field type definition script,
+it is assumed that all defaults are "".
+
+</p>
+</dd>
+<dt class="defitem"><a name="validate"><i>fieldType</i> validate <i>idict</i></a></dt><dd><p>
+
+This command can do any needed validation on the type-specific
+attribute, throwing an error if problems are found.</p>
+
+<p>If no such typemethod appears in the field type definition script, no
+extra validation is done.
+
+</p>
+</dd>
+<dt class="defitem"><a name="create"><i>fieldType</i> create <i>w idict</i></a></dt>
+<dt class="defitem"><a name="create"><i>fieldType</i> create <i>w idict rdict</i></a></dt><dd><p>
+
+This is a factory method that creates field widgets of this type
+given the widget name, <i>w</i>, and the item definition dictionary.
+The created widget must adhere to the <a href="../mani/field.html">field(i)</a> interface;
+and if the field's <b>readonly</b> attribute is true the field must
+be readonly (e.g., <code>-state disabled</code>).</p>
+
+<p>If the <a class="iref" href="#resources">resources</a> typemethod appears in the field type 
+definition script, then this method is additionally passed the
+<a href="../mann/dynaview.html">dynaview(n)</a> widget's <span class="tt">-resources</span> dictionary as the
+<i>rdict</i> parameter.</p>
+
+<p>The type method may use the <a class="iref" href="#asoptions">asoptions</a> command to convert 
+<i>idict</i> attributes into options when creating the widget.
+
+</p>
+</dd>
+<dt class="defitem"><a name="ready"><i>fieldType</i> ready <i>w idict</i></a></dt><dd><p>
+
+This method should return 1 if the field is ready for data entry, and
+0 otherwise.  For example, an <a href="../mann/dynaform.html#enum">enum</a> field with a
+<code>-listcmd</code> is ready when the <code>-listcmd</code>
+returns a list of one or more possible choices, and unready if the
+<code>-listcmd</code> returns the empty list.</p>
+
+<p>The <a href="../mann/dynaview.html">dynaview(n)</a> widget will automatically disable field
+widgets that aren't ready, as indicated by this method.  Only
+fields whose configuration changes dynamically can be unready;
+consequently, if no such typemethod appears in the field type
+definition script, it is assumed that fields of this type are always
+ready.
+
+</p>
+</dd>
+<dt class="defitem"><a name="resources"><i>fieldType</i> resources</a></dt><dd><p>
+
+Returns a list of the names of the application-specific resources
+required by this field type when a form containing this field type
+is instantiated.  Any declared resources will be made available to
+the <a class="iref" href="#create">create</a> typemethod when a field of this type is created.</p>
+
+<p>If no such typemethod appears in the field type definition script, no
+type-specific resources are defined.
+
+</p>
+</dd>
+<dt class="defitem"><a name="reconfigure"><i>fieldType</i> reconfigure <i>w idict vdict</i></a></dt><dd><p>
+
+Reconfigures the field widget when upstream fields change.  For
+example, an <a href="../mann/dynaform.html#enum">enum</a> field's list may depend on a 
+<code>-listcmd</code>.  The <a href="../mann/dynaview.html">dynaview(n)</a> widget will call
+this method at the appropriate time in order to configure the field
+properly.  The type method has access to the widget name, <i>w</i>,
+the field items, <i>idict</i>, and to a dictionary of the upstream
+field names and their values, the <i>vdict</i>.</p>
+
+<p>The type method may use the <a class="iref" href="#formcall">formcall</a> command to call
+commands which reference upstream field values.</p>
+
+<p>If no such typemethod appears in the field type definition script,
+nothing special is done on reconfiguration.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="helper_commands">HELPER COMMANDS</a></h2>
+    
+
+<p><a href="../mann/dynaform.html">dynaform(n)</a> defines the following special commands for use
+in field type methods.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="asoptions">asoptions <i>idict attr</i> ?<i>attr...</i>?</a></dt><dd><p>
+
+This command is used as a convenience in <a class="iref" href="#create">create</a> type
+methods.  It pulls the named attribute values from <i>idict</i> and
+returns an option/value list, suitable for use when creating a
+widget.</p>
+
+<p>There are two important features.  First, if a named attribute has an
+empty value in <i>idict</i>, it will not be included in the returned
+list.  This is so that the widget's default value will be used.</p>
+
+<p>Second, the <i>attr</i> is usually just the attribute name; the
+returned option will be the attribute name prefixed with a hyphen.
+Occasionally, however, attribute and option names differ.  In this
+case, the <i>attr</i> can be specified as a pair, {<i>attr
+option</i>}; the given option name will be used.</p>
+
+<p>For example:
+
+</p><pre>
+    typemethod create {w idict} {
+        myfield $w {*}[asoptions $idict width {text -label}]
+    }
+</pre>
+<p>The instance of the <code>myfield</code> widget will be created with
+values for its <code>-width</code> and <code>-label</code> options,
+which are drawn from the item's <code>width</code> and
+<code>text</code> attributes.  If either attribute has an empty
+value, the option will not be set.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="formcall">formcall <i>vdict_ cmd_</i></a></dt><dd><p>
+
+This is a command for use in <a class="iref" href="#reconfigure">reconfigure</a> type methods.
+Here, <i>cmd_</i> is a full command, possibly referencing upstream field
+variables, and <i>vdict_</i> is a dictionary of upstream field names
+and values.  The <a class="iref" href="#formcall">formcall</a> command calls <i>cmd_</i> in a
+context in which the field values in <i>vdict_</i> are defined as
+variables.  Thus, for example, an <a href="../mann/dynaform.html#enum">enum</a> field's
+<code>-listcmd</code> can depend on upstream fields; and this call
+is used to make it happen.</p>
+
+<p>For example, consider this dynaform:
+
+</p><pre>
+    enum a -listcmd {::actor names}
+    enum g -listcmd {::ownedgroups $a}
+</pre>
+<p>Field <code>a</code> is an "actor"; and field <i>g</i> is to be some
+group owned by the actor--the <code>::ownedgroups</code> command
+presumably returns a list of the groups owned by actor
+<code>a</code>.</p>
+
+<p>The magic is done by the <a href="../mann/dynaform.html#enum">enum</a> field type's own 
+<a class="iref" href="#reconfigure">reconfigure</a> method.  (The standard field types are defined
+using exactly the mechanisms described in this man page.)  It looks
+like this:
+
+</p>
+
+<pre>
+    typemethod reconfigure {w idict vdict} {
+        # If the field has a -listcmd, call it and apply the
+        # results (only if they've changed).
+        dict with idict {}
+
+        if {$listcmd ne ""} {
+            set values [formcall $vdict $listcmd] 
+
+            if {$values ne [$w cget -values]} {
+                $w configure -values $values 
+            }
+        }
+    }
+</pre>
+
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:49 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

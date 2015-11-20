@@ -1,0 +1,549 @@
+<html>
+<head>
+<title>mars 3.0.23: hbarchart(n) -- Horizontal Bar Chart, submodule of marsgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>hbarchart(n)</b> -- Horizontal Bar Chart, submodule of <a href="../mann/marsgui.html">marsgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#options">OPTIONS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#virtual_events">VIRTUAL EVENTS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require marsgui 3.0.23
+namespace import ::marsgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#hbarchart">hbarchart <i>pathName</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#cget"><i>win</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>win</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#plot"><i>win</i> plot <i>name</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#plot-data">-data <i>values</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#plot-label">-label <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#plot-rmin">-rmin <i>min</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#plot-rmax">-rmax <i>max</i></a></li>
+<li><a class="iref" href="#yview"><i>win</i> yview <i>args...</i></a></li>
+<li><a class="iref" href="#Context">&lt;&lt;Context&gt;&gt;</a></li>
+<li><a class="iref" href="#Context_none">none</a></li>
+<li><a class="iref" href="#Context_bar">bar <i>ylabel series value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The hbarchart(n) widget plots from one to ten series of data values as
+horizontal bars against a set of entities on the Y-axis.  Individual
+series of data can be updated individually.
+
+</p>
+
+<h2><a name="options">OPTIONS</a></h2>
+<p>The widget has the following options.
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="Context_bar-height">-height <i>pixels</i></a></dt><dd>
+
+Specifies the height of the chart window.
+
+</dd>
+<dt class="defopt"><a name="Context_bar-title">-title <i>text</i></a></dt><dd>
+
+Specifies an overall title for the chart.  If <i>text</i> is the empty
+string (the default), no title is drawn.
+
+</dd>
+<dt class="defopt"><a name="Context_bar-titlepos">-titlepos <i>anchor</i></a></dt><dd>
+
+Specifies where to put the title; <i>anchor</i> may be <b>n</b> or
+<b>s</b> to center the title at the top or bottom.  Defaults to
+<b>n</b>.
+
+</dd>
+<dt class="defopt"><a name="Context_bar-width">-width <i>pixels</i></a></dt><dd>
+
+Specifies the widget of the chart window.
+
+</dd>
+<dt class="defopt"><a name="Context_bar-xformat">-xformat <i>format</i></a></dt><dd>
+
+Specifies an <a href="../../../tcl/docs/mann/format.html">format(n)</a> conversion for formatting data
+values.  Defaults to "%.1f".
+
+</dd>
+<dt class="defopt"><a name="Context_bar-xtext">-xtext <i>text</i></a></dt><dd>
+
+Specifies a label for the X-axis.    If <i>text</i> is the empty
+string (the default), no label is drawn.
+
+</dd>
+<dt class="defopt"><a name="Context_bar-ylabels">-ylabels <i>labels</i></a></dt><dd><p>
+
+The widget plots one or more data values for each of a list of
+entities, each one of which is shown on the Y-axis.  The value of this
+option determines both the labels shown on the Y-axis and the
+number of entities.</p>
+
+<p>If the value of this option is changed, the plotted data series are
+deleted, and will need to be re-plotted using the <a class="iref" href="#plot">plot</a>
+method.
+
+</p>
+</dd>
+<dt class="defopt"><a name="Context_bar-yscrollcommand">-yscrollcommand <i>command</i></a></dt><dd>
+
+If the widget displays too many data bars to be seen at once, its data
+area can be scrolled vertically in the usual way.  Thus, the
+<i>command</i> would usually be to a vertical scrollbar's <b>set</b>
+method.
+
+</dd>
+<dt class="defopt"><a name="Context_bar-ytext">-ytext <i>text</i></a></dt><dd>
+
+Specifies a label for the Y-axis.    If <i>text</i> is the empty
+string (the default), no label is drawn.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="hbarchart">hbarchart <i>pathName</i> ?<i>options...</i>?</a></dt><dd>
+
+Creates a new hbarchart widget named <i>pathName</i>.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>win</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>win</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.  The widget will
+redraw the chart accordingly.
+
+</dd>
+<dt class="defitem"><a name="plot"><i>win</i> plot <i>name</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Plots a series of data values against each of the entities in
+<b>-ylabels</b>.  The <i>name</i> is used to identify the series for
+future updates.</p>
+
+<p>The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="plot-data">-data <i>values</i></a></dt><dd>
+
+Specifies a list of numeric data values, one for each label in
+<b>-ylabels</b>.
+
+</dd>
+<dt class="defopt"><a name="plot-label">-label <i>text</i></a></dt><dd>
+
+Specifies a label for this series of data.  The label is used in the
+legend.  If no <b>-label</b> is given, the series <i>name</i> is used
+instead.
+
+</dd>
+<dt class="defopt"><a name="plot-rmin">-rmin <i>min</i></a></dt>
+<dt class="defopt"><a name="plot-rmax">-rmax <i>max</i></a></dt><dd>
+
+These options specify the range bounds for the series--that is, not
+the min and max values in the data, but the logical min and max value
+for the data type.  Strict percentages, for example, have a range
+from 0.0 to 100.0.  If one of these options is omitted or explicitly
+set to the empty string, the relevant bound is computed from the data.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="yview"><i>win</i> yview <i>args...</i></a></dt><dd>
+
+The widget supports the standard <a href="../../../tk/docs/mann/canvas.html">canvas(n)</a> <b>yview</b>
+method, to allow vertical scrolling.
+
+</dd>
+</dl>
+
+<h2><a name="virtual_events">VIRTUAL EVENTS</a></h2>
+<p>The hbarchart(n) widget generates the following virtual events.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="Context">&lt;&lt;Context&gt;&gt;</a></dt><dd><p>
+
+This event is generated when the user right-clicks or control-clicks
+on the chart.  It supports the following substitutions: <b>%x</b>,
+<b>%y</b>, <b>%X</b>, <b>%Y</b>, and <b>%d</b>.</p>
+
+<p>The value of the <b>%d</b> substitution is a list whose first element
+indicates what was clicked on; the remaining items in the list vary
+depending on the first element.  The current possibilities are as
+follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="Context_none">none</a></dt><dd>
+
+The user right-clicked on nothing in particular.
+
+</dd>
+<dt class="defitem"><a name="Context_bar">bar <i>ylabel series value</i></a></dt><dd>
+
+The user right-clicked on a data bar.  The data identifies the bar by
+its <i>ylabel</i> and <i>series</i> name, and also gives the data
+<i>value</i>.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl/Tk 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>mars 3.0.23 Man page generated by manpage(n) on 
+Fri Nov 20 09:53:52 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
