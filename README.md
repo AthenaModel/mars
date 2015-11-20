@@ -5,4 +5,4 @@ See the [Documentation Index](docs/index.html) for details.
 
 ## License
 
-See [LICENSE](LICENSE).
+This code has been open-sourced by the California Institute of Technology under JPL NTR-47857; see [LICENSE](LICENSE) for the license terms.
