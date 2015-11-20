@@ -1,0 +1,494 @@
+<html><head>
+<title>mars 3.0.23: Mars Build Notes</title>
+<style>
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    
+</style>
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;mars 3.0.23: Mars Simulation Support Library
+</h1>
+    
+<h1>Mars Build Notes</h1>
+    
+
+<h3>Mars v3.0.23 -- 12 October 2015</h3>
+<p>This build has one documentation update, and a bug that will be tested under
+an issue (#320) written against the Athena/athena repository. 
+
+</p>
+
+<ul>
+<li> Issue #70: cellmodel(n): Recover old man page
+</li></ul>
+
+<h3>Mars v3.0.22 -- 17 September 2015</h3>
+<p>This build contains one enhancement:
+
+</p>
+
+<ul>
+<li> Issue #66: htmlviewer(n): -defstyles option
+</li></ul>
+
+<h3>Mars v3.0.21 -- 25 August 2015</h3>
+<p>This build introduces some new fonts and a file selection field. There is
+also a couple of bug fixes.
+
+</p>
+
+<ul>
+<li> Issue #65: marsgui(n): Font changes
+</li><li> Issue #64: filefield(n): File Selection Field 
+</li><li> Issue #63: dynabox(n): Error in -validatecmd not defined.
+</li><li> Issue #62: huddle package requires dict package
+</li></ul>
+
+<h3>Mars v3.0.20 -- 27 July 2015</h3>
+<p>This build contains an enhancement to parmset(n) that returns its contents
+in serialized form (eg. JSON) and a patch to huddle that fixes a problem 
+formatting certain numbers for JSON output.
+
+</p>
+
+<ul>
+<li> Issue #61: huddle patch needed for jsondump command
+</li><li> Issue #60: parmset(n) instances can now return thier contents in serialized forms
+</li></ul>
+
+<h3>Mars v3.0.19 -- 15 June 2015</h3>
+<p>This build contains two fixes: one to cmdinfo(n) which is mainly for 
+developers to use, but is critical and one to the documentation for URAM
+parameters.
+
+</p>
+
+<ul>
+<li> Issue #58: cmdinfo(n): getcode bgerror
+</li><li> Issue #59: uram.factors.* docstrings have visible html tags
+</li></ul> 
+
+<h3>Mars v3.0.18 -- 8 June 2015</h3>
+<p>This build contains one bug fix to sqlbrowser(n). Hidden rows are no longer
+selected when a SelectAll occurs.
+
+</p>
+
+<ul>
+<li> Isssue #57: sqlbrowser(n): SelectAll selects hidden rows
+</li></ul>
+
+<h3>Mars v3.0.17 -- 1 June 2015</h3>
+<p>This build includes the addition of a JSON mode to sqlib(n) for SQL query
+results to be formatted as a list of JSON objects.  Also, all query modes
+have been updated to direct one record at a time to a file (if it's been
+specified) rather than storing the entire result of the query in memory 
+and then outputting it at the end.  There's a couple of bug fixes as well.
+
+</p>
+
+<ul>
+<li> Issue #55: sqlib(n) should have -jsonok mode for queries
+</li><li> Issue #54: sqlib(n): Empty table produces wrong JSON output
+</li><li> Issue #52: order(n): parms with default values can be assigned the empty string
+</li><li> Issue #51: Marsbin will not build on OSX 10.7.5
+</li><li> Issue #50: mgrs() SQL function should be in sqldocument(n)
+</li><li> Issue #49: cmdinfo(n): error in TclOO methods returned by getcode
+</li></ul>
+
+<h3>Mars v3.0.16 -- 28 April 2015</h3>
+<p>This build contains an enhancement to the cmdinfo(n) object which exposes
+TclOO classes in the debugger via the getcode call.  This will make it easier
+to make a mod if it involves a TclOO object or class.
+
+</p>
+
+<ul>
+<li> Issue #48: cmdinfo(n): Support TclOO introspection, getcode
+</li></ul>
+
+<h3>Mars v3.0.15 -- 23 April 2015</h3>
+<p>This build contains only a fix to a bug in sqlib(n) for a safequery.
+
+</p>
+
+<ul>
+<li> Issue #47: sqlib(n): safequery ignores variables in user's scope
+</li></ul>
+
+<h3>Mars v3.0.14 -- 15 April 2015</h3>
+<p>This build adds an enhancement to logdisplay(n) and fixes a problem with
+global parmsets.
+
+</p>
+
+<ul>
+<li> Issue #43: global parmsets are a problem
+</li><li> Issue #44: logdisplay(n): -autowidth option
+</li></ul>
+
+<h3>Mars v3.0.13 -- 9 March 2015</h3>
+<p>This build contains some changes in support of the Athena re-architecture.
+
+</p>
+
+<ul>
+<li> Issue #42: simclock(n): Rename type, no default instance
+</li><li> Issue #41: saveable(i) objects should reset on empty restore
+</li><li> Issue #40: Add -resources support to dynabox(n)
+</li><li> Issue #39: Remove obsolete sqldocument(n) SQL functions
+</li></ul>
+
+<h3>Mars v3.0.12 -- 17 February 2015</h3>
+<p>This build fixes a bug in oohelper(n)'s "metadict" command.
+
+</p>
+
+<ul>
+<li> Issue #38: metadict fails for multi-line dicts
+</li></ul>
+
+<h3>Mars v3.0.11 -- 17 February 2015</h3>
+<p>This build adds a number of unrelated changes:
+
+</p>
+
+<ul>
+<li> Issue #30: order_flunky shouldn't send notifier(n) events
+</li><li> Issue #31: order_dialog(n): flunky <code>&lt;Sync&gt;</code>
+</li><li> Issue #32: Set defaults of maprect(n) object to Caspian Sea area.
+</li><li> Issue #33: Convert mam(n) to a type with instances.
+</li><li> Issue #37: metadict tclOO helper enhancement
+</li></ul>
+
+
+<h3>Mars v3.0.10 -- 2 February 2015</h3>
+<p>This build adds automatic variable declaration to order_set(n).
+
+</p>
+
+<ul>
+<li> Issue #29: order_set: automatic variable declaration
+</li></ul>
+
+<h3>Mars v3.0.9 -- 28 January 2015</h3>
+<p>This build contains significant changes to the order(n) infrastructure in
+support of having Athena run as a library in the cloud. Essentially, orders
+are now instances of TclOO objects and order processing is done by acting
+on those objects.
+
+</p>
+
+<ul>
+<li> Issue #27: New order stuff
+</li></ul>
+
+<h3>Mars v3.0.8 -- 13 January 2015</h3>
+<p>This build replaces the <span class="tt">-entity</span> support in dynaform(n)/dynaview(n)
+with <span class="tt">-resources</span> support.  The difference is that the client can
+specify an entire dictionary of resources.
+
+</p>
+
+<ul>
+<li> Issue #25: dynaform: contextkey is obsolete
+</li><li> Issue #26: dynaform(n): Application Resources
+</li></ul>
+
+<h3>Mars v3.0.7 -- 30 December 2014</h3>
+<p>This build adds <span class="tt">-entity</span> support to dynaform(n)/dynaview(n).
+
+</p>
+
+<ul>
+<li> #24: Dynaview Entity Changes
+</li></ul>
+
+<h3>Mars v3.0.6 -- 3 December 2014</h3>
+<p>This build extends the order(n) <span class="tt">prepare</span> command.
+
+</p>
+
+<ul>
+<li> Issue #22: order(n): prepare -with, -listwith
+</li></ul>
+
+<h3>Mars v3.0.5 -- 21 November 2014</h3>
+<p>This build contains a bug fix to the mapcanvas(n). If there's no map image
+the scroll regions are incorrectly computed.  With this fix, they are 
+correct.
+
+</p>
+
+<ul>
+<li> Issue #21: Scroll regions are incorrect in mapcanvas(n) when no map image is present
+</li></ul>
+
+
+<h3>Mars v3.0.4 -- 19 November 2014</h3>
+<p>This build fixes a bug found in Athena 6.1 related to saliencies being zero for
+all concerns.  A database query in the civilian group detail browser page 
+was failing.
+
+</p>
+
+<ul>
+<li> Issue #19: uram(n): contribs mood, contribs nbmood
+</li></ul>
+
+<h3>Mars v3.0.3 -- 5 November 2014</h3>
+<p>This build contains some documentation updates and a change to the project
+name from athena-mars to just mars.
+
+</p>
+
+<ul>
+<li> Issue #17: Update CM Plan
+</li><li> Issue #16: Update license and readme 
+</li><li> Issue #15: Rename project in project.kite 
+</li></ul>
+
+<h3>Mars v3.0.2 -- 20 October 2014</h3>
+<p>Mars v3.0.2 is the first complete build of Mars 3.x with all of the i's
+dotted and the t's crossed.  The changes in moving from Mars 2.x to Mars
+3.x are too numerous to list but include:
+
+</p>
+
+<ul>
+<li> Using Kite as the Mars project's automation tool.
+</li><li> Removing obsolete libraries and applications.
+</li><li> Moving particular infrastructure libraries from Mars to
+     Kite's <a href="./../../kite/docs/mann/kiteutils.html">kiteutils(n)</a> and <a href="./../../kite/docs/mann/kitedocs.html">kitedocs(n)</a>
+     packages (with appropriate changes).
+</li><li> Moving Mars CM from Subversion to 
+     <a href="https:github.jpl.nasa.gov/Athena/mars">GitHub@JPL</a>.
+</li></ul>
+
+<hr>
+<p><address><a href="mailto:William.H.Duquette@jpl.nasa.gov">William.H.Duquette@jpl.nasa.gov</a></address>
+</p>
+
+</body>
+</html>
+    
+
+<!-- List of Anchors
+
+-->

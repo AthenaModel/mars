@@ -10,7 +10,6 @@
 *.dll
 *.so
 *.dylib
-/docs/*.html
 *.xlsx
 *.pptx
 teapot.txt
